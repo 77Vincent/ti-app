@@ -6,7 +6,7 @@ Repository-level instructions for human and AI contributors.
 
 - Name: `ti-app`
 - Stage: early scaffold
-- Goal: build a Next.js web app backed by AWS RDS PostgreSQL
+- Goal: A online AI-backed instant assessment tool that supports broad subjects and subcategories such as physics, math and language learning, a bit like duolingo, but it purely focus on testing, no studying.
 
 ## Tech Stack
 
@@ -14,18 +14,15 @@ Repository-level instructions for human and AI contributors.
 - TypeScript
 - Tailwind CSS
 - PostgreSQL on AWS RDS
-- `pg` via `src/lib/db.ts`
 
 ## Working Rules
 
 1. Keep changes small and explain tradeoffs clearly.
-2. Do not commit secrets. Keep credentials in `.env.local`.
-3. Treat `DATABASE_URL` as server-only and never expose it to client code.
-4. Route all DB access through `src/lib/db.ts` unless intentionally changing architecture.
-5. Prefer `make` commands for common workflows.
-6. Update this file when project conventions change.
+2. Do not commit secrets. Keep credentials in `.env.local`. Document ENV in the .env.example
+3. Prefer `make` commands for common workflows.
+4. Simplicity and unification matters, do not repeat yourself, create and use sharable helpers or assets as much as possible to reduce drift.
 
 ## Definition Of Done
 
-1. Code compiles and lint passes.
-2. Behavior changes are documented in repo docs (`AGENTS.md` and/or `README.md`).
+1. UT is properly added or updated to ensure full coverage
+2. Code compiles, UT and lint passes.
