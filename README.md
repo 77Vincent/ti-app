@@ -4,13 +4,13 @@ Minimal application scaffold.
 
 ## Product Context
 
-`ti-app` is an AI-backed instant assessment tool that supports broad subjects and subcategories, including physics, math, and language learning, etc.
+`ti-app` is an AI-backed instant test tool that supports broad subjects and subcategories, including physics, math, and language learning, etc.
 
 The core product focus is testing and evaluation, not study content delivery. In other word, learning while testing.
 
 The motivation is to that everybody can find testing materials easily and test immedidately with only a few survey to know their requirement and target.
 
-## Workflow Spec v0: Take Assessment
+## Workflow Spec v0: Take Test
 
 1. Session setup
 Flow: Learner selects subject, subcategory, difficulty, goal, and optionally sets `question count limit` and/or `time limit`.
