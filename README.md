@@ -2,6 +2,14 @@
 
 Minimal application scaffold.
 
+## Product Context
+
+`ti-app` is an AI-backed instant assessment tool that supports broad subjects and subcategories, including physics, math, and language learning, etc.
+
+The core product focus is testing and evaluation, not study content delivery. In other word, learning while testing.
+
+The motivation is to that everybody can find testing materials easily and test immedidately with only a few survey to know their requirement and target.
+
 ## Context
 
 - `AGENTS.md`

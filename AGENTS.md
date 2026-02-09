@@ -6,7 +6,8 @@ Repository-level instructions for human and AI contributors.
 
 - Name: `ti-app`
 - Stage: early scaffold
-- Goal: An AI-backed instant assessment tool across subjects and subcategories (for example physics, math, and language learning). It focuses on testing, not studying.
+- Goal: Build a reliable online AI-backed assessment platform and release it as early as possible.
+- Business context and workflow live in `README.md`.
 
 ## Tech Stack
 
@@ -25,10 +26,11 @@ Repository-level instructions for human and AI contributors.
 5. Database access must stay in server-side code and go through `src/lib/db.ts` unless an architecture change is explicitly requested.
 6. Never expose `DATABASE_URL` or other secrets to client-side code.
 7. If requirements are ambiguous or conflicting, ask for clarification before implementing.
+8. Every newly created runtime source file must have a dedicated unit test file in the same change.
 
 ## Definition Of Done
 
-1. Tests are added or updated for changed behavior, prioritizing high-risk paths over blanket coverage targets.
+1. Every newly created runtime source file has a dedicated unit test file.
 2. Code compiles and `make lint` passes.
 3. `make build` passes.
 4. If a test suite exists for changed areas, `make test` passes.
