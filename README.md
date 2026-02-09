@@ -2,6 +2,10 @@
 
 Minimal application scaffold.
 
+## Context
+
+- `AGENTS.md`
+
 ## Development
 
 - `make install`
@@ -11,8 +15,4 @@ Open `http://localhost:3000` in your browser.
 
 ## Commands
 
-- `make lint`
-- `make test`
-- `make build`
-- `make start`
-- `make check`
+All development and deploy commands are wrapped and available in the makefile
