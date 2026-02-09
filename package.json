@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "next": "16.1.6",
+    "pg": "^8.18.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
