@@ -6,7 +6,7 @@ Repository-level instructions for human and AI contributors.
 
 - Name: `ti-app`
 - Stage: early scaffold
-- Goal: A online AI-backed instant assessment tool that supports broad subjects and subcategories such as physics, math and language learning, a bit like duolingo, but it purely focus on testing, no studying.
+- Goal: An AI-backed instant assessment tool across subjects and subcategories (for example physics, math, and language learning). It focuses on testing, not studying.
 
 ## Tech Stack
 
@@ -14,15 +14,21 @@ Repository-level instructions for human and AI contributors.
 - TypeScript
 - Tailwind CSS
 - PostgreSQL on AWS RDS
+- `pg` for database access
 
 ## Working Rules
 
 1. Keep changes small and explain tradeoffs clearly.
-2. Do not commit secrets. Keep credentials in `.env.local`. Document ENV in the .env.example
+2. Do not commit secrets. Keep credentials in `.env.local`. Document env vars in `.env.example`.
 3. Prefer `make` commands for common workflows.
-4. Simplicity and unification matters, do not repeat yourself, create and use sharable helpers or assets as much as possible to reduce drift.
+4. Favor simplicity and unification. Avoid repeating logic; use shared helpers/assets to reduce drift.
+5. Database access must stay in server-side code and go through `src/lib/db.ts` unless an architecture change is explicitly requested.
+6. Never expose `DATABASE_URL` or other secrets to client-side code.
+7. If requirements are ambiguous or conflicting, ask for clarification before implementing.
 
 ## Definition Of Done
 
-1. UT is properly added or updated to ensure full coverage
-2. Code compiles, UT and lint passes.
+1. Tests are added or updated for changed behavior, prioritizing high-risk paths over blanket coverage targets.
+2. Code compiles and `make lint` passes.
+3. `make build` passes.
+4. If a test suite exists for changed areas, `make test` passes.
