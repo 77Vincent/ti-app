@@ -27,10 +27,14 @@ Repository-level instructions for human and AI contributors.
 6. Never expose `DATABASE_URL` or other secrets to client-side code.
 7. If requirements are ambiguous or conflicting, ask for clarification before implementing.
 8. Every newly created runtime source file must have a dedicated unit test file in the same change.
+9. Any changed runtime behavior must include new or updated unit tests in the same change.
+10. Validate external input at system boundaries, use parameterized SQL only, and enforce auth/authz on protected operations.
+11. No dead code is allowed.
 
 ## Definition Of Done
 
 1. Every newly created runtime source file has a dedicated unit test file.
-2. Code compiles and `make lint` passes.
-3. `make build` passes.
-4. If a test suite exists for changed areas, `make test` passes.
+2. Runtime behavior changes include new or updated unit tests.
+3. Code compiles and `make lint` passes.
+4. `make build` passes.
+5. If a test suite exists for changed areas, `make test` passes.
