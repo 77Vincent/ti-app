@@ -3,7 +3,6 @@ import {
   INFINITE_TIME_LIMIT_MINUTES,
 } from "@/modules/startForm/constants";
 import type { QuestionRunnerProps } from "./types";
-import QuestionSkeleton from "./QuestionSkeleton";
 import Question from "./Question";
 
 export default function QuestionRunner({
@@ -14,8 +13,6 @@ export default function QuestionRunner({
   timeLimit,
   currentQuestion,
 }: QuestionRunnerProps) {
-  const isLoadingQuestion = !currentQuestion;
-
   return (
     <div className="my-auto space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -24,7 +21,12 @@ export default function QuestionRunner({
 
       <div className="card card-border bg-base-100 shadow-sm">
         <div className="card-body">
-          {isLoadingQuestion ? <QuestionSkeleton /> : <Question />}
+          <Question
+            currentQuestion={currentQuestion}
+            difficulty={difficulty}
+            subcategoryId={subcategoryId}
+            subjectId={subjectId}
+          />
         </div>
       </div>
 
