@@ -1,12 +1,7 @@
-import type { DifficultyLevel } from "@/lib/meta";
-import type { QuestionCountOption, TimeLimitOption } from "./constants";
+import type { StartFormSelectionState, TimeLimitOption } from "./constants";
 import { getCurrentStartFormStep } from "./utils";
 
-export type StartFormState = {
-  selectedSubjectId: string | null;
-  selectedSubcategoryId: string | null;
-  selectedDifficulty: DifficultyLevel | null;
-  selectedQuestionCount: QuestionCountOption | null;
+export type StartFormState = StartFormSelectionState & {
   selectedTimeLimit: TimeLimitOption | null;
 };
 
@@ -40,7 +35,7 @@ export function selectSubcategory(
 
 export function selectDifficulty(
   state: StartFormState,
-  difficulty: DifficultyLevel,
+  difficulty: StartFormSelectionState["selectedDifficulty"],
 ): StartFormState {
   return {
     ...state,
@@ -52,7 +47,7 @@ export function selectDifficulty(
 
 export function selectQuestionCount(
   state: StartFormState,
-  questionCount: QuestionCountOption,
+  questionCount: StartFormSelectionState["selectedQuestionCount"],
 ): StartFormState {
   return {
     ...state,

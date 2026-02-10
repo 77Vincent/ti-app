@@ -51,12 +51,7 @@ export default function StartForm() {
     return getOrderedSubcategories(selectedSubjectId);
   }, [selectedSubjectId]);
 
-  const currentStep = getCurrentStartFormStep({
-    selectedSubjectId,
-    selectedSubcategoryId,
-    selectedDifficulty,
-    selectedQuestionCount,
-  });
+  const currentStep = getCurrentStartFormStep(state);
   const canGoBack = canGoBackFromStep(currentStep);
 
   const handleSelectSubject = (subjectId: string) =>
