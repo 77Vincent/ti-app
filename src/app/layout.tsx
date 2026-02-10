@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ToastHost from "@/modules/toast/ToastHost";
+import Image from "next/image";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,14 +9,22 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  children: main,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <aside className="w-20">
+          <Image
+            src="/logo.svg"
+            alt="QuizMaster Logo"
+            width={48}
+            height={40}
+          />          
+        </aside>
+        {main}
         <ToastHost />
       </body>
     </html>

@@ -1,7 +1,3 @@
-import {
-  INFINITE_QUESTION_COUNT,
-  INFINITE_TIME_LIMIT_MINUTES,
-} from "@/modules/startForm/constants";
 import type { QuestionRunnerProps } from "./types";
 import Question from "./Question";
 
@@ -9,8 +5,6 @@ export default function QuestionRunner({
   subjectId,
   subcategoryId,
   difficulty,
-  questionCount,
-  timeLimit,
   currentQuestion,
 }: QuestionRunnerProps) {
   return (

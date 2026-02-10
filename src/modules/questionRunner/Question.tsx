@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import QuestionSkeleton from "./QuestionSkeleton";
-import type { DifficultyLevel } from "@/lib/meta";
-import type { Question as QuestionType } from "./types";
+import { QUESTION_TYPES, type DifficultyLevel } from "@/lib/meta";
+import type {
+  Question as QuestionType,
+  QuestionOptionId,
+} from "./types";
 import { fetchGeneratedQuestion } from "./api";
 import { toastError } from "@/modules/toast/toastBus";
 
@@ -24,17 +27,22 @@ export default function Question({
     currentQuestion ?? null,
   );
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(!currentQuestion);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedOptionIds, setSelectedOptionIds] = useState<QuestionOptionId[]>([]);
 
   useEffect(() => {
-    if (currentQuestion) {
-      setQuestion(currentQuestion);
-      setIsLoadingQuestion(false);
-      return;
-    }
-
     let cancelled = false;
 
-    async function loadQuestion() {
+    if (currentQuestion) {
+      setQuestion(currentQuestion);
+      setSelectedOptionIds([]);
+      setIsLoadingQuestion(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    async function loadInitialQuestion() {
       setIsLoadingQuestion(true);
 
       try {
@@ -46,6 +54,7 @@ export default function Question({
 
         if (!cancelled) {
           setQuestion(nextQuestion);
+          setSelectedOptionIds([]);
         }
       } catch (error) {
         if (!cancelled) {
@@ -60,12 +69,53 @@ export default function Question({
       }
     }
 
-    loadQuestion();
+    loadInitialQuestion();
 
     return () => {
       cancelled = true;
     };
   }, [currentQuestion, difficulty, subcategoryId, subjectId]);
+
+  function handleSelectOption(optionId: QuestionOptionId) {
+    if (!question || isSubmitting) {
+      return;
+    }
+
+    if (question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER) {
+      setSelectedOptionIds((prevIds) =>
+        prevIds.includes(optionId)
+          ? prevIds.filter((id) => id !== optionId)
+          : [...prevIds, optionId],
+      );
+      return;
+    }
+
+    setSelectedOptionIds([optionId]);
+  }
+
+  async function handleSubmit() {
+    if (!question || selectedOptionIds.length === 0 || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const nextQuestion = await fetchGeneratedQuestion({
+        subjectId,
+        subcategoryId,
+        difficulty,
+      });
+      setQuestion(nextQuestion);
+      setSelectedOptionIds([]);
+    } catch (error) {
+      toastError(
+        error instanceof Error ? error.message : "Failed to load question.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   if (isLoadingQuestion) {
     return <QuestionSkeleton />;
@@ -82,14 +132,28 @@ export default function Question({
       <div className="space-y-2">
         {question.options.map((option) => (
           <button
-            className="btn w-full justify-start"
+            className={`btn w-full justify-start ${
+              selectedOptionIds.includes(option.id) ? "btn-primary" : "btn-outline"
+            }`}
             key={option.id}
+            onClick={() => handleSelectOption(option.id)}
             type="button"
           >
             <span className="font-mono">{option.id}.</span>
             <span>{option.text}</span>
           </button>
         ))}
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          className={`btn btn-sm btn-primary ${isSubmitting ? "loading" : ""}`}
+          disabled={selectedOptionIds.length === 0 || isSubmitting}
+          onClick={handleSubmit}
+          type="button"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );

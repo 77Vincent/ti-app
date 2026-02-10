@@ -114,7 +114,7 @@ export default function StartForm() {
   }
 
   return (
-    <div className="card bg-base-100 shadow-sm my-auto">
+    <div className="card bg-base-100 shadow-sm">
       <div className="card-body">
         <div className="flex items-center justify-center">
           <h1 className="text-2xl font-medium text-center">{getStartFormTitle(currentStep)}</h1>
