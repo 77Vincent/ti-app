@@ -44,6 +44,12 @@ export function useQuestion({
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
 
+  const showLoadError = useCallback((error: unknown) => {
+    toastError(
+      error instanceof Error ? error.message : "Failed to load question.",
+    );
+  }, []);
+
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
       setQuestion(nextQuestion);
@@ -70,13 +76,11 @@ export function useQuestion({
         setPrefetchedQuestion(null);
 
         if (showError) {
-          toastError(
-            error instanceof Error ? error.message : "Failed to load question.",
-          );
+          showLoadError(error);
         }
       }
     },
-    [loadQuestion],
+    [loadQuestion, showLoadError],
   );
 
   useEffect(() => {
@@ -97,9 +101,7 @@ export function useQuestion({
         }
       } catch (error) {
         if (!cancelled) {
-          toastError(
-            error instanceof Error ? error.message : "Failed to load question.",
-          );
+          showLoadError(error);
         }
       } finally {
         if (!cancelled) {
@@ -113,7 +115,7 @@ export function useQuestion({
     return () => {
       cancelled = true;
     };
-  }, [applyLoadedQuestion, loadQuestion, prefetchNextQuestion]);
+  }, [applyLoadedQuestion, loadQuestion, prefetchNextQuestion, showLoadError]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -151,9 +153,7 @@ export function useQuestion({
       applyLoadedQuestion(nextQuestion);
       void prefetchNextQuestion();
     } catch (error) {
-      toastError(
-        error instanceof Error ? error.message : "Failed to load question.",
-      );
+      showLoadError(error);
     } finally {
       setIsSubmitting(false);
     }
