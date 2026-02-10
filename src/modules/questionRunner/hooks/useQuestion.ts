@@ -1,10 +1,15 @@
 "use client";
 
-import { QUESTION_TYPES, type DifficultyLevel } from "@/lib/meta";
+import type { DifficultyLevel } from "@/lib/meta";
 import { toastError } from "@/modules/toast/toastBus";
 import { useEffect, useState } from "react";
-import { fetchGeneratedQuestion } from "./api";
-import type { Question as QuestionType, QuestionOptionId } from "./types";
+import { fetchGeneratedQuestion } from "../api";
+import type { Question as QuestionType, QuestionOptionId } from "../types";
+import {
+  isOptionCorrect as getIsOptionCorrect,
+  isOptionWrongSelection as getIsOptionWrongSelection,
+} from "../utils/evaluation";
+import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
   subjectId: string;
@@ -16,7 +21,10 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
+  hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
+  isOptionCorrect: (optionId: QuestionOptionId) => boolean;
+  isOptionWrongSelection: (optionId: QuestionOptionId) => boolean;
   selectOption: (optionId: QuestionOptionId) => void;
   submit: () => Promise<void>;
 };
@@ -29,7 +37,9 @@ export function useQuestion({
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedOptionIds, setSelectedOptionIds] = useState<QuestionOptionId[]>([]);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
+    useQuestionSelection();
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +56,8 @@ export function useQuestion({
 
         if (!cancelled) {
           setQuestion(nextQuestion);
-          setSelectedOptionIds([]);
+          resetSelection();
+          setHasSubmitted(false);
         }
       } catch (error) {
         if (!cancelled) {
@@ -66,27 +77,27 @@ export function useQuestion({
     return () => {
       cancelled = true;
     };
-  }, [difficulty, subcategoryId, subjectId]);
+  }, [difficulty, resetSelection, subcategoryId, subjectId]);
 
   function selectOption(optionId: QuestionOptionId) {
-    if (!question || isSubmitting) {
-      return;
-    }
+    selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
+  }
 
-    if (question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER) {
-      setSelectedOptionIds((prevIds) =>
-        prevIds.includes(optionId)
-          ? prevIds.filter((id) => id !== optionId)
-          : [...prevIds, optionId],
-      );
-      return;
-    }
+  function isOptionCorrect(optionId: QuestionOptionId): boolean {
+    return getIsOptionCorrect(question, optionId);
+  }
 
-    setSelectedOptionIds([optionId]);
+  function isOptionWrongSelection(optionId: QuestionOptionId): boolean {
+    return getIsOptionWrongSelection(question, selectedOptionIds, optionId);
   }
 
   async function submit() {
     if (!question || selectedOptionIds.length === 0 || isSubmitting) {
+      return;
+    }
+
+    if (!hasSubmitted) {
+      setHasSubmitted(true);
       return;
     }
 
@@ -99,7 +110,8 @@ export function useQuestion({
         difficulty,
       });
       setQuestion(nextQuestion);
-      setSelectedOptionIds([]);
+      resetSelection();
+      setHasSubmitted(false);
     } catch (error) {
       toastError(
         error instanceof Error ? error.message : "Failed to load question.",
@@ -113,7 +125,10 @@ export function useQuestion({
     question,
     isLoadingQuestion,
     isSubmitting,
+    hasSubmitted,
     selectedOptionIds,
+    isOptionCorrect,
+    isOptionWrongSelection,
     selectOption,
     submit,
   };

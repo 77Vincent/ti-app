@@ -26,16 +26,15 @@ type BaseQuestion = {
   prompt: string;
   questionType: QuestionType;
   options: QuestionOption[];
+  correctOptionIds: QuestionOptionId[];
 };
 
 export type MultipleChoiceQuestion = BaseQuestion & {
   questionType: typeof QUESTION_TYPES.MULTIPLE_CHOICE;
-  correctOptionId: QuestionOptionId;
 };
 
 export type MultipleAnswerQuestion = BaseQuestion & {
   questionType: typeof QUESTION_TYPES.MULTIPLE_ANSWER;
-  correctOptionIds: QuestionOptionId[];
 };
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;

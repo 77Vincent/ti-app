@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       { id: "C", text: "Paris", explanation: Math.random().toString(36).substring(2, 10) + " is correct." },
       { id: "D", text: "Rome", explanation: Math.random().toString(36).substring(2, 10) + " is incorrect." },
     ],
-    correctOptionId: "C",
+    correctOptionIds: ["C"],
   };
 
   return NextResponse.json({ question });
