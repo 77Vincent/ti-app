@@ -1,7 +1,7 @@
 "use client";
 
 import QuestionSkeleton from "./QuestionSkeleton";
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { useQuestion } from "./hooks/useQuestion";
 import QuestionPrompt from "./QuestionPrompt";
@@ -10,7 +10,7 @@ import QuestionChoice from "./QuestionChoice";
 type QuestionProps = {
   subjectId: string;
   subcategoryId: string;
-  difficulty: DifficultyLevel;
+  difficulty: DifficultyEnum;
 };
 
 export default function Question({

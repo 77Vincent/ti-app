@@ -1,8 +1,14 @@
 "use client";
 
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
+import {
+  clearAsyncBuffer,
+  consumeAsyncBuffer,
+  createAsyncBuffer,
+  fillAsyncBuffer,
+} from "@/lib/asyncBuffer";
 import { toastError } from "@/modules/toast/toastBus";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchGeneratedQuestion } from "../api";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -14,7 +20,7 @@ import { useQuestionSelection } from "./useQuestionSelection";
 export type UseQuestionInput = {
   subjectId: string;
   subcategoryId: string;
-  difficulty: DifficultyLevel;
+  difficulty: DifficultyEnum;
 };
 
 export type UseQuestionResult = {
@@ -29,15 +35,15 @@ export type UseQuestionResult = {
   submit: () => Promise<void>;
 };
 
+const PREFETCH_BUFFER_SIZE = 2;
+
 export function useQuestion({
   subjectId,
   subcategoryId,
   difficulty,
 }: UseQuestionInput): UseQuestionResult {
   const [question, setQuestion] = useState<QuestionType | null>(null);
-  const [prefetchedQuestion, setPrefetchedQuestion] = useState<QuestionType | null>(
-    null,
-  );
+  const bufferRef = useRef(createAsyncBuffer<QuestionType>(PREFETCH_BUFFER_SIZE));
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -67,14 +73,11 @@ export function useQuestion({
     });
   }, [difficulty, subcategoryId, subjectId]);
 
-  const prefetchNextQuestion = useCallback(
+  const prefetchQuestions = useCallback(
     async (showError = false) => {
       try {
-        const nextQuestion = await loadQuestion();
-        setPrefetchedQuestion(nextQuestion);
+        await fillAsyncBuffer(bufferRef.current, loadQuestion);
       } catch (error) {
-        setPrefetchedQuestion(null);
-
         if (showError) {
           showLoadError(error);
         }
@@ -88,7 +91,7 @@ export function useQuestion({
 
     async function loadInitialQuestion() {
       setIsLoadingQuestion(true);
-      setPrefetchedQuestion(null);
+      clearAsyncBuffer(bufferRef.current);
 
       try {
         const nextQuestion = await loadQuestion();
@@ -96,8 +99,8 @@ export function useQuestion({
         if (!cancelled) {
           applyLoadedQuestion(nextQuestion);
 
-          // Keep one question ready in the background for smooth continue.
-          void prefetchNextQuestion();
+          // Keep two questions ready in the background for smoother continue.
+          void prefetchQuestions();
         }
       } catch (error) {
         if (!cancelled) {
@@ -115,7 +118,7 @@ export function useQuestion({
     return () => {
       cancelled = true;
     };
-  }, [applyLoadedQuestion, loadQuestion, prefetchNextQuestion, showLoadError]);
+  }, [applyLoadedQuestion, loadQuestion, prefetchQuestions, showLoadError]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -139,10 +142,12 @@ export function useQuestion({
       return;
     }
 
-    if (prefetchedQuestion) {
-      applyLoadedQuestion(prefetchedQuestion);
-      setPrefetchedQuestion(null);
-      void prefetchNextQuestion();
+    const nextBufferedQuestion = consumeAsyncBuffer(bufferRef.current);
+
+    if (nextBufferedQuestion) {
+      const nextQuestion = nextBufferedQuestion;
+      applyLoadedQuestion(nextQuestion);
+      void prefetchQuestions();
       return;
     }
 
@@ -151,7 +156,7 @@ export function useQuestion({
     try {
       const nextQuestion = await loadQuestion();
       applyLoadedQuestion(nextQuestion);
-      void prefetchNextQuestion();
+      void prefetchQuestions();
     } catch (error) {
       showLoadError(error);
     } finally {
