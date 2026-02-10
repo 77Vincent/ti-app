@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+      <body className="antialiased min-h-screen bg-base-200 text-base-content">
         <ThemeProvider
           attribute="data-theme"
           defaultTheme="system"

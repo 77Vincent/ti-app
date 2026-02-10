@@ -92,18 +92,16 @@ export default function StartForm() {
   }
 
   return (
-    <div className="card bg-base-100 shadow-sm">
-      <div className="card-body">
-        <div className="flex items-center justify-center">
-          <h1 className="text-2xl font-medium text-center">
-            {START_FORM_STEP_TITLES[currentStep]}
-          </h1>
-        </div>
+    <div className="mx-auto max-w-xl card bg-base-100 shadow-sm">
+      <div className="card-body items-center space-y-6">
+        <h1 className="text-2xl font-medium text-center">
+          {START_FORM_STEP_TITLES[currentStep]}
+        </h1>
 
         <div className="flex flex-wrap gap-2">
           {currentStepViewConfig.options.map((option) => (
             <button
-              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn-sm ${currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
+              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn ${currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
                 }`}
               key={option.value}
               onClick={() => onSelectByStep[currentStep](option.value)}
