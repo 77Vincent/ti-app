@@ -1,4 +1,6 @@
 import {
+  SUBJECT_CATALOG,
+  SUBCATEGORY_CATALOG,
   DIFFICULTY_OPTIONS,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
@@ -17,6 +19,20 @@ function isValidDifficulty(value: string): value is DifficultyLevel {
   return DIFFICULTY_OPTIONS.some((difficulty) => difficulty.id === value);
 }
 
+function isValidSubject(value: string): boolean {
+  return SUBJECT_CATALOG.some((subject) => subject.id === value);
+}
+
+function isValidSubcategoryForSubject(
+  subcategoryId: string,
+  subjectId: string,
+): boolean {
+  return SUBCATEGORY_CATALOG.some(
+    (subcategory) =>
+      subcategory.id === subcategoryId && subcategory.subjectId === subjectId,
+  );
+}
+
 export function parseGenerateQuestionRequest(
   body: unknown,
 ): GenerateQuestionRequest | null {
@@ -28,7 +44,9 @@ export function parseGenerateQuestionRequest(
 
   if (
     !isNonEmptyString(subjectId) ||
+    !isValidSubject(subjectId) ||
     !isNonEmptyString(subcategoryId) ||
+    !isValidSubcategoryForSubject(subcategoryId, subjectId) ||
     !isNonEmptyString(difficulty) ||
     !isValidDifficulty(difficulty)
   ) {
