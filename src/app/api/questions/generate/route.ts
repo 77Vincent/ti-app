@@ -5,14 +5,8 @@ import {
   parseGenerateQuestionRequest,
 } from "./validation";
 
-const DEFAULT_GENERATOR_MODE = "mock";
-
-function isAiGeneratorMode(): boolean {
-  const mode = (process.env.QUESTION_GENERATOR_MODE ?? DEFAULT_GENERATOR_MODE)
-    .trim()
-    .toLowerCase();
-
-  return mode === "ai";
+function hasOpenAiApiKey(): boolean {
+  return Boolean(process.env.OPENAI_API_KEY?.trim());
 }
 
 export async function POST(request: Request) {
@@ -33,7 +27,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isAiGeneratorMode()) {
+  if (!hasOpenAiApiKey()) {
     return NextResponse.json({ question: generateMockQuestion(input) });
   }
 

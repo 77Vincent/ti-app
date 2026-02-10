@@ -68,6 +68,7 @@ export default function StartForm() {
       subjectId: selectedSubjectId,
       subcategoryId: selectedSubcategoryId,
       difficulty,
+      questionIndex: 0,
     };
 
     try {

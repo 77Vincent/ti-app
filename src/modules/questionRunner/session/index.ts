@@ -5,6 +5,9 @@ export {
 } from "./reducer";
 export {
   clearStoredTestSession,
+  getStoredQuestionIndex,
   parseStoredTestSession,
+  subscribeStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
+  updateStoredQuestionIndex,
 } from "./storage";

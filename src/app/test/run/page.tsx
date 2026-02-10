@@ -21,12 +21,12 @@ export default function TestRunPage() {
 
   const handleEndTest = useCallback(() => {
     clearStoredTestSession();
-    router.push("/test/start");
+    router.push("/test");
   }, [router]);
 
   useEffect(() => {
     if (!params) {
-      router.replace("/test/start");
+      router.replace("/test");
     }
   }, [params, router]);
 

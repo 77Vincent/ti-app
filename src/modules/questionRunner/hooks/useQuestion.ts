@@ -2,9 +2,13 @@
 
 import { addToast } from "@heroui/react";
 import type { DifficultyEnum } from "@/lib/meta";
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { fetchGeneratedQuestion } from "../api";
-import { createQuestionSessionController } from "../session";
+import {
+  createQuestionSessionController,
+  getStoredQuestionIndex,
+  updateStoredQuestionIndex,
+} from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
   isOptionCorrect as getIsOptionCorrect,
@@ -41,6 +45,7 @@ export function useQuestion({
   subcategoryId,
   difficulty,
 }: UseQuestionInput): UseQuestionResult {
+  const questionIndexRef = useRef<number>(getStoredQuestionIndex() ?? 0);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -61,6 +66,8 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
+      questionIndexRef.current += 1;
+      updateStoredQuestionIndex(questionIndexRef.current);
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
