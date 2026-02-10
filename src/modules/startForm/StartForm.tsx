@@ -2,8 +2,8 @@
 
 import {
   sortByOrder,
-  SUBJECT_CATALOG,
-  SUBCATEGORY_CATALOG,
+  SUBJECTS,
+  SUBCATEGORIES,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 import { QuestionRunner } from "@/modules/questionRunner";
@@ -33,7 +33,7 @@ export default function StartForm() {
     selectedDifficulty,
   } = state;
   const hasStarted = selectedDifficulty !== null;
-  const subjects = useMemo(() => sortByOrder(SUBJECT_CATALOG), []);
+  const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
   const subcategories = useMemo(() => {
     if (!selectedSubjectId) {
@@ -41,7 +41,7 @@ export default function StartForm() {
     }
 
     return sortByOrder(
-      SUBCATEGORY_CATALOG.filter(
+      SUBCATEGORIES.filter(
         (subcategory) => subcategory.subjectId === selectedSubjectId,
       ),
     );
@@ -101,9 +101,8 @@ export default function StartForm() {
         <div className="flex flex-wrap gap-2">
           {currentStepViewConfig.options.map((option) => (
             <button
-              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn-sm ${
-                currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
-              }`}
+              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn-sm ${currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
+                }`}
               key={option.value}
               onClick={() => onSelectByStep[currentStep](option.value)}
               type="button"

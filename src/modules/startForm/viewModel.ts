@@ -1,4 +1,4 @@
-import { DIFFICULTY_OPTIONS } from "@/lib/meta";
+import { DIFFICULTIES } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 import type { StartFormStep } from "./constants";
 
@@ -41,7 +41,7 @@ export function buildCurrentStepViewConfig(
       value: subcategory.id,
       label: subcategory.label,
     })),
-    difficulty: DIFFICULTY_OPTIONS.map((difficulty) => ({
+    difficulty: DIFFICULTIES.map((difficulty) => ({
       value: difficulty.id,
       label: difficulty.label,
     })),

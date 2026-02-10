@@ -1,6 +1,6 @@
-export { SUBJECTS as SUBJECT_CATALOG } from "./subjects";
-export { SUBCATEGORIES as SUBCATEGORY_CATALOG } from "./subcategories";
-export { DIFFICULTIES as DIFFICULTY_OPTIONS } from "./difficulties";
+export { SUBJECTS } from "./subjects";
+export { SUBCATEGORIES } from "./subcategories";
+export { DIFFICULTIES } from "./difficulties";
 export { sortByOrder } from "./utils";
 export { QUESTION_TYPES } from "./questionTypes";
 export type { QuestionType } from "./questionTypes";

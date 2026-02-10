@@ -1,7 +1,7 @@
 import {
-  SUBJECT_CATALOG,
-  SUBCATEGORY_CATALOG,
-  DIFFICULTY_OPTIONS,
+  SUBJECTS,
+  SUBCATEGORIES,
+  DIFFICULTIES,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 
@@ -16,18 +16,18 @@ function isNonEmptyString(value: unknown): value is string {
 }
 
 function isValidDifficulty(value: string): value is DifficultyLevel {
-  return DIFFICULTY_OPTIONS.some((difficulty) => difficulty.id === value);
+  return DIFFICULTIES.some((difficulty) => difficulty.id === value);
 }
 
 function isValidSubject(value: string): boolean {
-  return SUBJECT_CATALOG.some((subject) => subject.id === value);
+  return SUBJECTS.some((subject) => subject.id === value);
 }
 
 function isValidSubcategoryForSubject(
   subcategoryId: string,
   subjectId: string,
 ): boolean {
-  return SUBCATEGORY_CATALOG.some(
+  return SUBCATEGORIES.some(
     (subcategory) =>
       subcategory.id === subcategoryId && subcategory.subjectId === subjectId,
   );
