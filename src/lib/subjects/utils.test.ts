@@ -4,6 +4,7 @@ import {
   getOrderedSubjects,
   getSubjectById,
 } from "./utils";
+import { DIFFICULTY_OPTIONS } from "./subjects";
 
 describe("subjects utils", () => {
   it("returns ordered subjects", () => {
@@ -34,5 +35,14 @@ describe("subjects utils", () => {
 
   it("returns empty subcategories for unknown subject", () => {
     expect(getOrderedSubcategories("unknown")).toEqual([]);
+  });
+
+  it("keeps ordered difficulty options in catalog data", () => {
+    expect(DIFFICULTY_OPTIONS.map((difficulty) => difficulty.id)).toEqual([
+      "beginner",
+      "intermediate",
+      "advanced",
+      "expert",
+    ]);
   });
 });

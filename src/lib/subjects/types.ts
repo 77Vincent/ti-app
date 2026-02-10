@@ -10,6 +10,10 @@ export type SubcategoryOption = GenericOption;
 export type QuestionType = "multiple_choice" | "multiple_answer";
 
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced" | "expert";
+export type DifficultyOption = {
+    id: DifficultyLevel;
+    label: string;
+};
 
 export type SubcategoryEntry = SubcategoryOption & {
     disabled?: boolean;

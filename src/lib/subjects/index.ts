@@ -1,4 +1,4 @@
-export { SUBJECT_CATALOG } from "./subjects";
+export { DIFFICULTY_OPTIONS, SUBJECT_CATALOG } from "./subjects";
 export {
   getOrderedSubcategories,
   getOrderedSubjects,
@@ -9,6 +9,7 @@ export {
   QUESTION_TYPES,
 } from "./types";
 export type {
+  DifficultyOption,
   DifficultyLevel,
   QuestionType,
   SubcategoryEntry,
