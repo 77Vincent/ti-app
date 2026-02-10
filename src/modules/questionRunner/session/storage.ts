@@ -13,8 +13,7 @@ export type TestRunParams = {
   difficulty: DifficultyEnum;
 };
 
-type StoredTestSession = TestRunParams & {
-};
+type StoredTestSession = TestRunParams;
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -60,4 +59,8 @@ export function parseStoredTestSession(rawSession: string | null): TestRunParams
   } catch {
     return null;
   }
+}
+
+export function clearStoredTestSession(): void {
+  sessionStorage.removeItem(TEST_SESSION_STORAGE_KEY);
 }

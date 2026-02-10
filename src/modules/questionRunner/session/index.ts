@@ -4,6 +4,7 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
+  clearStoredTestSession,
   parseStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
 } from "./storage";

@@ -1,12 +1,13 @@
 "use client";
 
 import {
+  clearStoredTestSession,
   parseStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
 } from "@/modules/questionRunner/session";
 import { QuestionRunner } from "@/modules/questionRunner";
 import { useRouter } from "next/navigation";
-import { useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 export default function TestRunPage() {
   const router = useRouter();
@@ -18,9 +19,14 @@ export default function TestRunPage() {
 
   const params = parseStoredTestSession(rawSession);
 
+  const handleEndTest = useCallback(() => {
+    clearStoredTestSession();
+    router.push("/test/start");
+  }, [router]);
+
   useEffect(() => {
     if (!params) {
-      router.replace("/test");
+      router.replace("/test/start");
     }
   }, [params, router]);
 
@@ -31,6 +37,7 @@ export default function TestRunPage() {
   return (
     <QuestionRunner
       difficulty={params.difficulty}
+      onEndTest={handleEndTest}
       subcategoryId={params.subcategoryId}
       subjectId={params.subjectId}
     />

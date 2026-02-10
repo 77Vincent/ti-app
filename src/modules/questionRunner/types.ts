@@ -7,6 +7,10 @@ export type TestMeta = {
   difficulty: DifficultyEnum;
 };
 
+export type TestRunnerActions = {
+  onEndTest: () => void;
+};
+
 export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
 
 export type QuestionOption = {
@@ -33,4 +37,4 @@ export type MultipleAnswerQuestion = BaseQuestion & {
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
-export type QuestionRunnerProps = TestMeta;
+export type QuestionRunnerProps = TestMeta & TestRunnerActions;

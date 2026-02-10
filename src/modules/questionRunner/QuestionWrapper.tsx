@@ -6,6 +6,7 @@ export default function QuestionRunner({
   subjectId,
   subcategoryId,
   difficulty,
+  onEndTest,
 }: QuestionRunnerProps) {
   return (
     <div className="mx-auto my-auto max-w-2xl space-y-3">
@@ -36,6 +37,7 @@ export default function QuestionRunner({
       <div className="flex justify-end">
         <Button
           aria-label="Quit test"
+          onPress={onEndTest}
           size="sm"
           variant="light"
         >
