@@ -12,5 +12,9 @@ export function isOptionWrongSelection(
   selectedOptionIds: QuestionOptionId[],
   optionId: QuestionOptionId,
 ): boolean {
+  if (!question) {
+    return false;
+  }
+
   return selectedOptionIds.includes(optionId) && !isOptionCorrect(question, optionId);
 }
