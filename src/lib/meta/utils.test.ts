@@ -21,13 +21,7 @@ describe("subjects utils", () => {
   });
 
   it("returns ordered subjects", () => {
-    expect(getOrderedSubjects().map((subject) => subject.id)).toEqual([
-      "language",
-      "math",
-      "physics",
-      "chemistry",
-      "computer_science",
-    ]);
+    expect(getOrderedSubjects().map((subject) => subject.id)).toEqual(["language"]);
   });
 
   it("returns subject by id", () => {
@@ -38,9 +32,9 @@ describe("subjects utils", () => {
 
   it("returns ordered subcategories for a subject", () => {
     expect(
-      getOrderedSubcategories("computer_science").map(
+      getOrderedSubcategories("language").map(
         (subcategory) => subcategory.id,
       ),
-    ).toEqual(["programming"]);
+    ).toEqual(["english"]);
   });
 });
