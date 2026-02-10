@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import ToastHost from "@/modules/toast/ToastHost";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import AppBar from "./appbar";
@@ -21,7 +20,6 @@ export default function RootLayout({
         <Providers>
           <main className="text-foreground bg-background">
             <AppBar />
-            <ToastHost />
             {main}
           </main>
         </Providers>

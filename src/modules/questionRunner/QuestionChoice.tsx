@@ -47,35 +47,38 @@ export default function QuestionChoice({
   const containerClassName = hasSubmitted
     ? isCorrect
       ? isMissedCorrect
-        ? "border-amber-500 bg-amber-50 text-amber-900"
-        : "border-emerald-500 bg-emerald-50 text-emerald-900"
+        ? "border-amber-500 bg-amber-50"
+        : "border-emerald-500 bg-emerald-50"
       : isWrongSelection
-        ? "border-red-500 bg-red-50 text-red-900"
-        : "border-default-300 bg-default-50 text-foreground"
+        ? "border-red-500 bg-red-50"
+        : "border-default-300 bg-default-50"
     : isSelected
-      ? "border-primary bg-primary-50 text-foreground"
-      : "border-default-300 bg-background text-foreground";
+      ? "border-primary bg-primary-50"
+      : "border-default-300 bg-background";
 
   return (
     <div className="space-y-1">
       <Card
-        className={`border-medium ${containerClassName}`}
-        isDisabled={isSubmitting || hasSubmitted}
+        shadow="none"
+        className={`border w-full ${containerClassName}`}
+        isDisabled={isSubmitting}
         isPressable={!hasSubmitted}
         onPress={onSelect}
       >
-        <CardBody className="px-4 py-3 text-left leading-relaxed">
-          <span className="font-mono">{option.id}. </span>
-          <span>{renderInlineMarkdown(option.text)}</span>
+        <CardBody className="px-4 py-2">
+          <div>
+            <span className="font-mono">{option.id}. </span>
+            <span>{renderInlineMarkdown(option.text)}</span>
+          </div>
         </CardBody>
       </Card>
 
       {hasSubmitted ? (
-        <Card className="border-default-200 bg-default-100" radius="sm">
-          <CardBody className="px-4 py-2 text-sm leading-relaxed">
-          <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
-            {option.explanation}
-          </ReactMarkdown>
+        <Card shadow="none">
+          <CardBody className="px-4 py-2">
+            <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
+              {option.explanation}
+            </ReactMarkdown>
           </CardBody>
         </Card>
       ) : null}

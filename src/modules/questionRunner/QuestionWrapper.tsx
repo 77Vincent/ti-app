@@ -8,23 +8,23 @@ export default function QuestionRunner({
   difficulty,
 }: QuestionRunnerProps) {
   return (
-    <div className="mx-auto my-auto max-w-2xl space-y-2">
+    <div className="mx-auto my-auto max-w-2xl space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-base font-semibold">Question 1</h1>
         <div className="flex flex-wrap gap-1.5">
-          <Chip size="sm" variant="bordered">
+          <Chip variant="bordered">
             {subjectId}
           </Chip>
-          <Chip size="sm" variant="bordered">
+          <Chip variant="bordered">
             {subcategoryId}
           </Chip>
-          <Chip size="sm" variant="bordered">
+          <Chip variant="bordered">
             {difficulty}
           </Chip>
         </div>
       </div>
 
-      <Card>
+      <Card shadow="sm">
         <CardBody className="p-6">
           <Question
             difficulty={difficulty}

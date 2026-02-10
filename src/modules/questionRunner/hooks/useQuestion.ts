@@ -1,7 +1,7 @@
 "use client";
 
+import { addToast } from "@heroui/react";
 import type { DifficultyEnum } from "@/lib/meta";
-import { toastError } from "@/modules/toast/toastBus";
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { fetchGeneratedQuestion } from "../api";
 import { createQuestionSessionController } from "../session";
@@ -50,9 +50,13 @@ export function useQuestion({
     useQuestionSelection();
 
   const showLoadError = useCallback((error: unknown) => {
-    toastError(
-      error instanceof Error ? error.message : "Failed to load question.",
-    );
+    addToast({
+      color: "danger",
+      description:
+        error instanceof Error ? error.message : "Failed to load question.",
+      title: "Error",
+      variant: "flat",
+    });
   }, []);
 
   const applyLoadedQuestion = useCallback(
