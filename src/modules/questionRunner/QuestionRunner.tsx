@@ -60,7 +60,12 @@ export default function Question({
         ))}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-base-content/50">
+          Select {question.correctOptionIds.length}{" "}
+          {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
+        </p>
+
         <button
           className={`btn btn-sm btn-primary ${isSubmitting ? "loading" : ""}`}
           disabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
