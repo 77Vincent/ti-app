@@ -6,8 +6,18 @@ import {
   getOrderedSubjects,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import {
+  INFINITE_QUESTION_COUNT,
+  QUESTION_COUNT_OPTIONS,
+} from "./constants";
+import type { QuestionCountOption } from "./constants";
+import {
+  canGoBackFromStep,
+  getCurrentStartFormStep,
+  getStartFormTitle,
+} from "./utils";
 
 export default function StartForm() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -15,6 +25,7 @@ export default function StartForm() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | null>(
     null,
   );
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState<QuestionCountOption | null>(null);
   const subjects = useMemo(() => getOrderedSubjects(), []);
 
   const subcategories = useMemo(() => {
@@ -25,30 +36,50 @@ export default function StartForm() {
     return getOrderedSubcategories(selectedSubjectId);
   }, [selectedSubjectId]);
 
-  const isSubjectStep = !selectedSubjectId;
-  const isSubcategoryStep = !!selectedSubjectId && !selectedSubcategoryId;
-  const isDifficultyStep = !!selectedSubjectId && !!selectedSubcategoryId;
-  const canGoBack = !isSubjectStep;
+  const currentStep = getCurrentStartFormStep({
+    selectedSubjectId,
+    selectedSubcategoryId,
+    selectedDifficulty,
+  });
+  const isSubjectStep = currentStep === "subject";
+  const isSubcategoryStep = currentStep === "subcategory";
+  const isDifficultyStep = currentStep === "difficulty";
+  const isQuestionCountStep = currentStep === "questionCount";
+  const canGoBack = canGoBackFromStep(currentStep);
 
   const handleSelectSubject = (subjectId: string) => {
     setSelectedSubjectId(subjectId);
     setSelectedSubcategoryId(null);
     setSelectedDifficulty(null);
+    setSelectedQuestionCount(null);
   };
 
   const handleSelectSubcategory = (subcategoryId: string) => {
     setSelectedSubcategoryId(subcategoryId);
     setSelectedDifficulty(null);
+    setSelectedQuestionCount(null);
+  };
+
+  const handleSelectDifficulty = (difficulty: DifficultyLevel) => {
+    setSelectedDifficulty(difficulty);
+    setSelectedQuestionCount(null);
   };
 
   const handleGoBack = () => {
-    if (isDifficultyStep) {
-      setSelectedSubcategoryId(null);
+    if (currentStep === "questionCount") {
       setSelectedDifficulty(null);
+      setSelectedQuestionCount(null);
       return;
     }
 
-    if (isSubcategoryStep) {
+    if (currentStep === "difficulty") {
+      setSelectedSubcategoryId(null);
+      setSelectedDifficulty(null);
+      setSelectedQuestionCount(null);
+      return;
+    }
+
+    if (currentStep === "subcategory") {
       setSelectedSubjectId(null);
       setSelectedSubcategoryId(null);
       setSelectedDifficulty(null);
@@ -71,9 +102,7 @@ export default function StartForm() {
           )}
 
           <h1 className="text-2xl font-medium text-center">
-            {isSubjectStep && "Choose the subject of your test"}
-            {isSubcategoryStep && "Choose the subcategory"}
-            {isDifficultyStep && "Choose the difficulty"}
+            {getStartFormTitle(currentStep)}
           </h1>
         </div>
 
@@ -109,10 +138,28 @@ export default function StartForm() {
                   selectedDifficulty === difficulty.id ? "btn-active" : ""
                 }`}
                 key={difficulty.id}
-                onClick={() => setSelectedDifficulty(difficulty.id)}
+                onClick={() => handleSelectDifficulty(difficulty.id)}
                 type="button"
               >
                 {difficulty.label}
+              </button>
+            ))}
+
+          {isQuestionCountStep &&
+            QUESTION_COUNT_OPTIONS.map((questionCount) => (
+              <button
+                className={`btn btn-info btn-outline btn-sm ${
+                  selectedQuestionCount === questionCount.value ? "btn-active" : ""
+                }`}
+                key={questionCount.value}
+                onClick={() => setSelectedQuestionCount(questionCount.value)}
+                type="button"
+              >
+                {questionCount.value === INFINITE_QUESTION_COUNT ? (
+                  <InfinityIcon aria-label={questionCount.label} className="h-4 w-4" />
+                ) : (
+                  questionCount.label
+                )}
               </button>
             ))}
         </div>
