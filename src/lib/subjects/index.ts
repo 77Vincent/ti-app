@@ -1,4 +1,4 @@
-export { DIFFICULTY_OPTIONS, SUBJECT_CATALOG } from "./subjects";
+export { DIFFICULTY_OPTIONS, SUBJECT_CATALOG } from "./data";
 export {
   getOrderedSubcategories,
   getOrderedSubjects,

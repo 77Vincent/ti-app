@@ -4,7 +4,7 @@ import {
   getOrderedSubjects,
   getSubjectById,
 } from "./utils";
-import { DIFFICULTY_OPTIONS } from "./subjects";
+import { DIFFICULTY_OPTIONS } from "./data";
 
 describe("subjects utils", () => {
   it("returns ordered subjects", () => {
