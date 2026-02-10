@@ -5,6 +5,7 @@ import {
   getOrderedSubjects,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
+import { QuestionRunner } from "@/modules/questionRunner";
 import { InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import type {
@@ -39,6 +40,7 @@ export default function StartForm() {
     selectedQuestionCount,
     selectedTimeLimit,
   } = state;
+  const hasStarted = selectedTimeLimit !== null;
   const subjects = useMemo(() => getOrderedSubjects(), []);
 
   const subcategories = useMemo(() => {
@@ -84,6 +86,27 @@ export default function StartForm() {
     selectedQuestionCount,
     selectedTimeLimit,
   });
+
+  if (hasStarted) {
+    if (
+      !selectedSubjectId ||
+      !selectedSubcategoryId ||
+      !selectedDifficulty ||
+      !selectedQuestionCount
+    ) {
+      return null;
+    }
+
+    return (
+      <QuestionRunner
+        difficulty={selectedDifficulty}
+        questionCount={selectedQuestionCount}
+        subcategoryId={selectedSubcategoryId}
+        subjectId={selectedSubjectId}
+        timeLimit={selectedTimeLimit}
+      />
+    );
+  }
 
   return (
     <div className="card bg-base-100 shadow-sm my-auto">
