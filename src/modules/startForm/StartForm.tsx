@@ -24,14 +24,16 @@ import {
   getCurrentStartFormStep,
   getStartFormTitle,
 } from "./utils";
-
-type StartFormState = {
-  selectedSubjectId: string | null;
-  selectedSubcategoryId: string | null;
-  selectedDifficulty: DifficultyLevel | null;
-  selectedQuestionCount: QuestionCountOption | null;
-  selectedTimeLimit: TimeLimitOption | null;
-};
+import {
+  goBack,
+  INITIAL_START_FORM_STATE,
+  selectDifficulty,
+  selectQuestionCount,
+  selectSubcategory,
+  selectSubject,
+  selectTimeLimit,
+} from "./state";
+import type { StartFormState } from "./state";
 
 type StepOptionValue = string | number;
 type StepOption = {
@@ -45,14 +47,6 @@ type StepConfig = {
   selectedValue: StepOptionValue | null;
   options: StepOption[];
   onSelect: (value: StepOptionValue) => void;
-};
-
-const INITIAL_START_FORM_STATE: StartFormState = {
-  selectedSubjectId: null,
-  selectedSubcategoryId: null,
-  selectedDifficulty: null,
-  selectedQuestionCount: null,
-  selectedTimeLimit: null,
 };
 
 export default function StartForm() {
@@ -83,40 +77,19 @@ export default function StartForm() {
   const canGoBack = canGoBackFromStep(currentStep);
 
   const handleSelectSubject = (subjectId: string) =>
-    setState({
-      ...INITIAL_START_FORM_STATE,
-      selectedSubjectId: subjectId,
-    });
+    setState(selectSubject(subjectId));
 
   const handleSelectSubcategory = (subcategoryId: string) =>
-    setState((prevState) => ({
-      ...prevState,
-      selectedSubcategoryId: subcategoryId,
-      selectedDifficulty: null,
-      selectedQuestionCount: null,
-      selectedTimeLimit: null,
-    }));
+    setState((prevState) => selectSubcategory(prevState, subcategoryId));
 
   const handleSelectDifficulty = (difficulty: DifficultyLevel) =>
-    setState((prevState) => ({
-      ...prevState,
-      selectedDifficulty: difficulty,
-      selectedQuestionCount: null,
-      selectedTimeLimit: null,
-    }));
+    setState((prevState) => selectDifficulty(prevState, difficulty));
 
   const handleSelectQuestionCount = (questionCount: QuestionCountOption) =>
-    setState((prevState) => ({
-      ...prevState,
-      selectedQuestionCount: questionCount,
-      selectedTimeLimit: null,
-    }));
+    setState((prevState) => selectQuestionCount(prevState, questionCount));
 
   const handleSelectTimeLimit = (timeLimit: TimeLimitOption) =>
-    setState((prevState) => ({
-      ...prevState,
-      selectedTimeLimit: timeLimit,
-    }));
+    setState((prevState) => selectTimeLimit(prevState, timeLimit));
 
   const stepOptionsByStep: Record<StartFormStep, StepOption[]> = {
     subject: subjects.map((subject) => ({
@@ -178,29 +151,7 @@ export default function StartForm() {
 
   const currentStepConfig = stepConfigByStep[currentStep];
 
-  const backStateByStep: Record<StartFormStep, () => StartFormState> = {
-    subject: () => INITIAL_START_FORM_STATE,
-    subcategory: () => INITIAL_START_FORM_STATE,
-    difficulty: () => ({
-      ...INITIAL_START_FORM_STATE,
-      selectedSubjectId,
-    }),
-    questionCount: () => ({
-      ...INITIAL_START_FORM_STATE,
-      selectedSubjectId,
-      selectedSubcategoryId,
-    }),
-    timeLimit: () => ({
-      ...INITIAL_START_FORM_STATE,
-      selectedSubjectId,
-      selectedSubcategoryId,
-      selectedDifficulty,
-    }),
-  };
-
-  const handleGoBack = () => {
-    setState(backStateByStep[currentStep]());
-  };
+  const handleGoBack = () => setState((prevState) => goBack(prevState));
 
   return (
     <div className="card bg-base-100 shadow-sm my-auto">
