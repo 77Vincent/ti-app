@@ -14,21 +14,56 @@ import {
   QUESTION_COUNT_OPTIONS,
   TIME_LIMIT_OPTIONS,
 } from "./constants";
-import type { QuestionCountOption, TimeLimitOption } from "./constants";
+import type {
+  QuestionCountOption,
+  StartFormStep,
+  TimeLimitOption,
+} from "./constants";
 import {
   canGoBackFromStep,
   getCurrentStartFormStep,
   getStartFormTitle,
 } from "./utils";
 
+type StartFormState = {
+  selectedSubjectId: string | null;
+  selectedSubcategoryId: string | null;
+  selectedDifficulty: DifficultyLevel | null;
+  selectedQuestionCount: QuestionCountOption | null;
+  selectedTimeLimit: TimeLimitOption | null;
+};
+
+type StepOptionValue = string | number;
+type StepOption = {
+  value: StepOptionValue;
+  label: string;
+  showInfinityIcon?: boolean;
+};
+
+type StepConfig = {
+  buttonClassName: string;
+  selectedValue: StepOptionValue | null;
+  options: StepOption[];
+  onSelect: (value: StepOptionValue) => void;
+};
+
+const INITIAL_START_FORM_STATE: StartFormState = {
+  selectedSubjectId: null,
+  selectedSubcategoryId: null,
+  selectedDifficulty: null,
+  selectedQuestionCount: null,
+  selectedTimeLimit: null,
+};
+
 export default function StartForm() {
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | null>(
-    null,
-  );
-  const [selectedQuestionCount, setSelectedQuestionCount] = useState<QuestionCountOption | null>(null);
-  const [selectedTimeLimit, setSelectedTimeLimit] = useState<TimeLimitOption | null>(null);
+  const [state, setState] = useState<StartFormState>(INITIAL_START_FORM_STATE);
+  const {
+    selectedSubjectId,
+    selectedSubcategoryId,
+    selectedDifficulty,
+    selectedQuestionCount,
+    selectedTimeLimit,
+  } = state;
   const subjects = useMemo(() => getOrderedSubjects(), []);
 
   const subcategories = useMemo(() => {
@@ -45,68 +80,126 @@ export default function StartForm() {
     selectedDifficulty,
     selectedQuestionCount,
   });
-  const isSubjectStep = currentStep === "subject";
-  const isSubcategoryStep = currentStep === "subcategory";
-  const isDifficultyStep = currentStep === "difficulty";
-  const isQuestionCountStep = currentStep === "questionCount";
-  const isTimeLimitStep = currentStep === "timeLimit";
   const canGoBack = canGoBackFromStep(currentStep);
 
-  const handleSelectSubject = (subjectId: string) => {
-    setSelectedSubjectId(subjectId);
-    setSelectedSubcategoryId(null);
-    setSelectedDifficulty(null);
-    setSelectedQuestionCount(null);
-    setSelectedTimeLimit(null);
+  const handleSelectSubject = (subjectId: string) =>
+    setState({
+      ...INITIAL_START_FORM_STATE,
+      selectedSubjectId: subjectId,
+    });
+
+  const handleSelectSubcategory = (subcategoryId: string) =>
+    setState((prevState) => ({
+      ...prevState,
+      selectedSubcategoryId: subcategoryId,
+      selectedDifficulty: null,
+      selectedQuestionCount: null,
+      selectedTimeLimit: null,
+    }));
+
+  const handleSelectDifficulty = (difficulty: DifficultyLevel) =>
+    setState((prevState) => ({
+      ...prevState,
+      selectedDifficulty: difficulty,
+      selectedQuestionCount: null,
+      selectedTimeLimit: null,
+    }));
+
+  const handleSelectQuestionCount = (questionCount: QuestionCountOption) =>
+    setState((prevState) => ({
+      ...prevState,
+      selectedQuestionCount: questionCount,
+      selectedTimeLimit: null,
+    }));
+
+  const handleSelectTimeLimit = (timeLimit: TimeLimitOption) =>
+    setState((prevState) => ({
+      ...prevState,
+      selectedTimeLimit: timeLimit,
+    }));
+
+  const stepOptionsByStep: Record<StartFormStep, StepOption[]> = {
+    subject: subjects.map((subject) => ({
+      value: subject.id,
+      label: subject.label,
+    })),
+    subcategory: subcategories.map((subcategory) => ({
+      value: subcategory.id,
+      label: subcategory.label,
+    })),
+    difficulty: DIFFICULTY_OPTIONS.map((difficulty) => ({
+      value: difficulty.id,
+      label: difficulty.label,
+    })),
+    questionCount: QUESTION_COUNT_OPTIONS.map((questionCount) => ({
+      value: questionCount.value,
+      label: questionCount.label,
+      showInfinityIcon: questionCount.value === INFINITE_QUESTION_COUNT,
+    })),
+    timeLimit: TIME_LIMIT_OPTIONS.map((timeLimit) => ({
+      value: timeLimit.value,
+      label: timeLimit.label,
+      showInfinityIcon: timeLimit.value === INFINITE_TIME_LIMIT_MINUTES,
+    })),
   };
 
-  const handleSelectSubcategory = (subcategoryId: string) => {
-    setSelectedSubcategoryId(subcategoryId);
-    setSelectedDifficulty(null);
-    setSelectedQuestionCount(null);
-    setSelectedTimeLimit(null);
+  const stepConfigByStep: Record<StartFormStep, StepConfig> = {
+    subject: {
+      buttonClassName: "btn-primary",
+      selectedValue: selectedSubjectId,
+      options: stepOptionsByStep.subject,
+      onSelect: (value) => handleSelectSubject(String(value)),
+    },
+    subcategory: {
+      buttonClassName: "btn-secondary",
+      selectedValue: selectedSubcategoryId,
+      options: stepOptionsByStep.subcategory,
+      onSelect: (value) => handleSelectSubcategory(String(value)),
+    },
+    difficulty: {
+      buttonClassName: "btn-accent",
+      selectedValue: selectedDifficulty,
+      options: stepOptionsByStep.difficulty,
+      onSelect: (value) => handleSelectDifficulty(String(value) as DifficultyLevel),
+    },
+    questionCount: {
+      buttonClassName: "btn-info",
+      selectedValue: selectedQuestionCount,
+      options: stepOptionsByStep.questionCount,
+      onSelect: (value) => handleSelectQuestionCount(Number(value)),
+    },
+    timeLimit: {
+      buttonClassName: "btn-success",
+      selectedValue: selectedTimeLimit,
+      options: stepOptionsByStep.timeLimit,
+      onSelect: (value) => handleSelectTimeLimit(Number(value)),
+    },
   };
 
-  const handleSelectDifficulty = (difficulty: DifficultyLevel) => {
-    setSelectedDifficulty(difficulty);
-    setSelectedQuestionCount(null);
-    setSelectedTimeLimit(null);
-  };
+  const currentStepConfig = stepConfigByStep[currentStep];
 
-  const handleSelectQuestionCount = (questionCount: QuestionCountOption) => {
-    setSelectedQuestionCount(questionCount);
-    setSelectedTimeLimit(null);
+  const backStateByStep: Record<StartFormStep, () => StartFormState> = {
+    subject: () => INITIAL_START_FORM_STATE,
+    subcategory: () => INITIAL_START_FORM_STATE,
+    difficulty: () => ({
+      ...INITIAL_START_FORM_STATE,
+      selectedSubjectId,
+    }),
+    questionCount: () => ({
+      ...INITIAL_START_FORM_STATE,
+      selectedSubjectId,
+      selectedSubcategoryId,
+    }),
+    timeLimit: () => ({
+      ...INITIAL_START_FORM_STATE,
+      selectedSubjectId,
+      selectedSubcategoryId,
+      selectedDifficulty,
+    }),
   };
 
   const handleGoBack = () => {
-    if (currentStep === "timeLimit") {
-      setSelectedQuestionCount(null);
-      setSelectedTimeLimit(null);
-      return;
-    }
-
-    if (currentStep === "questionCount") {
-      setSelectedDifficulty(null);
-      setSelectedQuestionCount(null);
-      setSelectedTimeLimit(null);
-      return;
-    }
-
-    if (currentStep === "difficulty") {
-      setSelectedSubcategoryId(null);
-      setSelectedDifficulty(null);
-      setSelectedQuestionCount(null);
-      setSelectedTimeLimit(null);
-      return;
-    }
-
-    if (currentStep === "subcategory") {
-      setSelectedSubjectId(null);
-      setSelectedSubcategoryId(null);
-      setSelectedDifficulty(null);
-      setSelectedQuestionCount(null);
-      setSelectedTimeLimit(null);
-    }
+    setState(backStateByStep[currentStep]());
   };
 
   return (
@@ -124,85 +217,26 @@ export default function StartForm() {
             </button>
           )}
 
-          <h1 className="text-2xl font-medium text-center">
-            {getStartFormTitle(currentStep)}
-          </h1>
+          <h1 className="text-2xl font-medium text-center">{getStartFormTitle(currentStep)}</h1>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {isSubjectStep &&
-            subjects.map((subject) => (
-              <button
-                className="btn btn-primary btn-outline btn-sm"
-                key={subject.id}
-                onClick={() => handleSelectSubject(subject.id)}
-                type="button"
-              >
-                {subject.label}
-              </button>
-            ))}
-
-          {isSubcategoryStep &&
-            subcategories.map((subcategory) => (
-              <button
-                className="btn btn-secondary btn-outline btn-sm"
-                key={subcategory.id}
-                onClick={() => handleSelectSubcategory(subcategory.id)}
-                type="button"
-              >
-                {subcategory.label}
-              </button>
-            ))}
-
-          {isDifficultyStep &&
-            DIFFICULTY_OPTIONS.map((difficulty) => (
-              <button
-                className={`btn btn-accent btn-outline btn-sm ${
-                  selectedDifficulty === difficulty.id ? "btn-active" : ""
-                }`}
-                key={difficulty.id}
-                onClick={() => handleSelectDifficulty(difficulty.id)}
-                type="button"
-              >
-                {difficulty.label}
-              </button>
-            ))}
-
-          {isQuestionCountStep &&
-            QUESTION_COUNT_OPTIONS.map((questionCount) => (
-              <button
-                className={`btn btn-info btn-outline btn-sm ${
-                  selectedQuestionCount === questionCount.value ? "btn-active" : ""
-                }`}
-                key={questionCount.value}
-                onClick={() => handleSelectQuestionCount(questionCount.value)}
-                type="button"
-              >
-                {questionCount.value === INFINITE_QUESTION_COUNT ? (
-                  <InfinityIcon aria-label={questionCount.label} className="h-4 w-4" />
-                ) : (
-                  questionCount.label
-                )}
-              </button>
-            ))}
-
-          {isTimeLimitStep &&
-            TIME_LIMIT_OPTIONS.map((timeLimit) => (
-              <button
-                className={`btn btn-success btn-outline btn-sm ${
-                  selectedTimeLimit === timeLimit.value ? "btn-active" : ""
-                }`}
-                key={timeLimit.value}
-                onClick={() => setSelectedTimeLimit(timeLimit.value)}
-                type="button"
-              >
-                {timeLimit.value === INFINITE_TIME_LIMIT_MINUTES ? (
-                  <InfinityIcon aria-label={timeLimit.label} className="h-4 w-4" />
-                ) : (
-                  timeLimit.label
-                )}
-              </button>
-            ))}
+          {currentStepConfig.options.map((option) => (
+            <button
+              className={`btn ${currentStepConfig.buttonClassName} btn-outline btn-sm ${
+                currentStepConfig.selectedValue === option.value ? "btn-active" : ""
+              }`}
+              key={option.value}
+              onClick={() => currentStepConfig.onSelect(option.value)}
+              type="button"
+            >
+              {option.showInfinityIcon ? (
+                <InfinityIcon aria-label={option.label} className="h-4 w-4" />
+              ) : (
+                option.label
+              )}
+            </button>
+          ))}
         </div>
       </div>
     </div>
