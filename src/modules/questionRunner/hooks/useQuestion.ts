@@ -2,7 +2,7 @@
 
 import type { DifficultyLevel } from "@/lib/meta";
 import { toastError } from "@/modules/toast/toastBus";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchGeneratedQuestion } from "../api";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -35,29 +35,58 @@ export function useQuestion({
   difficulty,
 }: UseQuestionInput): UseQuestionResult {
   const [question, setQuestion] = useState<QuestionType | null>(null);
+  const [prefetchedQuestion, setPrefetchedQuestion] = useState<QuestionType | null>(
+    null,
+  );
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
 
+  const loadQuestion = useCallback(async () => {
+    return fetchGeneratedQuestion({
+      subjectId,
+      subcategoryId,
+      difficulty,
+    });
+  }, [difficulty, subcategoryId, subjectId]);
+
+  const prefetchNextQuestion = useCallback(
+    async (showError = false) => {
+      try {
+        const nextQuestion = await loadQuestion();
+        setPrefetchedQuestion(nextQuestion);
+      } catch (error) {
+        setPrefetchedQuestion(null);
+
+        if (showError) {
+          toastError(
+            error instanceof Error ? error.message : "Failed to load question.",
+          );
+        }
+      }
+    },
+    [loadQuestion],
+  );
+
   useEffect(() => {
     let cancelled = false;
 
     async function loadInitialQuestion() {
       setIsLoadingQuestion(true);
+      setPrefetchedQuestion(null);
 
       try {
-        const nextQuestion = await fetchGeneratedQuestion({
-          subjectId,
-          subcategoryId,
-          difficulty,
-        });
+        const nextQuestion = await loadQuestion();
 
         if (!cancelled) {
           setQuestion(nextQuestion);
           resetSelection();
           setHasSubmitted(false);
+
+          // Keep one question ready in the background for smooth continue.
+          void prefetchNextQuestion();
         }
       } catch (error) {
         if (!cancelled) {
@@ -77,7 +106,7 @@ export function useQuestion({
     return () => {
       cancelled = true;
     };
-  }, [difficulty, resetSelection, subcategoryId, subjectId]);
+  }, [loadQuestion, prefetchNextQuestion, resetSelection]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -101,17 +130,23 @@ export function useQuestion({
       return;
     }
 
+    if (prefetchedQuestion) {
+      setQuestion(prefetchedQuestion);
+      setPrefetchedQuestion(null);
+      resetSelection();
+      setHasSubmitted(false);
+      void prefetchNextQuestion();
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const nextQuestion = await fetchGeneratedQuestion({
-        subjectId,
-        subcategoryId,
-        difficulty,
-      });
+      const nextQuestion = await loadQuestion();
       setQuestion(nextQuestion);
       resetSelection();
       setHasSubmitted(false);
+      void prefetchNextQuestion();
     } catch (error) {
       toastError(
         error instanceof Error ? error.message : "Failed to load question.",
