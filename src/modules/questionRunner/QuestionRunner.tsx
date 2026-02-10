@@ -2,6 +2,7 @@
 
 import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyLevel } from "@/lib/meta";
+import { QUESTION_TYPES } from "@/lib/meta";
 import { useQuestion } from "./hooks/useQuestion";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
@@ -46,6 +47,7 @@ export default function Question({
           <QuestionChoice
             hasSubmitted={hasSubmitted}
             isCorrect={isOptionCorrect(option.id)}
+            isMultipleAnswer={question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER}
             isSelected={selectedOptionIds.includes(option.id)}
             isSubmitting={isSubmitting}
             isWrongSelection={isOptionWrongSelection(option.id)}

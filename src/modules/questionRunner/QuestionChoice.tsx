@@ -8,6 +8,7 @@ import type { QuestionOption } from "./types";
 type QuestionChoiceProps = {
   option: QuestionOption;
   hasSubmitted: boolean;
+  isMultipleAnswer: boolean;
   isSubmitting: boolean;
   isSelected: boolean;
   isCorrect: boolean;
@@ -32,15 +33,21 @@ function renderInlineMarkdown(markdown: string) {
 export default function QuestionChoice({
   option,
   hasSubmitted,
+  isMultipleAnswer,
   isSubmitting,
   isSelected,
   isCorrect,
   isWrongSelection,
   onSelect,
 }: QuestionChoiceProps) {
+  const isMissedCorrect =
+    hasSubmitted && isMultipleAnswer && isCorrect && !isSelected;
+
   const containerClassName = hasSubmitted
     ? isCorrect
-      ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+      ? isMissedCorrect
+        ? "border-amber-500 bg-amber-50 text-amber-900"
+        : "border-emerald-500 bg-emerald-50 text-emerald-900"
       : isWrongSelection
         ? "border-red-500 bg-red-50 text-red-900"
         : "border-base-300 bg-base-100 text-base-content"
