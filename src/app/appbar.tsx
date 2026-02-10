@@ -23,6 +23,7 @@ export default function AppBar() {
         onPress={handleToggleTheme}
         radius="full"
         variant="bordered"
+        size="sm"
       >
         {isDark ? (
           <Sun aria-hidden="true" size={18} />

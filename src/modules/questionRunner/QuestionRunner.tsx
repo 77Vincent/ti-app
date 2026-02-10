@@ -60,7 +60,7 @@ export default function Question({
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-default-400">
+        <p className="font-light text-sm text-default-500">
           Select {question.correctOptionIds.length}{" "}
           {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
         </p>

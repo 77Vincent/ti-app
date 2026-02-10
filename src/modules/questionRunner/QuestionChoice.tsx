@@ -75,7 +75,7 @@ export default function QuestionChoice({
 
       {hasSubmitted ? (
         <Card shadow="none">
-          <CardBody className="px-4 py-2">
+          <CardBody className="px-4 py-1">
             <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
               {option.explanation}
             </ReactMarkdown>
