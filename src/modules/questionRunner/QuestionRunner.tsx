@@ -67,6 +67,7 @@ export default function Question({
 
         <Button
           color="primary"
+          size="sm"
           isDisabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
           isLoading={isSubmitting}
           onPress={submit}

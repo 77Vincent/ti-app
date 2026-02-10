@@ -47,13 +47,13 @@ export default function QuestionChoice({
   const containerClassName = hasSubmitted
     ? isCorrect
       ? isMissedCorrect
-        ? "border-amber-500 bg-amber-50"
-        : "border-emerald-500 bg-emerald-50"
+        ? "border-warning-500 bg-warning-50 dark:border-warning-400 dark:bg-warning-500/20"
+        : "border-success-500 bg-success-50 dark:border-success-400 dark:bg-success-500/20"
       : isWrongSelection
-        ? "border-red-500 bg-red-50"
-        : "border-default-300 bg-default-50"
+        ? "border-danger-500 bg-danger-50 dark:border-danger-400 dark:bg-danger-500/20"
+        : "border-default-300 bg-default-50 dark:border-default-400 dark:bg-default-100/10"
     : isSelected
-      ? "border-primary bg-primary-50"
+      ? "border-primary bg-primary-50 dark:bg-primary-500/20"
       : "border-default-300 bg-background";
 
   return (
