@@ -22,7 +22,7 @@ export default function QuestionRunner({
         <h1 className="text-base font-semibold">Question 1</h1>
       </div>
 
-      <div className="card bg-base-100 shadow-sm">
+      <div className="card card-border bg-base-100 shadow-sm">
         <div className="card-body">
           {isLoadingQuestion ? <QuestionSkeleton /> : <Question />}
         </div>
