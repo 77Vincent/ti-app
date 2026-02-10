@@ -4,8 +4,8 @@ import {
   DIFFICULTY_OPTIONS,
   getOrderedSubcategories,
   getOrderedSubjects,
-} from "@/lib/subjects";
-import type { DifficultyLevel } from "@/lib/subjects";
+} from "@/lib/meta";
+import type { DifficultyLevel } from "@/lib/meta";
 import { useMemo, useState } from "react";
 
 export default function StartForm() {
