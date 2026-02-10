@@ -13,9 +13,12 @@ export type TestMeta = {
   timeLimit: TimeLimitOption;
 };
 
+export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
+
 export type QuestionOption = {
-  id: string;
+  id: QuestionOptionId;
   text: string;
+  explanation?: string;
 };
 
 type BaseQuestion = {
@@ -23,17 +26,16 @@ type BaseQuestion = {
   prompt: string;
   questionType: QuestionType;
   options: QuestionOption[];
-  explanation?: string;
 };
 
 export type MultipleChoiceQuestion = BaseQuestion & {
   questionType: typeof QUESTION_TYPES.MULTIPLE_CHOICE;
-  correctOptionId: string;
+  correctOptionId: QuestionOptionId;
 };
 
 export type MultipleAnswerQuestion = BaseQuestion & {
   questionType: typeof QUESTION_TYPES.MULTIPLE_ANSWER;
-  correctOptionIds: string[];
+  correctOptionIds: QuestionOptionId[];
 };
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;

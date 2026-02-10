@@ -3,6 +3,7 @@ export type {
   MultipleAnswerQuestion,
   MultipleChoiceQuestion,
   Question,
+  QuestionOptionId,
   QuestionOption,
   QuestionRunnerProps,
   TestMeta,
