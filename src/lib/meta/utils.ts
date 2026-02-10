@@ -1,16 +1,13 @@
 import { SUBJECT_CATALOG } from "./subjects";
+import { SUBCATEGORY_CATALOG } from "./subcategories";
 import type { SubcategoryEntry, SubjectEntry } from "./types";
 
 export function sortByOrder<T extends { order: number }>(entries: T[]): T[] {
   return [...entries].sort((a, b) => a.order - b.order);
 }
 
-export function getEnabledEntries<T extends { disabled?: boolean }>(entries: T[]): T[] {
-  return entries.filter((entry) => !entry.disabled);
-}
-
 export function getOrderedSubjects(): SubjectEntry[] {
-  return sortByOrder(getEnabledEntries(SUBJECT_CATALOG));
+  return sortByOrder<SubjectEntry>(SUBJECT_CATALOG);
 }
 
 export function getSubjectById(subjectId: string): SubjectEntry | null {
@@ -18,11 +15,9 @@ export function getSubjectById(subjectId: string): SubjectEntry | null {
 }
 
 export function getOrderedSubcategories(subjectId: string): SubcategoryEntry[] {
-  const subject = getSubjectById(subjectId);
-
-  if (!subject) {
-    return [];
-  }
-
-  return sortByOrder(getEnabledEntries(subject.subcategories));
+  return sortByOrder(
+    SUBCATEGORY_CATALOG.filter(
+      (subcategory) => subcategory.subjectId === subjectId,
+    ),
+  );
 }

@@ -12,9 +12,7 @@ export const SUBJECT_CATALOGS = {
     COMPUTER_SCIENCE: "computer_science" as SubjectCatalog,
 }
 export type SubjectEntry = SubjectOption & {
-    disabled?: boolean;
     order: number;
-    subcategories: SubcategoryEntry[];
 };
 
 // Subcategory Options
@@ -23,7 +21,7 @@ export type SubcategoryOption = {
     label: string;
 };
 export type SubcategoryEntry = SubcategoryOption & {
-    disabled?: boolean;
+    subjectId: SubjectCatalog;
     order: number;
     questionTypesAllowed: QuestionType[];
 };

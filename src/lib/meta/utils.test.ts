@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  getEnabledEntries,
   getOrderedSubcategories,
   getOrderedSubjects,
   getSubjectById,
@@ -19,18 +18,6 @@ describe("subjects utils", () => {
 
     expect(sorted.map((entry) => entry.id)).toEqual(["first", "second", "third"]);
     expect(input.map((entry) => entry.id)).toEqual(["third", "first", "second"]);
-  });
-
-  it("getEnabledEntries filters out only disabled=true entries", () => {
-    const input = [
-      { id: "enabled-a" },
-      { id: "enabled-b", disabled: false },
-      { id: "disabled", disabled: true },
-    ];
-
-    const enabled = getEnabledEntries(input);
-
-    expect(enabled.map((entry) => entry.id)).toEqual(["enabled-a", "enabled-b"]);
   });
 
   it("returns ordered subjects", () => {

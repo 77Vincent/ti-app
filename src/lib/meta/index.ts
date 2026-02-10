@@ -1,4 +1,5 @@
 export { SUBJECT_CATALOG } from "./subjects";
+export { SUBCATEGORY_CATALOG } from "./subcategories";
 export { DIFFICULTY_LEVELS, DIFFICULTY_OPTIONS } from "./difficulties";
 export {
   getOrderedSubcategories,
