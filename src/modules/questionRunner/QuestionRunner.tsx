@@ -29,9 +29,9 @@ export default function QuestionRunner({
       </div>
 
       <div className="flex flex-wrap gap-1.5 justify-end">
-        <span className="badge badge-outline badge-primary">{subjectId}</span>
-        <span className="badge badge-outline badge-secondary">{subcategoryId}</span>
-        <span className="badge badge-outline badge-success">{difficulty}</span>
+        <span className="badge badge-outline">{subjectId}</span>
+        <span className="badge badge-outline">{subcategoryId}</span>
+        <span className="badge badge-outline">{difficulty}</span>
         {
           questionCount === INFINITE_QUESTION_COUNT
             ? null
