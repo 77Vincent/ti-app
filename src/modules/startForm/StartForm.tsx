@@ -10,9 +10,11 @@ import { ArrowLeft, InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   INFINITE_QUESTION_COUNT,
+  INFINITE_TIME_LIMIT_MINUTES,
   QUESTION_COUNT_OPTIONS,
+  TIME_LIMIT_OPTIONS,
 } from "./constants";
-import type { QuestionCountOption } from "./constants";
+import type { QuestionCountOption, TimeLimitOption } from "./constants";
 import {
   canGoBackFromStep,
   getCurrentStartFormStep,
@@ -26,6 +28,7 @@ export default function StartForm() {
     null,
   );
   const [selectedQuestionCount, setSelectedQuestionCount] = useState<QuestionCountOption | null>(null);
+  const [selectedTimeLimit, setSelectedTimeLimit] = useState<TimeLimitOption | null>(null);
   const subjects = useMemo(() => getOrderedSubjects(), []);
 
   const subcategories = useMemo(() => {
@@ -40,11 +43,13 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
+    selectedQuestionCount,
   });
   const isSubjectStep = currentStep === "subject";
   const isSubcategoryStep = currentStep === "subcategory";
   const isDifficultyStep = currentStep === "difficulty";
   const isQuestionCountStep = currentStep === "questionCount";
+  const isTimeLimitStep = currentStep === "timeLimit";
   const canGoBack = canGoBackFromStep(currentStep);
 
   const handleSelectSubject = (subjectId: string) => {
@@ -52,23 +57,38 @@ export default function StartForm() {
     setSelectedSubcategoryId(null);
     setSelectedDifficulty(null);
     setSelectedQuestionCount(null);
+    setSelectedTimeLimit(null);
   };
 
   const handleSelectSubcategory = (subcategoryId: string) => {
     setSelectedSubcategoryId(subcategoryId);
     setSelectedDifficulty(null);
     setSelectedQuestionCount(null);
+    setSelectedTimeLimit(null);
   };
 
   const handleSelectDifficulty = (difficulty: DifficultyLevel) => {
     setSelectedDifficulty(difficulty);
     setSelectedQuestionCount(null);
+    setSelectedTimeLimit(null);
+  };
+
+  const handleSelectQuestionCount = (questionCount: QuestionCountOption) => {
+    setSelectedQuestionCount(questionCount);
+    setSelectedTimeLimit(null);
   };
 
   const handleGoBack = () => {
+    if (currentStep === "timeLimit") {
+      setSelectedQuestionCount(null);
+      setSelectedTimeLimit(null);
+      return;
+    }
+
     if (currentStep === "questionCount") {
       setSelectedDifficulty(null);
       setSelectedQuestionCount(null);
+      setSelectedTimeLimit(null);
       return;
     }
 
@@ -76,6 +96,7 @@ export default function StartForm() {
       setSelectedSubcategoryId(null);
       setSelectedDifficulty(null);
       setSelectedQuestionCount(null);
+      setSelectedTimeLimit(null);
       return;
     }
 
@@ -83,6 +104,8 @@ export default function StartForm() {
       setSelectedSubjectId(null);
       setSelectedSubcategoryId(null);
       setSelectedDifficulty(null);
+      setSelectedQuestionCount(null);
+      setSelectedTimeLimit(null);
     }
   };
 
@@ -152,13 +175,31 @@ export default function StartForm() {
                   selectedQuestionCount === questionCount.value ? "btn-active" : ""
                 }`}
                 key={questionCount.value}
-                onClick={() => setSelectedQuestionCount(questionCount.value)}
+                onClick={() => handleSelectQuestionCount(questionCount.value)}
                 type="button"
               >
                 {questionCount.value === INFINITE_QUESTION_COUNT ? (
                   <InfinityIcon aria-label={questionCount.label} className="h-4 w-4" />
                 ) : (
                   questionCount.label
+                )}
+              </button>
+            ))}
+
+          {isTimeLimitStep &&
+            TIME_LIMIT_OPTIONS.map((timeLimit) => (
+              <button
+                className={`btn btn-success btn-outline btn-sm ${
+                  selectedTimeLimit === timeLimit.value ? "btn-active" : ""
+                }`}
+                key={timeLimit.value}
+                onClick={() => setSelectedTimeLimit(timeLimit.value)}
+                type="button"
+              >
+                {timeLimit.value === INFINITE_TIME_LIMIT_MINUTES ? (
+                  <InfinityIcon aria-label={timeLimit.label} className="h-4 w-4" />
+                ) : (
+                  timeLimit.label
                 )}
               </button>
             ))}

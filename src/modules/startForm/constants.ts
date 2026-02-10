@@ -1,8 +1,10 @@
 import type { DifficultyLevel } from "@/lib/meta";
 
 export const INFINITE_QUESTION_COUNT = 9999;
+export const INFINITE_TIME_LIMIT_MINUTES = 9999;
 
 export type QuestionCountOption = number;
+export type TimeLimitOption = number;
 
 export const QUESTION_COUNT_OPTIONS: Array<{
   value: QuestionCountOption;
@@ -18,11 +20,25 @@ export const QUESTION_COUNT_OPTIONS: Array<{
   { value: INFINITE_QUESTION_COUNT, label: "Infinite" },
 ];
 
+export const TIME_LIMIT_OPTIONS: Array<{
+  value: TimeLimitOption;
+  label: string;
+}> = [
+  { value: 5, label: "5min" },
+  { value: 15, label: "15min" },
+  { value: 30, label: "30min" },
+  { value: 45, label: "45min" },
+  { value: 60, label: "1h" },
+  { value: 90, label: "1.5h" },
+  { value: INFINITE_TIME_LIMIT_MINUTES, label: "Infinite" },
+];
+
 export const START_FORM_STEP_TITLES = {
   subject: "Choose the subject of your test",
   subcategory: "Choose the subcategory",
   difficulty: "Choose the difficulty",
   questionCount: "Choose the number of questions",
+  timeLimit: "Choose the time limit of the test",
 } as const;
 
 export type StartFormStep = keyof typeof START_FORM_STEP_TITLES;
@@ -31,4 +47,5 @@ export type StartFormSelectionState = {
   selectedSubjectId: string | null;
   selectedSubcategoryId: string | null;
   selectedDifficulty: DifficultyLevel | null;
+  selectedQuestionCount: QuestionCountOption | null;
 };

@@ -4,19 +4,18 @@ import type { StartFormSelectionState, StartFormStep } from "./constants";
 export function getCurrentStartFormStep(
   state: StartFormSelectionState,
 ): StartFormStep {
-  if (!state.selectedSubjectId) {
-    return "subject";
+  switch (true) {
+    case !state.selectedSubjectId:
+      return "subject";
+    case !state.selectedSubcategoryId:
+      return "subcategory";
+    case !state.selectedDifficulty:
+      return "difficulty";
+    case !state.selectedQuestionCount:
+      return "questionCount";
+    default:
+      return "timeLimit";
   }
-
-  if (!state.selectedSubcategoryId) {
-    return "subcategory";
-  }
-
-  if (!state.selectedDifficulty) {
-    return "difficulty";
-  }
-
-  return "questionCount";
 }
 
 export function canGoBackFromStep(step: StartFormStep): boolean {
