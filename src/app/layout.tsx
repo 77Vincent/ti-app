@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import ToastHost from "@/modules/toast/ToastHost";
-import Image from "next/image";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+import AppBar from "./appbar";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "It",
@@ -15,18 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        <header className="p-4">
-          <Image
-            src="/logo.svg"
-            alt="QuizMaster Logo"
-            width={48}
-            height={40}
-          />          
-        </header>
-        {main}
-        <ToastHost />
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+        >
+          <AppBar />
+          <ToastHost />
+          {main}
+        </ThemeProvider>
       </body>
     </html>
   );
