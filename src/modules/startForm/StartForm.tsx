@@ -1,19 +1,12 @@
 "use client";
 
 import {
-  DIFFICULTY_OPTIONS,
   getOrderedSubcategories,
   getOrderedSubjects,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 import { ArrowLeft, InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  INFINITE_QUESTION_COUNT,
-  INFINITE_TIME_LIMIT_MINUTES,
-  QUESTION_COUNT_OPTIONS,
-  TIME_LIMIT_OPTIONS,
-} from "./constants";
 import type {
   QuestionCountOption,
   StartFormStep,
@@ -34,20 +27,10 @@ import {
   selectTimeLimit,
 } from "./state";
 import type { StartFormState } from "./state";
-
-type StepOptionValue = string | number;
-type StepOption = {
-  value: StepOptionValue;
-  label: string;
-  showInfinityIcon?: boolean;
-};
-
-type StepConfig = {
-  buttonClassName: string;
-  selectedValue: StepOptionValue | null;
-  options: StepOption[];
-  onSelect: (value: StepOptionValue) => void;
-};
+import {
+  buildCurrentStepViewConfig,
+  type StepOptionValue,
+} from "./viewModel";
 
 export default function StartForm() {
   const [state, setState] = useState<StartFormState>(INITIAL_START_FORM_STATE);
@@ -91,65 +74,24 @@ export default function StartForm() {
   const handleSelectTimeLimit = (timeLimit: TimeLimitOption) =>
     setState((prevState) => selectTimeLimit(prevState, timeLimit));
 
-  const stepOptionsByStep: Record<StartFormStep, StepOption[]> = {
-    subject: subjects.map((subject) => ({
-      value: subject.id,
-      label: subject.label,
-    })),
-    subcategory: subcategories.map((subcategory) => ({
-      value: subcategory.id,
-      label: subcategory.label,
-    })),
-    difficulty: DIFFICULTY_OPTIONS.map((difficulty) => ({
-      value: difficulty.id,
-      label: difficulty.label,
-    })),
-    questionCount: QUESTION_COUNT_OPTIONS.map((questionCount) => ({
-      value: questionCount.value,
-      label: questionCount.label,
-      showInfinityIcon: questionCount.value === INFINITE_QUESTION_COUNT,
-    })),
-    timeLimit: TIME_LIMIT_OPTIONS.map((timeLimit) => ({
-      value: timeLimit.value,
-      label: timeLimit.label,
-      showInfinityIcon: timeLimit.value === INFINITE_TIME_LIMIT_MINUTES,
-    })),
+  const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
+    subject: (value) => handleSelectSubject(String(value)),
+    subcategory: (value) => handleSelectSubcategory(String(value)),
+    difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyLevel),
+    questionCount: (value) => handleSelectQuestionCount(Number(value)),
+    timeLimit: (value) => handleSelectTimeLimit(Number(value)),
   };
 
-  const stepConfigByStep: Record<StartFormStep, StepConfig> = {
-    subject: {
-      buttonClassName: "btn-primary",
-      selectedValue: selectedSubjectId,
-      options: stepOptionsByStep.subject,
-      onSelect: (value) => handleSelectSubject(String(value)),
-    },
-    subcategory: {
-      buttonClassName: "btn-secondary",
-      selectedValue: selectedSubcategoryId,
-      options: stepOptionsByStep.subcategory,
-      onSelect: (value) => handleSelectSubcategory(String(value)),
-    },
-    difficulty: {
-      buttonClassName: "btn-accent",
-      selectedValue: selectedDifficulty,
-      options: stepOptionsByStep.difficulty,
-      onSelect: (value) => handleSelectDifficulty(String(value) as DifficultyLevel),
-    },
-    questionCount: {
-      buttonClassName: "btn-info",
-      selectedValue: selectedQuestionCount,
-      options: stepOptionsByStep.questionCount,
-      onSelect: (value) => handleSelectQuestionCount(Number(value)),
-    },
-    timeLimit: {
-      buttonClassName: "btn-success",
-      selectedValue: selectedTimeLimit,
-      options: stepOptionsByStep.timeLimit,
-      onSelect: (value) => handleSelectTimeLimit(Number(value)),
-    },
-  };
-
-  const currentStepConfig = stepConfigByStep[currentStep];
+  const currentStepViewConfig = buildCurrentStepViewConfig({
+    currentStep,
+    subjects,
+    subcategories,
+    selectedSubjectId,
+    selectedSubcategoryId,
+    selectedDifficulty,
+    selectedQuestionCount,
+    selectedTimeLimit,
+  });
 
   const handleGoBack = () => setState((prevState) => goBack(prevState));
 
@@ -172,13 +114,13 @@ export default function StartForm() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {currentStepConfig.options.map((option) => (
+          {currentStepViewConfig.options.map((option) => (
             <button
-              className={`btn ${currentStepConfig.buttonClassName} btn-outline btn-sm ${
-                currentStepConfig.selectedValue === option.value ? "btn-active" : ""
+              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn-sm ${
+                currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
               }`}
               key={option.value}
-              onClick={() => currentStepConfig.onSelect(option.value)}
+              onClick={() => onSelectByStep[currentStep](option.value)}
               type="button"
             >
               {option.showInfinityIcon ? (
