@@ -1,5 +1,4 @@
 import type { StartFormSelectionState, TimeLimitOption } from "./constants";
-import { getCurrentStartFormStep } from "./utils";
 
 export type StartFormState = StartFormSelectionState & {
   selectedTimeLimit: TimeLimitOption | null;
@@ -64,33 +63,4 @@ export function selectTimeLimit(
     ...state,
     selectedTimeLimit: timeLimit,
   };
-}
-
-export function goBack(state: StartFormState): StartFormState {
-  const currentStep = getCurrentStartFormStep(state);
-
-  switch (currentStep) {
-    case "timeLimit":
-      return {
-        ...INITIAL_START_FORM_STATE,
-        selectedSubjectId: state.selectedSubjectId,
-        selectedSubcategoryId: state.selectedSubcategoryId,
-        selectedDifficulty: state.selectedDifficulty,
-      };
-    case "questionCount":
-      return {
-        ...INITIAL_START_FORM_STATE,
-        selectedSubjectId: state.selectedSubjectId,
-        selectedSubcategoryId: state.selectedSubcategoryId,
-      };
-    case "difficulty":
-      return {
-        ...INITIAL_START_FORM_STATE,
-        selectedSubjectId: state.selectedSubjectId,
-      };
-    case "subcategory":
-      return INITIAL_START_FORM_STATE;
-    default:
-      return INITIAL_START_FORM_STATE;
-  }
 }

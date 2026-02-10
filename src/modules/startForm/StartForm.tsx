@@ -5,7 +5,7 @@ import {
   getOrderedSubjects,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
-import { ArrowLeft, InfinityIcon } from "lucide-react";
+import { InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import type {
   QuestionCountOption,
@@ -13,12 +13,10 @@ import type {
   TimeLimitOption,
 } from "./constants";
 import {
-  canGoBackFromStep,
   getCurrentStartFormStep,
   getStartFormTitle,
 } from "./utils";
 import {
-  goBack,
   INITIAL_START_FORM_STATE,
   selectDifficulty,
   selectQuestionCount,
@@ -52,7 +50,6 @@ export default function StartForm() {
   }, [selectedSubjectId]);
 
   const currentStep = getCurrentStartFormStep(state);
-  const canGoBack = canGoBackFromStep(currentStep);
 
   const handleSelectSubject = (subjectId: string) =>
     setState(selectSubject(subjectId));
@@ -88,23 +85,10 @@ export default function StartForm() {
     selectedTimeLimit,
   });
 
-  const handleGoBack = () => setState((prevState) => goBack(prevState));
-
   return (
     <div className="card bg-base-100 shadow-sm my-auto">
       <div className="card-body">
-        <div className="relative flex items-center justify-center">
-          {canGoBack && (
-            <button
-              aria-label="Go back"
-              className="btn btn-ghost btn-circle btn-sm absolute left-0"
-              onClick={handleGoBack}
-              type="button"
-            >
-              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-            </button>
-          )}
-
+        <div className="flex items-center justify-center">
           <h1 className="text-2xl font-medium text-center">{getStartFormTitle(currentStep)}</h1>
         </div>
 

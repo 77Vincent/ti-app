@@ -18,10 +18,6 @@ export function getCurrentStartFormStep(
   }
 }
 
-export function canGoBackFromStep(step: StartFormStep): boolean {
-  return step !== "subject";
-}
-
 export function getStartFormTitle(step: StartFormStep): string {
   return START_FORM_STEP_TITLES[step];
 }
