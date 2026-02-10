@@ -80,13 +80,6 @@ export function useQuestion({
     [loadQuestion],
   );
 
-  const advanceToNextQuestion = useCallback(
-    (nextQuestion: QuestionType) => {
-      applyLoadedQuestion(nextQuestion);
-    },
-    [applyLoadedQuestion],
-  );
-
   useEffect(() => {
     let cancelled = false;
 
@@ -97,7 +90,7 @@ export function useQuestion({
         const nextQuestion = await questionSession.loadInitialQuestion();
 
         if (!cancelled) {
-          advanceToNextQuestion(nextQuestion);
+          applyLoadedQuestion(nextQuestion);
         }
       } catch (error) {
         if (!cancelled) {
@@ -116,7 +109,7 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [advanceToNextQuestion, questionSession, showLoadError]);
+  }, [applyLoadedQuestion, questionSession, showLoadError]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -142,7 +135,7 @@ export function useQuestion({
 
     if (questionSession.hasBufferedQuestion()) {
       const nextQuestion = await questionSession.consumeNextQuestion();
-      advanceToNextQuestion(nextQuestion);
+      applyLoadedQuestion(nextQuestion);
       return;
     }
 
@@ -150,7 +143,7 @@ export function useQuestion({
 
     try {
       const nextQuestion = await questionSession.consumeNextQuestion();
-      advanceToNextQuestion(nextQuestion);
+      applyLoadedQuestion(nextQuestion);
     } catch (error) {
       showLoadError(error);
     } finally {
