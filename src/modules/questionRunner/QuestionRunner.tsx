@@ -10,7 +10,10 @@ export default function QuestionRunner({
   difficulty,
   questionCount,
   timeLimit,
+  currentQuestion,
 }: QuestionRunnerProps) {
+  const isLoadingQuestion = !currentQuestion;
+
   return (
     <div className="my-auto space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -35,7 +38,19 @@ export default function QuestionRunner({
 
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
-          question content goes here
+          {isLoadingQuestion ? (
+            <div className="space-y-3">
+              <div className="skeleton h-12 w-full" />
+              <div className="pt-2 space-y-2">
+                <div className="skeleton h-6 w-full" />
+                <div className="skeleton h-6 w-full" />
+                <div className="skeleton h-6 w-full" />
+                <div className="skeleton h-6 w-full" />
+              </div>
+            </div>
+          ) : (
+            "question content goes here"
+          )}
         </div>
       </div>
     </div>
