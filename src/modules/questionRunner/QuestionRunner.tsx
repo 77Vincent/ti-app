@@ -33,19 +33,15 @@ export default function Question({
     difficulty,
   });
 
-  if (isLoadingQuestion) {
+  if (isLoadingQuestion || !question) {
     return <QuestionSkeleton />;
-  }
-
-  if (!question) {
-    return null;
   }
 
   return (
     <div className="space-y-4">
       <QuestionPrompt markdown={question.prompt} />
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {question.options.map((option) => (
           <QuestionChoice
             hasSubmitted={hasSubmitted}

@@ -61,7 +61,7 @@ export default function QuestionChoice({
       </button>
 
       {hasSubmitted ? (
-        <div className="text-sm leading-relaxed">
+        <div className="text-sm border border-base-300 rounded-lg px-4 py-2 bg-base-200 leading-relaxed">
           <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
             {option.explanation}
           </ReactMarkdown>
