@@ -1,9 +1,9 @@
 import {
   QUESTION_TYPES,
-  type SubcategoryEntry,
+  type SubcategoryOption,
 } from "./types";
 
-export const SUBCATEGORY_CATALOG: SubcategoryEntry[] = [
+export const SUBCATEGORY_CATALOG: SubcategoryOption[] = [
   {
     id: "english",
     label: "English",

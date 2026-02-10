@@ -1,4 +1,4 @@
-export { SUBJECTS as SUBJECT_CATALOG, SUBJECT_CATALOGS } from "./subjects";
+export { SUBJECTS as SUBJECT_CATALOG } from "./subjects";
 export { SUBCATEGORY_CATALOG } from "./subcategories";
 export { DIFFICULTIES as DIFFICULTY_OPTIONS } from "./difficulties";
 export {
@@ -9,7 +9,6 @@ export {
 export { QUESTION_TYPES } from "./types";
 export type {
   QuestionType,
-  SubcategoryEntry,
   SubcategoryOption,
 } from "./types";
 export type { SubjectEnum as SubjectCatalog, SubjectType as SubjectOption } from "./subjects";

@@ -1,7 +1,7 @@
 import { SUBJECTS } from "./subjects";
 import { SUBCATEGORY_CATALOG } from "./subcategories";
 import type { SubjectType } from "./subjects";
-import type { SubcategoryEntry } from "./types";
+import type { SubcategoryOption } from "./types";
 
 export function sortByOrder<T extends { order: number }>(entries: T[]): T[] {
   return [...entries].sort((a, b) => a.order - b.order);
@@ -15,7 +15,7 @@ export function getSubjectById(subjectId: string): SubjectType | null {
   return getOrderedSubjects().find((subject) => subject.id === subjectId) ?? null;
 }
 
-export function getOrderedSubcategories(subjectId: string): SubcategoryEntry[] {
+export function getOrderedSubcategories(subjectId: string): SubcategoryOption[] {
   return sortByOrder(
     SUBCATEGORY_CATALOG.filter(
       (subcategory) => subcategory.subjectId === subjectId,

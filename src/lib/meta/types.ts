@@ -4,8 +4,6 @@ import type { SubjectEnum } from "./subjects";
 export type SubcategoryOption = {
     id: string;
     label: string;
-};
-export type SubcategoryEntry = SubcategoryOption & {
     subjectId: SubjectEnum;
     order: number;
     questionTypesAllowed: QuestionType[];
