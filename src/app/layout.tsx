@@ -17,14 +17,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <aside className="w-20">
+        <header className="p-4">
           <Image
             src="/logo.svg"
             alt="QuizMaster Logo"
             width={48}
             height={40}
           />          
-        </aside>
+        </header>
         {main}
         <ToastHost />
       </body>
