@@ -1,3 +1,5 @@
+import { QUESTION_TYPES } from "@/lib/meta";
+import type { Question } from "@/modules/questionRunner/types";
 import { NextResponse } from "next/server";
 import { parseGenerateQuestionRequest } from "./validation";
 
@@ -19,27 +21,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = {
-    ok: true,
-    question: {
-      id: "q1",
-      type: "multiple_choice",
-      prompt: "What is the capital of France?",
-      options: [
-        { id: "o1", text: "Berlin" },
-        { id: "o2", text: "Madrid" },
-        { id: "o3", text: "Paris" },
-        { id: "o4", text: "Rome" },
-      ],
-      correctOptionId: "o3",
-    },
-    error: null,
-    status: 200,
-  }
+  const question: Question = {
+    id: "q1",
+    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+    prompt: "What is the capital of France?",
+    options: [
+      { id: "A", text: "Berlin" },
+      { id: "B", text: "Madrid" },
+      { id: "C", text: "Paris" },
+      { id: "D", text: "Rome" },
+    ],
+    correctOptionId: "C",
+  };
 
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
-  }
-
-  return NextResponse.json({ question: result.question });
+  return NextResponse.json({ question });
 }
