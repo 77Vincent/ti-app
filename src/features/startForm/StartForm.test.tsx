@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@heroui/react", () => {
   return {
-    Card: ({
+    Chip: ({
       children,
       ...props
     }: {
@@ -20,6 +20,8 @@ describe("StartForm", () => {
   it("renders the title", () => {
     const markup = renderToStaticMarkup(<StartForm />);
 
-    expect(markup).toContain("Choose subject");
+    expect(markup).toContain("Choose the subject of your test");
+    expect(markup).toContain("Language");
+    expect(markup).toContain("Mathematics");
   });
 });

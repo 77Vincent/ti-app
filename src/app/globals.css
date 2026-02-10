@@ -5,3 +5,7 @@ body {
   min-height: 100vh;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+
+.text-h1 {
+  @apply text-4xl font-bold;
+}
