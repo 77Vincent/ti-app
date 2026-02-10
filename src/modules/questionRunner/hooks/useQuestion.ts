@@ -81,6 +81,14 @@ export function useQuestion({
     }
   }, [loadQuestion]);
 
+  const advanceToNextQuestion = useCallback(
+    (nextQuestion: QuestionType) => {
+      applyLoadedQuestion(nextQuestion);
+      void prefetchQuestions();
+    },
+    [applyLoadedQuestion, prefetchQuestions],
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -140,8 +148,7 @@ export function useQuestion({
     const nextBufferedQuestion = consumeAsyncBuffer(bufferRef.current);
 
     if (nextBufferedQuestion) {
-      applyLoadedQuestion(nextBufferedQuestion);
-      void prefetchQuestions();
+      advanceToNextQuestion(nextBufferedQuestion);
       return;
     }
 
@@ -149,8 +156,7 @@ export function useQuestion({
 
     try {
       const nextQuestion = await loadQuestion();
-      applyLoadedQuestion(nextQuestion);
-      void prefetchQuestions();
+      advanceToNextQuestion(nextQuestion);
     } catch (error) {
       showLoadError(error);
     } finally {
