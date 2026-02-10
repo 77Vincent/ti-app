@@ -15,8 +15,6 @@ Repository-level instructions for human and AI contributors.
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- PostgreSQL on AWS RDS
-- `pg` for database access
 
 ## Working Rules
 
@@ -24,12 +22,12 @@ Repository-level instructions for human and AI contributors.
 2. Do not commit secrets. Keep credentials in `.env.local`. Document env vars in `.env.example`.
 3. Prefer `make` commands for common workflows.
 4. Favor simplicity and unification. Avoid repeating logic; use shared helpers/assets to reduce drift.
-5. Database access must stay in server-side code and go through `src/lib/db.ts` unless an architecture change is explicitly requested.
-6. Never expose `DATABASE_URL` or other secrets to client-side code.
+5. Keep integration code that uses secrets in server-side code only.
+6. Never expose API keys or other secrets to client-side code.
 7. If requirements are ambiguous or conflicting, ask for clarification before implementing.
 8. Every newly created runtime source file must have a dedicated unit test file in the same change.
 9. Any changed runtime behavior must include new or updated unit tests in the same change.
-10. Validate external input at system boundaries, use parameterized SQL only, and enforce auth/authz on protected operations.
+10. Validate external input at system boundaries and enforce auth/authz on protected operations.
 11. No dead code is allowed.
 12. During implementation, prefer targeted test runs for touched files/areas (for example `npm run test:staged -- <paths>`).
 13. Before final handoff or merge, run full project verification (`make test`, `make lint`, `make build`) unless explicitly asked not to.
