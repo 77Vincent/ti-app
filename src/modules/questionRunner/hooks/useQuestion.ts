@@ -2,7 +2,7 @@
 
 import type { DifficultyEnum } from "@/lib/meta";
 import { toastError } from "@/modules/toast/toastBus";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { fetchGeneratedQuestion } from "../api";
 import { createQuestionSessionController } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
@@ -10,6 +10,10 @@ import {
   isOptionCorrect as getIsOptionCorrect,
   isOptionWrongSelection as getIsOptionWrongSelection,
 } from "../utils/evaluation";
+import {
+  INITIAL_QUESTION_SESSION_UI_STATE,
+  questionSessionUiReducer,
+} from "../session/reducer";
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
@@ -37,10 +41,11 @@ export function useQuestion({
   subcategoryId,
   difficulty,
 }: UseQuestionInput): UseQuestionResult {
-  const [question, setQuestion] = useState<QuestionType | null>(null);
-  const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [uiState, dispatchUiState] = useReducer(
+    questionSessionUiReducer,
+    INITIAL_QUESTION_SESSION_UI_STATE,
+  );
+  const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
 
@@ -52,9 +57,8 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
-      setQuestion(nextQuestion);
       resetSelection();
-      setHasSubmitted(false);
+      dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
     [resetSelection],
   );
@@ -87,7 +91,7 @@ export function useQuestion({
     let cancelled = false;
 
     async function loadInitialQuestion() {
-      setIsLoadingQuestion(true);
+      dispatchUiState({ type: "initialLoadStarted" });
 
       try {
         const nextQuestion = await questionSession.loadInitialQuestion();
@@ -101,7 +105,7 @@ export function useQuestion({
         }
       } finally {
         if (!cancelled) {
-          setIsLoadingQuestion(false);
+          dispatchUiState({ type: "initialLoadFinished" });
         }
       }
     }
@@ -132,7 +136,7 @@ export function useQuestion({
     }
 
     if (!hasSubmitted) {
-      setHasSubmitted(true);
+      dispatchUiState({ type: "submissionMarked" });
       return;
     }
 
@@ -142,7 +146,7 @@ export function useQuestion({
       return;
     }
 
-    setIsSubmitting(true);
+    dispatchUiState({ type: "submitFetchStarted" });
 
     try {
       const nextQuestion = await questionSession.consumeNextQuestion();
@@ -150,7 +154,7 @@ export function useQuestion({
     } catch (error) {
       showLoadError(error);
     } finally {
-      setIsSubmitting(false);
+      dispatchUiState({ type: "submitFetchFinished" });
     }
   }
 
