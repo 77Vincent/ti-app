@@ -73,18 +73,13 @@ export function useQuestion({
     });
   }, [difficulty, subcategoryId, subjectId]);
 
-  const prefetchQuestions = useCallback(
-    async (showError = false) => {
-      try {
-        await fillAsyncBuffer(bufferRef.current, loadQuestion);
-      } catch (error) {
-        if (showError) {
-          showLoadError(error);
-        }
-      }
-    },
-    [loadQuestion, showLoadError],
-  );
+  const prefetchQuestions = useCallback(async () => {
+    try {
+      await fillAsyncBuffer(bufferRef.current, loadQuestion);
+    } catch {
+      // Silent prefetch failure: submit path still fetches on demand.
+    }
+  }, [loadQuestion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -145,8 +140,7 @@ export function useQuestion({
     const nextBufferedQuestion = consumeAsyncBuffer(bufferRef.current);
 
     if (nextBufferedQuestion) {
-      const nextQuestion = nextBufferedQuestion;
-      applyLoadedQuestion(nextQuestion);
+      applyLoadedQuestion(nextBufferedQuestion);
       void prefetchQuestions();
       return;
     }
