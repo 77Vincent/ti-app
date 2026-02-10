@@ -1,16 +1,8 @@
-import type { DifficultyLevel } from "@/lib/meta";
 import {
   INFINITE_QUESTION_COUNT,
   INFINITE_TIME_LIMIT_MINUTES,
 } from "@/modules/startForm/constants";
-
-type QuestionRunnerProps = {
-  subjectId: string;
-  subcategoryId: string;
-  difficulty: DifficultyLevel;
-  questionCount: number;
-  timeLimit: number;
-};
+import type { QuestionRunnerProps } from "./types";
 
 export default function QuestionRunner({
   subjectId,
