@@ -34,17 +34,3 @@ export const QUESTION_TYPES = {
     MULTIPLE_CHOICE: "multiple_choice" as QuestionType,
     MULTIPLE_ANSWER: "multiple_answer" as QuestionType,
 };
-
-// Difficulty Levels
-export type DifficultyLevel = "beginner" | "intermediate" | "advanced" | "expert";
-export type DifficultyOption = {
-    id: DifficultyLevel;
-    label: string;
-};
-export const DIFFICULTY_LEVELS = {
-    BEGINNER: "beginner" as DifficultyLevel,
-    INTERMEDIATE: "intermediate" as DifficultyLevel,
-    ADVANCED: "advanced" as DifficultyLevel,
-    EXPERT: "expert" as DifficultyLevel,
-};
-
