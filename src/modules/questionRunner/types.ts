@@ -1,16 +1,10 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import type { DifficultyLevel, QuestionType } from "@/lib/meta";
-import type {
-  QuestionCountOption,
-  TimeLimitOption,
-} from "@/modules/startForm/constants";
 
 export type TestMeta = {
   subjectId: string;
   subcategoryId: string;
   difficulty: DifficultyLevel;
-  questionCount: QuestionCountOption;
-  timeLimit: TimeLimitOption;
 };
 
 export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";

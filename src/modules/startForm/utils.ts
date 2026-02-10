@@ -11,10 +11,8 @@ export function getCurrentStartFormStep(
       return "subcategory";
     case !state.selectedDifficulty:
       return "difficulty";
-    case !state.selectedQuestionCount:
-      return "questionCount";
     default:
-      return "timeLimit";
+      return "difficulty";
   }
 }
 

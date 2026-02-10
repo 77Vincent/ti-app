@@ -1,15 +1,11 @@
-import type { StartFormSelectionState, TimeLimitOption } from "./constants";
+import type { StartFormSelectionState } from "./constants";
 
-export type StartFormState = StartFormSelectionState & {
-  selectedTimeLimit: TimeLimitOption | null;
-};
+export type StartFormState = StartFormSelectionState;
 
 export const INITIAL_START_FORM_STATE: StartFormState = {
   selectedSubjectId: null,
   selectedSubcategoryId: null,
   selectedDifficulty: null,
-  selectedQuestionCount: null,
-  selectedTimeLimit: null,
 };
 
 export function selectSubject(subjectId: string): StartFormState {
@@ -27,8 +23,6 @@ export function selectSubcategory(
     ...state,
     selectedSubcategoryId: subcategoryId,
     selectedDifficulty: null,
-    selectedQuestionCount: null,
-    selectedTimeLimit: null,
   };
 }
 
@@ -39,28 +33,5 @@ export function selectDifficulty(
   return {
     ...state,
     selectedDifficulty: difficulty,
-    selectedQuestionCount: null,
-    selectedTimeLimit: null,
-  };
-}
-
-export function selectQuestionCount(
-  state: StartFormState,
-  questionCount: StartFormSelectionState["selectedQuestionCount"],
-): StartFormState {
-  return {
-    ...state,
-    selectedQuestionCount: questionCount,
-    selectedTimeLimit: null,
-  };
-}
-
-export function selectTimeLimit(
-  state: StartFormState,
-  timeLimit: TimeLimitOption,
-): StartFormState {
-  return {
-    ...state,
-    selectedTimeLimit: timeLimit,
   };
 }

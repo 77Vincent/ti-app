@@ -13,9 +13,9 @@ The motivation is to that everybody can find testing materials easily and test i
 ## Workflow Spec v0: Take Test
 
 1. Session setup
-Flow: Learner selects subject, subcategory, difficulty, goal, and optionally sets `question count limit` and/or `time limit`.
-Rule: `question count limit` and `time limit` are independent, and each can be set or unset.
-Check: System can start a session with only one limit, both limits, or no limits.
+Flow: Learner selects subject, subcategory, and difficulty.
+Rule: Test starts immediately after difficulty is selected.
+Check: System can start a session with only these three selections.
 
 2. Question generation
 Flow: System starts the test session and generates the first question.
@@ -34,8 +34,8 @@ Check: Any unsupported question type is rejected and not shown.
 
 5. Session ending logic
 Flow: Test continues until an end condition is reached.
-Rule: End conditions are any configured limit reached or manual quit (`click quit`, `close tab`, `close app`).
-Check: If both limits are set, test ends when the first limit is reached; if both are unset, test is infinite until manual quit.
+Rule: End condition is manual quit (`click quit`, `close tab`, `close app`).
+Check: Session remains active until the user quits.
 
 6. Status lifecycle
 Flow: Session transitions from start to finish.

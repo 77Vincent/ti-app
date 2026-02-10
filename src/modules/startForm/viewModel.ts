@@ -1,24 +1,17 @@
 import { DIFFICULTY_OPTIONS } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
-import {
-  INFINITE_QUESTION_COUNT,
-  INFINITE_TIME_LIMIT_MINUTES,
-  QUESTION_COUNT_OPTIONS,
-  TIME_LIMIT_OPTIONS,
-} from "./constants";
-import type { QuestionCountOption, StartFormStep, TimeLimitOption } from "./constants";
+import type { StartFormStep } from "./constants";
 
 type SelectOption = {
   id: string;
   label: string;
 };
 
-export type StepOptionValue = string | number;
+export type StepOptionValue = string;
 
 export type StepOption = {
   value: StepOptionValue;
   label: string;
-  showInfinityIcon?: boolean;
 };
 
 export type StartFormStepViewConfig = {
@@ -34,8 +27,6 @@ type BuildCurrentStepViewConfigInput = {
   selectedSubjectId: string | null;
   selectedSubcategoryId: string | null;
   selectedDifficulty: DifficultyLevel | null;
-  selectedQuestionCount: QuestionCountOption | null;
-  selectedTimeLimit: TimeLimitOption | null;
 };
 
 export function buildCurrentStepViewConfig(
@@ -54,16 +45,6 @@ export function buildCurrentStepViewConfig(
       value: difficulty.id,
       label: difficulty.label,
     })),
-    questionCount: QUESTION_COUNT_OPTIONS.map((questionCount) => ({
-      value: questionCount.value,
-      label: questionCount.label,
-      showInfinityIcon: questionCount.value === INFINITE_QUESTION_COUNT,
-    })),
-    timeLimit: TIME_LIMIT_OPTIONS.map((timeLimit) => ({
-      value: timeLimit.value,
-      label: timeLimit.label,
-      showInfinityIcon: timeLimit.value === INFINITE_TIME_LIMIT_MINUTES,
-    })),
   };
 
   const stepConfigByStep: Record<StartFormStep, StartFormStepViewConfig> = {
@@ -81,16 +62,6 @@ export function buildCurrentStepViewConfig(
       buttonClassName: "btn-accent",
       selectedValue: input.selectedDifficulty,
       options: stepOptionsByStep.difficulty,
-    },
-    questionCount: {
-      buttonClassName: "btn-info",
-      selectedValue: input.selectedQuestionCount,
-      options: stepOptionsByStep.questionCount,
-    },
-    timeLimit: {
-      buttonClassName: "btn-success",
-      selectedValue: input.selectedTimeLimit,
-      options: stepOptionsByStep.timeLimit,
     },
   };
 

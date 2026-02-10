@@ -7,13 +7,8 @@ import {
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 import { QuestionRunner } from "@/modules/questionRunner";
-import { InfinityIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import type {
-  QuestionCountOption,
-  StartFormStep,
-  TimeLimitOption,
-} from "./constants";
+import type { StartFormStep } from "./constants";
 import {
   getCurrentStartFormStep,
   getStartFormTitle,
@@ -21,10 +16,8 @@ import {
 import {
   INITIAL_START_FORM_STATE,
   selectDifficulty,
-  selectQuestionCount,
   selectSubcategory,
   selectSubject,
-  selectTimeLimit,
 } from "./state";
 import type { StartFormState } from "./state";
 import {
@@ -38,10 +31,8 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
-    selectedQuestionCount,
-    selectedTimeLimit,
   } = state;
-  const hasStarted = selectedTimeLimit !== null;
+  const hasStarted = selectedDifficulty !== null;
   const subjects = useMemo(() => sortByOrder(SUBJECT_CATALOG), []);
 
   const subcategories = useMemo(() => {
@@ -67,18 +58,10 @@ export default function StartForm() {
   const handleSelectDifficulty = (difficulty: DifficultyLevel) =>
     setState((prevState) => selectDifficulty(prevState, difficulty));
 
-  const handleSelectQuestionCount = (questionCount: QuestionCountOption) =>
-    setState((prevState) => selectQuestionCount(prevState, questionCount));
-
-  const handleSelectTimeLimit = (timeLimit: TimeLimitOption) =>
-    setState((prevState) => selectTimeLimit(prevState, timeLimit));
-
   const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
     subject: (value) => handleSelectSubject(String(value)),
     subcategory: (value) => handleSelectSubcategory(String(value)),
     difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyLevel),
-    questionCount: (value) => handleSelectQuestionCount(Number(value)),
-    timeLimit: (value) => handleSelectTimeLimit(Number(value)),
   };
 
   const currentStepViewConfig = buildCurrentStepViewConfig({
@@ -88,16 +71,13 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
-    selectedQuestionCount,
-    selectedTimeLimit,
   });
 
   if (hasStarted) {
     if (
       !selectedSubjectId ||
       !selectedSubcategoryId ||
-      !selectedDifficulty ||
-      !selectedQuestionCount
+      !selectedDifficulty
     ) {
       return null;
     }
@@ -105,10 +85,8 @@ export default function StartForm() {
     return (
       <QuestionRunner
         difficulty={selectedDifficulty}
-        questionCount={selectedQuestionCount}
         subcategoryId={selectedSubcategoryId}
         subjectId={selectedSubjectId}
-        timeLimit={selectedTimeLimit}
       />
     );
   }
@@ -130,11 +108,7 @@ export default function StartForm() {
               onClick={() => onSelectByStep[currentStep](option.value)}
               type="button"
             >
-              {option.showInfinityIcon ? (
-                <InfinityIcon aria-label={option.label} className="h-4 w-4" />
-              ) : (
-                option.label
-              )}
+              {option.label}
             </button>
           ))}
         </div>
