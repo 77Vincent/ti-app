@@ -4,11 +4,11 @@ import {
   parseStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
 } from "@/modules/questionRunner/session";
-import { StartForm } from "@/modules/startForm";
+import { QuestionRunner } from "@/modules/questionRunner";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 
-export default function TestPage() {
+export default function TestRunPage() {
   const router = useRouter();
   const rawSession = useSyncExternalStore(
     () => () => undefined,
@@ -22,14 +22,20 @@ export default function TestPage() {
   );
 
   useEffect(() => {
-    if (params) {
-      router.replace("/test/run");
+    if (!params) {
+      router.replace("/test");
     }
   }, [params, router]);
 
-  if (params) {
+  if (!params) {
     return null;
   }
 
-  return <StartForm />;
+  return (
+    <QuestionRunner
+      difficulty={params.difficulty}
+      subcategoryId={params.subcategoryId}
+      subjectId={params.subjectId}
+    />
+  );
 }
