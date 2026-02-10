@@ -40,6 +40,4 @@ export type MultipleAnswerQuestion = BaseQuestion & {
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
-export type QuestionRunnerProps = TestMeta & {
-  currentQuestion?: Question | null;
-};
+export type QuestionRunnerProps = TestMeta;

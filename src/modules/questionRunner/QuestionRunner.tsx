@@ -5,7 +5,6 @@ export default function QuestionRunner({
   subjectId,
   subcategoryId,
   difficulty,
-  currentQuestion,
 }: QuestionRunnerProps) {
   return (
     <div className="my-auto space-y-4">
@@ -16,7 +15,6 @@ export default function QuestionRunner({
       <div className="card card-border bg-base-100 shadow-sm">
         <div className="card-body">
           <Question
-            currentQuestion={currentQuestion}
             difficulty={difficulty}
             subcategoryId={subcategoryId}
             subjectId={subjectId}
