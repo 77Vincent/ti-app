@@ -5,7 +5,7 @@ import {
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 import { QuestionRunner } from "@/modules/questionRunner";
 import { useMemo, useState } from "react";
 import type { StartFormStep } from "./constants";
@@ -55,13 +55,13 @@ export default function StartForm() {
   const handleSelectSubcategory = (subcategoryId: string) =>
     setState((prevState) => selectSubcategory(prevState, subcategoryId));
 
-  const handleSelectDifficulty = (difficulty: DifficultyLevel) =>
+  const handleSelectDifficulty = (difficulty: DifficultyEnum) =>
     setState((prevState) => selectDifficulty(prevState, difficulty));
 
   const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
     subject: (value) => handleSelectSubject(String(value)),
     subcategory: (value) => handleSelectSubcategory(String(value)),
-    difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyLevel),
+    difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyEnum),
   };
 
   const currentStepViewConfig = buildCurrentStepViewConfig({

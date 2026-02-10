@@ -3,7 +3,8 @@ export { SUBCATEGORIES } from "./subcategories";
 export { DIFFICULTIES } from "./difficulties";
 export { sortByOrder } from "./utils";
 export { QUESTION_TYPES } from "./questionTypes";
+
 export type { QuestionType } from "./questionTypes";
 export type { SubcategoryOption } from "./subcategories";
-export type { SubjectEnum as SubjectCatalog, SubjectType as SubjectOption } from "./subjects";
-export type { DifficultyEnum as DifficultyLevel, DifficultyType as DifficultyOption } from "./difficulties";
+export type { SubjectEnum, SubjectType } from "./subjects";
+export type { DifficultyEnum, DifficultyType } from "./difficulties";

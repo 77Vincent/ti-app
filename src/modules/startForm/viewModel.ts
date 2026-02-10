@@ -1,5 +1,5 @@
 import { DIFFICULTIES } from "@/lib/meta";
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 import type { StartFormStep } from "./constants";
 
 type SelectOption = {
@@ -26,7 +26,7 @@ type BuildCurrentStepViewConfigInput = {
   subcategories: SelectOption[];
   selectedSubjectId: string | null;
   selectedSubcategoryId: string | null;
-  selectedDifficulty: DifficultyLevel | null;
+  selectedDifficulty: DifficultyEnum | null;
 };
 
 export function buildCurrentStepViewConfig(

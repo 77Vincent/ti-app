@@ -3,19 +3,19 @@ import {
   SUBCATEGORIES,
   DIFFICULTIES,
 } from "@/lib/meta";
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 
 export type GenerateQuestionRequest = {
   subjectId: string;
   subcategoryId: string;
-  difficulty: DifficultyLevel;
+  difficulty: DifficultyEnum;
 };
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function isValidDifficulty(value: string): value is DifficultyLevel {
+function isValidDifficulty(value: string): value is DifficultyEnum {
   return DIFFICULTIES.some((difficulty) => difficulty.id === value);
 }
 

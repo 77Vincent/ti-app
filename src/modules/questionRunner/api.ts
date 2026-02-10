@@ -1,10 +1,10 @@
-import type { DifficultyLevel } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 import type { Question } from "./types";
 
 export type GenerateQuestionInput = {
   subjectId: string;
   subcategoryId: string;
-  difficulty: DifficultyLevel;
+  difficulty: DifficultyEnum;
 };
 
 type GenerateQuestionResponse = {

@@ -1,10 +1,10 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type { DifficultyLevel, QuestionType } from "@/lib/meta";
+import type { DifficultyEnum, QuestionType } from "@/lib/meta";
 
 export type TestMeta = {
   subjectId: string;
   subcategoryId: string;
-  difficulty: DifficultyLevel;
+  difficulty: DifficultyEnum;
 };
 
 export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
