@@ -19,21 +19,6 @@ export default function QuestionRunner({
   questionCount,
   timeLimit,
 }: QuestionRunnerProps) {
-  const testMeta = [
-    { label: "Subject", value: subjectId },
-    { label: "Subcategory", value: subcategoryId },
-    { label: "Difficulty", value: difficulty },
-    {
-      label: "Question count",
-      value:
-        questionCount === INFINITE_QUESTION_COUNT ? "Infinite" : String(questionCount),
-    },
-    {
-      label: "Time limit",
-      value: timeLimit === INFINITE_TIME_LIMIT_MINUTES ? "Infinite" : `${timeLimit} min`,
-    },
-  ];
-
   return (
     <div className="my-auto space-y-4">
       <div className="card bg-base-100 shadow-sm">
@@ -44,12 +29,21 @@ export default function QuestionRunner({
           </p>
         </div>
       </div>
+
       <div className="flex flex-wrap gap-2">
-        {testMeta.map((meta) => (
-          <span className="badge badge-outline" key={meta.label}>
-            <span>{meta.value}</span>
-          </span>
-        ))}
+        <span className="badge badge-outline badge-primary">{subjectId}</span>
+        <span className="badge badge-outline badge-secondary">{subcategoryId}</span>
+        <span className="badge badge-outline badge-success">{difficulty}</span>
+        {
+          questionCount === INFINITE_QUESTION_COUNT
+            ? null
+            : <span className="badge badge-outline">{questionCount} questions</span>
+        }
+        {
+          timeLimit === INFINITE_TIME_LIMIT_MINUTES
+            ? null
+            : <span className="badge badge-outline">{timeLimit} minutes</span>
+        }
       </div>
     </div>
   );
