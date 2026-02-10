@@ -1,7 +1,7 @@
 import {
   QUESTION_TYPES,
-} from "./types";
-import type { QuestionType } from "./types";
+} from "./questionTypes";
+import type { QuestionType } from "./questionTypes";
 import type { SubjectEnum } from "./subjects";
 
 export type SubcategoryOption = {
