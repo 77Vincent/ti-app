@@ -30,20 +30,10 @@ export default function QuestionRunner({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-1.5 justify-end">
-        <span className="badge badge-outline">{subjectId}</span>
-        <span className="badge badge-outline">{subcategoryId}</span>
-        <span className="badge badge-outline">{difficulty}</span>
-        {
-          questionCount === INFINITE_QUESTION_COUNT
-            ? null
-            : <span className="badge badge-outline ">{questionCount} Q</span>
-        }
-        {
-          timeLimit === INFINITE_TIME_LIMIT_MINUTES
-            ? null
-            : <span className="badge badge-outline ">{timeLimit} min</span>
-        }
+      <div className="flex flex-wrap gap-1.5">
+        <span className="badge badge-outline badge-sm">{subjectId}</span>
+        <span className="badge badge-outline badge-sm">{subcategoryId}</span>
+        <span className="badge badge-outline badge-sm">{difficulty}</span>
       </div>
     </div>
   );

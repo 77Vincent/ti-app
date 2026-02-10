@@ -77,12 +77,12 @@ export default function Question({
 
   return (
     <div className="space-y-4">
-      <p className="text-base font-medium">{question.prompt}</p>
+      <p className="text-base">{question.prompt}</p>
 
       <div className="space-y-2">
         {question.options.map((option) => (
           <button
-            className="btn btn-outline w-full justify-start"
+            className="btn w-full justify-start"
             key={option.id}
             type="button"
           >

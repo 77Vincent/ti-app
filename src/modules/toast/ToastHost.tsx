@@ -53,7 +53,7 @@ export default function ToastHost() {
   }
 
   return (
-    <div className="toast toast-top toast-end z-50">
+    <div className="toast toast-top toast-center z-50">
       {visibleToasts.map((toast) => (
         <div
           className={`alert ${getAlertClassName(toast.variant)}`}
