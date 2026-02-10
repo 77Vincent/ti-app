@@ -1,5 +1,5 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type { Question } from "@/modules/questionRunner/types";
+import type { Question } from "@/app/test/run/questionRunner/types";
 import type { GenerateQuestionRequest } from "./validation";
 
 function createMockQuestionId(): string {

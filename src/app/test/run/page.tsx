@@ -4,8 +4,8 @@ import {
   clearStoredTestSession,
   parseStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
-} from "@/modules/questionRunner/session";
-import { QuestionRunner } from "@/modules/questionRunner";
+} from "@/app/test/run/questionRunner/session";
+import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 

@@ -3,7 +3,7 @@ import type {
   Question,
   QuestionOption,
   QuestionOptionId,
-} from "@/modules/questionRunner/types";
+} from "@/app/test/run/questionRunner/types";
 import type { GenerateQuestionRequest } from "./validation";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";

@@ -6,7 +6,7 @@ import {
   SUBCATEGORIES,
 } from "@/lib/meta";
 import type { DifficultyEnum } from "@/lib/meta";
-import { TEST_SESSION_STORAGE_KEY } from "@/modules/questionRunner/session";
+import { TEST_SESSION_STORAGE_KEY } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";

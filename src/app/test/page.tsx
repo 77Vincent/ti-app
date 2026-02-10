@@ -3,8 +3,8 @@
 import {
   parseStoredTestSession,
   TEST_SESSION_STORAGE_KEY,
-} from "@/modules/questionRunner/session";
-import { StartForm } from "@/modules/startForm";
+} from "@/app/test/run/questionRunner/session";
+import { StartForm } from "@/app/test/startForm";
 import { useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 
