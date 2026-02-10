@@ -4,6 +4,7 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyLevel } from "@/lib/meta";
 import { useQuestion } from "./hooks/useQuestion";
 import QuestionPrompt from "./QuestionPrompt";
+import QuestionChoice from "./QuestionChoice";
 
 type QuestionProps = {
   subjectId: string;
@@ -46,31 +47,16 @@ export default function Question({
 
       <div className="space-y-2">
         {question.options.map((option) => (
-          <div className="space-y-1" key={option.id}>
-            <button
-              className={`btn w-full justify-start ${
-                hasSubmitted
-                  ? isOptionCorrect(option.id)
-                    ? "btn-success"
-                    : isOptionWrongSelection(option.id)
-                      ? "btn-error"
-                      : "btn-outline"
-                  : selectedOptionIds.includes(option.id)
-                    ? "btn-primary"
-                    : "btn-outline"
-              }`}
-              disabled={isSubmitting}
-              onClick={() => selectOption(option.id)}
-              type="button"
-            >
-              <span className="font-mono">{option.id}.</span>
-              <span>{option.text}</span>
-            </button>
-
-            {hasSubmitted ? (
-              <p className="text-sm">{option.explanation}</p>
-            ) : null}
-          </div>
+          <QuestionChoice
+            hasSubmitted={hasSubmitted}
+            isCorrect={isOptionCorrect(option.id)}
+            isSelected={selectedOptionIds.includes(option.id)}
+            isSubmitting={isSubmitting}
+            isWrongSelection={isOptionWrongSelection(option.id)}
+            key={option.id}
+            onSelect={() => selectOption(option.id)}
+            option={option}
+          />
         ))}
       </div>
 
