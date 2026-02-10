@@ -38,32 +38,34 @@ export default function QuestionChoice({
   isWrongSelection,
   onSelect,
 }: QuestionChoiceProps) {
-  const buttonClassName = hasSubmitted
+  const containerClassName = hasSubmitted
     ? isCorrect
-      ? "btn-success"
+      ? "border-emerald-500 bg-emerald-50 text-emerald-900"
       : isWrongSelection
-        ? "btn-error"
-        : "btn-outline"
+        ? "border-red-500 bg-red-50 text-red-900"
+        : "border-base-300 bg-base-100 text-base-content"
     : isSelected
-      ? "btn-primary"
-      : "btn-outline";
+      ? "border-primary bg-primary/10 text-base-content"
+      : "border-base-300 bg-base-100 text-base-content hover:bg-base-200";
 
   return (
     <div className="space-y-1">
       <button
-        className={`btn w-full justify-start ${buttonClassName}`}
+        className={`w-full cursor-pointer rounded-lg border px-4 py-2 text-left font-normal leading-relaxed transition-colors ${containerClassName}`}
         disabled={isSubmitting}
         onClick={onSelect}
         type="button"
       >
-        <span className="font-mono">{option.id}.</span>
+        <span className="font-mono">{option.id}. </span>
         <span>{renderInlineMarkdown(option.text)}</span>
       </button>
 
       {hasSubmitted ? (
-        <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
-          {option.explanation}
-        </ReactMarkdown>
+        <div className="text-sm leading-relaxed">
+          <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
+            {option.explanation}
+          </ReactMarkdown>
+        </div>
       ) : null}
     </div>
   );
