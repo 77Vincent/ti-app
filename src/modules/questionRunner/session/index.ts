@@ -3,3 +3,7 @@ export {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
 } from "./reducer";
+export {
+  parseStoredTestSession,
+  TEST_SESSION_STORAGE_KEY,
+} from "./storage";

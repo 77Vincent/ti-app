@@ -6,8 +6,9 @@ import {
   SUBCATEGORIES,
 } from "@/lib/meta";
 import type { DifficultyEnum } from "@/lib/meta";
+import { TEST_SESSION_STORAGE_KEY } from "@/modules/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
-import { QuestionRunner } from "@/modules/questionRunner";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
 import type { StartFormStep } from "./constants";
@@ -27,13 +28,13 @@ import {
 } from "./viewModel";
 
 export default function StartForm() {
+  const router = useRouter();
   const [state, setState] = useState<StartFormState>(INITIAL_START_FORM_STATE);
   const {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
   } = state;
-  const hasStarted = selectedDifficulty !== null;
   const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
   const subcategories = useMemo(() => {
@@ -56,8 +57,30 @@ export default function StartForm() {
   const handleSelectSubcategory = (subcategoryId: string) =>
     setState((prevState) => selectSubcategory(prevState, subcategoryId));
 
-  const handleSelectDifficulty = (difficulty: DifficultyEnum) =>
+  const handleSelectDifficulty = (difficulty: DifficultyEnum) => {
     setState((prevState) => selectDifficulty(prevState, difficulty));
+
+    if (!selectedSubjectId || !selectedSubcategoryId) {
+      return;
+    }
+
+    const testSession = {
+      subjectId: selectedSubjectId,
+      subcategoryId: selectedSubcategoryId,
+      difficulty,
+    };
+
+    try {
+      sessionStorage.setItem(
+        TEST_SESSION_STORAGE_KEY,
+        JSON.stringify(testSession),
+      );
+    } catch {
+      // Ignore sessionStorage write errors (e.g. private mode/storage denied).
+    }
+
+    router.push("/test/run");
+  };
 
   const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
     subject: (value) => handleSelectSubject(String(value)),
@@ -74,26 +97,8 @@ export default function StartForm() {
     selectedDifficulty,
   });
 
-  if (hasStarted) {
-    if (
-      !selectedSubjectId ||
-      !selectedSubcategoryId ||
-      !selectedDifficulty
-    ) {
-      return null;
-    }
-
-    return (
-      <QuestionRunner
-        difficulty={selectedDifficulty}
-        subcategoryId={selectedSubcategoryId}
-        subjectId={selectedSubjectId}
-      />
-    );
-  }
-
   return (
-    <Card className="mx-auto max-w-xl">
+    <Card shadow="sm" className="mx-auto max-w-xl">
       <CardHeader className="pt-6">
         <h1 className="mx-auto text-2xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}

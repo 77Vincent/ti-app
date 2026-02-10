@@ -6,7 +6,7 @@ import {
 } from "@/modules/questionRunner/session";
 import { StartForm } from "@/modules/startForm";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 export default function TestPage() {
   const router = useRouter();
@@ -16,10 +16,7 @@ export default function TestPage() {
     () => null,
   );
 
-  const params = useMemo(
-    () => parseStoredTestSession(rawSession),
-    [rawSession],
-  );
+  const params = parseStoredTestSession(rawSession);
 
   useEffect(() => {
     if (params) {
