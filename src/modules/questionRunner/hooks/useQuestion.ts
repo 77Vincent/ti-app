@@ -44,6 +44,15 @@ export function useQuestion({
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
 
+  const applyLoadedQuestion = useCallback(
+    (nextQuestion: QuestionType) => {
+      setQuestion(nextQuestion);
+      resetSelection();
+      setHasSubmitted(false);
+    },
+    [resetSelection],
+  );
+
   const loadQuestion = useCallback(async () => {
     return fetchGeneratedQuestion({
       subjectId,
@@ -81,9 +90,7 @@ export function useQuestion({
         const nextQuestion = await loadQuestion();
 
         if (!cancelled) {
-          setQuestion(nextQuestion);
-          resetSelection();
-          setHasSubmitted(false);
+          applyLoadedQuestion(nextQuestion);
 
           // Keep one question ready in the background for smooth continue.
           void prefetchNextQuestion();
@@ -106,7 +113,7 @@ export function useQuestion({
     return () => {
       cancelled = true;
     };
-  }, [loadQuestion, prefetchNextQuestion, resetSelection]);
+  }, [applyLoadedQuestion, loadQuestion, prefetchNextQuestion]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -131,10 +138,8 @@ export function useQuestion({
     }
 
     if (prefetchedQuestion) {
-      setQuestion(prefetchedQuestion);
+      applyLoadedQuestion(prefetchedQuestion);
       setPrefetchedQuestion(null);
-      resetSelection();
-      setHasSubmitted(false);
       void prefetchNextQuestion();
       return;
     }
@@ -143,9 +148,7 @@ export function useQuestion({
 
     try {
       const nextQuestion = await loadQuestion();
-      setQuestion(nextQuestion);
-      resetSelection();
-      setHasSubmitted(false);
+      applyLoadedQuestion(nextQuestion);
       void prefetchNextQuestion();
     } catch (error) {
       toastError(
