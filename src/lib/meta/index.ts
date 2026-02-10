@@ -1,6 +1,6 @@
-export { SUBJECT_CATALOG } from "./subjects";
+export { SUBJECTS as SUBJECT_CATALOG, SUBJECT_CATALOGS } from "./subjects";
 export { SUBCATEGORY_CATALOG } from "./subcategories";
-export { DIFFICULTY_LEVELS, DIFFICULTY_OPTIONS } from "./difficulties";
+export { DIFFICULTIES as DIFFICULTY_OPTIONS } from "./difficulties";
 export {
   getOrderedSubcategories,
   getOrderedSubjects,
@@ -11,7 +11,6 @@ export type {
   QuestionType,
   SubcategoryEntry,
   SubcategoryOption,
-  SubjectEntry,
-  SubjectOption,
 } from "./types";
-export type { DifficultyLevel, DifficultyOption } from "./difficulties";
+export type { SubjectEnum as SubjectCatalog, SubjectType as SubjectOption } from "./subjects";
+export type { DifficultyEnum as DifficultyLevel, DifficultyType as DifficultyOption } from "./difficulties";

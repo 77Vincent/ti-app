@@ -1,15 +1,4 @@
-// Subject Options
-export type SubjectCatalog = "language";
-export type SubjectOption = {
-    id: SubjectCatalog;
-    label: string;
-};
-export const SUBJECT_CATALOGS = {
-    LANGUAGE: "language" as SubjectCatalog,
-}
-export type SubjectEntry = SubjectOption & {
-    order: number;
-};
+import type { SubjectEnum } from "./subjects";
 
 // Subcategory Options
 export type SubcategoryOption = {
@@ -17,7 +6,7 @@ export type SubcategoryOption = {
     label: string;
 };
 export type SubcategoryEntry = SubcategoryOption & {
-    subjectId: SubjectCatalog;
+    subjectId: SubjectEnum;
     order: number;
     questionTypesAllowed: QuestionType[];
 };

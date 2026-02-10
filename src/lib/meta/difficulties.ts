@@ -1,35 +1,27 @@
-export const DIFFICULTY_LEVELS = {
-    BEGINNER: "beginner" as DifficultyLevel,
-    INTERMEDIATE: "intermediate" as DifficultyLevel,
-    ADVANCED: "advanced" as DifficultyLevel,
-    EXPERT: "expert" as DifficultyLevel,
-};
-
-
-export type DifficultyLevel = "beginner" | "intermediate" | "advanced" | "expert";
-export type DifficultyOption = {
-    id: DifficultyLevel;
+export type DifficultyEnum = "beginner" | "intermediate" | "advanced" | "expert";
+export type DifficultyType = {
+    id: DifficultyEnum;
     label: string;
     order: number;
 };
-export const DIFFICULTY_OPTIONS: DifficultyOption[] = [
+export const DIFFICULTIES: DifficultyType[] = [
     {
-        id: DIFFICULTY_LEVELS.BEGINNER,
+        id: "beginner",
         label: "Beginner",
         order: 1,
     },
     {
-        id: DIFFICULTY_LEVELS.INTERMEDIATE,
+        id: "intermediate",
         label: "Intermediate",
         order: 2,
     },
     {
-        id: DIFFICULTY_LEVELS.ADVANCED,
+        id: "advanced",
         label: "Advanced",
         order: 3,
     },
     {
-        id: DIFFICULTY_LEVELS.EXPERT,
+        id: "expert",
         label: "Expert",
         order: 4,
     },

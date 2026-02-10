@@ -1,11 +1,14 @@
-import {
-  SUBJECT_CATALOGS,
-  type SubjectEntry,
-} from "./types";
+export type SubjectEnum = "language";
 
-export const SUBJECT_CATALOG: SubjectEntry[] = [
+export type SubjectType = {
+  id: SubjectEnum;
+  label: string;
+  order: number;
+};
+
+export const SUBJECTS: SubjectType[] = [
   {
-    id: SUBJECT_CATALOGS.LANGUAGE,
+    id: "language",
     label: "Language",
     order: 1,
   },
