@@ -1,4 +1,3 @@
-import { START_FORM_STEP_TITLES } from "./constants";
 import type { StartFormSelectionState, StartFormStep } from "./constants";
 
 export function getCurrentStartFormStep(
@@ -14,8 +13,4 @@ export function getCurrentStartFormStep(
     default:
       return "difficulty";
   }
-}
-
-export function getStartFormTitle(step: StartFormStep): string {
-  return START_FORM_STEP_TITLES[step];
 }

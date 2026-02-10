@@ -8,10 +8,10 @@ import {
 import type { DifficultyEnum } from "@/lib/meta";
 import { QuestionRunner } from "@/modules/questionRunner";
 import { useMemo, useState } from "react";
+import { START_FORM_STEP_TITLES } from "./constants";
 import type { StartFormStep } from "./constants";
 import {
   getCurrentStartFormStep,
-  getStartFormTitle,
 } from "./utils";
 import {
   INITIAL_START_FORM_STATE,
@@ -95,7 +95,9 @@ export default function StartForm() {
     <div className="card bg-base-100 shadow-sm">
       <div className="card-body">
         <div className="flex items-center justify-center">
-          <h1 className="text-2xl font-medium text-center">{getStartFormTitle(currentStep)}</h1>
+          <h1 className="text-2xl font-medium text-center">
+            {START_FORM_STEP_TITLES[currentStep]}
+          </h1>
         </div>
 
         <div className="flex flex-wrap gap-2">

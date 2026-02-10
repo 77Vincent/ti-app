@@ -1,17 +1,10 @@
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 
-function getCorrectOptionIds(question: QuestionType | null): QuestionOptionId[] {
-  if (!question) {
-    return [];
-  }
-  return question.correctOptionIds;
-}
-
 export function isOptionCorrect(
   question: QuestionType | null,
   optionId: QuestionOptionId,
 ): boolean {
-  return getCorrectOptionIds(question).includes(optionId);
+  return question ? question.correctOptionIds.includes(optionId) : false;
 }
 
 export function isOptionWrongSelection(
