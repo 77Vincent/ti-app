@@ -1,7 +1,16 @@
 import {
   QUESTION_TYPES,
-  type SubcategoryOption,
 } from "./types";
+import type { QuestionType } from "./types";
+import type { SubjectEnum } from "./subjects";
+
+export type SubcategoryOption = {
+  id: string;
+  label: string;
+  subjectId: SubjectEnum;
+  order: number;
+  questionTypesAllowed: QuestionType[];
+};
 
 export const SUBCATEGORY_CATALOG: SubcategoryOption[] = [
   {

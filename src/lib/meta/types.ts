@@ -1,14 +1,3 @@
-import type { SubjectEnum } from "./subjects";
-
-// Subcategory Options
-export type SubcategoryOption = {
-    id: string;
-    label: string;
-    subjectId: SubjectEnum;
-    order: number;
-    questionTypesAllowed: QuestionType[];
-};
-
 // Question Types
 export type QuestionType = "multiple_choice" | "multiple_answer";
 export const QUESTION_TYPES = {
