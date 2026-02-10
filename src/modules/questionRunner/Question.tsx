@@ -5,6 +5,7 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyLevel } from "@/lib/meta";
 import type { Question as QuestionType } from "./types";
 import { fetchGeneratedQuestion } from "./api";
+import { toastError } from "@/modules/toast/toastBus";
 
 type QuestionProps = {
   subjectId: string;
@@ -23,13 +24,11 @@ export default function Question({
     currentQuestion ?? null,
   );
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(!currentQuestion);
-  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentQuestion) {
       setQuestion(currentQuestion);
       setIsLoadingQuestion(false);
-      setLoadError(null);
       return;
     }
 
@@ -37,7 +36,6 @@ export default function Question({
 
     async function loadQuestion() {
       setIsLoadingQuestion(true);
-      setLoadError(null);
 
       try {
         const nextQuestion = await fetchGeneratedQuestion({
@@ -51,7 +49,7 @@ export default function Question({
         }
       } catch (error) {
         if (!cancelled) {
-          setLoadError(
+          toastError(
             error instanceof Error ? error.message : "Failed to load question.",
           );
         }
@@ -71,10 +69,6 @@ export default function Question({
 
   if (isLoadingQuestion) {
     return <QuestionSkeleton />;
-  }
-
-  if (loadError) {
-    return <p className="text-sm text-error">{loadError}</p>;
   }
 
   if (!question) {
