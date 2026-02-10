@@ -21,29 +21,30 @@ export default function QuestionRunner({
 }: QuestionRunnerProps) {
   return (
     <div className="my-auto space-y-4">
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body items-center text-center gap-2">
-          <h1 className="text-2xl font-medium">Question 1</h1>
-          <p className="text-base-content/70">
-            Your test has started. The first question is being prepared.
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-sm font-semibold">Question 1</h1>
+
+        <div className="flex flex-wrap gap-1.5">
+          <span className="badge badge-outline badge-primary">{subjectId}</span>
+          <span className="badge badge-outline badge-secondary">{subcategoryId}</span>
+          <span className="badge badge-outline badge-success">{difficulty}</span>
+          {
+            questionCount === INFINITE_QUESTION_COUNT
+              ? null
+              : <span className="badge badge-outline ">{questionCount} Q</span>
+          }
+          {
+            timeLimit === INFINITE_TIME_LIMIT_MINUTES
+              ? null
+              : <span className="badge badge-outline ">{timeLimit} min</span>
+          }
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <span className="badge badge-outline badge-primary">{subjectId}</span>
-        <span className="badge badge-outline badge-secondary">{subcategoryId}</span>
-        <span className="badge badge-outline badge-success">{difficulty}</span>
-        {
-          questionCount === INFINITE_QUESTION_COUNT
-            ? null
-            : <span className="badge badge-outline">{questionCount} questions</span>
-        }
-        {
-          timeLimit === INFINITE_TIME_LIMIT_MINUTES
-            ? null
-            : <span className="badge badge-outline">{timeLimit} minutes</span>
-        }
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body">
+          question content goes here
+        </div>
       </div>
     </div>
   );
