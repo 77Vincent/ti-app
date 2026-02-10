@@ -1,31 +1,70 @@
-import type { QuestionRunnerProps } from "./types";
-import Question from "./Question";
+"use client";
 
-export default function QuestionRunner({
+import QuestionSkeleton from "./QuestionSkeleton";
+import type { DifficultyLevel } from "@/lib/meta";
+import { useQuestion } from "./useQuestion";
+
+type QuestionProps = {
+  subjectId: string;
+  subcategoryId: string;
+  difficulty: DifficultyLevel;
+};
+
+export default function Question({
   subjectId,
   subcategoryId,
   difficulty,
-}: QuestionRunnerProps) {
+}: QuestionProps) {
+  const {
+    question,
+    isLoadingQuestion,
+    isSubmitting,
+    selectedOptionIds,
+    selectOption,
+    submit,
+  } = useQuestion({
+    subjectId,
+    subcategoryId,
+    difficulty,
+  });
+
+  if (isLoadingQuestion) {
+    return <QuestionSkeleton />;
+  }
+
+  if (!question) {
+    return null;
+  }
+
   return (
-    <div className="my-auto space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-base font-semibold">Question 1</h1>
+    <div className="space-y-4">
+      <p className="text-base">{question.prompt}</p>
+
+      <div className="space-y-2">
+        {question.options.map((option) => (
+          <button
+            className={`btn w-full justify-start ${
+              selectedOptionIds.includes(option.id) ? "btn-primary" : "btn-outline"
+            }`}
+            key={option.id}
+            onClick={() => selectOption(option.id)}
+            type="button"
+          >
+            <span className="font-mono">{option.id}.</span>
+            <span>{option.text}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="card card-border bg-base-100 shadow-sm">
-        <div className="card-body">
-          <Question
-            difficulty={difficulty}
-            subcategoryId={subcategoryId}
-            subjectId={subjectId}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5">
-        <span className="badge badge-outline badge-sm">{subjectId}</span>
-        <span className="badge badge-outline badge-sm">{subcategoryId}</span>
-        <span className="badge badge-outline badge-sm">{difficulty}</span>
+      <div className="flex justify-end">
+        <button
+          className={`btn btn-sm btn-primary ${isSubmitting ? "loading" : ""}`}
+          disabled={selectedOptionIds.length === 0 || isSubmitting}
+          onClick={submit}
+          type="button"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-export { default as QuestionRunner } from "./QuestionRunner";
+export { default as QuestionRunner } from "./QuestionWrapper";
 export type {
   MultipleAnswerQuestion,
   MultipleChoiceQuestion,
