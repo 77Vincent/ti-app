@@ -1,8 +1,9 @@
 "use client";
 
 import {
-  getOrderedSubcategories,
-  getOrderedSubjects,
+  sortByOrder,
+  SUBJECT_CATALOG,
+  SUBCATEGORY_CATALOG,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
 import { QuestionRunner } from "@/modules/questionRunner";
@@ -41,14 +42,18 @@ export default function StartForm() {
     selectedTimeLimit,
   } = state;
   const hasStarted = selectedTimeLimit !== null;
-  const subjects = useMemo(() => getOrderedSubjects(), []);
+  const subjects = useMemo(() => sortByOrder(SUBJECT_CATALOG), []);
 
   const subcategories = useMemo(() => {
     if (!selectedSubjectId) {
       return [];
     }
 
-    return getOrderedSubcategories(selectedSubjectId);
+    return sortByOrder(
+      SUBCATEGORY_CATALOG.filter(
+        (subcategory) => subcategory.subjectId === selectedSubjectId,
+      ),
+    );
   }, [selectedSubjectId]);
 
   const currentStep = getCurrentStartFormStep(state);

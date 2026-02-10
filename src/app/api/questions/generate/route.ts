@@ -1,7 +1,7 @@
 import {
   DIFFICULTY_OPTIONS,
-  getOrderedSubcategories,
-  getSubjectById,
+  SUBJECT_CATALOG,
+  SUBCATEGORY_CATALOG,
   QUESTION_TYPES,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
@@ -156,14 +156,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const subject = getSubjectById(input.subjectId);
+  const subject = SUBJECT_CATALOG.find((item) => item.id === input.subjectId);
 
   if (!subject) {
     return NextResponse.json({ error: "Invalid subjectId." }, { status: 400 });
   }
 
-  const subcategory = getOrderedSubcategories(input.subjectId).find(
-    (item) => item.id === input.subcategoryId,
+  const subcategory = SUBCATEGORY_CATALOG.find(
+    (item) =>
+      item.subjectId === input.subjectId && item.id === input.subcategoryId,
   );
 
   if (!subcategory) {
