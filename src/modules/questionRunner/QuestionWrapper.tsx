@@ -11,7 +11,7 @@ export default function QuestionRunner({
   onEndTest,
 }: QuestionRunnerProps) {
   return (
-    <div className="mx-auto my-auto max-w-2xl space-y-3">
+    <div className="w-full max-w-2xl space-y-3">
       <div className="flex flex-wrap items-center justify-end gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
           <Chip variant="bordered">

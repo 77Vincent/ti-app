@@ -18,10 +18,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
-          <main className="text-foreground bg-background">
+          <div className="bg-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
-            {main}
-          </main>
+            <main className="flex flex-1 flex-col px-4">{main}</main>
+          </div>
         </Providers>
       </body>
     </html>

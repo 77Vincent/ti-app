@@ -28,5 +28,9 @@ export default function TestPage() {
     return null;
   }
 
-  return <StartForm />;
+  return (
+    <section className="flex flex-1 items-center justify-center">
+      <StartForm />
+    </section>
+  );
 }

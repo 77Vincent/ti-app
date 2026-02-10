@@ -35,11 +35,13 @@ export default function TestRunPage() {
   }
 
   return (
-    <QuestionRunner
-      difficulty={params.difficulty}
-      onEndTest={handleEndTest}
-      subcategoryId={params.subcategoryId}
-      subjectId={params.subjectId}
-    />
+    <section className="flex flex-1 items-center justify-center">
+      <QuestionRunner
+        difficulty={params.difficulty}
+        onEndTest={handleEndTest}
+        subcategoryId={params.subcategoryId}
+        subjectId={params.subjectId}
+      />
+    </section>
   );
 }
