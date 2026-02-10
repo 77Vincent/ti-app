@@ -7,9 +7,14 @@ export default function QuestionRunner({
   difficulty,
 }: QuestionRunnerProps) {
   return (
-    <div className="my-auto max-w-2xl space-y-4">
+    <div className="my-auto mx-auto max-w-2xl space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-base font-semibold">Question 1</h1>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="badge badge-outline badge-sm">{subjectId}</span>
+          <span className="badge badge-outline badge-sm">{subcategoryId}</span>
+          <span className="badge badge-outline badge-sm">{difficulty}</span>
+        </div>
       </div>
 
       <div className="card card-border bg-base-100 shadow-sm">
@@ -20,12 +25,6 @@ export default function QuestionRunner({
             subjectId={subjectId}
           />
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5">
-        <span className="badge badge-outline badge-sm">{subjectId}</span>
-        <span className="badge badge-outline badge-sm">{subcategoryId}</span>
-        <span className="badge badge-outline badge-sm">{difficulty}</span>
       </div>
     </div>
   );
