@@ -34,11 +34,11 @@ export const TIME_LIMIT_OPTIONS: Array<{
 ];
 
 export const START_FORM_STEP_TITLES = {
-  subject: "Choose the subject of your test",
-  subcategory: "Choose the subcategory",
-  difficulty: "Choose the difficulty",
-  questionCount: "Choose the number of questions",
-  timeLimit: "Choose the time limit of the test",
+  subject: "Subject of your test",
+  subcategory: "Subcategory of your test",
+  difficulty: "Difficulty",
+  questionCount: "Number of questions",
+  timeLimit: "Time limit",
 } as const;
 
 export type StartFormStep = keyof typeof START_FORM_STEP_TITLES;
