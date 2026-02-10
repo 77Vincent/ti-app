@@ -6,14 +6,14 @@ export default function StartForm() {
       <h1 className="text-2xl font-medium text-center">
         Choose the subject of your test
       </h1>
-      <div className="flex flex-wrap justify-center gap-2">
+
+      <div className="">
         {SUBJECT_CATALOG.map((subject) => (
-          <span
+          <div className="badge badge-lg badge-primary"
             key={subject.id}
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm"
           >
             {subject.label}
-          </span>
+          </div>
         ))}
       </div>
     </section>
