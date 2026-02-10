@@ -1,5 +1,5 @@
-import TestStartForm from "../features/test/TestStartForm";
+import {StartForm} from "../features/startForm";
 
 export default function Home() {
-  return <TestStartForm />;
+  return <StartForm />;
 }
