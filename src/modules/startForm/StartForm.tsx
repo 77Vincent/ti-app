@@ -94,13 +94,13 @@ export default function StartForm() {
 
   return (
     <Card className="mx-auto max-w-xl">
-      <CardHeader className="justify-center pt-6 pb-2">
-        <h1 className="text-center text-2xl font-medium">
+      <CardHeader>
+        <h1 className="mx-auto text-2xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}
         </h1>
       </CardHeader>
 
-      <CardBody className="pb-6">
+      <CardBody>
         <div className="flex flex-wrap gap-2">
           {currentStepViewConfig.options.map((option) => (
             <Button
