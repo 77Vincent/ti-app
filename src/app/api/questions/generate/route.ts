@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { generateQuestion } from "./generator";
 import { parseGenerateQuestionRequest } from "./validation";
 
 export async function POST(request: Request) {
@@ -20,7 +19,23 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = {}
+  const result = {
+    ok: true,
+    question: {
+      id: "q1",
+      type: "multiple_choice",
+      prompt: "What is the capital of France?",
+      options: [
+        { id: "o1", text: "Berlin" },
+        { id: "o2", text: "Madrid" },
+        { id: "o3", text: "Paris" },
+        { id: "o4", text: "Rome" },
+      ],
+      correctOptionId: "o3",
+    },
+    error: null,
+    status: 200,
+  }
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: result.status });
