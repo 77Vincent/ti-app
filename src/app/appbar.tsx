@@ -1,6 +1,12 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import {
+  Button,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+} from "@heroui/react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -14,23 +20,29 @@ export default function AppBar() {
   }
 
   return (
-    <header className="flex items-center justify-between p-4">
-      <Image src="/logo.svg" alt="QuizMaster Logo" width={48} height={40} />
+    <Navbar height={60} maxWidth="full" position="sticky">
+      <NavbarBrand>
+        <Image src="/logo.svg" alt="QuizMaster Logo" width={48} height={40} />
+      </NavbarBrand>
 
-      <Button
-        aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-        isIconOnly
-        onPress={handleToggleTheme}
-        radius="full"
-        variant="bordered"
-        size="sm"
-      >
-        {isDark ? (
-          <Sun aria-hidden="true" size={18} />
-        ) : (
-          <Moon aria-hidden="true" size={18} />
-        )}
-      </Button>
-    </header>
+      <NavbarContent justify="end">
+        <NavbarItem>
+          <Button
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            isIconOnly
+            onPress={handleToggleTheme}
+            radius="full"
+            size="sm"
+            variant="bordered"
+          >
+            {isDark ? (
+              <Sun aria-hidden="true" size={18} />
+            ) : (
+              <Moon aria-hidden="true" size={18} />
+            )}
+          </Button>
+        </NavbarItem>
+      </NavbarContent>
+    </Navbar>
   );
 }
