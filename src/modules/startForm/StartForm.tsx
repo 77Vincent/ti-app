@@ -6,6 +6,7 @@ import {
   getOrderedSubjects,
 } from "@/lib/meta";
 import type { DifficultyLevel } from "@/lib/meta";
+import { ArrowLeft } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export default function StartForm() {
@@ -27,6 +28,7 @@ export default function StartForm() {
   const isSubjectStep = !selectedSubjectId;
   const isSubcategoryStep = !!selectedSubjectId && !selectedSubcategoryId;
   const isDifficultyStep = !!selectedSubjectId && !!selectedSubcategoryId;
+  const canGoBack = !isSubjectStep;
 
   const handleSelectSubject = (subjectId: string) => {
     setSelectedSubjectId(subjectId);
@@ -39,14 +41,41 @@ export default function StartForm() {
     setSelectedDifficulty(null);
   };
 
+  const handleGoBack = () => {
+    if (isDifficultyStep) {
+      setSelectedSubcategoryId(null);
+      setSelectedDifficulty(null);
+      return;
+    }
+
+    if (isSubcategoryStep) {
+      setSelectedSubjectId(null);
+      setSelectedSubcategoryId(null);
+      setSelectedDifficulty(null);
+    }
+  };
+
   return (
     <div className="card bg-base-100 shadow-sm my-auto">
       <div className="card-body">
-        <h1 className="text-2xl font-medium text-center">
-          {isSubjectStep && "Choose the subject of your test"}
-          {isSubcategoryStep && "Choose the subcategory"}
-          {isDifficultyStep && "Choose the difficulty"}
-        </h1>
+        <div className="relative flex items-center justify-center">
+          {canGoBack && (
+            <button
+              aria-label="Go back"
+              className="btn btn-ghost btn-circle btn-sm absolute left-0"
+              onClick={handleGoBack}
+              type="button"
+            >
+              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            </button>
+          )}
+
+          <h1 className="text-2xl font-medium text-center">
+            {isSubjectStep && "Choose the subject of your test"}
+            {isSubcategoryStep && "Choose the subcategory"}
+            {isDifficultyStep && "Choose the difficulty"}
+          </h1>
+        </div>
 
         <div className="flex flex-wrap gap-2">
           {isSubjectStep &&
