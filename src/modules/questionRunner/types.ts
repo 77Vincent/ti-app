@@ -18,7 +18,7 @@ export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
 export type QuestionOption = {
   id: QuestionOptionId;
   text: string;
-  explanation?: string;
+  explanation: string;
 };
 
 type BaseQuestion = {

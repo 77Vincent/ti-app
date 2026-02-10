@@ -22,14 +22,14 @@ export async function POST(request: Request) {
   }
 
   const question: Question = {
-    id: "q1",
+    id: Math.random().toString(36).substring(2, 10),
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-    prompt: "What is the capital of France?",
+    prompt: Math.random().toString(36).substring(2, 10) + ": What is the capital of France?",
     options: [
-      { id: "A", text: "Berlin" },
-      { id: "B", text: "Madrid" },
-      { id: "C", text: "Paris" },
-      { id: "D", text: "Rome" },
+      { id: "A", text: "Berlin", explanation: Math.random().toString(36).substring(2, 10) + " is incorrect." },
+      { id: "B", text: "Madrid", explanation: Math.random().toString(36).substring(2, 10) + " is incorrect." },
+      { id: "C", text: "Paris", explanation: Math.random().toString(36).substring(2, 10) + " is correct." },
+      { id: "D", text: "Rome", explanation: Math.random().toString(36).substring(2, 10) + " is incorrect." },
     ],
     correctOptionId: "C",
   };

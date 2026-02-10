@@ -7,7 +7,7 @@ export default function QuestionRunner({
   difficulty,
 }: QuestionRunnerProps) {
   return (
-    <div className="my-auto space-y-4">
+    <div className="my-auto max-w-2xl space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-base font-semibold">Question 1</h1>
       </div>
