@@ -12,7 +12,7 @@ export type SubcategoryOption = {
   questionTypesAllowed: QuestionType[];
 };
 
-export const SUBCATEGORY_CATALOG: SubcategoryOption[] = [
+export const SUBCATEGORIES: SubcategoryOption[] = [
   {
     id: "english",
     label: "English",
