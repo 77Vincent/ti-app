@@ -25,7 +25,9 @@ export default function RootLayout({
         >
           <AppBar />
           <ToastHost />
-          {main}
+          <main>
+            {main}
+          </main>
         </ThemeProvider>
       </body>
     </html>
