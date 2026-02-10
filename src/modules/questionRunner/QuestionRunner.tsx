@@ -58,7 +58,7 @@ export default function Question({
                     ? "btn-primary"
                     : "btn-outline"
               }`}
-              disabled={hasSubmitted || isSubmitting}
+              disabled={isSubmitting}
               onClick={() => selectOption(option.id)}
               type="button"
             >
@@ -66,8 +66,8 @@ export default function Question({
               <span>{option.text}</span>
             </button>
 
-            {hasSubmitted && isOptionCorrect(option.id) ? (
-              <p className="text-xs opacity-80">{option.explanation}</p>
+            {hasSubmitted ? (
+              <p className="text-sm">{option.explanation}</p>
             ) : null}
           </div>
         ))}
@@ -80,7 +80,7 @@ export default function Question({
           onClick={submit}
           type="button"
         >
-          {hasSubmitted ? "Continue" : "Submit"}
+          {hasSubmitted ? "Next" : "Submit"}
         </button>
       </div>
     </div>
