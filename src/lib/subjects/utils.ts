@@ -1,4 +1,4 @@
-import { SUBJECT_CATALOG } from "./data";
+import { SUBJECT_CATALOG } from "./subjects";
 import type { SubcategoryEntry, SubjectEntry } from "./types";
 
 function sortByOrder<T extends { order: number }>(entries: T[]): T[] {
