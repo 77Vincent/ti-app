@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ToastHost from "@/modules/toast/ToastHost";
 import Image from "next/image";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

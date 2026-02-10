@@ -3,6 +3,7 @@
 import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyLevel } from "@/lib/meta";
 import { useQuestion } from "./hooks/useQuestion";
+import QuestionPrompt from "./QuestionPrompt";
 
 type QuestionProps = {
   subjectId: string;
@@ -41,7 +42,7 @@ export default function Question({
 
   return (
     <div className="space-y-4">
-      <p className="text-base">{question.prompt}</p>
+      <QuestionPrompt markdown={question.prompt} />
 
       <div className="space-y-2">
         {question.options.map((option) => (
