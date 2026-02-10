@@ -6,6 +6,7 @@ import {
   SUBCATEGORIES,
 } from "@/lib/meta";
 import type { DifficultyEnum } from "@/lib/meta";
+import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { QuestionRunner } from "@/modules/questionRunner";
 import { useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
@@ -92,26 +93,31 @@ export default function StartForm() {
   }
 
   return (
-    <div className="mx-auto max-w-xl card bg-base-100 shadow-sm">
-      <div className="card-body items-center space-y-6">
-        <h1 className="text-2xl font-medium text-center">
+    <Card className="mx-auto max-w-xl">
+      <CardHeader className="justify-center pt-6 pb-2">
+        <h1 className="text-center text-2xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}
         </h1>
+      </CardHeader>
 
+      <CardBody className="pb-6">
         <div className="flex flex-wrap gap-2">
           {currentStepViewConfig.options.map((option) => (
-            <button
-              className={`btn ${currentStepViewConfig.buttonClassName} btn-outline btn ${currentStepViewConfig.selectedValue === option.value ? "btn-active" : ""
-                }`}
+            <Button
+              color={currentStepViewConfig.buttonColor}
               key={option.value}
-              onClick={() => onSelectByStep[currentStep](option.value)}
-              type="button"
+              onPress={() => onSelectByStep[currentStep](option.value)}
+              variant={
+                currentStepViewConfig.selectedValue === option.value
+                  ? "solid"
+                  : "bordered"
+              }
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }

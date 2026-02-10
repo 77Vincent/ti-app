@@ -3,7 +3,7 @@ import ToastHost from "@/modules/toast/ToastHost";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import AppBar from "./appbar";
-import { ThemeProvider } from "next-themes";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "It",
@@ -17,18 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased min-h-screen bg-base-200 text-base-content">
-        <ThemeProvider
-          attribute="data-theme"
-          defaultTheme="system"
-          enableSystem
-        >
-          <AppBar />
-          <ToastHost />
-          <main>
+      <body className="antialiased">
+        <Providers>
+          <main className="text-foreground bg-background">
+            <AppBar />
+            <ToastHost />
             {main}
           </main>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

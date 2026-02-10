@@ -3,6 +3,7 @@
 import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
+import { Button } from "@heroui/react";
 import { useQuestion } from "./hooks/useQuestion";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
@@ -59,19 +60,19 @@ export default function Question({
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-base-content/50">
+        <p className="text-default-500">
           Select {question.correctOptionIds.length}{" "}
           {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
         </p>
 
-        <button
-          className={`btn btn-sm btn-primary ${isSubmitting ? "loading" : ""}`}
-          disabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
-          onClick={submit}
-          type="button"
+        <Button
+          color="primary"
+          isDisabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
+          isLoading={isSubmitting}
+          onPress={submit}
         >
           {hasSubmitted ? "Next" : "Submit"}
-        </button>
+        </Button>
       </div>
     </div>
   );

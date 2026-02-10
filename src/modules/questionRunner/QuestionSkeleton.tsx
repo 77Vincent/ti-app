@@ -1,13 +1,15 @@
+import { Skeleton } from "@heroui/react";
+
 export default function QuestionSkeleton() {
-    return (
-        <div className="space-y-3">
-            <div className="skeleton h-12 w-full" />
-            <div className="pt-2 space-y-3">
-                <div className="skeleton h-8 w-full" />
-                <div className="skeleton h-8 w-full" />
-                <div className="skeleton h-8 w-full" />
-                <div className="skeleton h-8 w-full" />
-            </div>
-        </div>
-    )
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-12 w-full rounded-md" />
+      <div className="space-y-3 pt-2">
+        <Skeleton className="h-8 w-full rounded-md" />
+        <Skeleton className="h-8 w-full rounded-md" />
+        <Skeleton className="h-8 w-full rounded-md" />
+        <Skeleton className="h-8 w-full rounded-md" />
+      </div>
+    </div>
+  );
 }

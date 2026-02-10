@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardBody } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
 import {
   subscribeToast,
@@ -9,14 +10,14 @@ import {
 
 const TOAST_DURATION_MS = 4000;
 
-function getAlertClassName(variant: ToastVariant): string {
+function getToastClassName(variant: ToastVariant): string {
   switch (variant) {
     case "error":
-      return "alert-error";
+      return "border-danger-300 bg-danger-50 text-danger-700";
     case "success":
-      return "alert-success";
+      return "border-success-300 bg-success-50 text-success-700";
     default:
-      return "alert-info";
+      return "border-primary-300 bg-primary-50 text-primary-700";
   }
 }
 
@@ -53,15 +54,17 @@ export default function ToastHost() {
   }
 
   return (
-    <div className="toast toast-top toast-center z-50">
+    <div className="fixed top-4 left-1/2 z-50 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
       {visibleToasts.map((toast) => (
-        <div
-          className={`alert ${getAlertClassName(toast.variant)}`}
+        <Card
+          className={`border-medium ${getToastClassName(toast.variant)}`}
           key={toast.id}
           role="alert"
         >
-          <span>{toast.message}</span>
-        </div>
+          <CardBody className="px-4 py-3 text-sm">
+            {toast.message}
+          </CardBody>
+        </Card>
       ))}
     </div>
   );

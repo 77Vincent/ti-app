@@ -1,3 +1,4 @@
+import type { ButtonProps } from "@heroui/react";
 import { DIFFICULTIES } from "@/lib/meta";
 import type { DifficultyEnum } from "@/lib/meta";
 import type { StartFormStep } from "./constants";
@@ -15,7 +16,7 @@ export type StepOption = {
 };
 
 export type StartFormStepViewConfig = {
-  buttonClassName: string;
+  buttonColor: ButtonProps["color"];
   selectedValue: StepOptionValue | null;
   options: StepOption[];
 };
@@ -49,17 +50,17 @@ export function buildCurrentStepViewConfig(
 
   const stepConfigByStep: Record<StartFormStep, StartFormStepViewConfig> = {
     subject: {
-      buttonClassName: "btn-primary",
+      buttonColor: "primary",
       selectedValue: input.selectedSubjectId,
       options: stepOptionsByStep.subject,
     },
     subcategory: {
-      buttonClassName: "btn-secondary",
+      buttonColor: "secondary",
       selectedValue: input.selectedSubcategoryId,
       options: stepOptionsByStep.subcategory,
     },
     difficulty: {
-      buttonClassName: "btn-accent",
+      buttonColor: "warning",
       selectedValue: input.selectedDifficulty,
       options: stepOptionsByStep.difficulty,
     },

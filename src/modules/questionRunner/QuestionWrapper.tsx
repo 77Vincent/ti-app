@@ -1,4 +1,5 @@
 import type { QuestionRunnerProps } from "./types";
+import { Card, CardBody, Chip } from "@heroui/react";
 import Question from "./QuestionRunner";
 
 export default function QuestionRunner({
@@ -7,25 +8,31 @@ export default function QuestionRunner({
   difficulty,
 }: QuestionRunnerProps) {
   return (
-    <div className="my-auto mx-auto max-w-2xl space-y-2">
+    <div className="mx-auto my-auto max-w-2xl space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-base font-semibold">Question 1</h1>
         <div className="flex flex-wrap gap-1.5">
-          <span className="badge badge-outline badge-sm">{subjectId}</span>
-          <span className="badge badge-outline badge-sm">{subcategoryId}</span>
-          <span className="badge badge-outline badge-sm">{difficulty}</span>
+          <Chip size="sm" variant="bordered">
+            {subjectId}
+          </Chip>
+          <Chip size="sm" variant="bordered">
+            {subcategoryId}
+          </Chip>
+          <Chip size="sm" variant="bordered">
+            {difficulty}
+          </Chip>
         </div>
       </div>
 
-      <div className="card card-border bg-base-100 shadow-sm">
-        <div className="card-body">
+      <Card>
+        <CardBody className="p-6">
           <Question
             difficulty={difficulty}
             subcategoryId={subcategoryId}
             subjectId={subjectId}
           />
-        </div>
-      </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

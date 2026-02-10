@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardBody } from "@heroui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -50,29 +51,33 @@ export default function QuestionChoice({
         : "border-emerald-500 bg-emerald-50 text-emerald-900"
       : isWrongSelection
         ? "border-red-500 bg-red-50 text-red-900"
-        : "border-base-300 bg-base-100 text-base-content"
+        : "border-default-300 bg-default-50 text-foreground"
     : isSelected
-      ? "border-primary bg-primary/10 text-base-content"
-      : "border-base-300 bg-base-100 text-base-content hover:bg-base-200";
+      ? "border-primary bg-primary-50 text-foreground"
+      : "border-default-300 bg-background text-foreground";
 
   return (
     <div className="space-y-1">
-      <button
-        className={`w-full cursor-pointer rounded-lg border px-4 py-2 text-left font-normal leading-relaxed transition-colors ${containerClassName}`}
-        disabled={isSubmitting}
-        onClick={onSelect}
-        type="button"
+      <Card
+        className={`border-medium ${containerClassName}`}
+        isDisabled={isSubmitting || hasSubmitted}
+        isPressable={!hasSubmitted}
+        onPress={onSelect}
       >
-        <span className="font-mono">{option.id}. </span>
-        <span>{renderInlineMarkdown(option.text)}</span>
-      </button>
+        <CardBody className="px-4 py-3 text-left leading-relaxed">
+          <span className="font-mono">{option.id}. </span>
+          <span>{renderInlineMarkdown(option.text)}</span>
+        </CardBody>
+      </Card>
 
       {hasSubmitted ? (
-        <div className="text-sm border border-base-300 rounded-lg px-4 py-2 bg-base-200 leading-relaxed">
+        <Card className="border-default-200 bg-default-100" radius="sm">
+          <CardBody className="px-4 py-2 text-sm leading-relaxed">
           <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
             {option.explanation}
           </ReactMarkdown>
-        </div>
+          </CardBody>
+        </Card>
       ) : null}
     </div>
   );
