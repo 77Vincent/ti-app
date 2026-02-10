@@ -1,23 +1,10 @@
-import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("@heroui/react", () => {
-  return {
-    Chip: ({
-      children,
-      ...props
-    }: {
-      children?: ReactNode;
-      [key: string]: unknown;
-    }) => <div {...props}>{children}</div>,
-  };
-});
+import { describe, expect, it } from "vitest";
 
 import StartForm from "./StartForm";
 
 describe("StartForm", () => {
-  it("renders the title", () => {
+  it("renders the title and available subjects", () => {
     const markup = renderToStaticMarkup(<StartForm />);
 
     expect(markup).toContain("Choose the subject of your test");
