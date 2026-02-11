@@ -8,19 +8,21 @@ import {
 } from "@/app/auth/signIn";
 
 export default function SignInPage() {
-  function handleGoogleSignIn() {
-    void signIn(GOOGLE_PROVIDER_ID, {
-      callbackUrl: POST_SIGN_IN_CALLBACK_PATH,
-    });
-  }
-
   return (
     <section className="flex justify-center">
       <Card shadow="sm" className="w-full max-w-md">
         <CardBody className="gap-4 p-8 text-center">
           <h1 className="text-2xl font-semibold">Sign in to Ti</h1>
           <p className="font-light text-default-500">Learning while testing</p>
-          <Button color="primary" fullWidth onPress={handleGoogleSignIn}>
+          <Button
+            color="primary"
+            fullWidth
+            onPress={() => {
+              void signIn(GOOGLE_PROVIDER_ID, {
+                callbackUrl: POST_SIGN_IN_CALLBACK_PATH,
+              });
+            }}
+          >
             Continue with Google
           </Button>
         </CardBody>

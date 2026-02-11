@@ -19,13 +19,12 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { type Key, useEffect, useState } from "react";
-import { SIGN_IN_PAGE_PATH } from "./auth/signIn";
+import { POST_SIGN_IN_CALLBACK_PATH, SIGN_IN_PAGE_PATH } from "./auth/signIn";
 import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
 import { clearTestSession } from "./test/run/questionRunner/session";
-
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -55,24 +54,26 @@ export default function AppBar() {
     setTheme(isDark ? "light" : "dark");
   }
 
+  function clearSessionThen(action: () => void) {
+    void clearTestSession()
+      .catch(() => undefined)
+      .finally(action);
+  }
+
   function handleUserMenuAction(key: Key) {
     if (key === USER_MENU_LOGOUT_KEY) {
-      void clearTestSession()
-        .catch(() => undefined)
-        .finally(() => {
-          void signOut({
-            callbackUrl: "/test",
-          });
+      clearSessionThen(() => {
+        void signOut({
+          callbackUrl: POST_SIGN_IN_CALLBACK_PATH,
         });
+      });
     }
   }
 
   function handleSignIn() {
-    void clearTestSession()
-      .catch(() => undefined)
-      .finally(() => {
-        window.location.assign(SIGN_IN_PAGE_PATH);
-      });
+    clearSessionThen(() => {
+      window.location.assign(SIGN_IN_PAGE_PATH);
+    });
   }
 
   return (
