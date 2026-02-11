@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps } from "./types";
-import { Button, Card, CardBody, Chip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -11,7 +11,7 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { Timer } from "lucide-react";
+import { LogOut, Timer } from "lucide-react";
 import { createElement, useEffect, useState } from "react";
 import Question from "./QuestionRunner";
 import { formatElapsedTime } from "./utils/timer";
@@ -51,19 +51,24 @@ export default function QuestionRunner({
 
   return (
     <div className="w-full max-w-2xl space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <p className="inline-flex items-center gap-1.5 text-sm text-default-500 tabular-nums">
-          <Timer aria-hidden size={14} />
+      <div className="flex items-center justify-between gap-2">
+        <p className="inline-flex items-center gap-1.5 text-sm tabular-nums">
+          <Timer aria-hidden size={16} />
           {elapsedLabel}
         </p>
-        <Button
-          aria-label="Quit test"
-          onPress={onEndTest}
-          size="sm"
-          variant="light"
-        >
-          End Test
-        </Button>
+
+        <Tooltip content="Quit test">
+          <Button
+            aria-label="Quit test"
+            onPress={onEndTest}
+            size="sm"
+            isIconOnly
+            radius="full"
+            variant="light"
+          >
+            <LogOut aria-hidden size={16} />
+          </Button>
+        </Tooltip>
       </div>
 
       <Card shadow="sm">
