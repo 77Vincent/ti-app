@@ -105,8 +105,8 @@ export default function StartForm() {
         </h1>
       </CardHeader>
 
-      <CardBody className="p-6">
-        <div className="flex flex-wrap gap-2">
+      <CardBody className="p-6 pt-2">
+        <div className="flex flex-wrap gap-2 items-center justify-center">
           {currentStepViewConfig.options.map((option) => (
             <Button
               color={currentStepViewConfig.buttonColor}
