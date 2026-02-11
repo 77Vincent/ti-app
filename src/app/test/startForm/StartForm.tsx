@@ -109,7 +109,6 @@ export default function StartForm() {
         <div className="flex flex-wrap gap-2 items-center justify-center">
           {currentStepViewConfig.options.map((option) => (
             <Button
-              color={currentStepViewConfig.buttonColor}
               key={option.value}
               onPress={() => onSelectByStep[currentStep](option.value)}
               variant={
