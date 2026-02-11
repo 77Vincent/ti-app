@@ -14,6 +14,10 @@ export type TestRunParams = {
   goal: GoalEnum;
 };
 
+export type TestRunSession = TestRunParams & {
+  startedAtMs: number;
+};
+
 export function parseTestRunParams(value: unknown): TestRunParams | null {
   if (!value || typeof value !== "object") {
     return null;
@@ -50,5 +54,30 @@ export function parseTestRunParams(value: unknown): TestRunParams | null {
     subcategoryId,
     difficulty: difficulty as DifficultyEnum,
     goal: goal as GoalEnum,
+  };
+}
+
+export function parseTestRunSession(value: unknown): TestRunSession | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const params = parseTestRunParams(value);
+  if (!params) {
+    return null;
+  }
+
+  const startedAtMs = (value as { startedAtMs?: unknown }).startedAtMs;
+  if (
+    typeof startedAtMs !== "number" ||
+    !Number.isFinite(startedAtMs) ||
+    startedAtMs <= 0
+  ) {
+    return null;
+  }
+
+  return {
+    ...params,
+    startedAtMs: Math.floor(startedAtMs),
   };
 }

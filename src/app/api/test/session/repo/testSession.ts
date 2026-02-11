@@ -8,6 +8,7 @@ export type UserTestSessionWhere = {
 const TEST_RUN_PARAMS_SELECT = {
   difficulty: true,
   goal: true,
+  updatedAt: true,
   subjectId: true,
   subcategoryId: true,
 } as const;
@@ -17,6 +18,7 @@ export async function readTestSession(
 ): Promise<{
   difficulty: string;
   goal: string;
+  updatedAt: Date;
   subjectId: string;
   subcategoryId: string;
 } | null> {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   parseTestRunParams,
-  type TestRunParams,
+  type TestRunSession,
 } from "@/app/test/run/questionRunner/session/params";
 import {
   clearAnonymousTestSessionCookie,
@@ -19,14 +19,25 @@ export const runtime = "nodejs";
 
 async function readActiveSession(
   userId: string | null,
-): Promise<TestRunParams | null> {
+): Promise<TestRunSession | null> {
   if (!userId) {
     return readAnonymousTestSessionCookie();
   }
 
   const session = await readTestSession({ userId });
+  if (!session) {
+    return null;
+  }
 
-  return parseTestRunParams(session);
+  const params = parseTestRunParams(session);
+  if (!params) {
+    return null;
+  }
+
+  return {
+    ...params,
+    startedAtMs: session.updatedAt.getTime(),
+  };
 }
 
 export async function GET() {
@@ -58,11 +69,15 @@ export async function POST(request: Request) {
 
   const userId = await readAuthenticatedUserId();
   const response = NextResponse.json({ ok: true });
+  const startedAtMs = Date.now();
 
   if (userId) {
     await upsertTestSession({ userId }, params);
   } else {
-    persistAnonymousTestSessionCookie(response, params);
+    persistAnonymousTestSessionCookie(response, {
+      ...params,
+      startedAtMs,
+    });
   }
 
   return response;

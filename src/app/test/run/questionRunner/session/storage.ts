@@ -1,6 +1,7 @@
 import {
-  parseTestRunParams,
+  parseTestRunSession,
   type TestRunParams,
+  type TestRunSession,
 } from "./params";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 
@@ -17,12 +18,12 @@ type SessionRequestOptions = {
   method: "GET" | "POST" | "DELETE";
 };
 
-function parseSessionFromResponse(payload: unknown): TestRunParams | null {
+function parseSessionFromResponse(payload: unknown): TestRunSession | null {
   if (!payload || typeof payload !== "object") {
     return null;
   }
 
-  return parseTestRunParams((payload as TestSessionResponse).session);
+  return parseTestRunSession((payload as TestSessionResponse).session);
 }
 
 async function requestSession(
@@ -54,7 +55,7 @@ async function requestSession(
   }
 }
 
-export async function readTestSession(): Promise<TestRunParams | null> {
+export async function readTestSession(): Promise<TestRunSession | null> {
   const payload = await requestSession({
     cache: "no-store",
     method: "GET",

@@ -11,16 +11,22 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { createElement } from "react";
+import { Timer } from "lucide-react";
+import { createElement, useEffect, useState } from "react";
 import Question from "./QuestionRunner";
+import { formatElapsedTime } from "./utils/timer";
 
 export default function QuestionRunner({
   subjectId,
   subcategoryId,
   difficulty,
   goal,
+  startedAtMs,
   onEndTest,
 }: QuestionRunnerProps) {
+  const [elapsedSeconds, setElapsedSeconds] = useState(() =>
+    Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000)),
+  );
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
   const GoalIcon = getGoalIcon(goal);
@@ -28,10 +34,28 @@ export default function QuestionRunner({
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
   const difficultyLabel = getDifficultyLabel(difficulty);
   const goalLabel = getGoalLabel(goal);
+  const elapsedLabel = formatElapsedTime(elapsedSeconds);
+
+  useEffect(() => {
+    const getElapsedSeconds = () =>
+      Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000));
+
+    const timer = setInterval(() => {
+      setElapsedSeconds(getElapsedSeconds());
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [startedAtMs]);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
+        <p className="inline-flex items-center gap-1.5 text-sm text-default-500 tabular-nums">
+          <Timer aria-hidden size={14} />
+          {elapsedLabel}
+        </p>
         <Button
           aria-label="Quit test"
           onPress={onEndTest}

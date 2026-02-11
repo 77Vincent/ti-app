@@ -11,6 +11,7 @@ export type TestMeta = {
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
+  startedAtMs: number;
 };
 
 export type TestRunnerActions = {

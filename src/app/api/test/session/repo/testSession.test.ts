@@ -34,6 +34,7 @@ describe("test session repo", () => {
     testSessionFindUnique.mockResolvedValueOnce({
       difficulty: "beginner",
       goal: "study",
+      updatedAt: new Date("2026-02-11T10:00:00.000Z"),
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -41,6 +42,7 @@ describe("test session repo", () => {
     await expect(readTestSession({ userId: "user-1" })).resolves.toEqual({
       difficulty: "beginner",
       goal: "study",
+      updatedAt: new Date("2026-02-11T10:00:00.000Z"),
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -49,6 +51,7 @@ describe("test session repo", () => {
       select: {
         difficulty: true,
         goal: true,
+        updatedAt: true,
         subjectId: true,
         subcategoryId: true,
       },
