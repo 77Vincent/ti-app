@@ -41,7 +41,7 @@ export default function Question({
   if (isSignInRequired) {
     return (
       <div className="relative">
-        <QuestionSkeleton />
+        <QuestionSkeleton className="opacity-70 blur-sm" />
         <div className="absolute inset-0 flex items-center justify-center">
           <Button as={Link} color="primary" href={SIGN_IN_PAGE_PATH} size="lg">
             Sign in to continue
