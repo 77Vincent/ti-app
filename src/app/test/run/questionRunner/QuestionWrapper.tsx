@@ -57,16 +57,16 @@ export default function QuestionRunner({
           {elapsedLabel}
         </p>
 
-        <Tooltip content="Quit test">
+        <Tooltip content="End test">
           <Button
-            aria-label="Quit test"
+            aria-label="End test"
             onPress={onEndTest}
             size="sm"
             isIconOnly
             radius="full"
             variant="light"
           >
-            <LogOut aria-hidden size={16} />
+            <LogOut aria-hidden size={18} />
           </Button>
         </Tooltip>
       </div>
