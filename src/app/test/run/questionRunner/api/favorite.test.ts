@@ -1,4 +1,5 @@
 import { QUESTION_TYPES } from "@/lib/meta";
+import { API_PATHS } from "@/lib/config/paths";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   addFavoriteQuestion,
@@ -38,7 +39,7 @@ describe("addFavoriteQuestion", () => {
 
     await addFavoriteQuestion(VALID_INPUT);
 
-    expect(fetchSpy).toHaveBeenCalledWith("/api/questions/favorite", {
+    expect(fetchSpy).toHaveBeenCalledWith(API_PATHS.QUESTIONS_FAVORITE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -78,7 +79,7 @@ describe("removeFavoriteQuestion", () => {
 
     await removeFavoriteQuestion("q-1");
 
-    expect(fetchSpy).toHaveBeenCalledWith("/api/questions/favorite", {
+    expect(fetchSpy).toHaveBeenCalledWith(API_PATHS.QUESTIONS_FAVORITE, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionId: "q-1" }),

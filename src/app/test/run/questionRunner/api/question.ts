@@ -1,4 +1,5 @@
 import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
 import { QuestionRunnerApiError } from "./error";
@@ -9,8 +10,6 @@ export type GenerateQuestionInput = {
   difficulty: DifficultyEnum;
   goal: GoalEnum;
 };
-
-const GENERATE_QUESTION_API_PATH = "/api/questions/generate";
 
 type GenerateQuestionResponse = {
   question?: Question;
@@ -24,7 +23,7 @@ export function isAnonymousQuestionLimitError(error: unknown): boolean {
 export async function fetchGeneratedQuestion(
   input: GenerateQuestionInput,
 ): Promise<Question> {
-  const response = await fetch(GENERATE_QUESTION_API_PATH, {
+  const response = await fetch(API_PATHS.QUESTIONS_GENERATE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),

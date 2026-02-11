@@ -3,10 +3,10 @@
 import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button } from "@heroui/react";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { SIGN_IN_PAGE_PATH } from "@/app/auth/signIn";
 import { useQuestion } from "./hooks/useQuestion";
 import { canSubmitQuestion } from "./utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
@@ -54,7 +54,7 @@ export default function Question({
         <QuestionSkeleton className="opacity-70 blur-sm" />
         <div className="absolute inset-0 flex items-center justify-center flex-col gap-4">
           <p className="text-lg text-default-600 font-light">Question limit reached</p>
-          <Button as={Link} color="primary" href={SIGN_IN_PAGE_PATH} size="lg">
+          <Button as={Link} color="primary" href={PAGE_PATHS.SIGN_IN} size="lg">
             Sign in to continue
           </Button>
         </div>

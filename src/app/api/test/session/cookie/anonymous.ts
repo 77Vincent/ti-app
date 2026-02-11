@@ -6,6 +6,7 @@ import {
   type TestRunSession,
 } from "@/lib/validation/testSession";
 import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
+import { COOKIE_PATHS } from "@/lib/config/paths";
 import { isNonEmptyString } from "@/lib/string";
 
 const ANONYMOUS_TEST_SESSION_COOKIE_NAME = "ti-app-anon-test-session";
@@ -50,7 +51,7 @@ export function persistAnonymousTestSessionCookie(
     {
       httpOnly: true,
       maxAge: ANONYMOUS_SESSION_TTL,
-      path: "/",
+      path: COOKIE_PATHS.ROOT,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     },
@@ -64,7 +65,7 @@ export function clearAnonymousTestSessionCookie(
 ): NextResponse {
   response.cookies.delete({
     name: ANONYMOUS_TEST_SESSION_COOKIE_NAME,
-    path: "/",
+    path: COOKIE_PATHS.ROOT,
   });
 
   return response;

@@ -1,4 +1,5 @@
 import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
 import { QuestionRunnerApiError } from "./error";
@@ -11,10 +12,8 @@ export type FavoriteQuestionInput = {
   question: Question;
 };
 
-const FAVORITE_QUESTION_API_PATH = "/api/questions/favorite";
-
 export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise<void> {
-  const response = await fetch(FAVORITE_QUESTION_API_PATH, {
+  const response = await fetch(API_PATHS.QUESTIONS_FAVORITE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -39,7 +38,7 @@ export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise
 }
 
 export async function removeFavoriteQuestion(questionId: string): Promise<void> {
-  const response = await fetch(FAVORITE_QUESTION_API_PATH, {
+  const response = await fetch(API_PATHS.QUESTIONS_FAVORITE, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ questionId }),

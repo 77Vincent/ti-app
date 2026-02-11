@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextResponse } from "next/server";
 import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
+import { COOKIE_PATHS } from "@/lib/config/paths";
 
 const { cookieGet, cookiesFn } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -126,7 +127,7 @@ describe("anonymous session cookie helpers", () => {
       {
         httpOnly: true,
         maxAge: ANONYMOUS_SESSION_TTL,
-        path: "/",
+        path: COOKIE_PATHS.ROOT,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
       },
@@ -144,7 +145,7 @@ describe("anonymous session cookie helpers", () => {
     expect(result).toBe(response);
     expect(del).toHaveBeenCalledWith({
       name: "ti-app-anon-test-session",
-      path: "/",
+      path: COOKIE_PATHS.ROOT,
     });
   });
 });

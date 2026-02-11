@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, CardBody } from "@heroui/react";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import Link from "next/link";
 
 export default function Home() {
@@ -9,7 +10,7 @@ export default function Home() {
       <Card shadow="sm">
         <CardBody className="items-center gap-4 p-8 text-center">
           <h1 className="text-4xl font-medium">Learning by testing</h1>
-          <Button as={Link} color="primary" href="/test">
+          <Button as={Link} color="primary" href={PAGE_PATHS.TEST}>
             Test Now
           </Button>
         </CardBody>

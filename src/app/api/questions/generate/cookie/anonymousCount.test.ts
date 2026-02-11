@@ -4,6 +4,7 @@ import {
   ANONYMOUS_SESSION_TTL,
   MAX_ANONYMOUS_QUESTION_COUNT,
 } from "@/lib/config/testPolicy";
+import { COOKIE_PATHS } from "@/lib/config/paths";
 
 const { cookieGet, cookiesFn } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -61,7 +62,7 @@ describe("anonymous question count cookie helpers", () => {
       {
         httpOnly: true,
         maxAge: ANONYMOUS_SESSION_TTL,
-        path: "/",
+        path: COOKIE_PATHS.ROOT,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
       },

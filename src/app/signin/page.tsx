@@ -2,10 +2,8 @@
 
 import { Button, Card, CardBody } from "@heroui/react";
 import { signIn } from "next-auth/react";
-import {
-  GOOGLE_PROVIDER_ID,
-  POST_SIGN_IN_CALLBACK_PATH,
-} from "@/app/auth/signIn";
+import { GOOGLE_PROVIDER_ID } from "@/app/auth/signIn";
+import { PAGE_PATHS } from "@/lib/config/paths";
 
 export default function SignInPage() {
   return (
@@ -19,7 +17,7 @@ export default function SignInPage() {
             fullWidth
             onPress={() => {
               void signIn(GOOGLE_PROVIDER_ID, {
-                callbackUrl: POST_SIGN_IN_CALLBACK_PATH,
+                callbackUrl: PAGE_PATHS.TEST,
               });
             }}
           >

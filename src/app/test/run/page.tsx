@@ -6,6 +6,7 @@ import {
   type TestRunSession,
 } from "@/app/test/run/questionRunner/session";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -17,7 +18,7 @@ export default function TestRunPage() {
 
   const handleEndTest = useCallback(() => {
     void clearTestSession().catch(() => undefined);
-    router.push("/test");
+    router.push(PAGE_PATHS.TEST);
   }, [router]);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function TestRunPage() {
 
   useEffect(() => {
     if (params === null) {
-      router.replace("/test");
+      router.replace(PAGE_PATHS.TEST);
     }
   }, [params, router]);
 

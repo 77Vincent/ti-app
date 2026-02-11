@@ -10,6 +10,7 @@ import {
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -81,7 +82,7 @@ export default function StartForm() {
 
     void writeTestSession(testSession)
       .then(() => {
-        router.push("/test/run");
+        router.push(PAGE_PATHS.TEST_RUN);
       })
       .catch((error) => {
         toast.error(error, {

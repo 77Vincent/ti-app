@@ -4,8 +4,7 @@ import {
   type TestRunSession,
 } from "@/lib/validation/testSession";
 import { parseHttpErrorMessage } from "@/lib/http/error";
-
-const TEST_SESSION_API_PATH = "/api/test/session";
+import { API_PATHS } from "@/lib/config/paths";
 
 type TestSessionResponse = {
   session?: unknown;
@@ -29,7 +28,7 @@ function parseSessionFromResponse(payload: unknown): TestRunSession | null {
 async function requestSession(
   options: SessionRequestOptions,
 ): Promise<TestSessionResponse | null> {
-  const response = await fetch(TEST_SESSION_API_PATH, {
+  const response = await fetch(API_PATHS.TEST_SESSION, {
     body: options.body,
     cache: options.cache,
     headers: options.body

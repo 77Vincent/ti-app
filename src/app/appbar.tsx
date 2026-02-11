@@ -19,7 +19,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { type Key, useEffect, useState } from "react";
-import { POST_SIGN_IN_CALLBACK_PATH, SIGN_IN_PAGE_PATH } from "./auth/signIn";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
@@ -64,7 +64,7 @@ export default function AppBar() {
     if (key === USER_MENU_LOGOUT_KEY) {
       clearSessionThen(() => {
         void signOut({
-          callbackUrl: POST_SIGN_IN_CALLBACK_PATH,
+          callbackUrl: PAGE_PATHS.TEST,
         });
       });
     }
@@ -72,14 +72,14 @@ export default function AppBar() {
 
   function handleSignIn() {
     clearSessionThen(() => {
-      window.location.assign(SIGN_IN_PAGE_PATH);
+      window.location.assign(PAGE_PATHS.SIGN_IN);
     });
   }
 
   return (
     <Navbar height={55} maxWidth="full" position="sticky">
       <NavbarBrand>
-        <Link className="hover:brightness-125" href="/" aria-label="Ti">
+        <Link className="hover:brightness-125" href={PAGE_PATHS.HOME} aria-label="Ti">
           <Image src="/logo.svg" alt="Ti Logo" width={48} height={40} />
         </Link>
       </NavbarBrand>

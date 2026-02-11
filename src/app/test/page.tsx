@@ -4,6 +4,7 @@ import {
   readTestSession,
 } from "@/app/test/run/questionRunner/session";
 import { StartForm } from "@/app/test/startForm";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,7 +22,7 @@ export default function TestPage() {
         }
 
         if (session) {
-          router.replace("/test/run");
+          router.replace(PAGE_PATHS.TEST_RUN);
           return;
         }
 
