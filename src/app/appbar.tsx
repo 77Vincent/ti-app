@@ -79,8 +79,9 @@ export default function AppBar() {
   return (
     <Navbar height={55} maxWidth="full" position="sticky">
       <NavbarBrand>
-        <Link className="hover:brightness-125" href={PAGE_PATHS.HOME} aria-label="Ti">
-          <Image src="/logo.svg" alt="Ti Logo" width={48} height={40} />
+        <Link className="hover:brightness-125 flex gap-2" href={PAGE_PATHS.HOME} aria-label="Ti">
+          <Image src="/logo.svg" alt="Ti Logo" width={44} height={40} />
+          <span className="text-2xl font-semibold">Ti</span>
         </Link>
       </NavbarBrand>
 

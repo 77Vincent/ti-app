@@ -2,29 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   buildQuestion,
-  incrementAnonymousQuestionCountCookie,
   parseTestRunParams,
-  readAnonymousQuestionCount,
-  readAuthenticatedUserId,
 } = vi.hoisted(() => ({
   buildQuestion: vi.fn(),
-  incrementAnonymousQuestionCountCookie: vi.fn((response: Response) => response),
   parseTestRunParams: vi.fn(),
-  readAnonymousQuestionCount: vi.fn(),
-  readAuthenticatedUserId: vi.fn(),
 }));
 
 vi.mock("@/lib/validation/testSession", () => ({
   parseTestRunParams,
-}));
-
-vi.mock("@/app/api/test/session/auth", () => ({
-  readAuthenticatedUserId,
-}));
-
-vi.mock("./cookie/anonymousCount", () => ({
-  incrementAnonymousQuestionCountCookie,
-  readAnonymousQuestionCount,
 }));
 
 vi.mock("./service/question", () => ({
@@ -42,21 +27,13 @@ describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
     buildQuestion.mockReset();
-    incrementAnonymousQuestionCountCookie.mockReset();
-    readAuthenticatedUserId.mockReset();
     parseTestRunParams.mockReset();
-    readAnonymousQuestionCount.mockReset();
 
     parseTestRunParams.mockReturnValue(VALID_INPUT);
     buildQuestion.mockResolvedValue({ id: "question-1" });
-    incrementAnonymousQuestionCountCookie.mockImplementation(
-      (response: Response) => response,
-    );
-    readAuthenticatedUserId.mockResolvedValue(null);
-    readAnonymousQuestionCount.mockResolvedValue(0);
   });
 
-  it("increments anonymous question count when request succeeds", async () => {
+  it("returns question when request succeeds", async () => {
     const route = await import("./route");
 
     const response = await route.POST(
@@ -71,14 +48,10 @@ describe("generate question route", () => {
       question: { id: "question-1" },
     });
     expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
-    expect(incrementAnonymousQuestionCountCookie).toHaveBeenCalledWith(
-      expect.any(Response),
-      0,
-    );
   });
 
-  it("blocks anonymous request after 5 questions", async () => {
-    readAnonymousQuestionCount.mockResolvedValue(5);
+  it("returns 400 for invalid request payload", async () => {
+    parseTestRunParams.mockReturnValueOnce(null);
 
     const route = await import("./route");
 
@@ -89,17 +62,15 @@ describe("generate question route", () => {
       }),
     );
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error:
-        "You have reached the anonymous limit of 5 questions. Please log in to continue.",
+      error: "subjectId, subcategoryId, difficulty, and goal are required.",
     });
     expect(buildQuestion).not.toHaveBeenCalled();
-    expect(incrementAnonymousQuestionCountCookie).not.toHaveBeenCalled();
   });
 
-  it("does not apply anonymous limit for authenticated users", async () => {
-    readAuthenticatedUserId.mockResolvedValue("user-1");
+  it("returns 500 when question generation throws", async () => {
+    buildQuestion.mockRejectedValueOnce(new Error("provider down"));
 
     const route = await import("./route");
 
@@ -110,11 +81,9 @@ describe("generate question route", () => {
       }),
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
-      question: { id: "question-1" },
+      error: "provider down",
     });
-    expect(readAnonymousQuestionCount).not.toHaveBeenCalled();
-    expect(incrementAnonymousQuestionCountCookie).not.toHaveBeenCalled();
   });
 });
