@@ -1,8 +1,6 @@
 "use client";
 
-import { addToast, type ToastProps } from "@heroui/react";
-
-type ToastKind = "error" | "warning" | "success" | "info";
+import { addToast } from "@heroui/react";
 
 type ToastOptions = {
   title?: string;
@@ -12,72 +10,46 @@ type ErrorToastOptions = ToastOptions & {
   fallbackDescription?: string;
 };
 
-const TOAST_DEFAULTS: Record<
-  ToastKind,
-  { color: ToastProps["color"]; title: string }
-> = {
-  error: {
-    color: "danger",
-    title: "Error",
-  },
-  warning: {
-    color: "warning",
-    title: "Warning",
-  },
-  success: {
-    color: "success",
-    title: "Success",
-  },
-  info: {
-    color: "primary",
-    title: "Info",
-  },
-};
-
-function showToast(kind: ToastKind, description: string, options?: ToastOptions) {
-  const config = TOAST_DEFAULTS[kind];
-
+function showToast(
+  description: string,
+  color: "danger" | "warning" | "success" | "primary",
+  defaultTitle: string,
+  options?: ToastOptions,
+) {
   addToast({
-    color: config.color,
+    color,
     description,
-    title: options?.title ?? config.title,
+    title: options?.title ?? defaultTitle,
     variant: "flat",
   });
 }
 
-function getErrorDescription(
-  value: unknown,
-  fallbackDescription: string,
-): string {
-  if (value instanceof Error && value.message.trim().length > 0) {
+function getErrorDescription(value: unknown, fallbackDescription: string): string {
+  if (value instanceof Error && value.message) {
     return value.message;
   }
-
-  if (typeof value === "string" && value.trim().length > 0) {
-    return value;
-  }
-
   return fallbackDescription;
 }
 
 export const toast = {
   error(value: unknown, options?: ErrorToastOptions) {
     showToast(
-      "error",
       getErrorDescription(
         value,
         options?.fallbackDescription ?? "Something went wrong.",
       ),
+      "danger",
+      "Error",
       options,
     );
   },
   warning(description: string, options?: ToastOptions) {
-    showToast("warning", description, options);
+    showToast(description, "warning", "Warning", options);
   },
   success(description: string, options?: ToastOptions) {
-    showToast("success", description, options);
+    showToast(description, "success", "Success", options);
   },
   info(description: string, options?: ToastOptions) {
-    showToast("info", description, options);
+    showToast(description, "primary", "Info", options);
   },
 };
