@@ -8,6 +8,7 @@ import {
 import type { DifficultyEnum } from "@/lib/meta";
 import { TEST_SESSION_STORAGE_KEY } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
+import { Crown, Flame, Leaf, TrendingUp, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
@@ -26,6 +27,13 @@ import {
   buildCurrentStepViewConfig,
   type StepOptionValue,
 } from "./viewModel";
+
+const DIFFICULTY_ICON_BY_ID: Record<DifficultyEnum, LucideIcon> = {
+  beginner: Leaf,
+  intermediate: TrendingUp,
+  advanced: Flame,
+  expert: Crown,
+};
 
 export default function StartForm() {
   const router = useRouter();
@@ -96,6 +104,7 @@ export default function StartForm() {
     selectedSubcategoryId,
     selectedDifficulty,
   });
+  const isDifficultyStep = currentStep === "difficulty";
 
   return (
     <Card shadow="sm" className="w-full max-w-xl self-start">
@@ -107,19 +116,26 @@ export default function StartForm() {
 
       <CardBody className="p-6 pt-2">
         <div className="flex flex-wrap gap-2 items-center justify-center">
-          {currentStepViewConfig.options.map((option) => (
-            <Button
-              key={option.value}
-              onPress={() => onSelectByStep[currentStep](option.value)}
-              variant={
-                currentStepViewConfig.selectedValue === option.value
-                  ? "solid"
-                  : "bordered"
-              }
-            >
-              {option.label}
-            </Button>
-          ))}
+          {currentStepViewConfig.options.map((option) => {
+            const DifficultyIcon = isDifficultyStep
+              ? DIFFICULTY_ICON_BY_ID[option.value as DifficultyEnum]
+              : null;
+
+            return (
+              <Button
+                key={option.value}
+                onPress={() => onSelectByStep[currentStep](option.value)}
+                startContent={DifficultyIcon ? <DifficultyIcon aria-hidden size={16} /> : undefined}
+                variant={
+                  currentStepViewConfig.selectedValue === option.value
+                    ? "solid"
+                    : "bordered"
+                }
+              >
+                {option.label}
+              </Button>
+            );
+          })}
         </div>
       </CardBody>
     </Card>
