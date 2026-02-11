@@ -52,6 +52,7 @@ Generate one question for this context:
 - subjectId: ${input.subjectId}
 - subcategoryId: ${input.subcategoryId}
 - difficulty: ${input.difficulty}
+- goal: ${input.goal}
 
 Keep the question clear, reliable, and objectively gradable.
 `.trim();

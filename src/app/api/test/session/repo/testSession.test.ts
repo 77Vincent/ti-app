@@ -33,12 +33,14 @@ describe("test session repo", () => {
   it("reads a stored test session payload", async () => {
     testSessionFindUnique.mockResolvedValueOnce({
       difficulty: "beginner",
+      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
 
     await expect(readTestSession({ userId: "user-1" })).resolves.toEqual({
       difficulty: "beginner",
+      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -46,6 +48,7 @@ describe("test session repo", () => {
     expect(testSessionFindUnique).toHaveBeenCalledWith({
       select: {
         difficulty: true,
+        goal: true,
         subjectId: true,
         subcategoryId: true,
       },
@@ -62,6 +65,7 @@ describe("test session repo", () => {
       { userId: "user-1" },
       {
         difficulty: "beginner",
+        goal: "study",
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -70,12 +74,14 @@ describe("test session repo", () => {
     expect(testSessionUpsert).toHaveBeenCalledWith({
       create: {
         difficulty: "beginner",
+        goal: "study",
         subjectId: "language",
         subcategoryId: "english",
         userId: "user-1",
       },
       update: {
         difficulty: "beginner",
+        goal: "study",
         subjectId: "language",
         subcategoryId: "english",
       },

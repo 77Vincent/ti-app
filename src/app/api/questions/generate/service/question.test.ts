@@ -17,6 +17,7 @@ import { buildQuestion } from "./question";
 
 const VALID_INPUT = {
   difficulty: "beginner",
+  goal: "study",
   subjectId: "language",
   subcategoryId: "english",
 };

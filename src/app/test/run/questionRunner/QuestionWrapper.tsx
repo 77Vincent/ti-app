@@ -10,6 +10,7 @@ export default function QuestionRunner({
   subjectId,
   subcategoryId,
   difficulty,
+  goal,
   onEndTest,
 }: QuestionRunnerProps) {
   const SubjectIcon = getSubjectIcon(subjectId);
@@ -21,6 +22,7 @@ export default function QuestionRunner({
         <CardBody className="p-6">
           <Question
             difficulty={difficulty}
+            goal={goal}
             subcategoryId={subcategoryId}
             subjectId={subjectId}
           />
@@ -47,6 +49,9 @@ export default function QuestionRunner({
                 : null}
               {difficulty}
             </span>
+          </Chip>
+          <Chip variant="bordered">
+            {goal}
           </Chip>
         </div>
 

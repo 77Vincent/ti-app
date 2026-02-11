@@ -8,7 +8,7 @@ import {
   SUBCATEGORIES,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import type { DifficultyEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import {
 import {
   INITIAL_START_FORM_STATE,
   selectDifficulty,
+  selectGoal,
   selectSubcategory,
   selectSubject,
 } from "./state";
@@ -37,6 +38,7 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
+    selectedGoal,
   } = state;
   const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
@@ -62,15 +64,20 @@ export default function StartForm() {
 
   const handleSelectDifficulty = (difficulty: DifficultyEnum) => {
     setState((prevState) => selectDifficulty(prevState, difficulty));
+  };
 
-    if (!selectedSubjectId || !selectedSubcategoryId) {
+  const handleSelectGoal = (goal: GoalEnum) => {
+    setState((prevState) => selectGoal(prevState, goal));
+
+    if (!selectedSubjectId || !selectedSubcategoryId || !selectedDifficulty) {
       return;
     }
 
     const testSession = {
       subjectId: selectedSubjectId,
       subcategoryId: selectedSubcategoryId,
-      difficulty,
+      difficulty: selectedDifficulty,
+      goal,
     };
 
     void writeTestSession(testSession)
@@ -88,6 +95,7 @@ export default function StartForm() {
     subject: (value) => handleSelectSubject(String(value)),
     subcategory: (value) => handleSelectSubcategory(String(value)),
     difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyEnum),
+    goal: (value) => handleSelectGoal(String(value) as GoalEnum),
   };
 
   const currentStepViewConfig = buildCurrentStepViewConfig({
@@ -97,6 +105,7 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
+    selectedGoal,
   });
   const isSubjectStep = currentStep === "subject";
   const isDifficultyStep = currentStep === "difficulty";

@@ -9,6 +9,7 @@ import type { Question } from "./types";
 
 const VALID_INPUT = {
   difficulty: "beginner",
+  goal: "study",
   subjectId: "language",
   subcategoryId: "english",
 } as const;

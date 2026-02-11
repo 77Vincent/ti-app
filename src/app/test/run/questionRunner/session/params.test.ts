@@ -5,12 +5,14 @@ describe("parseTestRunParams", () => {
   it("parses a valid test session payload", () => {
     const parsed = parseTestRunParams({
       difficulty: "beginner",
+      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
 
     expect(parsed).toEqual({
       difficulty: "beginner",
+      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -19,7 +21,8 @@ describe("parseTestRunParams", () => {
   it("returns null for invalid payload", () => {
     expect(
       parseTestRunParams({
-        difficulty: "unknown",
+        difficulty: "beginner",
+        goal: "unknown",
         subjectId: "language",
         subcategoryId: "english",
       }),

@@ -54,6 +54,7 @@ export default function TestRunPage() {
     <section className="flex flex-1 justify-center">
       <QuestionRunner
         difficulty={params.difficulty}
+        goal={params.goal}
         onEndTest={handleEndTest}
         subcategoryId={params.subcategoryId}
         subjectId={params.subjectId}

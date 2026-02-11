@@ -1,10 +1,11 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type { DifficultyEnum, QuestionType } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, QuestionType } from "@/lib/meta";
 
 export type TestMeta = {
   subjectId: string;
   subcategoryId: string;
   difficulty: DifficultyEnum;
+  goal: GoalEnum;
 };
 
 export type TestRunnerActions = {

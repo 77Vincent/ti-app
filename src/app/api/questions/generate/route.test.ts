@@ -33,6 +33,7 @@ vi.mock("./service/question", () => ({
 
 const VALID_INPUT = {
   difficulty: "beginner",
+  goal: "study",
   subjectId: "language",
   subcategoryId: "english",
 };

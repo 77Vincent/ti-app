@@ -1,7 +1,7 @@
 "use client";
 
 import QuestionSkeleton from "./QuestionSkeleton";
-import type { DifficultyEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { Button } from "@heroui/react";
 import { Star } from "lucide-react";
@@ -15,12 +15,14 @@ type QuestionProps = {
   subjectId: string;
   subcategoryId: string;
   difficulty: DifficultyEnum;
+  goal: GoalEnum;
 };
 
 export default function Question({
   subjectId,
   subcategoryId,
   difficulty,
+  goal,
 }: QuestionProps) {
   const {
     question,
@@ -37,6 +39,7 @@ export default function Question({
     subjectId,
     subcategoryId,
     difficulty,
+    goal,
   });
 
   if (isSignInRequired) {

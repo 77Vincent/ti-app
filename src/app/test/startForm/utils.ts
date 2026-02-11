@@ -10,7 +10,9 @@ export function getCurrentStartFormStep(
       return "subcategory";
     case !state.selectedDifficulty:
       return "difficulty";
+    case !state.selectedGoal:
+      return "goal";
     default:
-      return "difficulty";
+      return "goal";
   }
 }

@@ -35,6 +35,7 @@ describe("anonymous session cookie helpers", () => {
         value: encodeURIComponent(
           JSON.stringify({
             difficulty: "beginner",
+            goal: "study",
             subjectId: "language",
             subcategoryId: "english",
           }),
@@ -44,6 +45,7 @@ describe("anonymous session cookie helpers", () => {
 
     await expect(readAnonymousTestSessionCookie()).resolves.toEqual({
       difficulty: "beginner",
+      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -71,6 +73,7 @@ describe("anonymous session cookie helpers", () => {
       response as unknown as NextResponse,
       {
         difficulty: "beginner",
+        goal: "study",
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -82,6 +85,7 @@ describe("anonymous session cookie helpers", () => {
       encodeURIComponent(
         JSON.stringify({
           difficulty: "beginner",
+          goal: "study",
           subjectId: "language",
           subcategoryId: "english",
         }),

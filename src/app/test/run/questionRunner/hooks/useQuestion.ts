@@ -1,6 +1,6 @@
 "use client";
 
-import type { DifficultyEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
@@ -25,6 +25,7 @@ export type UseQuestionInput = {
   subjectId: string;
   subcategoryId: string;
   difficulty: DifficultyEnum;
+  goal: GoalEnum;
 };
 
 export type UseQuestionResult = {
@@ -46,6 +47,7 @@ export function useQuestion({
   subjectId,
   subcategoryId,
   difficulty,
+  goal,
 }: UseQuestionInput): UseQuestionResult {
   const [isSignInRequired, setIsSignInRequired] = useState(false);
   const [uiState, dispatchUiState] = useReducer(
@@ -81,8 +83,9 @@ export function useQuestion({
       subjectId,
       subcategoryId,
       difficulty,
+      goal,
     });
-  }, [difficulty, subcategoryId, subjectId]);
+  }, [difficulty, goal, subcategoryId, subjectId]);
 
   const questionSession = useMemo(
     () =>

@@ -7,13 +7,19 @@ export type UserTestSessionWhere = {
 
 const TEST_RUN_PARAMS_SELECT = {
   difficulty: true,
+  goal: true,
   subjectId: true,
   subcategoryId: true,
 } as const;
 
 export async function readTestSession(
   where: UserTestSessionWhere,
-): Promise<{ difficulty: string; subjectId: string; subcategoryId: string } | null> {
+): Promise<{
+  difficulty: string;
+  goal: string;
+  subjectId: string;
+  subcategoryId: string;
+} | null> {
   return prisma.testSession.findUnique({
     where,
     select: TEST_RUN_PARAMS_SELECT,
@@ -28,12 +34,14 @@ export async function upsertTestSession(
     where,
     create: {
       difficulty: params.difficulty,
+      goal: params.goal,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
       userId: where.userId,
     },
     update: {
       difficulty: params.difficulty,
+      goal: params.goal,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
     },

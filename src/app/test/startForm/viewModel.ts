@@ -1,5 +1,5 @@
-import { DIFFICULTIES } from "@/lib/meta";
-import type { DifficultyEnum } from "@/lib/meta";
+import { DIFFICULTIES, GOALS } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import type { StartFormStep } from "./constants";
 
 type SelectOption = {
@@ -26,6 +26,7 @@ type BuildCurrentStepViewConfigInput = {
   selectedSubjectId: string | null;
   selectedSubcategoryId: string | null;
   selectedDifficulty: DifficultyEnum | null;
+  selectedGoal: GoalEnum | null;
 };
 
 export function buildCurrentStepViewConfig(
@@ -44,6 +45,10 @@ export function buildCurrentStepViewConfig(
       value: difficulty.id,
       label: difficulty.label,
     })),
+    goal: GOALS.map((goal) => ({
+      value: goal.id,
+      label: goal.label,
+    })),
   };
 
   const stepConfigByStep: Record<StartFormStep, StartFormStepViewConfig> = {
@@ -58,6 +63,10 @@ export function buildCurrentStepViewConfig(
     difficulty: {
       selectedValue: input.selectedDifficulty,
       options: stepOptionsByStep.difficulty,
+    },
+    goal: {
+      selectedValue: input.selectedGoal,
+      options: stepOptionsByStep.goal,
     },
   };
 
