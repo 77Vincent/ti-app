@@ -5,10 +5,17 @@ import {
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
-import type { DifficultyEnum } from "@/lib/meta";
+import type { DifficultyEnum, SubjectEnum } from "@/lib/meta";
 import { TEST_SESSION_STORAGE_KEY } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
-import { Crown, Flame, Leaf, TrendingUp, type LucideIcon } from "lucide-react";
+import {
+  Crown,
+  Flame,
+  Languages,
+  Leaf,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
@@ -33,6 +40,10 @@ const DIFFICULTY_ICON_BY_ID: Record<DifficultyEnum, LucideIcon> = {
   intermediate: TrendingUp,
   advanced: Flame,
   expert: Crown,
+};
+
+const SUBJECT_ICON_BY_ID: Record<SubjectEnum, LucideIcon> = {
+  language: Languages,
 };
 
 export default function StartForm() {
@@ -104,6 +115,7 @@ export default function StartForm() {
     selectedSubcategoryId,
     selectedDifficulty,
   });
+  const isSubjectStep = currentStep === "subject";
   const isDifficultyStep = currentStep === "difficulty";
 
   return (
@@ -117,15 +129,19 @@ export default function StartForm() {
       <CardBody className="p-6 pt-2">
         <div className="flex flex-wrap gap-2 items-center justify-center">
           {currentStepViewConfig.options.map((option) => {
+            const SubjectIcon = isSubjectStep
+              ? SUBJECT_ICON_BY_ID[option.value as SubjectEnum]
+              : null;
             const DifficultyIcon = isDifficultyStep
               ? DIFFICULTY_ICON_BY_ID[option.value as DifficultyEnum]
               : null;
+            const OptionIcon = SubjectIcon ?? DifficultyIcon;
 
             return (
               <Button
                 key={option.value}
                 onPress={() => onSelectByStep[currentStep](option.value)}
-                startContent={DifficultyIcon ? <DifficultyIcon aria-hidden size={16} /> : undefined}
+                startContent={OptionIcon ? <OptionIcon aria-hidden size={16} /> : undefined}
                 variant={
                   currentStepViewConfig.selectedValue === option.value
                     ? "solid"
