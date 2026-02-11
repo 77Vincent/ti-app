@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ti-db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+    environment:
+      POSTGRES_USER: ti
+      POSTGRES_PASSWORD: ti
+      POSTGRES_DB: ti
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "ti"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --forward-to http://host.docker.internal:3000/api/stripe/webhook
+    volumes:
+      - ~/.config/stripe:/root/.config/stripe
+    tty: true
+
+volumes:
+  postgres-data:

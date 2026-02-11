@@ -15,11 +15,14 @@ help:
 	@echo "  make check      Run lint, test, and build"
 	@echo "  make clean      Remove Next.js build output"
 	@echo "  make clean-deps Remove node_modules"
+	@echo "  make up 	  	 Start development environment with Docker Compose"
 
 install:
 	$(NPM) install
 
 dev:
+	npx prisma migrate deploy || true
+	npx prisma generate || true
 	$(NPM) run dev
 
 build:
@@ -41,3 +44,6 @@ clean:
 
 clean-deps:
 	rm -rf node_modules
+
+up:
+	docker-compose up -d
