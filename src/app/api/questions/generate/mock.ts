@@ -14,7 +14,7 @@ export function generateMockQuestion(input: GenerateQuestionRequest): Question {
   return {
     id: createMockQuestionId(),
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-    prompt: `**Mock question** (${input.subjectId} / ${input.subcategoryId} / ${input.difficulty} / ${input.goal})\n\nWhat is the capital of France?`,
+    prompt: `**Mock question** (${new Date().toISOString()} / ${input.subjectId} / ${input.subcategoryId} / ${input.difficulty} / ${input.goal})\n\nWhat is the capital of France?`,
     options: [
       {
         id: "A",
