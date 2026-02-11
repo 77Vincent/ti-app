@@ -13,7 +13,7 @@ import {
   NavbarItem,
   Tooltip,
 } from "@heroui/react";
-import { LogIn, Moon, Sun, User, User2 } from "lucide-react";
+import { Moon, Sun, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";

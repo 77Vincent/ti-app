@@ -13,17 +13,6 @@ export default function QuestionRunner({
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Chip variant="bordered">
-            {subjectId}
-          </Chip>
-          <Chip variant="bordered">
-            {subcategoryId}
-          </Chip>
-          <Chip variant="bordered">
-            {difficulty}
-          </Chip>
-        </div>
       </div>
 
       <Card shadow="sm">
@@ -35,7 +24,20 @@ export default function QuestionRunner({
           />
         </CardBody>
       </Card>
-      <div className="flex justify-end">
+
+      <div className="flex justify-between">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Chip variant="bordered">
+            {subjectId}
+          </Chip>
+          <Chip variant="bordered">
+            {subcategoryId}
+          </Chip>
+          <Chip variant="bordered">
+            {difficulty}
+          </Chip>
+        </div>
+
         <Button
           aria-label="Quit test"
           onPress={onEndTest}
