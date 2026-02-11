@@ -98,7 +98,7 @@ export default function StartForm() {
   });
 
   return (
-    <Card isBlurred shadow="sm" className="w-full max-w-xl self-start">
+    <Card shadow="sm" className="w-full max-w-xl self-start">
       <CardHeader className="pt-6">
         <h1 className="mx-auto text-2xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}
