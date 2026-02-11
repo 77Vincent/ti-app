@@ -61,7 +61,7 @@ export default function AppBar() {
   }
 
   return (
-    <Navbar height={60} maxWidth="full" position="sticky">
+    <Navbar isBlurred height={50} maxWidth="full" position="sticky">
       <NavbarBrand>
         <Link className="hover:brightness-125" href="/" aria-label="Ti">
           <Image src="/logo.svg" alt="Ti Logo" width={48} height={40} />

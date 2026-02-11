@@ -12,9 +12,6 @@ export default function QuestionRunner({
 }: QuestionRunnerProps) {
   return (
     <div className="w-full max-w-2xl space-y-3">
-      <div className="flex flex-wrap items-center justify-end gap-2">
-      </div>
-
       <Card shadow="sm">
         <CardBody className="p-6">
           <Question

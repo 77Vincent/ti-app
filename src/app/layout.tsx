@@ -20,7 +20,7 @@ export default function RootLayout({
         <Providers>
           <div className="bg-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
-            <main className="flex flex-1 flex-col px-4">{main}</main>
+            <main className="flex flex-1 flex-col p-4">{main}</main>
           </div>
         </Providers>
       </body>

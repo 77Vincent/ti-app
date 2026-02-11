@@ -29,7 +29,7 @@ export default function TestPage() {
   }
 
   return (
-    <section className="flex flex-1 items-center justify-center">
+    <section className="flex flex-1 justify-center">
       <StartForm />
     </section>
   );
