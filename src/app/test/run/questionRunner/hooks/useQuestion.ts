@@ -4,8 +4,10 @@ import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
+  addFavoriteQuestion,
   fetchGeneratedQuestion,
   isAnonymousQuestionLimitError,
+  removeFavoriteQuestion,
 } from "../api";
 import {
   createQuestionSessionController,
@@ -32,12 +34,15 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
+  isFavorite: boolean;
+  isFavoriteSubmitting: boolean;
   isSignInRequired: boolean;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
   isOptionCorrect: (optionId: QuestionOptionId) => boolean;
   isOptionWrongSelection: (optionId: QuestionOptionId) => boolean;
   selectOption: (optionId: QuestionOptionId) => void;
+  toggleFavorite: () => Promise<void>;
   submit: () => Promise<void>;
 };
 
@@ -50,6 +55,8 @@ export function useQuestion({
   goal,
 }: UseQuestionInput): UseQuestionResult {
   const [isSignInRequired, setIsSignInRequired] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteSubmitting, setIsFavoriteSubmitting] = useState(false);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -72,6 +79,7 @@ export function useQuestion({
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
       setIsSignInRequired(false);
+      setIsFavorite(false);
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
@@ -167,16 +175,52 @@ export function useQuestion({
     }
   }
 
+  async function toggleFavorite() {
+    if (!question || isFavoriteSubmitting) {
+      return;
+    }
+
+    setIsFavoriteSubmitting(true);
+
+    try {
+      if (isFavorite) {
+        await removeFavoriteQuestion(question.id);
+        setIsFavorite(false);
+        return;
+      }
+
+      await addFavoriteQuestion({
+        subjectId,
+        subcategoryId,
+        difficulty,
+        goal,
+        question,
+      });
+      setIsFavorite(true);
+    } catch (error) {
+      toast.error(error, {
+        fallbackDescription: isFavorite
+          ? "Failed to remove favorite."
+          : "Failed to favorite question.",
+      });
+    } finally {
+      setIsFavoriteSubmitting(false);
+    }
+  }
+
   return {
     question,
     isLoadingQuestion,
     isSubmitting,
+    isFavorite,
+    isFavoriteSubmitting,
     isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
     isOptionCorrect,
     isOptionWrongSelection,
     selectOption,
+    toggleFavorite,
     submit,
   };
 }

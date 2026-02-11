@@ -28,12 +28,15 @@ export default function Question({
     question,
     isLoadingQuestion,
     isSubmitting,
+    isFavorite,
+    isFavoriteSubmitting,
     isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
     isOptionCorrect,
     isOptionWrongSelection,
     selectOption,
+    toggleFavorite,
     submit,
   } = useQuestion({
     subjectId,
@@ -88,13 +91,17 @@ export default function Question({
 
         <div className="flex items-center gap-3">
           <Button
-            aria-label="Favorite question"
+            aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
+            color={isFavorite ? "warning" : "default"}
             isIconOnly
-            size="sm"
+            isDisabled={isFavoriteSubmitting}
+            isLoading={isFavoriteSubmitting}
+            onPress={toggleFavorite}
             radius="full"
-            variant="light"
+            size="sm"
+            variant={isFavorite ? "solid" : "light"}
           >
-            <Star aria-hidden size={16} />
+            <Star aria-hidden className={isFavorite ? "fill-current" : undefined} size={16} />
           </Button>
 
           <Button

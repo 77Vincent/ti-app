@@ -2,10 +2,10 @@ import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   fetchGeneratedQuestion,
-  GenerateQuestionRequestError,
   isAnonymousQuestionLimitError,
-} from "./api";
-import type { Question } from "./types";
+} from "./question";
+import { QuestionRunnerApiError } from "./error";
+import type { Question } from "../types";
 
 const VALID_INPUT = {
   difficulty: "beginner",
@@ -53,7 +53,7 @@ describe("fetchGeneratedQuestion", () => {
     await expect(fetchGeneratedQuestion(VALID_INPUT)).rejects.toMatchObject({
       message:
         "You have reached the anonymous limit of 5 questions. Please log in to continue.",
-      name: "GenerateQuestionRequestError",
+      name: "QuestionRunnerApiError",
       status: 403,
     });
   });
@@ -63,7 +63,7 @@ describe("isAnonymousQuestionLimitError", () => {
   it("returns true for anonymous limit request error", () => {
     expect(
       isAnonymousQuestionLimitError(
-        new GenerateQuestionRequestError("limit", 403),
+        new QuestionRunnerApiError("limit", 403),
       ),
     ).toBe(true);
   });
@@ -71,7 +71,7 @@ describe("isAnonymousQuestionLimitError", () => {
   it("returns false for non-limit errors", () => {
     expect(
       isAnonymousQuestionLimitError(
-        new GenerateQuestionRequestError("not-limit", 500),
+        new QuestionRunnerApiError("not-limit", 500),
       ),
     ).toBe(false);
     expect(isAnonymousQuestionLimitError(new Error("x"))).toBe(false);

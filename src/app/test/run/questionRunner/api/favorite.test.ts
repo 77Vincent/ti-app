@@ -1,0 +1,87 @@
+import { QUESTION_TYPES } from "@/lib/meta";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  addFavoriteQuestion,
+  removeFavoriteQuestion,
+} from "./favorite";
+import { QuestionRunnerApiError } from "./error";
+import type { Question } from "../types";
+
+const VALID_INPUT = {
+  difficulty: "beginner",
+  goal: "study",
+  subjectId: "language",
+  subcategoryId: "english",
+  question: {
+    id: "q-1",
+    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+    prompt: "Prompt",
+    options: [
+      { id: "A", text: "Option A", explanation: "A" },
+      { id: "B", text: "Option B", explanation: "B" },
+      { id: "C", text: "Option C", explanation: "C" },
+      { id: "D", text: "Option D", explanation: "D" },
+    ],
+    correctOptionIds: ["A"],
+  } as Question,
+} as const;
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("addFavoriteQuestion", () => {
+  it("posts favorite payload", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
+
+    await addFavoriteQuestion(VALID_INPUT);
+
+    expect(fetchSpy).toHaveBeenCalledWith("/api/questions/favorite", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subjectId: "language",
+        subcategoryId: "english",
+        difficulty: "beginner",
+        goal: "study",
+        questionId: "q-1",
+        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+        prompt: "Prompt",
+        options: VALID_INPUT.question.options,
+        correctOptionIds: ["A"],
+      }),
+    });
+  });
+
+  it("throws request error for non-ok response", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: "Authentication required." }), {
+        status: 401,
+      }),
+    );
+
+    await expect(addFavoriteQuestion(VALID_INPUT)).rejects.toMatchObject({
+      message: "Authentication required.",
+      name: "QuestionRunnerApiError",
+      status: 401,
+    } satisfies Partial<QuestionRunnerApiError>);
+  });
+});
+
+describe("removeFavoriteQuestion", () => {
+  it("deletes favorite by question id", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
+
+    await removeFavoriteQuestion("q-1");
+
+    expect(fetchSpy).toHaveBeenCalledWith("/api/questions/favorite", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ questionId: "q-1" }),
+    });
+  });
+});
