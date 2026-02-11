@@ -1,18 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { getGoogleSignInPath, getSignInPagePath } from "./signIn";
+import {
+  GOOGLE_PROVIDER_ID,
+  POST_SIGN_IN_CALLBACK_PATH,
+  SIGN_IN_PAGE_PATH,
+} from "./signIn";
 
 describe("sign-in paths", () => {
-  it("returns sign-in page path", () => {
-    expect(getSignInPagePath()).toBe("/signin");
+  it("exports sign-in page path", () => {
+    expect(SIGN_IN_PAGE_PATH).toBe("/signin");
   });
 
-  it("returns the provider sign-in path for Google", () => {
-    expect(getGoogleSignInPath()).toBe("/api/auth/signin/google");
+  it("exports provider id for Google", () => {
+    expect(GOOGLE_PROVIDER_ID).toBe("google");
   });
 
-  it("appends callbackUrl when provided", () => {
-    expect(getGoogleSignInPath("/test")).toBe(
-      "/api/auth/signin/google?callbackUrl=%2Ftest",
-    );
+  it("exports post-sign-in callback path", () => {
+    expect(POST_SIGN_IN_CALLBACK_PATH).toBe("/test");
   });
 });

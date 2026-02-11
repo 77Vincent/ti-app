@@ -19,7 +19,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { type Key, useEffect, useState } from "react";
-import { getSignInPagePath } from "./auth/signIn";
+import { SIGN_IN_PAGE_PATH } from "./auth/signIn";
 import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
@@ -71,7 +71,7 @@ export default function AppBar() {
     void clearTestSession()
       .catch(() => undefined)
       .finally(() => {
-        window.location.assign(getSignInPagePath());
+        window.location.assign(SIGN_IN_PAGE_PATH);
       });
   }
 
