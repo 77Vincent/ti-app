@@ -25,12 +25,14 @@ import {
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
 
-const LOGIN_ICON_LABEL = "Sign in";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const isDark = resolvedTheme === "dark";
+  const THEME_TOGGLE_LABEL = isDark ? "Light theme" : "Dark theme";
+  const USER_SESSION_LABEL = isAuthenticated ? "User menu" : "Sign in";
 
   useEffect(() => {
     let active = true;
@@ -83,9 +85,9 @@ export default function AppBar() {
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <Tooltip content={LOGIN_ICON_LABEL}>
+            <Tooltip content={USER_SESSION_LABEL}>
               <Button
-                aria-label={LOGIN_ICON_LABEL}
+                aria-label={USER_SESSION_LABEL}
                 as={Link}
                 href={getGoogleSignInPath()}
                 isIconOnly
@@ -100,20 +102,22 @@ export default function AppBar() {
         </NavbarItem>
 
         <NavbarItem>
-          <Button
-            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-            isIconOnly
-            onPress={handleToggleTheme}
-            radius="full"
-            size="sm"
-            variant="bordered"
-          >
-            {isDark ? (
-              <Sun aria-hidden="true" size={18} />
-            ) : (
-              <Moon aria-hidden="true" size={18} />
-            )}
-          </Button>
+          <Tooltip content={THEME_TOGGLE_LABEL}>
+            <Button
+              aria-label={THEME_TOGGLE_LABEL}
+              isIconOnly
+              onPress={handleToggleTheme}
+              radius="full"
+              size="sm"
+              variant="bordered"
+            >
+              {isDark ? (
+                <Sun aria-hidden="true" size={18} />
+              ) : (
+                <Moon aria-hidden="true" size={18} />
+              )}
+            </Button>
+          </Tooltip>
         </NavbarItem>
       </NavbarContent>
     </Navbar>
