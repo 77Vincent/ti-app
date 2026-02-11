@@ -1,7 +1,7 @@
 "use client";
 
 import QuestionSkeleton from "./QuestionSkeleton";
-import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { Button } from "@heroui/react";
 import { Star } from "lucide-react";
@@ -12,7 +12,7 @@ import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
 
 type QuestionProps = {
-  subjectId: string;
+  subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;

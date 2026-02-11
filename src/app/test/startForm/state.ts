@@ -9,7 +9,9 @@ export const INITIAL_START_FORM_STATE: StartFormState = {
   selectedGoal: null,
 };
 
-export function selectSubject(subjectId: string): StartFormState {
+export function selectSubject(
+  subjectId: NonNullable<StartFormSelectionState["selectedSubjectId"]>,
+): StartFormState {
   return {
     ...INITIAL_START_FORM_STATE,
     selectedSubjectId: subjectId,

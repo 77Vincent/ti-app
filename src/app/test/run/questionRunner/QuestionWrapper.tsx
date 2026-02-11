@@ -3,7 +3,6 @@
 import type { QuestionRunnerProps } from "./types";
 import { Button, Card, CardBody, Chip } from "@heroui/react";
 import { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "@/lib/meta";
-import type { SubjectEnum } from "@/lib/meta";
 import { createElement } from "react";
 import Question from "./QuestionRunner";
 
@@ -14,7 +13,7 @@ export default function QuestionRunner({
   goal,
   onEndTest,
 }: QuestionRunnerProps) {
-  const SubjectIcon = getSubjectIcon(subjectId as SubjectEnum);
+  const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
   const GoalIcon = getGoalIcon(goal);
 

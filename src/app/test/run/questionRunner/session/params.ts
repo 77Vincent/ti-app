@@ -4,11 +4,11 @@ import {
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
-import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { isNonEmptyString } from "@/lib/string";
 
 export type TestRunParams = {
-  subjectId: string;
+  subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
@@ -46,7 +46,7 @@ export function parseTestRunParams(value: unknown): TestRunParams | null {
   }
 
   return {
-    subjectId,
+    subjectId: subjectId as SubjectEnum,
     subcategoryId,
     difficulty: difficulty as DifficultyEnum,
     goal: goal as GoalEnum,

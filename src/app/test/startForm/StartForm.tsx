@@ -13,7 +13,7 @@ import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { createElement, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
 import type { StartFormStep } from "./constants";
 import {
@@ -57,7 +57,7 @@ export default function StartForm() {
 
   const currentStep = getCurrentStartFormStep(state);
 
-  const handleSelectSubject = (subjectId: string) =>
+  const handleSelectSubject = (subjectId: SubjectEnum) =>
     setState(selectSubject(subjectId));
 
   const handleSelectSubcategory = (subcategoryId: string) =>
@@ -93,7 +93,7 @@ export default function StartForm() {
   };
 
   const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
-    subject: (value) => handleSelectSubject(String(value)),
+    subject: (value) => handleSelectSubject(String(value) as SubjectEnum),
     subcategory: (value) => handleSelectSubcategory(String(value)),
     difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyEnum),
     goal: (value) => handleSelectGoal(String(value) as GoalEnum),
@@ -141,7 +141,7 @@ export default function StartForm() {
                 onPress={() => onSelectByStep[currentStep](option.value)}
                 startContent={
                   OptionIcon
-                    ? createElement(OptionIcon, { "aria-hidden": true, size: 16 })
+                    ? <OptionIcon aria-hidden size={16} />
                     : undefined
                 }
                 variant={
