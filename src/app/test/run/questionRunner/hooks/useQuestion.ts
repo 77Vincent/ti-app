@@ -2,8 +2,11 @@
 
 import type { DifficultyEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import { useCallback, useEffect, useMemo, useReducer } from "react";
-import { fetchGeneratedQuestion } from "../api";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import {
+  fetchGeneratedQuestion,
+  isAnonymousQuestionLimitError,
+} from "../api";
 import {
   createQuestionSessionController,
 } from "../session";
@@ -28,6 +31,7 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
+  isSignInRequired: boolean;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
   isOptionCorrect: (optionId: QuestionOptionId) => boolean;
@@ -43,6 +47,7 @@ export function useQuestion({
   subcategoryId,
   difficulty,
 }: UseQuestionInput): UseQuestionResult {
+  const [isSignInRequired, setIsSignInRequired] = useState(false);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -52,6 +57,11 @@ export function useQuestion({
     useQuestionSelection();
 
   const showLoadError = useCallback((error: unknown) => {
+    if (isAnonymousQuestionLimitError(error)) {
+      setIsSignInRequired(true);
+      return;
+    }
+
     toast.error(error, {
       fallbackDescription: "Failed to load question.",
     });
@@ -59,6 +69,7 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
+      setIsSignInRequired(false);
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
@@ -157,6 +168,7 @@ export function useQuestion({
     question,
     isLoadingQuestion,
     isSubmitting,
+    isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
     isOptionCorrect,

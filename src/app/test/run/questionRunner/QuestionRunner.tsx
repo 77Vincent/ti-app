@@ -4,6 +4,8 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { Button } from "@heroui/react";
+import Link from "next/link";
+import { SIGN_IN_PAGE_PATH } from "@/app/auth/signIn";
 import { useQuestion } from "./hooks/useQuestion";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
@@ -23,6 +25,7 @@ export default function Question({
     question,
     isLoadingQuestion,
     isSubmitting,
+    isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
     isOptionCorrect,
@@ -34,6 +37,19 @@ export default function Question({
     subcategoryId,
     difficulty,
   });
+
+  if (isSignInRequired) {
+    return (
+      <div className="relative">
+        <QuestionSkeleton />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Button as={Link} color="primary" href={SIGN_IN_PAGE_PATH} size="lg">
+            Sign in to continue
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoadingQuestion || !question) {
     return <QuestionSkeleton />;

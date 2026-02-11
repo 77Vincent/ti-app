@@ -12,6 +12,23 @@ type GenerateQuestionResponse = {
   error?: string;
 };
 
+export class GenerateQuestionRequestError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "GenerateQuestionRequestError";
+    this.status = status;
+  }
+}
+
+export function isAnonymousQuestionLimitError(error: unknown): boolean {
+  return (
+    error instanceof GenerateQuestionRequestError &&
+    error.status === 403
+  );
+}
+
 export async function fetchGeneratedQuestion(
   input: GenerateQuestionInput,
 ): Promise<Question> {
@@ -24,7 +41,10 @@ export async function fetchGeneratedQuestion(
   const payload = (await response.json()) as GenerateQuestionResponse;
 
   if (!response.ok || !payload.question) {
-    throw new Error(payload.error ?? "Failed to load question.");
+    throw new GenerateQuestionRequestError(
+      payload.error ?? "Failed to load question.",
+      response.status,
+    );
   }
 
   return payload.question;
