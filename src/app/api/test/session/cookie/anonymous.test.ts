@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextResponse } from "next/server";
+import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
 
 const { cookieGet, cookiesFn } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -87,7 +88,7 @@ describe("anonymous session cookie helpers", () => {
       ),
       {
         httpOnly: true,
-        maxAge: 60 * 60 * 24,
+        maxAge: ANONYMOUS_SESSION_TTL,
         path: "/",
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",

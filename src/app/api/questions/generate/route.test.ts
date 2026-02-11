@@ -24,7 +24,6 @@ vi.mock("@/app/api/test/session/auth", () => ({
 
 vi.mock("./cookie/anonymousCount", () => ({
   incrementAnonymousQuestionCountCookie,
-  MAX_ANONYMOUS_QUESTION_COUNT: 5,
   readAnonymousQuestionCount,
 }));
 

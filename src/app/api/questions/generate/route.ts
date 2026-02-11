@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { parseTestRunParams } from "@/app/test/run/questionRunner/session/params";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
+import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {
   incrementAnonymousQuestionCountCookie,
-  MAX_ANONYMOUS_QUESTION_COUNT,
   readAnonymousQuestionCount,
 } from "./cookie/anonymousCount";
 import { buildQuestion } from "./service/question";

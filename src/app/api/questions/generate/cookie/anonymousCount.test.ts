@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextResponse } from "next/server";
+import {
+  ANONYMOUS_SESSION_TTL,
+  MAX_ANONYMOUS_QUESTION_COUNT,
+} from "@/lib/config/testPolicy";
 
 const { cookieGet, cookiesFn } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -14,7 +18,6 @@ vi.mock("next/headers", () => ({
 
 import {
   incrementAnonymousQuestionCountCookie,
-  MAX_ANONYMOUS_QUESTION_COUNT,
   readAnonymousQuestionCount,
 } from "./anonymousCount";
 
@@ -57,7 +60,7 @@ describe("anonymous question count cookie helpers", () => {
       String(MAX_ANONYMOUS_QUESTION_COUNT),
       {
         httpOnly: true,
-        maxAge: 60 * 60 * 24,
+        maxAge: ANONYMOUS_SESSION_TTL,
         path: "/",
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",

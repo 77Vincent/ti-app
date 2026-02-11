@@ -4,10 +4,10 @@ import {
   parseTestRunParams,
   type TestRunParams,
 } from "@/app/test/run/questionRunner/session/params";
+import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
 import { isNonEmptyString } from "@/lib/string";
 
 const ANONYMOUS_TEST_SESSION_COOKIE_NAME = "ti-app-anon-test-session";
-const ANONYMOUS_TEST_SESSION_COOKIE_TTL_SECONDS = 60 * 60 * 24;
 
 export async function readAnonymousTestSessionCookie(): Promise<TestRunParams | null> {
   const cookieStore = await cookies();
@@ -35,7 +35,7 @@ export function persistAnonymousTestSessionCookie(
     encodeURIComponent(JSON.stringify(params)),
     {
       httpOnly: true,
-      maxAge: ANONYMOUS_TEST_SESSION_COOKIE_TTL_SECONDS,
+      maxAge: ANONYMOUS_SESSION_TTL,
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

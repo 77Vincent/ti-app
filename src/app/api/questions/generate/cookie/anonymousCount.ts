@@ -1,10 +1,8 @@
+import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
 
 const ANONYMOUS_QUESTION_COUNT_COOKIE_NAME = "ti-app-anon-question-count";
-const ANONYMOUS_QUESTION_COUNT_COOKIE_TTL_SECONDS = 60 * 60 * 24;
-
-export const MAX_ANONYMOUS_QUESTION_COUNT = 5;
 
 function parseAnonymousQuestionCount(value: string | undefined): number {
   if (!value) {
@@ -37,7 +35,7 @@ export function incrementAnonymousQuestionCountCookie(
     String(anonymousQuestionCount + 1),
     {
       httpOnly: true,
-      maxAge: ANONYMOUS_QUESTION_COUNT_COOKIE_TTL_SECONDS,
+      maxAge: ANONYMOUS_SESSION_TTL,
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

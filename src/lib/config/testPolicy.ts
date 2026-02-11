@@ -1,0 +1,2 @@
+export const ANONYMOUS_SESSION_TTL = 60 * 60 * 24;
+export const MAX_ANONYMOUS_QUESTION_COUNT = 5;
