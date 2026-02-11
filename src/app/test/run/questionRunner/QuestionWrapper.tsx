@@ -2,7 +2,15 @@
 
 import type { QuestionRunnerProps } from "./types";
 import { Button, Card, CardBody, Chip } from "@heroui/react";
-import { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "@/lib/meta";
+import {
+  getDifficultyIcon,
+  getDifficultyLabel,
+  getGoalIcon,
+  getGoalLabel,
+  getSubcategoryLabel,
+  getSubjectIcon,
+  getSubjectLabel,
+} from "@/lib/meta";
 import { createElement } from "react";
 import Question from "./QuestionRunner";
 
@@ -16,6 +24,10 @@ export default function QuestionRunner({
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
   const GoalIcon = getGoalIcon(goal);
+  const subjectLabel = getSubjectLabel(subjectId);
+  const subcategoryLabel = getSubcategoryLabel(subcategoryId);
+  const difficultyLabel = getDifficultyLabel(difficulty);
+  const goalLabel = getGoalLabel(goal);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -41,30 +53,28 @@ export default function QuestionRunner({
         </CardBody>
       </Card>
 
-      <div className="flex justify-between">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Chip variant="bordered">
-            <span className="inline-flex items-center gap-1.5">
-              {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
-              {subjectId}
-            </span>
-          </Chip>
-          <Chip variant="bordered">
-            {subcategoryId}
-          </Chip>
-          <Chip variant="bordered">
-            <span className="inline-flex items-center gap-1.5">
-              {createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })}
-              {difficulty}
-            </span>
-          </Chip>
-          <Chip variant="bordered">
-            <span className="inline-flex items-center gap-1.5">
-              {createElement(GoalIcon, { "aria-hidden": true, size: 14 })}
-              {goal}
-            </span>
-          </Chip>
-        </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Chip variant="bordered">
+          <span className="inline-flex items-center gap-1.5">
+            {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
+            {subjectLabel}
+          </span>
+        </Chip>
+        <Chip variant="bordered">
+          {subcategoryLabel}
+        </Chip>
+        <Chip variant="bordered">
+          <span className="inline-flex items-center gap-1.5">
+            {createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })}
+            {difficultyLabel}
+          </span>
+        </Chip>
+        <Chip variant="bordered">
+          <span className="inline-flex items-center gap-1.5">
+            {createElement(GoalIcon, { "aria-hidden": true, size: 14 })}
+            {goalLabel}
+          </span>
+        </Chip>
       </div>
     </div>
   );

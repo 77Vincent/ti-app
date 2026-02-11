@@ -1,7 +1,13 @@
 export { SUBJECTS } from "./subjects";
 export { SUBCATEGORIES } from "./subcategories";
 export { DIFFICULTIES } from "./difficulties";
-export { sortByOrder } from "./utils";
+export {
+  getDifficultyLabel,
+  getGoalLabel,
+  getSubcategoryLabel,
+  getSubjectLabel,
+  sortByOrder,
+} from "./utils";
 export { QUESTION_TYPES } from "./questionTypes";
 export { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "./icons";
 export { GOALS } from "./goals";
