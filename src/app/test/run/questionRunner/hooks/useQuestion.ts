@@ -2,7 +2,7 @@
 
 import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   addFavoriteQuestion,
   fetchGeneratedQuestion,
@@ -14,13 +14,14 @@ import {
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
-  isOptionCorrect as getIsOptionCorrect,
-  isOptionWrongSelection as getIsOptionWrongSelection,
-} from "../utils/evaluation";
-import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
 } from "../session/reducer";
+import {
+  canSubmitQuestion,
+  isActiveFavoriteMutation,
+  isFavoriteAuthError,
+} from "../utils/questionGuards";
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
@@ -39,8 +40,6 @@ export type UseQuestionResult = {
   isSignInRequired: boolean;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
-  isOptionCorrect: (optionId: QuestionOptionId) => boolean;
-  isOptionWrongSelection: (optionId: QuestionOptionId) => boolean;
   selectOption: (optionId: QuestionOptionId) => void;
   toggleFavorite: () => Promise<void>;
   submit: () => Promise<void>;
@@ -57,6 +56,7 @@ export function useQuestion({
   const [isSignInRequired, setIsSignInRequired] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFavoriteSubmitting, setIsFavoriteSubmitting] = useState(false);
+  const activeQuestionIdRef = useRef<string | null>(null);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -80,10 +80,36 @@ export function useQuestion({
     (nextQuestion: QuestionType) => {
       setIsSignInRequired(false);
       setIsFavorite(false);
+      setIsFavoriteSubmitting(false);
+      activeQuestionIdRef.current = nextQuestion.id;
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
     [resetSelection],
+  );
+
+  const loadAndApplyQuestion = useCallback(
+    async (
+      load: () => Promise<QuestionType>,
+      shouldIgnoreResult?: () => boolean,
+    ): Promise<void> => {
+      try {
+        const nextQuestion = await load();
+
+        if (shouldIgnoreResult?.()) {
+          return;
+        }
+
+        applyLoadedQuestion(nextQuestion);
+      } catch (error) {
+        if (shouldIgnoreResult?.()) {
+          return;
+        }
+
+        showLoadError(error);
+      }
+    },
+    [applyLoadedQuestion, showLoadError],
   );
 
   const loadQuestion = useCallback(async () => {
@@ -110,20 +136,13 @@ export function useQuestion({
     async function loadInitialQuestion() {
       dispatchUiState({ type: "initialLoadStarted" });
 
-      try {
-        const nextQuestion = await questionSession.loadInitialQuestion();
+      await loadAndApplyQuestion(
+        () => questionSession.loadInitialQuestion(),
+        () => cancelled,
+      );
 
-        if (!cancelled) {
-          applyLoadedQuestion(nextQuestion);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          showLoadError(error);
-        }
-      } finally {
-        if (!cancelled) {
-          dispatchUiState({ type: "initialLoadFinished" });
-        }
+      if (!cancelled) {
+        dispatchUiState({ type: "initialLoadFinished" });
       }
     }
 
@@ -133,22 +152,22 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [applyLoadedQuestion, questionSession, showLoadError]);
+  }, [loadAndApplyQuestion, questionSession]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
   }
 
-  function isOptionCorrect(optionId: QuestionOptionId): boolean {
-    return getIsOptionCorrect(question, optionId);
-  }
-
-  function isOptionWrongSelection(optionId: QuestionOptionId): boolean {
-    return getIsOptionWrongSelection(question, selectedOptionIds, optionId);
-  }
-
   async function submit() {
-    if (!question || selectedOptionIds.length === 0 || isSubmitting) {
+    if (
+      !canSubmitQuestion({
+        hasQuestion: Boolean(question),
+        hasSubmitted,
+        selectedOptionCount: selectedOptionIds.length,
+        isSubmitting,
+        isFavoriteSubmitting,
+      })
+    ) {
       return;
     }
 
@@ -158,18 +177,14 @@ export function useQuestion({
     }
 
     if (questionSession.hasBufferedQuestion()) {
-      const nextQuestion = await questionSession.consumeNextQuestion();
-      applyLoadedQuestion(nextQuestion);
+      await loadAndApplyQuestion(() => questionSession.consumeNextQuestion());
       return;
     }
 
     dispatchUiState({ type: "submitFetchStarted" });
 
     try {
-      const nextQuestion = await questionSession.consumeNextQuestion();
-      applyLoadedQuestion(nextQuestion);
-    } catch (error) {
-      showLoadError(error);
+      await loadAndApplyQuestion(() => questionSession.consumeNextQuestion());
     } finally {
       dispatchUiState({ type: "submitFetchFinished" });
     }
@@ -180,24 +195,38 @@ export function useQuestion({
       return;
     }
 
+    const targetQuestionId = question.id;
+    const nextFavoriteState = !isFavorite;
     setIsFavoriteSubmitting(true);
 
     try {
       if (isFavorite) {
         await removeFavoriteQuestion(question.id);
-        setIsFavorite(false);
+      } else {
+        await addFavoriteQuestion({
+          subjectId,
+          subcategoryId,
+          difficulty,
+          goal,
+          question,
+        });
+      }
+
+      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
         return;
       }
 
-      await addFavoriteQuestion({
-        subjectId,
-        subcategoryId,
-        difficulty,
-        goal,
-        question,
-      });
-      setIsFavorite(true);
+      setIsFavorite(nextFavoriteState);
     } catch (error) {
+      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
+        return;
+      }
+
+      if (isFavoriteAuthError(error)) {
+        setIsSignInRequired(true);
+        return;
+      }
+
       toast.error(error, {
         fallbackDescription: isFavorite
           ? "Failed to remove favorite."
@@ -217,8 +246,6 @@ export function useQuestion({
     isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
-    isOptionCorrect,
-    isOptionWrongSelection,
     selectOption,
     toggleFavorite,
     submit,

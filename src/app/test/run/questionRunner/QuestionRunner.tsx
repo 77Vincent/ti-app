@@ -8,8 +8,13 @@ import { Star } from "lucide-react";
 import Link from "next/link";
 import { SIGN_IN_PAGE_PATH } from "@/app/auth/signIn";
 import { useQuestion } from "./hooks/useQuestion";
+import { canSubmitQuestion } from "./utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
+import {
+  isOptionCorrect,
+  isOptionWrongSelection,
+} from "./utils/evaluation";
 
 type QuestionProps = {
   subjectId: SubjectEnum;
@@ -33,8 +38,6 @@ export default function Question({
     isSignInRequired,
     hasSubmitted,
     selectedOptionIds,
-    isOptionCorrect,
-    isOptionWrongSelection,
     selectOption,
     toggleFavorite,
     submit,
@@ -71,11 +74,15 @@ export default function Question({
         {question.options.map((option) => (
           <QuestionChoice
             hasSubmitted={hasSubmitted}
-            isCorrect={isOptionCorrect(option.id)}
+            isCorrect={isOptionCorrect(question, option.id)}
             isMultipleAnswer={question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER}
             isSelected={selectedOptionIds.includes(option.id)}
             isSubmitting={isSubmitting}
-            isWrongSelection={isOptionWrongSelection(option.id)}
+            isWrongSelection={isOptionWrongSelection(
+              question,
+              selectedOptionIds,
+              option.id,
+            )}
             key={option.id}
             onSelect={() => selectOption(option.id)}
             option={option}
@@ -107,7 +114,15 @@ export default function Question({
           <Button
             color="primary"
             size="sm"
-            isDisabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
+            isDisabled={
+              !canSubmitQuestion({
+                hasQuestion: true,
+                hasSubmitted,
+                selectedOptionCount: selectedOptionIds.length,
+                isSubmitting,
+                isFavoriteSubmitting,
+              })
+            }
             isLoading={isSubmitting}
             onPress={submit}
           >
