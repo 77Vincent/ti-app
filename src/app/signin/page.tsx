@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, Card, CardBody } from "@heroui/react";
-import Link from "next/link";
 import { signIn } from "next-auth/react";
 import {
   GOOGLE_PROVIDER_ID,
@@ -20,11 +19,9 @@ export default function SignInPage() {
       <Card shadow="sm" className="w-full">
         <CardBody className="gap-4 p-8 text-center">
           <h1 className="text-2xl font-semibold">Sign in to Ti</h1>
+          <p className="font-light text-default-500">Learning while testing</p>
           <Button color="primary" fullWidth onPress={handleGoogleSignIn}>
             Continue with Google
-          </Button>
-          <Button as={Link} href="/" fullWidth variant="light">
-            Back to Home
           </Button>
         </CardBody>
       </Card>
