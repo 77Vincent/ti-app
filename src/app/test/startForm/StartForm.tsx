@@ -109,6 +109,7 @@ export default function StartForm() {
 
           return (
             <Button
+              size="lg"
               key={option.value}
               onPress={() => handleSelectSubject(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
@@ -125,6 +126,7 @@ export default function StartForm() {
       case "subcategory":
         return currentStepViewConfig.options.map((option) => (
           <Button
+            size="lg"
             key={option.value}
             onPress={() => handleSelectSubcategory(option.value)}
             variant={
@@ -142,6 +144,7 @@ export default function StartForm() {
 
           return (
             <Button
+              size="lg"
               key={option.value}
               onPress={() => handleSelectDifficulty(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
@@ -162,6 +165,7 @@ export default function StartForm() {
           return (
             <Button
               key={option.value}
+              size="lg"
               onPress={() => handleSelectGoal(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
               variant={
@@ -178,14 +182,14 @@ export default function StartForm() {
   }
 
   return (
-    <Card shadow="sm" className="w-full max-w-xl self-start">
+    <Card shadow="sm" className="w-full max-w-2xl self-start">
       <CardHeader className="pt-6">
         <h1 className="mx-auto text-2xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}
         </h1>
       </CardHeader>
 
-      <CardBody className="p-6 pt-2">
+      <CardBody className="p-6 pt-4">
         <div className="flex flex-wrap gap-2 items-center justify-center">{renderStepOptions()}</div>
       </CardBody>
     </Card>

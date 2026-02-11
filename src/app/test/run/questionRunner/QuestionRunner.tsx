@@ -96,7 +96,7 @@ export default function Question({
           {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
         </p>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
             <Button
               aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
@@ -109,13 +109,12 @@ export default function Question({
               size="sm"
               variant={"light"}
             >
-              <Star aria-hidden className={isFavorite ? "fill-current" : undefined} size={16} />
+              <Star aria-hidden className={isFavorite ? "fill-current" : undefined} size={20} />
             </Button>
           </Tooltip>
 
           <Button
             color="primary"
-            size="sm"
             isDisabled={
               !canSubmitQuestion({
                 hasQuestion: true,
