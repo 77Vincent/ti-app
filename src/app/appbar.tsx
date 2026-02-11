@@ -13,7 +13,7 @@ import {
   NavbarItem,
   Tooltip,
 } from "@heroui/react";
-import { LogIn, Moon, Sun, User } from "lucide-react";
+import { LogIn, Moon, Sun, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -63,7 +63,9 @@ export default function AppBar() {
   return (
     <Navbar height={60} maxWidth="full" position="sticky">
       <NavbarBrand>
-        <Image src="/logo.svg" alt="QuizMaster Logo" width={48} height={40} />
+        <Link className="hover:brightness-125" href="/" aria-label="Ti">
+          <Image src="/logo.svg" alt="Ti Logo" width={48} height={40} />
+        </Link>
       </NavbarBrand>
 
       <NavbarContent justify="end">
@@ -95,7 +97,7 @@ export default function AppBar() {
                 size="sm"
                 variant="bordered"
               >
-                <LogIn aria-hidden="true" size={18} />
+                <User2 aria-hidden="true" size={18} />
               </Button>
             </Tooltip>
           )}
