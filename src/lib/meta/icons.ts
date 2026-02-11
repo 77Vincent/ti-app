@@ -1,5 +1,7 @@
 import {
+  BookOpenCheck,
   Crown,
+  GraduationCap,
   Flame,
   Languages,
   Leaf,
@@ -7,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { DifficultyEnum } from "./difficulties";
+import type { GoalEnum } from "./goals";
 import type { SubjectEnum } from "./subjects";
 
 const DIFFICULTY_ICON_BY_ID: Record<DifficultyEnum, LucideIcon> = {
@@ -20,18 +23,19 @@ const SUBJECT_ICON_BY_ID: Record<SubjectEnum, LucideIcon> = {
   language: Languages,
 };
 
-export function getDifficultyIcon(id: string): LucideIcon | null {
-  if (!(id in DIFFICULTY_ICON_BY_ID)) {
-    return null;
-  }
+const GOAL_ICON_BY_ID: Record<GoalEnum, LucideIcon> = {
+  study: GraduationCap,
+  exam: BookOpenCheck,
+};
 
-  return DIFFICULTY_ICON_BY_ID[id as DifficultyEnum];
+export function getDifficultyIcon(id: DifficultyEnum): LucideIcon {
+  return DIFFICULTY_ICON_BY_ID[id];
 }
 
-export function getSubjectIcon(id: string): LucideIcon | null {
-  if (!(id in SUBJECT_ICON_BY_ID)) {
-    return null;
-  }
+export function getSubjectIcon(id: SubjectEnum): LucideIcon {
+  return SUBJECT_ICON_BY_ID[id];
+}
 
-  return SUBJECT_ICON_BY_ID[id as SubjectEnum];
+export function getGoalIcon(id: GoalEnum): LucideIcon {
+  return GOAL_ICON_BY_ID[id];
 }

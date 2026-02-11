@@ -2,13 +2,14 @@
 
 import {
   getDifficultyIcon,
+  getGoalIcon,
   getSubjectIcon,
   sortByOrder,
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -109,6 +110,7 @@ export default function StartForm() {
   });
   const isSubjectStep = currentStep === "subject";
   const isDifficultyStep = currentStep === "difficulty";
+  const isGoalStep = currentStep === "goal";
 
   return (
     <Card shadow="sm" className="w-full max-w-xl self-start">
@@ -122,11 +124,16 @@ export default function StartForm() {
         <div className="flex flex-wrap gap-2 items-center justify-center">
           {currentStepViewConfig.options.map((option) => {
             const optionValue = String(option.value);
-            const SubjectIcon = isSubjectStep ? getSubjectIcon(optionValue) : null;
-            const DifficultyIcon = isDifficultyStep
-              ? getDifficultyIcon(optionValue)
+            const SubjectIcon = isSubjectStep
+              ? getSubjectIcon(optionValue as SubjectEnum)
               : null;
-            const OptionIcon = SubjectIcon ?? DifficultyIcon;
+            const DifficultyIcon = isDifficultyStep
+              ? getDifficultyIcon(optionValue as DifficultyEnum)
+              : null;
+            const GoalIcon = isGoalStep
+              ? getGoalIcon(optionValue as GoalEnum)
+              : null;
+            const OptionIcon = SubjectIcon ?? DifficultyIcon ?? GoalIcon;
 
             return (
               <Button

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getDifficultyIcon, getSubjectIcon } from "./icons";
+import { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "./icons";
 
 describe("meta icons", () => {
   it("returns icon for known subject", () => {
@@ -10,8 +10,8 @@ describe("meta icons", () => {
     expect(getDifficultyIcon("beginner")).not.toBeNull();
   });
 
-  it("returns null for unknown keys", () => {
-    expect(getSubjectIcon("unknown-subject")).toBeNull();
-    expect(getDifficultyIcon("unknown-difficulty")).toBeNull();
+  it("returns icon for known goal", () => {
+    expect(getGoalIcon("study")).not.toBeNull();
+    expect(getGoalIcon("exam")).not.toBeNull();
   });
 });

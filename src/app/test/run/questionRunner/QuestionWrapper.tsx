@@ -2,7 +2,8 @@
 
 import type { QuestionRunnerProps } from "./types";
 import { Button, Card, CardBody, Chip } from "@heroui/react";
-import { getDifficultyIcon, getSubjectIcon } from "@/lib/meta";
+import { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "@/lib/meta";
+import type { SubjectEnum } from "@/lib/meta";
 import { createElement } from "react";
 import Question from "./QuestionRunner";
 
@@ -13,8 +14,9 @@ export default function QuestionRunner({
   goal,
   onEndTest,
 }: QuestionRunnerProps) {
-  const SubjectIcon = getSubjectIcon(subjectId);
+  const SubjectIcon = getSubjectIcon(subjectId as SubjectEnum);
   const DifficultyIcon = getDifficultyIcon(difficulty);
+  const GoalIcon = getGoalIcon(goal);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -33,9 +35,7 @@ export default function QuestionRunner({
         <div className="flex flex-wrap items-center gap-1.5">
           <Chip variant="bordered">
             <span className="inline-flex items-center gap-1.5">
-              {SubjectIcon
-                ? createElement(SubjectIcon, { "aria-hidden": true, size: 14 })
-                : null}
+              {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
               {subjectId}
             </span>
           </Chip>
@@ -44,14 +44,15 @@ export default function QuestionRunner({
           </Chip>
           <Chip variant="bordered">
             <span className="inline-flex items-center gap-1.5">
-              {DifficultyIcon
-                ? createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })
-                : null}
+              {createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })}
               {difficulty}
             </span>
           </Chip>
           <Chip variant="bordered">
-            {goal}
+            <span className="inline-flex items-center gap-1.5">
+              {createElement(GoalIcon, { "aria-hidden": true, size: 14 })}
+              {goal}
+            </span>
           </Chip>
         </div>
 
