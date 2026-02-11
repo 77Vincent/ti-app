@@ -15,8 +15,8 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-1 items-center justify-center">
-      <Card shadow="sm" className="w-full">
+    <section className="flex justify-center">
+      <Card shadow="sm" className="w-full max-w-md">
         <CardBody className="gap-4 p-8 text-center">
           <h1 className="text-2xl font-semibold">Sign in to Ti</h1>
           <p className="font-light text-default-500">Learning while testing</p>
@@ -25,6 +25,6 @@ export default function SignInPage() {
           </Button>
         </CardBody>
       </Card>
-    </div>
+    </section>
   );
 }

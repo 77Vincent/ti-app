@@ -42,7 +42,8 @@ export default function Question({
     return (
       <div className="relative">
         <QuestionSkeleton className="opacity-70 blur-sm" />
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center flex-col gap-4">
+          <p className="text-lg text-default-600 font-light">Question limit reached</p>
           <Button as={Link} color="primary" href={SIGN_IN_PAGE_PATH} size="lg">
             Sign in to continue
           </Button>
