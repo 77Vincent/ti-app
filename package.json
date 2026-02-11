@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",
     "test:staged": "vitest related --run --passWithNoTests",
+    "postinstall": "prisma generate",
     "prepare": "husky"
   },
   "dependencies": {
