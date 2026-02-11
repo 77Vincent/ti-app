@@ -5,6 +5,7 @@ import {
 } from "@/lib/validation/testSession";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
+import { QuestionRunnerApiError } from "../api/error";
 
 type TestSessionResponse = {
   session?: unknown;
@@ -14,7 +15,7 @@ type TestSessionResponse = {
 type SessionRequestOptions = {
   body?: string;
   cache?: RequestCache;
-  method: "GET" | "POST" | "DELETE";
+  method: "GET" | "POST" | "DELETE" | "PATCH";
 };
 
 function parseSessionFromResponse(payload: unknown): TestRunSession | null {
@@ -40,7 +41,10 @@ async function requestSession(
   });
 
   if (!response.ok) {
-    throw new Error(await parseHttpErrorMessage(response));
+    throw new QuestionRunnerApiError(
+      await parseHttpErrorMessage(response),
+      response.status,
+    );
   }
 
   if (response.status === 204) {
@@ -75,5 +79,11 @@ export async function writeTestSession(
 export async function clearTestSession(): Promise<void> {
   await requestSession({
     method: "DELETE",
+  });
+}
+
+export async function consumeQuestionQuota(): Promise<void> {
+  await requestSession({
+    method: "PATCH",
   });
 }

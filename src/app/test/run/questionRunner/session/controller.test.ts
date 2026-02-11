@@ -24,7 +24,7 @@ describe("question session controller", () => {
     expect(loadQuestion).toHaveBeenCalledTimes(3);
   });
 
-  it("consumes buffered question first and refills in background", async () => {
+  it("consumes buffered question first and refills on explicit prefetch", async () => {
     const loadQuestion = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce("Q1")
@@ -51,9 +51,7 @@ describe("question session controller", () => {
   it("falls back to direct load when buffer is empty", async () => {
     const loadQuestion = vi
       .fn<() => Promise<string>>()
-      .mockResolvedValueOnce("Q1")
-      .mockResolvedValueOnce("Q2")
-      .mockResolvedValueOnce("Q3");
+      .mockResolvedValueOnce("Q1");
 
     const controller = createQuestionSessionController({
       bufferSize: 2,
@@ -62,6 +60,6 @@ describe("question session controller", () => {
 
     const nextQuestion = await controller.consumeNextQuestion();
     expect(nextQuestion).toBe("Q1");
-    expect(loadQuestion).toHaveBeenCalledTimes(3);
+    expect(loadQuestion).toHaveBeenCalledTimes(1);
   });
 });

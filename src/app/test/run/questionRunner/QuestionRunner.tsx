@@ -7,7 +7,7 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button, Tooltip } from "@heroui/react";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { useQuestion } from "./hooks/useQuestion";
+import { useQuestion, type SignInDemand } from "./hooks/useQuestion";
 import { canSubmitQuestion } from "./utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
@@ -23,6 +23,11 @@ type QuestionProps = {
   goal: GoalEnum;
 };
 
+const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
+  favorite: "Sign in to favorite",
+  more_questions: "Sign in for more questions",
+};
+
 export default function Question({
   subjectId,
   subcategoryId,
@@ -36,6 +41,7 @@ export default function Question({
     isFavorite,
     isFavoriteSubmitting,
     isSignInRequired,
+    signInDemand,
     hasSubmitted,
     selectedOptionIds,
     selectOption,
@@ -54,7 +60,9 @@ export default function Question({
       {isSignInRequired ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <Button as={Link} color="primary" href={PAGE_PATHS.SIGN_IN} size="lg">
-            Sign in to continue
+            {signInDemand
+              ? SIGN_IN_CTA_LABEL_BY_DEMAND[signInDemand]
+              : "Sign in to continue"}
           </Button>
         </div>
       ) : null}

@@ -5,6 +5,7 @@ export {
 } from "./reducer";
 export {
   clearTestSession,
+  consumeQuestionQuota,
   readTestSession,
   writeTestSession,
 } from "./storage";

@@ -33,28 +33,19 @@ export function createQuestionSessionController<T>({
     }
   }
 
-  function prefetchInBackground() {
-    void prefetchToCapacity();
-  }
-
   async function loadInitialQuestion(): Promise<T> {
     clearAsyncBuffer(buffer);
-    const nextQuestion = await loadQuestion();
-    prefetchInBackground();
-    return nextQuestion;
+    return loadQuestion();
   }
 
   async function consumeNextQuestion(): Promise<T> {
     const bufferedQuestion = consumeAsyncBuffer(buffer);
 
     if (bufferedQuestion) {
-      prefetchInBackground();
       return bufferedQuestion;
     }
 
-    const nextQuestion = await loadQuestion();
-    prefetchInBackground();
-    return nextQuestion;
+    return loadQuestion();
   }
 
   function clear() {

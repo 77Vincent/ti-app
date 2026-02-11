@@ -8,7 +8,12 @@ import {
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
 } from "./cookie/anonymous";
+import {
+  incrementAnonymousQuestionCountCookie,
+  readAnonymousQuestionCount,
+} from "./cookie/anonymousQuestionCount";
 import { readAuthenticatedUserId } from "./auth";
+import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {
   deleteTestSession,
   readTestSession,
@@ -94,4 +99,25 @@ export async function DELETE() {
   clearAnonymousTestSessionCookie(response);
 
   return response;
+}
+
+export async function PATCH() {
+  const userId = await readAuthenticatedUserId();
+  const response = NextResponse.json({ ok: true });
+
+  if (userId) {
+    return response;
+  }
+
+  const anonymousQuestionCount = await readAnonymousQuestionCount();
+  if (anonymousQuestionCount >= MAX_ANONYMOUS_QUESTION_COUNT) {
+    return NextResponse.json(
+      {
+        error: `You have reached the anonymous limit of ${MAX_ANONYMOUS_QUESTION_COUNT} questions. Please log in to continue.`,
+      },
+      { status: 403 },
+    );
+  }
+
+  return incrementAnonymousQuestionCountCookie(response, anonymousQuestionCount);
 }

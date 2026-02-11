@@ -10,6 +10,7 @@ import {
   removeFavoriteQuestion,
 } from "../api";
 import {
+  consumeQuestionQuota,
   createQuestionSessionController,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
@@ -38,6 +39,7 @@ export type UseQuestionResult = {
   isFavorite: boolean;
   isFavoriteSubmitting: boolean;
   isSignInRequired: boolean;
+  signInDemand: SignInDemand | null;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
   selectOption: (optionId: QuestionOptionId) => void;
@@ -46,6 +48,7 @@ export type UseQuestionResult = {
 };
 
 const PREFETCH_BUFFER_SIZE = 2;
+export type SignInDemand = "more_questions" | "favorite";
 
 export function useQuestion({
   subjectId,
@@ -53,7 +56,7 @@ export function useQuestion({
   difficulty,
   goal,
 }: UseQuestionInput): UseQuestionResult {
-  const [isSignInRequired, setIsSignInRequired] = useState(false);
+  const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFavoriteSubmitting, setIsFavoriteSubmitting] = useState(false);
   const activeQuestionIdRef = useRef<string | null>(null);
@@ -67,7 +70,7 @@ export function useQuestion({
 
   const showLoadError = useCallback((error: unknown) => {
     if (isAnonymousQuestionLimitError(error)) {
-      setIsSignInRequired(true);
+      setSignInDemand("more_questions");
       return;
     }
 
@@ -78,7 +81,7 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
-      setIsSignInRequired(false);
+      setSignInDemand(null);
       setIsFavorite(false);
       setIsFavoriteSubmitting(false);
       activeQuestionIdRef.current = nextQuestion.id;
@@ -113,6 +116,7 @@ export function useQuestion({
   );
 
   const loadQuestion = useCallback(async () => {
+    await consumeQuestionQuota();
     return fetchGeneratedQuestion({
       subjectId,
       subcategoryId,
@@ -223,7 +227,7 @@ export function useQuestion({
       }
 
       if (isFavoriteAuthError(error)) {
-        setIsSignInRequired(true);
+        setSignInDemand("favorite");
         return;
       }
 
@@ -237,6 +241,7 @@ export function useQuestion({
     }
   }
 
+  const isSignInRequired = signInDemand !== null;
   return {
     question,
     isLoadingQuestion,
@@ -244,6 +249,7 @@ export function useQuestion({
     isFavorite,
     isFavoriteSubmitting,
     isSignInRequired,
+    signInDemand,
     hasSubmitted,
     selectedOptionIds,
     selectOption,
