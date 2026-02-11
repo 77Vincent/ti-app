@@ -19,6 +19,17 @@ export default function QuestionRunner({
 
   return (
     <div className="w-full max-w-2xl space-y-3">
+      <div className="flex items-center justify-between">
+        <Button
+          aria-label="Quit test"
+          onPress={onEndTest}
+          size="sm"
+          variant="light"
+        >
+          End Test
+        </Button>
+      </div>
+
       <Card shadow="sm">
         <CardBody className="p-6">
           <Question
@@ -54,15 +65,6 @@ export default function QuestionRunner({
             </span>
           </Chip>
         </div>
-
-        <Button
-          aria-label="Quit test"
-          onPress={onEndTest}
-          size="sm"
-          variant="light"
-        >
-          End Test
-        </Button>
       </div>
     </div>
   );

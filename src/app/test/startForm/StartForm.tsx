@@ -13,9 +13,8 @@ import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { createElement, useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
-import type { StartFormStep } from "./constants";
 import {
   getCurrentStartFormStep,
 } from "./utils";
@@ -29,7 +28,6 @@ import {
 import type { StartFormState } from "./state";
 import {
   buildCurrentStepViewConfig,
-  type StepOptionValue,
 } from "./viewModel";
 
 export default function StartForm() {
@@ -92,13 +90,6 @@ export default function StartForm() {
       });
   };
 
-  const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {
-    subject: (value) => handleSelectSubject(String(value) as SubjectEnum),
-    subcategory: (value) => handleSelectSubcategory(String(value)),
-    difficulty: (value) => handleSelectDifficulty(String(value) as DifficultyEnum),
-    goal: (value) => handleSelectGoal(String(value) as GoalEnum),
-  };
-
   const currentStepViewConfig = buildCurrentStepViewConfig({
     currentStep,
     subjects,
@@ -108,9 +99,82 @@ export default function StartForm() {
     selectedDifficulty,
     selectedGoal,
   });
-  const isSubjectStep = currentStep === "subject";
-  const isDifficultyStep = currentStep === "difficulty";
-  const isGoalStep = currentStep === "goal";
+
+  function renderStepOptions() {
+    switch (currentStepViewConfig.step) {
+      case "subject":
+        return currentStepViewConfig.options.map((option) => {
+          const Icon = getSubjectIcon(option.value);
+
+          return (
+            <Button
+              key={option.value}
+              onPress={() => handleSelectSubject(option.value)}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              variant={
+                currentStepViewConfig.selectedValue === option.value
+                  ? "solid"
+                  : "bordered"
+              }
+            >
+              {option.label}
+            </Button>
+          );
+        });
+      case "subcategory":
+        return currentStepViewConfig.options.map((option) => (
+          <Button
+            key={option.value}
+            onPress={() => handleSelectSubcategory(option.value)}
+            variant={
+              currentStepViewConfig.selectedValue === option.value
+                ? "solid"
+                : "bordered"
+            }
+          >
+            {option.label}
+          </Button>
+        ));
+      case "difficulty":
+        return currentStepViewConfig.options.map((option) => {
+          const Icon = getDifficultyIcon(option.value);
+
+          return (
+            <Button
+              key={option.value}
+              onPress={() => handleSelectDifficulty(option.value)}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              variant={
+                currentStepViewConfig.selectedValue === option.value
+                  ? "solid"
+                  : "bordered"
+              }
+            >
+              {option.label}
+            </Button>
+          );
+        });
+      case "goal":
+        return currentStepViewConfig.options.map((option) => {
+          const Icon = getGoalIcon(option.value);
+
+          return (
+            <Button
+              key={option.value}
+              onPress={() => handleSelectGoal(option.value)}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              variant={
+                currentStepViewConfig.selectedValue === option.value
+                  ? "solid"
+                  : "bordered"
+              }
+            >
+              {option.label}
+            </Button>
+          );
+        });
+    }
+  }
 
   return (
     <Card shadow="sm" className="w-full max-w-xl self-start">
@@ -121,40 +185,7 @@ export default function StartForm() {
       </CardHeader>
 
       <CardBody className="p-6 pt-2">
-        <div className="flex flex-wrap gap-2 items-center justify-center">
-          {currentStepViewConfig.options.map((option) => {
-            const optionValue = String(option.value);
-            const SubjectIcon = isSubjectStep
-              ? getSubjectIcon(optionValue as SubjectEnum)
-              : null;
-            const DifficultyIcon = isDifficultyStep
-              ? getDifficultyIcon(optionValue as DifficultyEnum)
-              : null;
-            const GoalIcon = isGoalStep
-              ? getGoalIcon(optionValue as GoalEnum)
-              : null;
-            const OptionIcon = SubjectIcon ?? DifficultyIcon ?? GoalIcon;
-
-            return (
-              <Button
-                key={option.value}
-                onPress={() => onSelectByStep[currentStep](option.value)}
-                startContent={
-                  OptionIcon
-                    ? <OptionIcon aria-hidden size={16} />
-                    : undefined
-                }
-                variant={
-                  currentStepViewConfig.selectedValue === option.value
-                    ? "solid"
-                    : "bordered"
-                }
-              >
-                {option.label}
-              </Button>
-            );
-          })}
-        </div>
+        <div className="flex flex-wrap gap-2 items-center justify-center">{renderStepOptions()}</div>
       </CardBody>
     </Card>
   );
