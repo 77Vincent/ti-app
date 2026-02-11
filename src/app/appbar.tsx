@@ -24,6 +24,7 @@ import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
+import { clearStoredTestSession } from "./test/run/questionRunner/session";
 
 
 export default function AppBar() {
@@ -56,7 +57,10 @@ export default function AppBar() {
 
   function handleUserMenuAction(key: Key) {
     if (key === USER_MENU_LOGOUT_KEY) {
-      void signOut();
+      clearStoredTestSession();
+      void signOut({
+        callbackUrl: "/test",
+      });
     }
   }
 
@@ -93,6 +97,7 @@ export default function AppBar() {
                 as={Link}
                 href={getGoogleSignInPath()}
                 isIconOnly
+                onPress={clearStoredTestSession}
                 radius="full"
                 size="sm"
                 variant="bordered"
