@@ -3,6 +3,7 @@ export { SUBCATEGORIES } from "./subcategories";
 export { DIFFICULTIES } from "./difficulties";
 export { sortByOrder } from "./utils";
 export { QUESTION_TYPES } from "./questionTypes";
+export { getDifficultyIcon, getSubjectIcon } from "./icons";
 
 export type { QuestionType } from "./questionTypes";
 export type { SubcategoryOption } from "./subcategories";

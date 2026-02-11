@@ -1,24 +1,18 @@
 "use client";
 
 import {
+  getDifficultyIcon,
+  getSubjectIcon,
   sortByOrder,
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import type { DifficultyEnum, SubjectEnum } from "@/lib/meta";
+import type { DifficultyEnum } from "@/lib/meta";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
-import {
-  Crown,
-  Flame,
-  Languages,
-  Leaf,
-  TrendingUp,
-  type LucideIcon,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { createElement, useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
 import type { StartFormStep } from "./constants";
 import {
@@ -35,17 +29,6 @@ import {
   buildCurrentStepViewConfig,
   type StepOptionValue,
 } from "./viewModel";
-
-const DIFFICULTY_ICON_BY_ID: Record<DifficultyEnum, LucideIcon> = {
-  beginner: Leaf,
-  intermediate: TrendingUp,
-  advanced: Flame,
-  expert: Crown,
-};
-
-const SUBJECT_ICON_BY_ID: Record<SubjectEnum, LucideIcon> = {
-  language: Languages,
-};
 
 export default function StartForm() {
   const router = useRouter();
@@ -129,11 +112,10 @@ export default function StartForm() {
       <CardBody className="p-6 pt-2">
         <div className="flex flex-wrap gap-2 items-center justify-center">
           {currentStepViewConfig.options.map((option) => {
-            const SubjectIcon = isSubjectStep
-              ? SUBJECT_ICON_BY_ID[option.value as SubjectEnum]
-              : null;
+            const optionValue = String(option.value);
+            const SubjectIcon = isSubjectStep ? getSubjectIcon(optionValue) : null;
             const DifficultyIcon = isDifficultyStep
-              ? DIFFICULTY_ICON_BY_ID[option.value as DifficultyEnum]
+              ? getDifficultyIcon(optionValue)
               : null;
             const OptionIcon = SubjectIcon ?? DifficultyIcon;
 
@@ -141,7 +123,11 @@ export default function StartForm() {
               <Button
                 key={option.value}
                 onPress={() => onSelectByStep[currentStep](option.value)}
-                startContent={OptionIcon ? <OptionIcon aria-hidden size={16} /> : undefined}
+                startContent={
+                  OptionIcon
+                    ? createElement(OptionIcon, { "aria-hidden": true, size: 16 })
+                    : undefined
+                }
                 variant={
                   currentStepViewConfig.selectedValue === option.value
                     ? "solid"
