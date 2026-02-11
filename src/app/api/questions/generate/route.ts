@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseTestRunParams } from "@/app/test/run/questionRunner/session/params";
+import { parseTestRunParams } from "@/lib/validation/testSession";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {

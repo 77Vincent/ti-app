@@ -2,7 +2,7 @@ import {
   parseTestRunSession,
   type TestRunParams,
   type TestRunSession,
-} from "./params";
+} from "@/lib/validation/testSession";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 
 const TEST_SESSION_API_PATH = "/api/test/session";

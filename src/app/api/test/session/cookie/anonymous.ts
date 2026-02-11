@@ -4,7 +4,7 @@ import {
   parseTestRunParams,
   parseTestRunSession,
   type TestRunSession,
-} from "@/app/test/run/questionRunner/session/params";
+} from "@/lib/validation/testSession";
 import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
 import { isNonEmptyString } from "@/lib/string";
 

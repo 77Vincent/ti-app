@@ -1,15 +1,16 @@
 import { QUESTION_TYPES } from "@/lib/meta";
+import {
+  hasValidCorrectOptionCount,
+  isQuestionType,
+  parseCorrectOptionIds,
+  parseQuestionOptions,
+} from "@/lib/validation/question";
 import { isNonEmptyString } from "@/lib/string";
-import type { TestRunParams as GenerateQuestionRequest } from "@/app/test/run/questionRunner/session/params";
-import type {
-  Question,
-  QuestionOption,
-  QuestionOptionId,
-} from "@/app/test/run/questionRunner/types";
+import type { TestRunParams as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { Question } from "@/app/test/run/questionRunner/types";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const DEFAULT_OPENAI_MODEL = "o4-mini";
-const OPTION_IDS: QuestionOptionId[] = ["A", "B", "C", "D", "E", "F"];
 
 const SYSTEM_PROMPT = `
 You generate high-quality assessment questions.
@@ -77,94 +78,6 @@ function parseJsonObject(content: string): unknown {
   }
 }
 
-function isQuestionOptionId(value: string): value is QuestionOptionId {
-  return OPTION_IDS.includes(value as QuestionOptionId);
-}
-
-function isQuestionType(value: unknown): value is Question["questionType"] {
-  return (
-    value === QUESTION_TYPES.MULTIPLE_CHOICE ||
-    value === QUESTION_TYPES.MULTIPLE_ANSWER
-  );
-}
-
-function parseOption(value: unknown): QuestionOption | null {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-
-  const { id, text, explanation } = value as Record<string, unknown>;
-
-  if (
-    !isNonEmptyString(id) ||
-    !isQuestionOptionId(id) ||
-    !isNonEmptyString(text) ||
-    !isNonEmptyString(explanation)
-  ) {
-    return null;
-  }
-
-  return {
-    id,
-    text: text.trim(),
-    explanation: explanation.trim(),
-  };
-}
-
-function parseOptions(value: unknown): QuestionOption[] | null {
-  if (!Array.isArray(value) || value.length < 4 || value.length > 6) {
-    return null;
-  }
-
-  const options = value.map(parseOption);
-  if (options.some((option) => option === null)) {
-    return null;
-  }
-
-  const typedOptions = options as QuestionOption[];
-  const ids = typedOptions.map((option) => option.id);
-  const uniqueIds = new Set(ids);
-
-  if (uniqueIds.size !== ids.length) {
-    return null;
-  }
-
-  const expectedIds = OPTION_IDS.slice(0, typedOptions.length);
-  if (!expectedIds.every((id, index) => ids[index] === id)) {
-    return null;
-  }
-
-  return typedOptions;
-}
-
-function parseCorrectOptionIds(
-  value: unknown,
-  options: QuestionOption[],
-): QuestionOptionId[] | null {
-  if (!Array.isArray(value) || value.length === 0) {
-    return null;
-  }
-
-  const optionIdSet = new Set(options.map((option) => option.id));
-  const ids: QuestionOptionId[] = [];
-
-  for (const item of value) {
-    if (!isNonEmptyString(item) || !isQuestionOptionId(item)) {
-      return null;
-    }
-    if (!optionIdSet.has(item)) {
-      return null;
-    }
-    ids.push(item);
-  }
-
-  if (new Set(ids).size !== ids.length) {
-    return null;
-  }
-
-  return ids;
-}
-
 function parseQuestionPayload(value: unknown): Omit<Question, "id"> {
   if (!value || typeof value !== "object") {
     throw new Error("AI response shape is invalid.");
@@ -177,7 +90,11 @@ function parseQuestionPayload(value: unknown): Omit<Question, "id"> {
     throw new Error("AI response shape is invalid.");
   }
 
-  const parsedOptions = parseOptions(options);
+  const parsedOptions = parseQuestionOptions(options, {
+    minOptions: 4,
+    maxOptions: 6,
+    requireSequentialFromA: true,
+  });
   if (!parsedOptions) {
     throw new Error("AI options are invalid.");
   }
@@ -192,14 +109,14 @@ function parseQuestionPayload(value: unknown): Omit<Question, "id"> {
 
   if (
     questionType === QUESTION_TYPES.MULTIPLE_CHOICE &&
-    parsedCorrectOptionIds.length !== 1
+    !hasValidCorrectOptionCount(questionType, parsedCorrectOptionIds)
   ) {
     throw new Error("AI multiple_choice must have exactly one correct option.");
   }
 
   if (
     questionType === QUESTION_TYPES.MULTIPLE_ANSWER &&
-    parsedCorrectOptionIds.length < 2
+    !hasValidCorrectOptionCount(questionType, parsedCorrectOptionIds)
   ) {
     throw new Error("AI multiple_answer must have at least two correct options.");
   }

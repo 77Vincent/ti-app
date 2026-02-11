@@ -1,4 +1,4 @@
-import type { TestRunParams } from "@/app/test/run/questionRunner/session/params";
+import type { TestRunParams } from "@/lib/validation/testSession";
 import { prisma } from "@/lib/prisma";
 
 export type UserTestSessionWhere = {

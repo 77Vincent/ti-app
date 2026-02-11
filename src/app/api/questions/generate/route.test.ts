@@ -14,7 +14,7 @@ const {
   readAuthenticatedUserId: vi.fn(),
 }));
 
-vi.mock("@/app/test/run/questionRunner/session/params", () => ({
+vi.mock("@/lib/validation/testSession", () => ({
   parseTestRunParams,
 }));
 

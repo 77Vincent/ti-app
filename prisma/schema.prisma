@@ -16,6 +16,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   testSession   TestSession?
+  favorites     FavoriteQuestion[]
 }
 
 model Account {
@@ -52,10 +53,41 @@ model TestSession {
   subjectId     String
   subcategoryId String
   difficulty    String
+  goal          String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model QuestionPool {
+  id               String   @id
+  subjectId        String
+  subcategoryId    String
+  difficulty       String
+  goal             String
+  questionType     String
+  prompt           String   @db.Text
+  options          Json
+  correctOptionIds Json
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  favorites        FavoriteQuestion[]
+}
+
+model FavoriteQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question QuestionPool @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([questionId])
+  @@unique([userId, questionId])
 }
 
 model VerificationToken {

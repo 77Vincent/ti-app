@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   parseTestRunParams,
   type TestRunSession,
-} from "@/app/test/run/questionRunner/session/params";
+} from "@/lib/validation/testSession";
 import {
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,

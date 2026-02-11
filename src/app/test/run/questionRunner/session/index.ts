@@ -8,4 +8,4 @@ export {
   readTestSession,
   writeTestSession,
 } from "./storage";
-export type { TestRunParams, TestRunSession } from "./params";
+export type { TestRunParams, TestRunSession } from "@/lib/validation/testSession";
