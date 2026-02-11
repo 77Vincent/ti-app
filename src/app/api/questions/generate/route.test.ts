@@ -1,31 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
-  cookieGet,
-  cookiesFn,
-  generateMockQuestion,
+  buildQuestion,
+  incrementAnonymousQuestionCountCookie,
   parseTestRunParams,
+  readAnonymousQuestionCount,
   readAuthenticatedUserId,
 } = vi.hoisted(() => ({
-  cookieGet: vi.fn(),
-  cookiesFn: vi.fn(async () => ({
-    get: cookieGet,
-  })),
-  generateMockQuestion: vi.fn(),
+  buildQuestion: vi.fn(),
+  incrementAnonymousQuestionCountCookie: vi.fn((response: Response) => response),
   parseTestRunParams: vi.fn(),
+  readAnonymousQuestionCount: vi.fn(),
   readAuthenticatedUserId: vi.fn(),
-}));
-
-vi.mock("next/headers", () => ({
-  cookies: cookiesFn,
-}));
-
-vi.mock("./ai", () => ({
-  generateQuestionWithAI: vi.fn(),
-}));
-
-vi.mock("./mock", () => ({
-  generateMockQuestion,
 }));
 
 vi.mock("@/app/test/run/questionRunner/session/params", () => ({
@@ -34,6 +20,16 @@ vi.mock("@/app/test/run/questionRunner/session/params", () => ({
 
 vi.mock("@/app/api/test/session/auth", () => ({
   readAuthenticatedUserId,
+}));
+
+vi.mock("./cookie/anonymousCount", () => ({
+  incrementAnonymousQuestionCountCookie,
+  MAX_ANONYMOUS_QUESTION_COUNT: 5,
+  readAnonymousQuestionCount,
+}));
+
+vi.mock("./service/question", () => ({
+  buildQuestion,
 }));
 
 const VALID_INPUT = {
@@ -45,17 +41,19 @@ const VALID_INPUT = {
 describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
-    cookieGet.mockReset();
-    cookiesFn.mockClear();
+    buildQuestion.mockReset();
+    incrementAnonymousQuestionCountCookie.mockReset();
     readAuthenticatedUserId.mockReset();
-    generateMockQuestion.mockReset();
     parseTestRunParams.mockReset();
+    readAnonymousQuestionCount.mockReset();
 
     parseTestRunParams.mockReturnValue(VALID_INPUT);
-    generateMockQuestion.mockReturnValue({ id: "mock-question" });
+    buildQuestion.mockResolvedValue({ id: "question-1" });
+    incrementAnonymousQuestionCountCookie.mockImplementation(
+      (response: Response) => response,
+    );
     readAuthenticatedUserId.mockResolvedValue(null);
-    cookieGet.mockReturnValue(undefined);
-    delete process.env.OPENAI_API_KEY;
+    readAnonymousQuestionCount.mockResolvedValue(0);
   });
 
   it("increments anonymous question count when request succeeds", async () => {
@@ -70,21 +68,17 @@ describe("generate question route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      question: { id: "mock-question" },
+      question: { id: "question-1" },
     });
-    expect(response.headers.get("set-cookie")).toContain(
-      "ti-app-anon-question-count=1",
+    expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
+    expect(incrementAnonymousQuestionCountCookie).toHaveBeenCalledWith(
+      expect.any(Response),
+      0,
     );
   });
 
   it("blocks anonymous request after 5 questions", async () => {
-    cookieGet.mockImplementation((cookieName: string) => {
-      if (cookieName !== "ti-app-anon-question-count") {
-        return undefined;
-      }
-
-      return { value: "5" };
-    });
+    readAnonymousQuestionCount.mockResolvedValue(5);
 
     const route = await import("./route");
 
@@ -100,12 +94,12 @@ describe("generate question route", () => {
       error:
         "You have reached the anonymous limit of 5 questions. Please log in to continue.",
     });
-    expect(generateMockQuestion).not.toHaveBeenCalled();
+    expect(buildQuestion).not.toHaveBeenCalled();
+    expect(incrementAnonymousQuestionCountCookie).not.toHaveBeenCalled();
   });
 
   it("does not apply anonymous limit for authenticated users", async () => {
     readAuthenticatedUserId.mockResolvedValue("user-1");
-    cookieGet.mockImplementation(() => ({ value: "5" }));
 
     const route = await import("./route");
 
@@ -118,8 +112,9 @@ describe("generate question route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      question: { id: "mock-question" },
+      question: { id: "question-1" },
     });
-    expect(response.headers.get("set-cookie")).toBeNull();
+    expect(readAnonymousQuestionCount).not.toHaveBeenCalled();
+    expect(incrementAnonymousQuestionCountCookie).not.toHaveBeenCalled();
   });
 });
