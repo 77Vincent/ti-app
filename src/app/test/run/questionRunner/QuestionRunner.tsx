@@ -48,7 +48,20 @@ export default function Question({
     goal,
   });
 
+
   if (isLoadingQuestion || !question) {
+    if (isSignInRequired) {
+      return (
+        <div className="relative">
+          <QuestionSkeleton className="blur-sm" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Button as={Link} color="primary" href={PAGE_PATHS.SIGN_IN} size="lg">
+              Sign in to continue
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return <QuestionSkeleton />;
   }
 
