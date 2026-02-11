@@ -4,7 +4,7 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useQuestion } from "./hooks/useQuestion";
@@ -97,19 +97,21 @@ export default function Question({
         </p>
 
         <div className="flex items-center gap-3">
-          <Button
-            aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
-            color={isFavorite ? "warning" : "default"}
-            isIconOnly
-            isDisabled={isFavoriteSubmitting}
-            isLoading={isFavoriteSubmitting}
-            onPress={toggleFavorite}
-            radius="full"
-            size="sm"
-            variant={isFavorite ? "solid" : "light"}
-          >
-            <Star aria-hidden className={isFavorite ? "fill-current" : undefined} size={16} />
-          </Button>
+          <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
+            <Button
+              aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
+              color={isFavorite ? "warning" : "default"}
+              isIconOnly
+              isDisabled={isFavoriteSubmitting}
+              isLoading={isFavoriteSubmitting}
+              onPress={toggleFavorite}
+              radius="full"
+              size="sm"
+              variant={"light"}
+            >
+              <Star aria-hidden className={isFavorite ? "fill-current" : undefined} size={16} />
+            </Button>
+          </Tooltip>
 
           <Button
             color="primary"
