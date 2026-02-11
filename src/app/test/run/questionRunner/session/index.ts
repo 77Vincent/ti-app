@@ -4,7 +4,8 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
-  clearStoredTestSession,
-  parseStoredTestSession,
-  TEST_SESSION_STORAGE_KEY,
+  clearTestSession,
+  readTestSession,
+  writeTestSession,
 } from "./storage";
+export type { TestRunParams } from "./params";

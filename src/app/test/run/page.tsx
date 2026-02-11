@@ -1,31 +1,47 @@
 "use client";
 
 import {
-  clearStoredTestSession,
-  parseStoredTestSession,
-  TEST_SESSION_STORAGE_KEY,
+  clearTestSession,
+  readTestSession,
+  type TestRunParams,
 } from "@/app/test/run/questionRunner/session";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function TestRunPage() {
   const router = useRouter();
-  const rawSession = useSyncExternalStore(
-    () => () => undefined,
-    () => sessionStorage.getItem(TEST_SESSION_STORAGE_KEY),
-    () => null,
+  const [params, setParams] = useState<TestRunParams | null | undefined>(
+    undefined,
   );
 
-  const params = parseStoredTestSession(rawSession);
-
   const handleEndTest = useCallback(() => {
-    clearStoredTestSession();
+    void clearTestSession().catch(() => undefined);
     router.push("/test");
   }, [router]);
 
   useEffect(() => {
-    if (!params) {
+    let active = true;
+
+    void readTestSession()
+      .then((session) => {
+        if (active) {
+          setParams(session);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setParams(null);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (params === null) {
       router.replace("/test");
     }
   }, [params, router]);

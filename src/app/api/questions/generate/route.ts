@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
+import { parseTestRunParams } from "@/app/test/run/questionRunner/session/params";
 import { generateQuestionWithAI } from "./ai";
 import { generateMockQuestion } from "./mock";
-import {
-  parseGenerateQuestionRequest,
-} from "./validation";
 
 function hasOpenAiApiKey(): boolean {
   return Boolean(process.env.OPENAI_API_KEY?.trim());
@@ -18,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const input = parseGenerateQuestionRequest(body);
+  const input = parseTestRunParams(body);
 
   if (!input) {
     return NextResponse.json(

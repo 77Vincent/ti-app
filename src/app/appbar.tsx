@@ -24,7 +24,7 @@ import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
-import { clearStoredTestSession } from "./test/run/questionRunner/session";
+import { clearTestSession } from "./test/run/questionRunner/session";
 
 
 export default function AppBar() {
@@ -57,11 +57,22 @@ export default function AppBar() {
 
   function handleUserMenuAction(key: Key) {
     if (key === USER_MENU_LOGOUT_KEY) {
-      clearStoredTestSession();
-      void signOut({
-        callbackUrl: "/test",
-      });
+      void clearTestSession()
+        .catch(() => undefined)
+        .finally(() => {
+          void signOut({
+            callbackUrl: "/test",
+          });
+        });
     }
+  }
+
+  function handleSignIn() {
+    void clearTestSession()
+      .catch(() => undefined)
+      .finally(() => {
+        window.location.assign(getGoogleSignInPath());
+      });
   }
 
   return (
@@ -94,10 +105,8 @@ export default function AppBar() {
             <Tooltip content={USER_SESSION_LABEL}>
               <Button
                 aria-label={USER_SESSION_LABEL}
-                as={Link}
-                href={getGoogleSignInPath()}
                 isIconOnly
-                onPress={clearStoredTestSession}
+                onPress={handleSignIn}
                 radius="full"
                 size="sm"
                 variant="bordered"

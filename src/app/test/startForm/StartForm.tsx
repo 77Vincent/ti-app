@@ -5,8 +5,9 @@ import {
   SUBJECTS,
   SUBCATEGORIES,
 } from "@/lib/meta";
+import { toast } from "@/lib/toast";
 import type { DifficultyEnum, SubjectEnum } from "@/lib/meta";
-import { TEST_SESSION_STORAGE_KEY } from "@/app/test/run/questionRunner/session";
+import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import {
   Crown,
@@ -89,16 +90,15 @@ export default function StartForm() {
       difficulty,
     };
 
-    try {
-      sessionStorage.setItem(
-        TEST_SESSION_STORAGE_KEY,
-        JSON.stringify(testSession),
-      );
-    } catch {
-      // Ignore sessionStorage write errors (e.g. private mode/storage denied).
-    }
-
-    router.push("/test/run");
+    void writeTestSession(testSession)
+      .then(() => {
+        router.push("/test/run");
+      })
+      .catch((error) => {
+        toast.error(error, {
+          fallbackDescription: "Failed to start test session.",
+        });
+      });
   };
 
   const onSelectByStep: Record<StartFormStep, (value: StepOptionValue) => void> = {

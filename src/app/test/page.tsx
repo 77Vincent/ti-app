@@ -1,30 +1,44 @@
 "use client";
 
 import {
-  parseStoredTestSession,
-  TEST_SESSION_STORAGE_KEY,
+  readTestSession,
 } from "@/app/test/run/questionRunner/session";
 import { StartForm } from "@/app/test/startForm";
 import { useRouter } from "next/navigation";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
 export default function TestPage() {
   const router = useRouter();
-  const rawSession = useSyncExternalStore(
-    () => () => undefined,
-    () => sessionStorage.getItem(TEST_SESSION_STORAGE_KEY),
-    () => null,
-  );
-
-  const params = parseStoredTestSession(rawSession);
+  const [hasActiveSession, setHasActiveSession] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (params) {
-      router.replace("/test/run");
-    }
-  }, [params, router]);
+    let active = true;
 
-  if (params) {
+    void readTestSession()
+      .then((session) => {
+        if (!active) {
+          return;
+        }
+
+        if (session) {
+          router.replace("/test/run");
+          return;
+        }
+
+        setHasActiveSession(false);
+      })
+      .catch(() => {
+        if (active) {
+          setHasActiveSession(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
+
+  if (hasActiveSession !== false) {
     return null;
   }
 

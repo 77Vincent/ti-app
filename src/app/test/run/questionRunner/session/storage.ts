@@ -1,83 +1,79 @@
 import {
-  DIFFICULTIES,
-  SUBJECTS,
-  SUBCATEGORIES,
-} from "@/lib/meta";
-import type { DifficultyEnum } from "@/lib/meta";
+  parseTestRunParams,
+  type TestRunParams,
+} from "./params";
+import { parseHttpErrorMessage } from "@/lib/http/error";
 
-export const TEST_SESSION_STORAGE_KEY = "ti-app:test-session";
+const TEST_SESSION_API_PATH = "/api/test/session";
 
-export type TestRunParams = {
-  subjectId: string;
-  subcategoryId: string;
-  difficulty: DifficultyEnum;
+type TestSessionResponse = {
+  session?: unknown;
+  error?: unknown;
 };
 
-type StoredTestSession = TestRunParams;
+type SessionRequestOptions = {
+  body?: string;
+  cache?: RequestCache;
+  method: "GET" | "POST" | "DELETE";
+};
 
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
+function parseSessionFromResponse(payload: unknown): TestRunParams | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  return parseTestRunParams((payload as TestSessionResponse).session);
 }
 
-function parseStoredSession(rawSession: string | null): StoredTestSession | null {
-  if (!rawSession) {
+async function requestSession(
+  options: SessionRequestOptions,
+): Promise<TestSessionResponse | null> {
+  const response = await fetch(TEST_SESSION_API_PATH, {
+    body: options.body,
+    cache: options.cache,
+    headers: options.body
+      ? {
+          "content-type": "application/json",
+        }
+      : undefined,
+    method: options.method,
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseHttpErrorMessage(response));
+  }
+
+  if (response.status === 204) {
     return null;
   }
 
   try {
-    const value = JSON.parse(rawSession) as Partial<StoredTestSession>;
-
-    const subjectId = value.subjectId;
-    const subcategoryId = value.subcategoryId;
-    const difficulty = value.difficulty;
-    if (
-      !isNonEmptyString(subjectId) ||
-      !isNonEmptyString(subcategoryId) ||
-      !isNonEmptyString(difficulty)
-    ) {
-      return null;
-    }
-
-    const isValidDifficulty = DIFFICULTIES.some(
-      (item) => item.id === difficulty,
-    );
-    const isValidSubject = SUBJECTS.some((item) => item.id === subjectId);
-    const isValidSubcategory = SUBCATEGORIES.some(
-      (item) => item.id === subcategoryId && item.subjectId === subjectId,
-    );
-
-    if (!isValidDifficulty || !isValidSubject || !isValidSubcategory) {
-      return null;
-    }
-
-    return {
-      subjectId,
-      subcategoryId,
-      difficulty: difficulty as DifficultyEnum,
-    };
+    return (await response.json()) as TestSessionResponse;
   } catch {
     return null;
   }
 }
 
-export function parseStoredTestSession(rawSession: string | null): TestRunParams | null {
-  const session = parseStoredSession(rawSession);
+export async function readTestSession(): Promise<TestRunParams | null> {
+  const payload = await requestSession({
+    cache: "no-store",
+    method: "GET",
+  });
 
-  if (!session) {
-    return null;
-  }
-
-  return {
-    subjectId: session.subjectId,
-    subcategoryId: session.subcategoryId,
-    difficulty: session.difficulty,
-  };
+  return parseSessionFromResponse(payload);
 }
 
-export function clearStoredTestSession(): void {
-  if (typeof window === "undefined") {
-    return;
-  }
+export async function writeTestSession(
+  params: TestRunParams,
+): Promise<void> {
+  await requestSession({
+    body: JSON.stringify(params),
+    method: "POST",
+  });
+}
 
-  sessionStorage.removeItem(TEST_SESSION_STORAGE_KEY);
+export async function clearTestSession(): Promise<void> {
+  await requestSession({
+    method: "DELETE",
+  });
 }

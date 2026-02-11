@@ -23,7 +23,6 @@ describe("toast helper", () => {
     expect(addToast).toHaveBeenCalledWith({
       color: "danger",
       description: "boom",
-      title: "Error",
       variant: "flat",
     });
   });
@@ -31,13 +30,21 @@ describe("toast helper", () => {
   it("uses fallback description when error payload is unknown", () => {
     toast.error(null, {
       fallbackDescription: "fallback",
-      title: "Oops",
     });
 
     expect(addToast).toHaveBeenCalledWith({
       color: "danger",
       description: "fallback",
-      title: "Oops",
+      variant: "flat",
+    });
+  });
+
+  it("uses string error payload as description", () => {
+    toast.error("boom-string");
+
+    expect(addToast).toHaveBeenCalledWith({
+      color: "danger",
+      description: "boom-string",
       variant: "flat",
     });
   });
@@ -50,19 +57,16 @@ describe("toast helper", () => {
     expect(addToast).toHaveBeenNthCalledWith(1, {
       color: "warning",
       description: "watch out",
-      title: "Warning",
       variant: "flat",
     });
     expect(addToast).toHaveBeenNthCalledWith(2, {
       color: "success",
       description: "done",
-      title: "Success",
       variant: "flat",
     });
     expect(addToast).toHaveBeenNthCalledWith(3, {
       color: "primary",
       description: "heads up",
-      title: "Info",
       variant: "flat",
     });
   });

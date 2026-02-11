@@ -1,10 +1,11 @@
 import { QUESTION_TYPES } from "@/lib/meta";
+import { isNonEmptyString } from "@/lib/string";
+import type { TestRunParams as GenerateQuestionRequest } from "@/app/test/run/questionRunner/session/params";
 import type {
   Question,
   QuestionOption,
   QuestionOptionId,
 } from "@/app/test/run/questionRunner/types";
-import type { GenerateQuestionRequest } from "./validation";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const DEFAULT_OPENAI_MODEL = "o4-mini";
@@ -73,10 +74,6 @@ function parseJsonObject(content: string): unknown {
       throw new Error("AI response was not valid JSON.");
     }
   }
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isQuestionOptionId(value: string): value is QuestionOptionId {

@@ -1,6 +1,6 @@
 import { QUESTION_TYPES } from "@/lib/meta";
+import type { TestRunParams as GenerateQuestionRequest } from "@/app/test/run/questionRunner/session/params";
 import type { Question } from "@/app/test/run/questionRunner/types";
-import type { GenerateQuestionRequest } from "./validation";
 
 function createMockQuestionId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {

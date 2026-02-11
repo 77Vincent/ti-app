@@ -2,24 +2,17 @@
 
 import { addToast, type ToastProps } from "@heroui/react";
 
-type ToastOptions = {
-  title?: string;
-};
-
-type ErrorToastOptions = ToastOptions & {
+type ErrorToastOptions = {
   fallbackDescription?: string;
 };
 
 function showToast(
   description: string,
   color: ToastProps["color"],
-  defaultTitle: string,
-  options?: ToastOptions,
 ) {
   addToast({
     color,
     description,
-    title: options?.title ?? defaultTitle,
     variant: "flat",
   });
 }
@@ -44,17 +37,15 @@ export const toast = {
         options?.fallbackDescription ?? "Something went wrong.",
       ),
       "danger",
-      "Error",
-      options,
     );
   },
-  warning(description: string, options?: ToastOptions) {
-    showToast(description, "warning", "Warning", options);
+  warning(description: string) {
+    showToast(description, "warning");
   },
-  success(description: string, options?: ToastOptions) {
-    showToast(description, "success", "Success", options);
+  success(description: string) {
+    showToast(description, "success");
   },
-  info(description: string, options?: ToastOptions) {
-    showToast(description, "primary", "Info", options);
+  info(description: string) {
+    showToast(description, "primary");
   },
 };
