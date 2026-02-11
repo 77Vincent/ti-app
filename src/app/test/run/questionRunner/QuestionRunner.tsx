@@ -4,6 +4,7 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import type { DifficultyEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { Button } from "@heroui/react";
+import { Star } from "lucide-react";
 import Link from "next/link";
 import { SIGN_IN_PAGE_PATH } from "@/app/auth/signIn";
 import { useQuestion } from "./hooks/useQuestion";
@@ -82,15 +83,27 @@ export default function Question({
           {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
         </p>
 
-        <Button
-          color="primary"
-          size="sm"
-          isDisabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
-          isLoading={isSubmitting}
-          onPress={submit}
-        >
-          {hasSubmitted ? "Next" : "Submit"}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            aria-label="Favorite question"
+            isIconOnly
+            size="sm"
+            radius="full"
+            variant="light"
+          >
+            <Star aria-hidden size={16} />
+          </Button>
+
+          <Button
+            color="primary"
+            size="sm"
+            isDisabled={(!hasSubmitted && selectedOptionIds.length === 0) || isSubmitting}
+            isLoading={isSubmitting}
+            onPress={submit}
+          >
+            {hasSubmitted ? "Next" : "Submit"}
+          </Button>
+        </div>
       </div>
     </div>
   );
