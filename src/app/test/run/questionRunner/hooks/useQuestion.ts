@@ -1,6 +1,6 @@
 "use client";
 
-import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
@@ -10,8 +10,11 @@ import {
   removeFavoriteQuestion,
 } from "../api";
 import {
+  buildQuestionSessionKey,
   consumeQuestionQuota,
   createQuestionSessionController,
+  readCachedQuestion,
+  writeCachedQuestion,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -26,10 +29,11 @@ import {
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
-  subjectId: string;
+  subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
+  startedAtMs: number;
 };
 
 export type UseQuestionResult = {
@@ -55,6 +59,7 @@ export function useQuestion({
   subcategoryId,
   difficulty,
   goal,
+  startedAtMs,
 }: UseQuestionInput): UseQuestionResult {
   const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -67,6 +72,17 @@ export function useQuestion({
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
+  const questionSessionKey = useMemo(
+    () =>
+      buildQuestionSessionKey({
+        startedAtMs,
+        subjectId,
+        subcategoryId,
+        difficulty,
+        goal,
+      }),
+    [difficulty, goal, startedAtMs, subcategoryId, subjectId],
+  );
 
   const showLoadError = useCallback((error: unknown) => {
     if (isAnonymousQuestionLimitError(error)) {
@@ -81,6 +97,7 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
+      writeCachedQuestion(questionSessionKey, nextQuestion);
       setSignInDemand(null);
       setIsFavorite(false);
       setIsFavoriteSubmitting(false);
@@ -88,7 +105,7 @@ export function useQuestion({
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
-    [resetSelection],
+    [questionSessionKey, resetSelection],
   );
 
   const loadAndApplyQuestion = useCallback(
@@ -138,6 +155,13 @@ export function useQuestion({
     let cancelled = false;
 
     async function loadInitialQuestion() {
+      const cachedQuestion = readCachedQuestion(questionSessionKey);
+      if (cachedQuestion) {
+        applyLoadedQuestion(cachedQuestion);
+        dispatchUiState({ type: "initialLoadFinished" });
+        return;
+      }
+
       dispatchUiState({ type: "initialLoadStarted" });
 
       await loadAndApplyQuestion(
@@ -156,7 +180,7 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [loadAndApplyQuestion, questionSession]);
+  }, [applyLoadedQuestion, loadAndApplyQuestion, questionSession, questionSessionKey]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
