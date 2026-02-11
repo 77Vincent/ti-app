@@ -11,6 +11,7 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  Tooltip,
 } from "@heroui/react";
 import { LogIn, Moon, Sun, User } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
@@ -23,6 +24,8 @@ import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
+
+const LOGIN_ICON_LABEL = "Sign in";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -80,17 +83,19 @@ export default function AppBar() {
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <Button
-              aria-label="Login with Google"
-              as={Link}
-              href={getGoogleSignInPath()}
-              isIconOnly
-              radius="full"
-              size="sm"
-              variant="bordered"
-            >
-              <LogIn aria-hidden="true" size={18} />
-            </Button>
+            <Tooltip content={LOGIN_ICON_LABEL}>
+              <Button
+                aria-label={LOGIN_ICON_LABEL}
+                as={Link}
+                href={getGoogleSignInPath()}
+                isIconOnly
+                radius="full"
+                size="sm"
+                variant="bordered"
+              >
+                <LogIn aria-hidden="true" size={18} />
+              </Button>
+            </Tooltip>
           )}
         </NavbarItem>
 

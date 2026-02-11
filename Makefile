@@ -16,6 +16,7 @@ help:
 	@echo "  make clean      Remove Next.js build output"
 	@echo "  make clean-deps Remove node_modules"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
+	@echo "  make reset      Reset the database with Prisma migrate"
 
 install:
 	$(NPM) install
@@ -47,3 +48,12 @@ clean-deps:
 
 up:
 	docker-compose up -d
+
+reset:
+	npx prisma migrate reset --force
+
+reset-prod:
+	@set -a; \
+	. ./.env.prod; \
+	set +a; \
+	NODE_ENV=production npx prisma migrate reset --force
