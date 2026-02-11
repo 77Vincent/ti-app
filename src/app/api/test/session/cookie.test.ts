@@ -13,8 +13,9 @@ vi.mock("next/headers", () => ({
 }));
 
 import {
-  persistAnonymousIdCookie,
-  readAnonymousIdCookie,
+  clearAnonymousTestSessionCookie,
+  persistAnonymousTestSessionCookie,
+  readAnonymousTestSessionCookie,
   readSessionTokenCookieValues,
 } from "./cookie";
 
@@ -45,61 +46,89 @@ describe("test session cookie helpers", () => {
     ]);
   });
 
-  it("reads and trims anonymous id cookie", async () => {
+  it("reads anonymous test session cookie when payload is valid", async () => {
     cookieGet.mockImplementation((cookieName: string) => {
-      if (cookieName !== "ti-app-anon-id") {
+      if (cookieName !== "ti-app-anon-test-session") {
         return undefined;
       }
 
-      return { value: "  anon-id-1  " };
+      return {
+        value: encodeURIComponent(
+          JSON.stringify({
+            difficulty: "beginner",
+            subjectId: "language",
+            subcategoryId: "english",
+          }),
+        ),
+      };
     });
 
-    await expect(readAnonymousIdCookie()).resolves.toBe("anon-id-1");
+    await expect(readAnonymousTestSessionCookie()).resolves.toEqual({
+      difficulty: "beginner",
+      subjectId: "language",
+      subcategoryId: "english",
+    });
   });
 
-  it("returns null for blank anonymous id cookie", async () => {
+  it("returns null when anonymous test session cookie is malformed", async () => {
     cookieGet.mockImplementation((cookieName: string) => {
-      if (cookieName !== "ti-app-anon-id") {
+      if (cookieName !== "ti-app-anon-test-session") {
         return undefined;
       }
 
-      return { value: "   " };
+      return {
+        value: "not-json",
+      };
     });
 
-    await expect(readAnonymousIdCookie()).resolves.toBeNull();
+    await expect(readAnonymousTestSessionCookie()).resolves.toBeNull();
   });
 
-  it("persists anonymous id cookie when requested", () => {
+  it("persists anonymous test session cookie", () => {
     const set = vi.fn();
     const response = { cookies: { set } };
 
-    const result = persistAnonymousIdCookie(
+    const result = persistAnonymousTestSessionCookie(
       response as unknown as NextResponse,
-      "anon-id-1",
-      true,
+      {
+        difficulty: "beginner",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
     );
 
     expect(result).toBe(response);
-    expect(set).toHaveBeenCalledWith("ti-app-anon-id", "anon-id-1", {
-      httpOnly: true,
-      maxAge: 60 * 60,
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
+    expect(set).toHaveBeenCalledWith(
+      "ti-app-anon-test-session",
+      encodeURIComponent(
+        JSON.stringify({
+          difficulty: "beginner",
+          subjectId: "language",
+          subcategoryId: "english",
+        }),
+      ),
+      {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24,
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      },
+    );
   });
 
-  it("does not persist anonymous id cookie when not requested", () => {
-    const set = vi.fn();
-    const response = { cookies: { set } };
+  it("clears anonymous test session cookie", () => {
+    const del = vi.fn();
+    const response = { cookies: { delete: del } };
 
-    persistAnonymousIdCookie(
+    const result = clearAnonymousTestSessionCookie(
       response as unknown as NextResponse,
-      "anon-id-1",
-      false,
     );
-    persistAnonymousIdCookie(response as unknown as NextResponse, null, true);
 
-    expect(set).not.toHaveBeenCalled();
+    expect(result).toBe(response);
+    expect(del).toHaveBeenCalledWith({
+      name: "ti-app-anon-test-session",
+      path: "/",
+    });
   });
 });

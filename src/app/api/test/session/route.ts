@@ -4,25 +4,19 @@ import {
   type TestRunParams,
 } from "@/app/test/run/questionRunner/session/params";
 import {
-  persistAnonymousIdCookie,
-  readAnonymousIdCookie,
+  clearAnonymousTestSessionCookie,
+  persistAnonymousTestSessionCookie,
+  readAnonymousTestSessionCookie,
   readSessionTokenCookieValues,
 } from "./cookie";
 import {
   deleteTestSession,
   findUserIdBySessionToken,
   readTestSession,
-  type UserTestSessionWhere,
   upsertTestSession,
 } from "./repo";
 
 export const runtime = "nodejs";
-
-type TestSessionIdentity = {
-  userId: string | null;
-  anonymousId: string | null;
-  shouldPersistAnonymousCookie: boolean;
-};
 
 async function readAuthenticatedUserId(): Promise<string | null> {
   const sessionTokens = await readSessionTokenCookieValues();
@@ -37,82 +31,23 @@ async function readAuthenticatedUserId(): Promise<string | null> {
   return null;
 }
 
-async function resolveTestSessionIdentity({
-  createAnonymousId,
-}: {
-  createAnonymousId: boolean;
-}): Promise<TestSessionIdentity> {
-  const userId = await readAuthenticatedUserId();
-
-  if (userId) {
-    return {
-      userId,
-      anonymousId: null,
-      shouldPersistAnonymousCookie: false,
-    };
-  }
-
-  const existingAnonymousId = await readAnonymousIdCookie();
-
-  if (existingAnonymousId) {
-    return {
-      userId: null,
-      anonymousId: existingAnonymousId,
-      shouldPersistAnonymousCookie: false,
-    };
-  }
-
-  if (!createAnonymousId) {
-    return {
-      userId: null,
-      anonymousId: null,
-      shouldPersistAnonymousCookie: false,
-    };
-  }
-
-  return {
-    userId: null,
-    anonymousId: crypto.randomUUID(),
-    shouldPersistAnonymousCookie: true,
-  };
-}
-
-function resolveUserSessionWhere(
-  identity: TestSessionIdentity,
-): UserTestSessionWhere | null {
-  if (identity.userId) {
-    return {
-      userId: identity.userId,
-    };
-  }
-
-  return null;
-}
-
 async function readActiveSession(
-  identity: TestSessionIdentity,
+  userId: string | null,
 ): Promise<TestRunParams | null> {
-  const where = resolveUserSessionWhere(identity);
-
-  if (!where) {
-    return null;
+  if (!userId) {
+    return readAnonymousTestSessionCookie();
   }
 
-  const session = await readTestSession(where);
+  const session = await readTestSession({ userId });
 
   return parseTestRunParams(session);
 }
 
 export async function GET() {
-  const identity = await resolveTestSessionIdentity({ createAnonymousId: true });
-  const session = await readActiveSession(identity);
+  const userId = await readAuthenticatedUserId();
+  const session = await readActiveSession(userId);
 
-  const response = NextResponse.json({ session });
-  return persistAnonymousIdCookie(
-    response,
-    identity.anonymousId,
-    identity.shouldPersistAnonymousCookie,
-  );
+  return NextResponse.json({ session });
 }
 
 export async function POST(request: Request) {
@@ -135,28 +70,27 @@ export async function POST(request: Request) {
     );
   }
 
-  const identity = await resolveTestSessionIdentity({ createAnonymousId: true });
-  const where = resolveUserSessionWhere(identity);
+  const userId = await readAuthenticatedUserId();
+  const response = NextResponse.json({ ok: true });
 
-  if (where) {
-    await upsertTestSession(where, params);
+  if (userId) {
+    await upsertTestSession({ userId }, params);
+  } else {
+    persistAnonymousTestSessionCookie(response, params);
   }
 
-  const response = NextResponse.json({ ok: true });
-  return persistAnonymousIdCookie(
-    response,
-    identity.anonymousId,
-    identity.shouldPersistAnonymousCookie,
-  );
+  return response;
 }
 
 export async function DELETE() {
-  const identity = await resolveTestSessionIdentity({ createAnonymousId: false });
-  const where = resolveUserSessionWhere(identity);
+  const userId = await readAuthenticatedUserId();
+  const response = NextResponse.json({ ok: true });
 
-  if (where) {
-    await deleteTestSession(where);
+  if (userId) {
+    await deleteTestSession({ userId });
   }
 
-  return NextResponse.json({ ok: true });
+  clearAnonymousTestSessionCookie(response);
+
+  return response;
 }

@@ -1,9 +1,13 @@
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
+import {
+  parseTestRunParams,
+  type TestRunParams,
+} from "@/app/test/run/questionRunner/session/params";
 import { isNonEmptyString } from "@/lib/string";
 
-const ANONYMOUS_ID_COOKIE_NAME = "ti-app-anon-id";
-const ANONYMOUS_ID_COOKIE_TTL_SECONDS = 60 * 60;
+const ANONYMOUS_TEST_SESSION_COOKIE_NAME = "ti-app-anon-test-session";
+const ANONYMOUS_TEST_SESSION_COOKIE_TTL_SECONDS = 60 * 60 * 24;
 const SESSION_TOKEN_COOKIE_NAMES = [
   "next-auth.session-token",
   "__Secure-next-auth.session-token",
@@ -17,26 +21,48 @@ export async function readSessionTokenCookieValues(): Promise<string[]> {
   ).filter(isNonEmptyString);
 }
 
-export async function readAnonymousIdCookie(): Promise<string | null> {
+export async function readAnonymousTestSessionCookie(): Promise<TestRunParams | null> {
   const cookieStore = await cookies();
-  return cookieStore.get(ANONYMOUS_ID_COOKIE_NAME)?.value?.trim() || null;
-}
+  const rawSessionValue =
+    cookieStore.get(ANONYMOUS_TEST_SESSION_COOKIE_NAME)?.value || null;
 
-export function persistAnonymousIdCookie(
-  response: NextResponse,
-  anonymousId: string | null,
-  shouldPersist: boolean,
-): NextResponse {
-  if (!shouldPersist || !anonymousId) {
-    return response;
+  if (!isNonEmptyString(rawSessionValue)) {
+    return null;
   }
 
-  response.cookies.set(ANONYMOUS_ID_COOKIE_NAME, anonymousId, {
-    httpOnly: true,
-    maxAge: ANONYMOUS_ID_COOKIE_TTL_SECONDS,
+  try {
+    const parsed = JSON.parse(decodeURIComponent(rawSessionValue));
+    return parseTestRunParams(parsed);
+  } catch {
+    return null;
+  }
+}
+
+export function persistAnonymousTestSessionCookie(
+  response: NextResponse,
+  params: TestRunParams,
+): NextResponse {
+  response.cookies.set(
+      ANONYMOUS_TEST_SESSION_COOKIE_NAME,
+      encodeURIComponent(JSON.stringify(params)),
+      {
+        httpOnly: true,
+        maxAge: ANONYMOUS_TEST_SESSION_COOKIE_TTL_SECONDS,
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      },
+  );
+
+  return response;
+}
+
+export function clearAnonymousTestSessionCookie(
+  response: NextResponse,
+): NextResponse {
+  response.cookies.delete({
+    name: ANONYMOUS_TEST_SESSION_COOKIE_NAME,
     path: "/",
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
   });
 
   return response;
