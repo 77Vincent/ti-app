@@ -9,7 +9,7 @@ vi.mock("../mock", () => ({
   generateMockQuestion,
 }));
 
-vi.mock("../ai", () => ({
+vi.mock("@/lib/question/ai", () => ({
   generateQuestionWithAI,
 }));
 

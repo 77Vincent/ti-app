@@ -1,13 +1,28 @@
 import { QUESTION_TYPES } from "@/lib/meta";
+import type { QuestionType } from "@/lib/meta";
 import {
   hasValidCorrectOptionCount,
   isQuestionType,
+  type QuestionOptionId,
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/validation/question";
 import { isNonEmptyString } from "@/lib/string";
 import type { TestRunParams as GenerateQuestionRequest } from "@/lib/validation/testSession";
-import type { Question } from "@/app/test/run/questionRunner/types";
+
+type QuestionOption = {
+  id: QuestionOptionId;
+  text: string;
+  explanation: string;
+};
+
+export type Question = {
+  id: string;
+  prompt: string;
+  questionType: QuestionType;
+  options: QuestionOption[];
+  correctOptionIds: QuestionOptionId[];
+};
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const DEFAULT_OPENAI_MODEL = "o4-mini";

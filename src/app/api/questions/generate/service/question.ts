@@ -1,5 +1,5 @@
 import type { TestRunParams } from "@/lib/validation/testSession";
-import { generateQuestionWithAI } from "../ai";
+import { generateQuestionWithAI } from "@/lib/question/ai";
 import { generateMockQuestion } from "../mock";
 
 function hasOpenAiApiKey(): boolean {
