@@ -1,6 +1,6 @@
 "use client";
 
-import { addToast } from "@heroui/react";
+import { addToast, type ToastProps } from "@heroui/react";
 
 type ToastOptions = {
   title?: string;
@@ -12,7 +12,7 @@ type ErrorToastOptions = ToastOptions & {
 
 function showToast(
   description: string,
-  color: "danger" | "warning" | "success" | "primary",
+  color: ToastProps["color"],
   defaultTitle: string,
   options?: ToastOptions,
 ) {
@@ -28,6 +28,11 @@ function getErrorDescription(value: unknown, fallbackDescription: string): strin
   if (value instanceof Error && value.message) {
     return value.message;
   }
+
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value;
+  }
+
   return fallbackDescription;
 }
 
