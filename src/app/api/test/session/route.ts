@@ -7,29 +7,15 @@ import {
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
-  readSessionTokenCookieValues,
-} from "./cookie";
+} from "./cookie/anonymous";
+import { readAuthenticatedUserId } from "./auth";
 import {
   deleteTestSession,
-  findUserIdBySessionToken,
   readTestSession,
   upsertTestSession,
-} from "./repo";
+} from "./repo/testSession";
 
 export const runtime = "nodejs";
-
-async function readAuthenticatedUserId(): Promise<string | null> {
-  const sessionTokens = await readSessionTokenCookieValues();
-
-  for (const sessionToken of sessionTokens) {
-    const userId = await findUserIdBySessionToken(sessionToken);
-    if (userId) {
-      return userId;
-    }
-  }
-
-  return null;
-}
 
 async function readActiveSession(
   userId: string | null,

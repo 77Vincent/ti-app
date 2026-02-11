@@ -16,34 +16,12 @@ import {
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
-  readSessionTokenCookieValues,
-} from "./cookie";
+} from "./anonymous";
 
-describe("test session cookie helpers", () => {
+describe("anonymous session cookie helpers", () => {
   beforeEach(() => {
     cookieGet.mockReset();
     cookiesFn.mockClear();
-  });
-
-  it("reads available auth session token cookie values", async () => {
-    cookieGet.mockImplementation((cookieName: string) => {
-      const values: Record<string, string | undefined> = {
-        "__Secure-next-auth.session-token": "session-token-b",
-        "next-auth.session-token": "session-token-a",
-      };
-
-      const value = values[cookieName];
-      if (value === undefined) {
-        return undefined;
-      }
-
-      return { value };
-    });
-
-    await expect(readSessionTokenCookieValues()).resolves.toEqual([
-      "session-token-a",
-      "session-token-b",
-    ]);
   });
 
   it("reads anonymous test session cookie when payload is valid", async () => {

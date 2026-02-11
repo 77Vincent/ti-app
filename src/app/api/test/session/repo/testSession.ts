@@ -11,27 +11,6 @@ const TEST_RUN_PARAMS_SELECT = {
   subcategoryId: true,
 } as const;
 
-export async function findUserIdBySessionToken(
-  sessionToken: string,
-  now: Date = new Date(),
-): Promise<string | null> {
-  const session = await prisma.session.findUnique({
-    where: {
-      sessionToken,
-    },
-    select: {
-      expires: true,
-      userId: true,
-    },
-  });
-
-  if (!session || session.expires <= now) {
-    return null;
-  }
-
-  return session.userId;
-}
-
 export async function readTestSession(
   where: UserTestSessionWhere,
 ): Promise<{ difficulty: string; subjectId: string; subcategoryId: string } | null> {
