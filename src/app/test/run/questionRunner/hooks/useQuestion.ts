@@ -95,6 +95,24 @@ export function useQuestion({
     });
   }, []);
 
+  const loadQuestion = useCallback(async () => {
+    return fetchGeneratedQuestion({
+      subjectId,
+      subcategoryId,
+      difficulty,
+      goal,
+    });
+  }, [difficulty, goal, subcategoryId, subjectId]);
+
+  const questionSession = useMemo(
+    () =>
+      createQuestionSessionController<QuestionType>({
+        bufferSize: PREFETCH_BUFFER_SIZE,
+        loadQuestion,
+      }),
+    [loadQuestion],
+  );
+
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
       writeCachedQuestion(questionSessionKey, nextQuestion);
@@ -121,6 +139,7 @@ export function useQuestion({
         }
 
         applyLoadedQuestion(nextQuestion);
+        void questionSession.prefetchToCapacity();
       } catch (error) {
         if (shouldIgnoreResult?.()) {
           return;
@@ -129,26 +148,7 @@ export function useQuestion({
         showLoadError(error);
       }
     },
-    [applyLoadedQuestion, showLoadError],
-  );
-
-  const loadQuestion = useCallback(async () => {
-    await consumeQuestionQuota();
-    return fetchGeneratedQuestion({
-      subjectId,
-      subcategoryId,
-      difficulty,
-      goal,
-    });
-  }, [difficulty, goal, subcategoryId, subjectId]);
-
-  const questionSession = useMemo(
-    () =>
-      createQuestionSessionController<QuestionType>({
-        bufferSize: PREFETCH_BUFFER_SIZE,
-        loadQuestion,
-      }),
-    [loadQuestion],
+    [applyLoadedQuestion, questionSession, showLoadError],
   );
 
   useEffect(() => {
@@ -158,6 +158,7 @@ export function useQuestion({
       const cachedQuestion = readCachedQuestion(questionSessionKey);
       if (cachedQuestion) {
         applyLoadedQuestion(cachedQuestion);
+        void questionSession.prefetchToCapacity();
         dispatchUiState({ type: "initialLoadFinished" });
         return;
       }
@@ -200,6 +201,20 @@ export function useQuestion({
     }
 
     if (!hasSubmitted) {
+      try {
+        await consumeQuestionQuota();
+      } catch (error) {
+        if (isAnonymousQuestionLimitError(error)) {
+          setSignInDemand("more_questions");
+          return;
+        }
+
+        toast.error(error, {
+          fallbackDescription: "Failed to submit answer.",
+        });
+        return;
+      }
+
       dispatchUiState({ type: "submissionMarked" });
       return;
     }
