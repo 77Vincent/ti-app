@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps } from "./types";
-import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Tooltip, Divider } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -12,11 +12,13 @@ import {
   getSubjectLabel,
 } from "@/lib/meta";
 import { LogOut, Timer } from "lucide-react";
-import { createElement, useEffect, useState } from "react";
+import { createElement, useCallback, useEffect, useState } from "react";
 import Question from "./QuestionRunner";
+import { readLocalTestSessionSnapshot } from "./session";
 import { formatElapsedTime } from "./utils/timer";
 
 export default function QuestionRunner({
+  id,
   subjectId,
   subcategoryId,
   difficulty,
@@ -24,8 +26,23 @@ export default function QuestionRunner({
   startedAtMs,
   onEndTest,
 }: QuestionRunnerProps) {
+  const readCurrentSessionQuestionIndex = useCallback((): number | null => {
+    const snapshot = readLocalTestSessionSnapshot();
+    if (!snapshot) {
+      return null;
+    }
+
+    const { sessionId, currentQuestionIndex } = snapshot;
+    const isCurrentSession = sessionId === id;
+
+    return isCurrentSession ? currentQuestionIndex : null;
+  }, [id]);
+
   const [elapsedSeconds, setElapsedSeconds] = useState(() =>
     Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000)),
+  );
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(() =>
+    readCurrentSessionQuestionIndex(),
   );
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
@@ -42,20 +59,29 @@ export default function QuestionRunner({
 
     const timer = setInterval(() => {
       setElapsedSeconds(getElapsedSeconds());
+      setCurrentQuestionIndex(readCurrentSessionQuestionIndex());
     }, 1000);
 
     return () => {
       clearInterval(timer);
     };
-  }, [startedAtMs]);
+  }, [readCurrentSessionQuestionIndex, startedAtMs]);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="inline-flex items-center gap-1.5 text-sm tabular-nums">
-          <Timer aria-hidden size={16} />
-          {elapsedLabel}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="inline-flex items-center gap-1.5 tabular-nums">
+            <Timer aria-hidden size={16} />
+            {elapsedLabel}
+          </p>
+          {currentQuestionIndex !== null ? (
+            <>
+              <Divider className="h-4" orientation="vertical" />
+              <span className="font-medium tabular-nums">Question {currentQuestionIndex + 1}</span>
+            </>
+          ) : null}
+        </div>
 
         <Tooltip content="End test">
           <Button

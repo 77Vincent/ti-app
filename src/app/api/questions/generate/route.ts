@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseTestRunParams } from "@/lib/validation/testSession";
+import { parseTestParam } from "@/lib/validation/testSession";
 import { buildQuestion } from "./service/question";
 
 export async function POST(request: Request) {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const input = parseTestRunParams(body);
+  const input = parseTestParam(body);
 
   if (!input) {
     return NextResponse.json(

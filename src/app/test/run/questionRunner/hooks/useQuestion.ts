@@ -12,6 +12,7 @@ import {
 import {
   consumeQuestionQuota,
   createQuestionSessionController,
+  writeLocalTestSessionQuestion,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -98,6 +99,7 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
+      writeLocalTestSessionQuestion(nextQuestion);
       setSignInDemand(null);
       setIsFavorite(false);
       setIsFavoriteSubmitting(false);

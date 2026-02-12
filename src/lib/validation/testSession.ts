@@ -7,23 +7,24 @@ import {
 import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { isNonEmptyString } from "@/lib/string";
 
-export type TestRunParams = {
+export type TestParam = {
   subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
 };
 
-export type TestRunSession = TestRunParams & {
+export type TestSession = TestParam & {
+  id: string;
   startedAtMs: number;
 };
 
-export function parseTestRunParams(value: unknown): TestRunParams | null {
+export function parseTestParam(value: unknown): TestParam | null {
   if (!value || typeof value !== "object") {
     return null;
   }
 
-  const raw = value as Partial<TestRunParams>;
+  const raw = value as Partial<TestParam>;
   const subjectId = raw.subjectId;
   const subcategoryId = raw.subcategoryId;
   const difficulty = raw.difficulty;
@@ -57,13 +58,18 @@ export function parseTestRunParams(value: unknown): TestRunParams | null {
   };
 }
 
-export function parseTestRunSession(value: unknown): TestRunSession | null {
+export function parseTestSession(value: unknown): TestSession | null {
   if (!value || typeof value !== "object") {
     return null;
   }
 
-  const params = parseTestRunParams(value);
+  const params = parseTestParam(value);
   if (!params) {
+    return null;
+  }
+
+  const id = (value as { id?: unknown }).id;
+  if (!isNonEmptyString(id)) {
     return null;
   }
 
@@ -78,6 +84,7 @@ export function parseTestRunSession(value: unknown): TestRunSession | null {
 
   return {
     ...params,
+    id,
     startedAtMs: Math.floor(startedAtMs),
   };
 }

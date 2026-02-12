@@ -1,4 +1,4 @@
-import type { TestRunParams as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
 You generate high-quality assessment questions.

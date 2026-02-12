@@ -101,7 +101,7 @@ export default function Question({
               </p>
 
               <div className="flex items-center gap-4">
-                <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
+                <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
                   <Button
                     aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
                     color={isFavorite ? "warning" : "default"}

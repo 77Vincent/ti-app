@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { QUESTION_TYPES } from "@/lib/meta";
-import { parseTestRunParams } from "@/lib/validation/testSession";
+import { parseTestParam } from "@/lib/validation/testSession";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
 import {
@@ -23,7 +23,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   }
 
   const raw = value as Record<string, unknown>;
-  const params = parseTestRunParams(raw);
+  const params = parseTestParam(raw);
   const questionId = raw.questionId;
   const questionType = raw.questionType;
   const prompt = raw.prompt;

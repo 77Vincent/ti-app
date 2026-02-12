@@ -32,6 +32,7 @@ describe("test session repo", () => {
 
   it("reads a stored test session payload", async () => {
     testSessionFindUnique.mockResolvedValueOnce({
+      id: "session-1",
       difficulty: "beginner",
       goal: "study",
       updatedAt: new Date("2026-02-11T10:00:00.000Z"),
@@ -40,6 +41,7 @@ describe("test session repo", () => {
     });
 
     await expect(readTestSession({ userId: "user-1" })).resolves.toEqual({
+      id: "session-1",
       difficulty: "beginner",
       goal: "study",
       updatedAt: new Date("2026-02-11T10:00:00.000Z"),
@@ -49,6 +51,7 @@ describe("test session repo", () => {
 
     expect(testSessionFindUnique).toHaveBeenCalledWith({
       select: {
+        id: true,
         difficulty: true,
         goal: true,
         updatedAt: true,
@@ -66,6 +69,7 @@ describe("test session repo", () => {
 
     await upsertTestSession(
       { userId: "user-1" },
+      "session-1",
       {
         difficulty: "beginner",
         goal: "study",
@@ -76,6 +80,7 @@ describe("test session repo", () => {
 
     expect(testSessionUpsert).toHaveBeenCalledWith({
       create: {
+        id: "session-1",
         difficulty: "beginner",
         goal: "study",
         subjectId: "language",
@@ -83,6 +88,7 @@ describe("test session repo", () => {
         userId: "user-1",
       },
       update: {
+        id: "session-1",
         difficulty: "beginner",
         goal: "study",
         subjectId: "language",

@@ -1,11 +1,15 @@
 import {
-  parseTestRunSession,
-  type TestRunParams,
-  type TestRunSession,
+  parseTestSession,
+  type TestParam,
+  type TestSession,
 } from "@/lib/validation/testSession";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
 import { QuestionRunnerApiError } from "../api/error";
+import {
+  clearLocalTestSession,
+  writeLocalTestSession,
+} from "./localSession";
 
 type TestSessionResponse = {
   session?: unknown;
@@ -18,12 +22,12 @@ type SessionRequestOptions = {
   method: "GET" | "POST" | "DELETE" | "PATCH";
 };
 
-function parseSessionFromResponse(payload: unknown): TestRunSession | null {
+function parseSessionFromResponse(payload: unknown): TestSession | null {
   if (!payload || typeof payload !== "object") {
     return null;
   }
 
-  return parseTestRunSession((payload as TestSessionResponse).session);
+  return parseTestSession((payload as TestSessionResponse).session);
 }
 
 async function requestSession(
@@ -58,25 +62,40 @@ async function requestSession(
   }
 }
 
-export async function readTestSession(): Promise<TestRunSession | null> {
+export async function readTestSession(): Promise<TestSession | null> {
   const payload = await requestSession({
     cache: "no-store",
     method: "GET",
   });
+  const session = parseSessionFromResponse(payload);
 
-  return parseSessionFromResponse(payload);
+  if (session) {
+    writeLocalTestSession(session.id);
+    return session;
+  }
+
+  clearLocalTestSession();
+  return null;
 }
 
 export async function writeTestSession(
-  params: TestRunParams,
+  params: TestParam,
 ): Promise<void> {
-  await requestSession({
+  const payload = await requestSession({
     body: JSON.stringify(params),
     method: "POST",
   });
+  const session = parseSessionFromResponse(payload);
+  if (!session) {
+    throw new QuestionRunnerApiError("Failed to start test session.", 500);
+  }
+
+  writeLocalTestSession(session.id);
 }
 
 export async function clearTestSession(): Promise<void> {
+  clearLocalTestSession();
+
   await requestSession({
     method: "DELETE",
   });

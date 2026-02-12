@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
-  parseTestRunParams,
-  type TestRunSession,
+  parseTestParam,
+  type TestSession,
 } from "@/lib/validation/testSession";
 import {
   clearAnonymousTestSessionCookie,
@@ -24,7 +24,7 @@ export const runtime = "nodejs";
 
 async function readActiveSession(
   userId: string | null,
-): Promise<TestRunSession | null> {
+): Promise<TestSession | null> {
   if (!userId) {
     return readAnonymousTestSessionCookie();
   }
@@ -34,13 +34,14 @@ async function readActiveSession(
     return null;
   }
 
-  const params = parseTestRunParams(session);
+  const params = parseTestParam(session);
   if (!params) {
     return null;
   }
 
   return {
     ...params,
+    id: session.id,
     startedAtMs: session.updatedAt.getTime(),
   };
 }
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const params = parseTestRunParams(body);
+  const params = parseTestParam(body);
 
   if (!params) {
     return NextResponse.json(
@@ -73,16 +74,19 @@ export async function POST(request: Request) {
   }
 
   const userId = await readAuthenticatedUserId();
-  const response = NextResponse.json({ ok: true });
+  const id = crypto.randomUUID();
   const startedAtMs = Date.now();
+  const session: TestSession = {
+    ...params,
+    id,
+    startedAtMs,
+  };
+  const response = NextResponse.json({ session });
 
   if (userId) {
-    await upsertTestSession({ userId }, params);
+    await upsertTestSession({ userId }, id, params);
   } else {
-    persistAnonymousTestSessionCookie(response, {
-      ...params,
-      startedAtMs,
-    });
+    persistAnonymousTestSessionCookie(response, session);
   }
 
   return response;

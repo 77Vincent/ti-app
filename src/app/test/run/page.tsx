@@ -3,7 +3,7 @@
 import {
   clearTestSession,
   readTestSession,
-  type TestRunSession,
+  type TestSession,
 } from "@/app/test/run/questionRunner/session";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { PAGE_PATHS } from "@/lib/config/paths";
@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function TestRunPage() {
   const router = useRouter();
-  const [params, setParams] = useState<TestRunSession | null | undefined>(
+  const [params, setParams] = useState<TestSession | null | undefined>(
     undefined,
   );
 
@@ -57,6 +57,7 @@ export default function TestRunPage() {
         difficulty={params.difficulty}
         goal={params.goal}
         onEndTest={handleEndTest}
+        id={params.id}
         startedAtMs={params.startedAtMs}
         subcategoryId={params.subcategoryId}
         subjectId={params.subjectId}

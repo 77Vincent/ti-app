@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseTestRunParams, parseTestRunSession } from "./testSession";
+import { parseTestParam, parseTestSession } from "./testSession";
 
-describe("parseTestRunParams", () => {
+describe("parseTestParam", () => {
   it("parses a valid test session payload", () => {
-    const parsed = parseTestRunParams({
+    const parsed = parseTestParam({
       difficulty: "beginner",
       goal: "study",
       subjectId: "language",
@@ -20,7 +20,7 @@ describe("parseTestRunParams", () => {
 
   it("returns null for invalid payload", () => {
     expect(
-      parseTestRunParams({
+      parseTestParam({
         difficulty: "beginner",
         goal: "unknown",
         subjectId: "language",
@@ -30,12 +30,13 @@ describe("parseTestRunParams", () => {
   });
 });
 
-describe("parseTestRunSession", () => {
+describe("parseTestSession", () => {
   it("parses a valid session payload with startedAtMs", () => {
     expect(
-      parseTestRunSession({
+      parseTestSession({
         difficulty: "beginner",
         goal: "study",
+        id: "session-1",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
@@ -43,6 +44,7 @@ describe("parseTestRunSession", () => {
     ).toEqual({
       difficulty: "beginner",
       goal: "study",
+      id: "session-1",
       startedAtMs: 1_738_000_000_000,
       subjectId: "language",
       subcategoryId: "english",
@@ -51,9 +53,21 @@ describe("parseTestRunSession", () => {
 
   it("returns null when startedAtMs is missing", () => {
     expect(
-      parseTestRunSession({
+      parseTestSession({
         difficulty: "beginner",
         goal: "study",
+        subjectId: "language",
+        subcategoryId: "english",
+      }),
+    ).toBeNull();
+  });
+
+  it("returns null when id is missing", () => {
+    expect(
+      parseTestSession({
+        difficulty: "beginner",
+        goal: "study",
+        startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
       }),

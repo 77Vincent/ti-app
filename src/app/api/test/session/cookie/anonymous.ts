@@ -1,9 +1,8 @@
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
 import {
-  parseTestRunParams,
-  parseTestRunSession,
-  type TestRunSession,
+  parseTestSession,
+  type TestSession,
 } from "@/lib/validation/testSession";
 import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
@@ -11,7 +10,7 @@ import { isNonEmptyString } from "@/lib/string";
 
 const ANONYMOUS_TEST_SESSION_COOKIE_NAME = "ti-app-anon-test-session";
 
-export async function readAnonymousTestSessionCookie(): Promise<TestRunSession | null> {
+export async function readAnonymousTestSessionCookie(): Promise<TestSession | null> {
   const cookieStore = await cookies();
   const rawSessionValue =
     cookieStore.get(ANONYMOUS_TEST_SESSION_COOKIE_NAME)?.value || null;
@@ -22,20 +21,7 @@ export async function readAnonymousTestSessionCookie(): Promise<TestRunSession |
 
   try {
     const parsed = JSON.parse(decodeURIComponent(rawSessionValue));
-    const session = parseTestRunSession(parsed);
-    if (session) {
-      return session;
-    }
-
-    const params = parseTestRunParams(parsed);
-    if (!params) {
-      return null;
-    }
-
-    return {
-      ...params,
-      startedAtMs: Date.now(),
-    };
+    return parseTestSession(parsed);
   } catch {
     return null;
   }
@@ -43,7 +29,7 @@ export async function readAnonymousTestSessionCookie(): Promise<TestRunSession |
 
 export function persistAnonymousTestSessionCookie(
   response: NextResponse,
-  session: TestRunSession,
+  session: TestSession,
 ): NextResponse {
   response.cookies.set(
     ANONYMOUS_TEST_SESSION_COOKIE_NAME,

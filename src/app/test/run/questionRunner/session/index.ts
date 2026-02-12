@@ -4,9 +4,14 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
+  readLocalTestSessionSnapshot,
+  writeLocalTestSessionQuestion,
+} from "./localSession";
+export type { LocalTestSessionSnapshot } from "./localSession";
+export {
   clearTestSession,
   consumeQuestionQuota,
   readTestSession,
   writeTestSession,
 } from "./storage";
-export type { TestRunParams, TestRunSession } from "@/lib/validation/testSession";
+export type { TestParam, TestSession } from "@/lib/validation/testSession";

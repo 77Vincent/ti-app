@@ -1,4 +1,4 @@
-import type { TestRunParams } from "@/lib/validation/testSession";
+import type { TestParam } from "@/lib/validation/testSession";
 import { prisma } from "@/lib/prisma";
 
 export type UserTestSessionWhere = {
@@ -6,6 +6,7 @@ export type UserTestSessionWhere = {
 };
 
 const TEST_RUN_PARAMS_SELECT = {
+  id: true,
   difficulty: true,
   goal: true,
   updatedAt: true,
@@ -16,6 +17,7 @@ const TEST_RUN_PARAMS_SELECT = {
 export async function readTestSession(
   where: UserTestSessionWhere,
 ): Promise<{
+  id: string;
   difficulty: string;
   goal: string;
   updatedAt: Date;
@@ -30,11 +32,13 @@ export async function readTestSession(
 
 export async function upsertTestSession(
   where: UserTestSessionWhere,
-  params: TestRunParams,
+  id: string,
+  params: TestParam,
 ): Promise<void> {
   await prisma.testSession.upsert({
     where,
     create: {
+      id: id,
       difficulty: params.difficulty,
       goal: params.goal,
       subjectId: params.subjectId,
@@ -42,6 +46,7 @@ export async function upsertTestSession(
       userId: where.userId,
     },
     update: {
+      id: id,
       difficulty: params.difficulty,
       goal: params.goal,
       subjectId: params.subjectId,

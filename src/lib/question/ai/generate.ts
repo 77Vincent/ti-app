@@ -1,6 +1,6 @@
 import type { QuestionType } from "@/lib/meta";
 import type { QuestionOptionId } from "@/lib/validation/question";
-import type { TestRunParams as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 import { requestOpenAIQuestionContent } from "./client";
 import { parseAIQuestionPayload } from "./payload";
 

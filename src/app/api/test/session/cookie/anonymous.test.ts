@@ -37,6 +37,7 @@ describe("anonymous session cookie helpers", () => {
           JSON.stringify({
             difficulty: "beginner",
             goal: "study",
+            id: "session-1",
             startedAtMs: 1_738_000_000_000,
             subjectId: "language",
             subcategoryId: "english",
@@ -48,6 +49,7 @@ describe("anonymous session cookie helpers", () => {
     await expect(readAnonymousTestSessionCookie()).resolves.toEqual({
       difficulty: "beginner",
       goal: "study",
+      id: "session-1",
       startedAtMs: 1_738_000_000_000,
       subjectId: "language",
       subcategoryId: "english",
@@ -68,35 +70,6 @@ describe("anonymous session cookie helpers", () => {
     await expect(readAnonymousTestSessionCookie()).resolves.toBeNull();
   });
 
-  it("supports legacy cookie payload without startedAtMs", async () => {
-    cookieGet.mockImplementation((cookieName: string) => {
-      if (cookieName !== "ti-app-anon-test-session") {
-        return undefined;
-      }
-
-      return {
-        value: encodeURIComponent(
-          JSON.stringify({
-            difficulty: "beginner",
-            goal: "study",
-            subjectId: "language",
-            subcategoryId: "english",
-          }),
-        ),
-      };
-    });
-
-    const session = await readAnonymousTestSessionCookie();
-
-    expect(session).toMatchObject({
-      difficulty: "beginner",
-      goal: "study",
-      subjectId: "language",
-      subcategoryId: "english",
-    });
-    expect(session?.startedAtMs).toEqual(expect.any(Number));
-  });
-
   it("persists anonymous test session cookie", () => {
     const set = vi.fn();
     const response = { cookies: { set } };
@@ -106,6 +79,7 @@ describe("anonymous session cookie helpers", () => {
       {
         difficulty: "beginner",
         goal: "study",
+        id: "session-1",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
@@ -119,6 +93,7 @@ describe("anonymous session cookie helpers", () => {
         JSON.stringify({
           difficulty: "beginner",
           goal: "study",
+          id: "session-1",
           startedAtMs: 1_738_000_000_000,
           subjectId: "language",
           subcategoryId: "english",

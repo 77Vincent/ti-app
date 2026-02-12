@@ -6,5 +6,4 @@ export type {
   QuestionOptionId,
   QuestionOption,
   QuestionRunnerProps,
-  TestMeta,
 } from "./types";

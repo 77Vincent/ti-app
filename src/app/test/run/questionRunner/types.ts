@@ -1,18 +1,6 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type {
-  DifficultyEnum,
-  GoalEnum,
-  QuestionType,
-  SubjectEnum,
-} from "@/lib/meta";
-
-export type TestMeta = {
-  subjectId: SubjectEnum;
-  subcategoryId: string;
-  difficulty: DifficultyEnum;
-  goal: GoalEnum;
-  startedAtMs: number;
-};
+import type { QuestionType } from "@/lib/meta";
+import type { TestSession } from "@/lib/validation/testSession";
 
 export type TestRunnerActions = {
   onEndTest: () => void;
@@ -44,4 +32,4 @@ export type MultipleAnswerQuestion = BaseQuestion & {
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
-export type QuestionRunnerProps = TestMeta & TestRunnerActions;
+export type QuestionRunnerProps = TestSession & TestRunnerActions;

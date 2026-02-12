@@ -2,14 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   buildQuestion,
-  parseTestRunParams,
+  parseTestParam,
 } = vi.hoisted(() => ({
   buildQuestion: vi.fn(),
-  parseTestRunParams: vi.fn(),
+  parseTestParam: vi.fn(),
 }));
 
 vi.mock("@/lib/validation/testSession", () => ({
-  parseTestRunParams,
+  parseTestParam,
 }));
 
 vi.mock("./service/question", () => ({
@@ -27,9 +27,9 @@ describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
     buildQuestion.mockReset();
-    parseTestRunParams.mockReset();
+    parseTestParam.mockReset();
 
-    parseTestRunParams.mockReturnValue(VALID_INPUT);
+    parseTestParam.mockReturnValue(VALID_INPUT);
     buildQuestion.mockResolvedValue({ id: "question-1" });
   });
 
@@ -51,7 +51,7 @@ describe("generate question route", () => {
   });
 
   it("returns 400 for invalid request payload", async () => {
-    parseTestRunParams.mockReturnValueOnce(null);
+    parseTestParam.mockReturnValueOnce(null);
 
     const route = await import("./route");
 
