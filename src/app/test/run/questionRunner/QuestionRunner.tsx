@@ -21,7 +21,6 @@ type QuestionProps = {
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
-  startedAtMs: number;
 };
 
 const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
@@ -34,7 +33,6 @@ export default function Question({
   subcategoryId,
   difficulty,
   goal,
-  startedAtMs,
 }: QuestionProps) {
   const {
     question,
@@ -54,7 +52,6 @@ export default function Question({
     subcategoryId,
     difficulty,
     goal,
-    startedAtMs,
   });
   const isLoading = isLoadingQuestion || !question;
 

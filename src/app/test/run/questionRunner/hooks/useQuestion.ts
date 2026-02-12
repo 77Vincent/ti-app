@@ -10,11 +10,8 @@ import {
   removeFavoriteQuestion,
 } from "../api";
 import {
-  buildQuestionSessionKey,
   consumeQuestionQuota,
   createQuestionSessionController,
-  readCachedQuestion,
-  writeCachedQuestion,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -33,7 +30,6 @@ export type UseQuestionInput = {
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
-  startedAtMs: number;
 };
 
 export type UseQuestionResult = {
@@ -59,7 +55,6 @@ export function useQuestion({
   subcategoryId,
   difficulty,
   goal,
-  startedAtMs,
 }: UseQuestionInput): UseQuestionResult {
   const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -72,18 +67,6 @@ export function useQuestion({
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
-  const questionSessionKey = useMemo(
-    () =>
-      buildQuestionSessionKey({
-        startedAtMs,
-        subjectId,
-        subcategoryId,
-        difficulty,
-        goal,
-      }),
-    [difficulty, goal, startedAtMs, subcategoryId, subjectId],
-  );
-
   const showLoadError = useCallback((error: unknown) => {
     if (isAnonymousQuestionLimitError(error)) {
       setSignInDemand("more_questions");
@@ -115,7 +98,6 @@ export function useQuestion({
 
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
-      writeCachedQuestion(questionSessionKey, nextQuestion);
       setSignInDemand(null);
       setIsFavorite(false);
       setIsFavoriteSubmitting(false);
@@ -123,7 +105,7 @@ export function useQuestion({
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
-    [questionSessionKey, resetSelection],
+    [resetSelection],
   );
 
   const loadAndApplyQuestion = useCallback(
@@ -155,14 +137,6 @@ export function useQuestion({
     let cancelled = false;
 
     async function loadInitialQuestion() {
-      const cachedQuestion = readCachedQuestion(questionSessionKey);
-      if (cachedQuestion) {
-        applyLoadedQuestion(cachedQuestion);
-        void questionSession.prefetchToCapacity();
-        dispatchUiState({ type: "initialLoadFinished" });
-        return;
-      }
-
       dispatchUiState({ type: "initialLoadStarted" });
 
       await loadAndApplyQuestion(
@@ -181,7 +155,7 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [applyLoadedQuestion, loadAndApplyQuestion, questionSession, questionSessionKey]);
+  }, [loadAndApplyQuestion, questionSession]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);

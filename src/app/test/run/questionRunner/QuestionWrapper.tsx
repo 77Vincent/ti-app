@@ -76,7 +76,6 @@ export default function QuestionRunner({
           <Question
             difficulty={difficulty}
             goal={goal}
-            startedAtMs={startedAtMs}
             subcategoryId={subcategoryId}
             subjectId={subjectId}
           />

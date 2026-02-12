@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  clearCachedQuestion,
   clearTestSession,
   readTestSession,
   type TestRunSession,
@@ -18,7 +17,6 @@ export default function TestRunPage() {
   );
 
   const handleEndTest = useCallback(() => {
-    clearCachedQuestion();
     void clearTestSession().catch(() => undefined);
     router.push(PAGE_PATHS.TEST);
   }, [router]);

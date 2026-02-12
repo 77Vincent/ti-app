@@ -24,7 +24,7 @@ import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
-import { clearCachedQuestion, clearTestSession } from "./test/run/questionRunner/session";
+import { clearTestSession } from "./test/run/questionRunner/session";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -55,7 +55,6 @@ export default function AppBar() {
   }
 
   function clearSessionThen(action: () => void) {
-    clearCachedQuestion();
     void clearTestSession()
       .catch(() => undefined)
       .finally(action);
