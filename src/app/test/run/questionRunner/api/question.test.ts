@@ -1,7 +1,7 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  fetchGeneratedQuestion,
+  fetchQuestion,
   isAnonymousQuestionLimitError,
 } from "./question";
 import { QuestionRunnerApiError } from "./error";
@@ -31,13 +31,13 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("fetchGeneratedQuestion", () => {
+describe("fetchQuestion", () => {
   it("returns question when response is ok", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify({ question: MOCK_QUESTION }), { status: 200 }),
     );
 
-    await expect(fetchGeneratedQuestion(VALID_INPUT)).resolves.toEqual(MOCK_QUESTION);
+    await expect(fetchQuestion(VALID_INPUT)).resolves.toEqual(MOCK_QUESTION);
   });
 
   it("throws request error with status for non-ok response", async () => {
@@ -50,7 +50,7 @@ describe("fetchGeneratedQuestion", () => {
       ),
     );
 
-    await expect(fetchGeneratedQuestion(VALID_INPUT)).rejects.toMatchObject({
+    await expect(fetchQuestion(VALID_INPUT)).rejects.toMatchObject({
       message:
         "You have reached the anonymous limit of 5 questions. Please log in to continue.",
       name: "QuestionRunnerApiError",

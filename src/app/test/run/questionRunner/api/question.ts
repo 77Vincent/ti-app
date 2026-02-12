@@ -4,14 +4,14 @@ import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
 import { QuestionRunnerApiError } from "./error";
 
-export type GenerateQuestionInput = {
+export type FetchQuestionInput = {
   subjectId: string;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
 };
 
-type GenerateQuestionResponse = {
+type FetchQuestionResponse = {
   question?: Question;
   error?: string;
 };
@@ -20,8 +20,8 @@ export function isAnonymousQuestionLimitError(error: unknown): boolean {
   return error instanceof QuestionRunnerApiError && error.status === 403;
 }
 
-export async function fetchGeneratedQuestion(
-  input: GenerateQuestionInput,
+export async function fetchQuestion(
+  input: FetchQuestionInput,
 ): Promise<Question> {
   const response = await fetch(API_PATHS.QUESTIONS_GENERATE, {
     method: "POST",
@@ -36,7 +36,7 @@ export async function fetchGeneratedQuestion(
     );
   }
 
-  const payload = (await response.json()) as GenerateQuestionResponse;
+  const payload = (await response.json()) as FetchQuestionResponse;
 
   if (!payload.question) {
     throw new QuestionRunnerApiError(

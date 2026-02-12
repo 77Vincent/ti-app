@@ -1,7 +1,7 @@
 export {
-  fetchGeneratedQuestion,
+  fetchQuestion,
   isAnonymousQuestionLimitError,
-  type GenerateQuestionInput,
+  type FetchQuestionInput,
 } from "./question";
 export {
   addFavoriteQuestion,

@@ -5,7 +5,7 @@ import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   addFavoriteQuestion,
-  fetchGeneratedQuestion,
+  fetchQuestion,
   isAnonymousQuestionLimitError,
   removeFavoriteQuestion,
 } from "../api";
@@ -96,7 +96,7 @@ export function useQuestion({
   }, []);
 
   const loadQuestion = useCallback(async () => {
-    return fetchGeneratedQuestion({
+    return fetchQuestion({
       subjectId,
       subcategoryId,
       difficulty,
