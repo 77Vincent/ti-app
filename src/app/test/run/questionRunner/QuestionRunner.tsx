@@ -17,10 +17,12 @@ import {
 } from "./utils/evaluation";
 
 type QuestionProps = {
+  sessionId: string;
   subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
+  onQuestionApplied?: () => void;
 };
 
 const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
@@ -28,11 +30,13 @@ const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
   more_questions: "Sign in for more questions",
 };
 
-export default function Question({
+export default function QuestionRunner({
+  sessionId,
   subjectId,
   subcategoryId,
   difficulty,
   goal,
+  onQuestionApplied,
 }: QuestionProps) {
   const {
     question,
@@ -48,10 +52,12 @@ export default function Question({
     toggleFavorite,
     submit,
   } = useQuestion({
+    sessionId,
     subjectId,
     subcategoryId,
     difficulty,
     goal,
+    onQuestionApplied,
   });
   const isLoading = isLoadingQuestion || !question;
 

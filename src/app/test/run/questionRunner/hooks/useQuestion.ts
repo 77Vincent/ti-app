@@ -12,6 +12,7 @@ import {
 import {
   consumeQuestionQuota,
   createQuestionSessionController,
+  readLocalTestSessionSnapshot,
   writeLocalTestSessionQuestion,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
@@ -27,10 +28,12 @@ import {
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
+  sessionId: string;
   subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
+  onQuestionApplied?: () => void;
 };
 
 export type UseQuestionResult = {
@@ -48,14 +51,15 @@ export type UseQuestionResult = {
   submit: () => Promise<void>;
 };
 
-const PREFETCH_BUFFER_SIZE = 1;
 export type SignInDemand = "more_questions" | "favorite";
 
 export function useQuestion({
+  sessionId,
   subjectId,
   subcategoryId,
   difficulty,
   goal,
+  onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
   const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -91,7 +95,6 @@ export function useQuestion({
   const questionSession = useMemo(
     () =>
       createQuestionSessionController<QuestionType>({
-        bufferSize: PREFETCH_BUFFER_SIZE,
         loadQuestion,
       }),
     [loadQuestion],
@@ -100,6 +103,7 @@ export function useQuestion({
   const applyLoadedQuestion = useCallback(
     (nextQuestion: QuestionType) => {
       writeLocalTestSessionQuestion(nextQuestion);
+      onQuestionApplied?.();
       setSignInDemand(null);
       setIsFavorite(false);
       setIsFavoriteSubmitting(false);
@@ -107,7 +111,7 @@ export function useQuestion({
       resetSelection();
       dispatchUiState({ type: "questionApplied", question: nextQuestion });
     },
-    [resetSelection],
+    [onQuestionApplied, resetSelection],
   );
 
   const loadAndApplyQuestion = useCallback(
@@ -123,7 +127,6 @@ export function useQuestion({
         }
 
         applyLoadedQuestion(nextQuestion);
-        void questionSession.prefetchToCapacity();
       } catch (error) {
         if (shouldIgnoreResult?.()) {
           return;
@@ -132,14 +135,32 @@ export function useQuestion({
         showLoadError(error);
       }
     },
-    [applyLoadedQuestion, questionSession, showLoadError],
+    [applyLoadedQuestion, showLoadError],
   );
+
+  const readCurrentCachedQuestion = useCallback((): QuestionType | null => {
+    const snapshot = readLocalTestSessionSnapshot();
+    if (!snapshot || snapshot.sessionId !== sessionId) {
+      return null;
+    }
+
+    return snapshot.questions[snapshot.currentQuestionIndex] ?? null;
+  }, [sessionId]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadInitialQuestion() {
       dispatchUiState({ type: "initialLoadStarted" });
+
+      const cachedQuestion = readCurrentCachedQuestion();
+      if (cachedQuestion) {
+        applyLoadedQuestion(cachedQuestion);
+        if (!cancelled) {
+          dispatchUiState({ type: "initialLoadFinished" });
+        }
+        return;
+      }
 
       await loadAndApplyQuestion(
         () => questionSession.loadInitialQuestion(),
@@ -157,7 +178,7 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [loadAndApplyQuestion, questionSession]);
+  }, [applyLoadedQuestion, loadAndApplyQuestion, questionSession, readCurrentCachedQuestion]);
 
   function selectOption(optionId: QuestionOptionId) {
     selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
@@ -192,11 +213,6 @@ export function useQuestion({
       }
 
       dispatchUiState({ type: "submissionMarked" });
-      return;
-    }
-
-    if (questionSession.hasBufferedQuestion()) {
-      await loadAndApplyQuestion(() => questionSession.consumeNextQuestion());
       return;
     }
 

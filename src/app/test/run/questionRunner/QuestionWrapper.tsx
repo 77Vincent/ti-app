@@ -13,11 +13,11 @@ import {
 } from "@/lib/meta";
 import { LogOut, Timer } from "lucide-react";
 import { createElement, useCallback, useEffect, useState } from "react";
-import Question from "./QuestionRunner";
+import QuestionRunner from "./QuestionRunner";
 import { readLocalTestSessionSnapshot } from "./session";
 import { formatElapsedTime } from "./utils/timer";
 
-export default function QuestionRunner({
+export default function QuestionWrapper({
   id,
   subjectId,
   subcategoryId,
@@ -44,6 +44,9 @@ export default function QuestionRunner({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(() =>
     readCurrentSessionQuestionIndex(),
   );
+  const handleQuestionApplied = useCallback(() => {
+    setCurrentQuestionIndex(readCurrentSessionQuestionIndex());
+  }, [readCurrentSessionQuestionIndex]);
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
   const GoalIcon = getGoalIcon(goal);
@@ -59,13 +62,12 @@ export default function QuestionRunner({
 
     const timer = setInterval(() => {
       setElapsedSeconds(getElapsedSeconds());
-      setCurrentQuestionIndex(readCurrentSessionQuestionIndex());
     }, 1000);
 
     return () => {
       clearInterval(timer);
     };
-  }, [readCurrentSessionQuestionIndex, startedAtMs]);
+  }, [startedAtMs]);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -99,9 +101,11 @@ export default function QuestionRunner({
 
       <Card shadow="sm">
         <CardBody className="p-6">
-          <Question
+          <QuestionRunner
             difficulty={difficulty}
             goal={goal}
+            onQuestionApplied={handleQuestionApplied}
+            sessionId={id}
             subcategoryId={subcategoryId}
             subjectId={subjectId}
           />
