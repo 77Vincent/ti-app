@@ -8,6 +8,7 @@ import { API_PATHS } from "@/lib/config/paths";
 import { QuestionRunnerApiError } from "../api/error";
 import {
   clearLocalTestSession,
+  readLocalTestSessionSnapshot,
   writeLocalTestSession,
 } from "./localSession";
 
@@ -69,13 +70,21 @@ export async function readTestSession(): Promise<TestSession | null> {
   });
   const session = parseSessionFromResponse(payload);
 
-  if (session) {
-    writeLocalTestSession(session.id);
-    return session;
+  if (!session) {
+    clearLocalTestSession();
+    return null;
   }
 
-  clearLocalTestSession();
-  return null;
+  const localSession = readLocalTestSessionSnapshot();
+  const isLocalSessionConsistent =
+    localSession !== null && localSession.sessionId === session.id;
+
+  if (!isLocalSessionConsistent) {
+    await clearTestSession();
+    return null;
+  }
+
+  return session;
 }
 
 export async function writeTestSession(
