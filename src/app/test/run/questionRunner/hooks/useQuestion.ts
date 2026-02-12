@@ -51,7 +51,7 @@ export type UseQuestionResult = {
   submit: () => Promise<void>;
 };
 
-const PREFETCH_BUFFER_SIZE = 2;
+const PREFETCH_BUFFER_SIZE = 1;
 export type SignInDemand = "more_questions" | "favorite";
 
 export function useQuestion({
