@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextResponse } from "next/server";
-import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
+import { ANONYMOUS_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
 
 const { cookieGet, cookiesFn } = vi.hoisted(() => ({
@@ -58,7 +58,7 @@ describe("anonymous question count cookie helpers", () => {
       "3",
       {
         httpOnly: true,
-        maxAge: ANONYMOUS_SESSION_TTL,
+        maxAge: ANONYMOUS_TTL,
         path: COOKIE_PATHS.ROOT,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",

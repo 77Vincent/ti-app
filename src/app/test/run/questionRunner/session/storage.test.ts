@@ -11,7 +11,7 @@ const {
   writeLocalTestSession: vi.fn(),
 }));
 
-vi.mock("./localSession", () => ({
+vi.mock("./local", () => ({
   clearLocalTestSession,
   readLocalTestSessionSnapshot,
   writeLocalTestSession,

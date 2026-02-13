@@ -5,7 +5,7 @@ import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button, Tooltip } from "@heroui/react";
-import { Star } from "lucide-react";
+import { ChevronLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { useQuestion, type SignInDemand } from "./hooks/useQuestion";
 import { canSubmitQuestion } from "./utils/questionGuards";
@@ -44,10 +44,12 @@ export default function QuestionRunner({
     isSubmitting,
     isFavorite,
     isFavoriteSubmitting,
+    canGoToPreviousQuestion,
     isSignInRequired,
     signInDemand,
     hasSubmitted,
     selectedOptionIds,
+    goToPreviousQuestion,
     selectOption,
     toggleFavorite,
     submit,
@@ -107,6 +109,20 @@ export default function QuestionRunner({
               </p>
 
               <div className="flex items-center gap-4">
+                <Button
+                  isDisabled={
+                    !canGoToPreviousQuestion ||
+                    isSubmitting ||
+                    isFavoriteSubmitting
+                  }
+                  onPress={goToPreviousQuestion}
+                  size="sm"
+                  startContent={<ChevronLeft aria-hidden size={16} />}
+                  variant="light"
+                >
+                  Previous
+                </Button>
+
                 <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
                   <Button
                     aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}

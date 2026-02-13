@@ -4,10 +4,18 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
+  markLocalTestSessionQuestionSubmitted,
   readLocalTestSessionSnapshot,
+  readLocalTestSessionQuestionState,
+  shiftLocalTestSessionQuestion,
+  writeLocalTestSessionQuestionSelection,
   writeLocalTestSessionQuestion,
-} from "./localSession";
-export type { LocalTestSessionSnapshot } from "./localSession";
+} from "./local";
+export type {
+  LocalTestSessionQuestionEntry,
+  LocalTestSessionQuestionState,
+  LocalTestSessionSnapshot,
+} from "./local";
 export {
   clearTestSession,
   consumeQuestionQuota,

@@ -10,7 +10,7 @@ import {
   clearLocalTestSession,
   readLocalTestSessionSnapshot,
   writeLocalTestSession,
-} from "./localSession";
+} from "./local";
 
 type TestSessionResponse = {
   session?: unknown;

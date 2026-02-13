@@ -2,18 +2,14 @@
 
 import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
-  addFavoriteQuestion,
   fetchQuestion,
   isAnonymousQuestionLimitError,
-  removeFavoriteQuestion,
 } from "../api";
 import {
   consumeQuestionQuota,
   createQuestionSessionController,
-  readLocalTestSessionSnapshot,
-  writeLocalTestSessionQuestion,
 } from "../session";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 import {
@@ -22,9 +18,11 @@ import {
 } from "../session/reducer";
 import {
   canSubmitQuestion,
-  isActiveFavoriteMutation,
-  isFavoriteAuthError,
 } from "../utils/questionGuards";
+import { loadAndApplyQuestion } from "../service/questionLoad";
+import { submitQuestion } from "../service/questionSubmit";
+import { useQuestionFavorite } from "./useQuestionFavorite";
+import { useQuestionHistory } from "./useQuestionHistory";
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
@@ -42,10 +40,12 @@ export type UseQuestionResult = {
   isSubmitting: boolean;
   isFavorite: boolean;
   isFavoriteSubmitting: boolean;
+  canGoToPreviousQuestion: boolean;
   isSignInRequired: boolean;
   signInDemand: SignInDemand | null;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
+  goToPreviousQuestion: () => void;
   selectOption: (optionId: QuestionOptionId) => void;
   toggleFavorite: () => Promise<void>;
   submit: () => Promise<void>;
@@ -62,16 +62,27 @@ export function useQuestion({
   onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
   const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isFavoriteSubmitting, setIsFavoriteSubmitting] = useState(false);
-  const activeQuestionIdRef = useRef<string | null>(null);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
   );
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
-  const { selectedOptionIds, resetSelection, selectOption: selectQuestionOption } =
+  const { selectedOptionIds, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
+  const {
+    isFavorite,
+    isFavoriteSubmitting,
+    resetFavoriteState,
+    toggleFavorite,
+  } = useQuestionFavorite({
+    subjectId,
+    subcategoryId,
+    difficulty,
+    goal,
+    onAuthRequired: () => {
+      setSignInDemand("favorite");
+    },
+  });
   const showLoadError = useCallback((error: unknown) => {
     if (isAnonymousQuestionLimitError(error)) {
       setSignInDemand("more_questions");
@@ -100,52 +111,37 @@ export function useQuestion({
     [loadQuestion],
   );
 
-  const applyLoadedQuestion = useCallback(
-    (nextQuestion: QuestionType) => {
-      writeLocalTestSessionQuestion(nextQuestion);
-      onQuestionApplied?.();
+  const applyQuestionStateToUi = useCallback(
+    (questionState: {
+      question: QuestionType;
+      selectedOptionIds: QuestionOptionId[];
+      hasSubmitted: boolean;
+    }) => {
       setSignInDemand(null);
-      setIsFavorite(false);
-      setIsFavoriteSubmitting(false);
-      activeQuestionIdRef.current = nextQuestion.id;
-      resetSelection();
-      dispatchUiState({ type: "questionApplied", question: nextQuestion });
+      resetFavoriteState(questionState.question.id);
+      setSelection(questionState.selectedOptionIds);
+      dispatchUiState({
+        type: "questionApplied",
+        question: questionState.question,
+        hasSubmitted: questionState.hasSubmitted,
+      });
     },
-    [onQuestionApplied, resetSelection],
+    [resetFavoriteState, setSelection],
   );
 
-  const loadAndApplyQuestion = useCallback(
-    async (
-      load: () => Promise<QuestionType>,
-      shouldIgnoreResult?: () => boolean,
-    ): Promise<void> => {
-      try {
-        const nextQuestion = await load();
-
-        if (shouldIgnoreResult?.()) {
-          return;
-        }
-
-        applyLoadedQuestion(nextQuestion);
-      } catch (error) {
-        if (shouldIgnoreResult?.()) {
-          return;
-        }
-
-        showLoadError(error);
-      }
-    },
-    [applyLoadedQuestion, showLoadError],
-  );
-
-  const readCurrentCachedQuestion = useCallback((): QuestionType | null => {
-    const snapshot = readLocalTestSessionSnapshot();
-    if (!snapshot || snapshot.sessionId !== sessionId) {
-      return null;
-    }
-
-    return snapshot.questions[snapshot.currentQuestionIndex] ?? null;
-  }, [sessionId]);
+  const {
+    canGoToPreviousQuestion,
+    restoreCurrentQuestion,
+    pushLoadedQuestion,
+    goToPreviousQuestion,
+    goToNextQuestion,
+    persistSelection,
+    persistSubmission,
+  } = useQuestionHistory({
+    sessionId,
+    onQuestionApplied,
+    onQuestionStateApplied: applyQuestionStateToUi,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -153,19 +149,19 @@ export function useQuestion({
     async function loadInitialQuestion() {
       dispatchUiState({ type: "initialLoadStarted" });
 
-      const cachedQuestion = readCurrentCachedQuestion();
-      if (cachedQuestion) {
-        applyLoadedQuestion(cachedQuestion);
+      if (restoreCurrentQuestion()) {
         if (!cancelled) {
           dispatchUiState({ type: "initialLoadFinished" });
         }
         return;
       }
 
-      await loadAndApplyQuestion(
-        () => questionSession.loadInitialQuestion(),
-        () => cancelled,
-      );
+      await loadAndApplyQuestion({
+        load: () => questionSession.loadInitialQuestion(),
+        onError: showLoadError,
+        pushLoadedQuestion,
+        shouldIgnoreResult: () => cancelled,
+      });
 
       if (!cancelled) {
         dispatchUiState({ type: "initialLoadFinished" });
@@ -178,10 +174,19 @@ export function useQuestion({
       cancelled = true;
       questionSession.clear();
     };
-  }, [applyLoadedQuestion, loadAndApplyQuestion, questionSession, readCurrentCachedQuestion]);
+  }, [pushLoadedQuestion, questionSession, restoreCurrentQuestion, showLoadError]);
 
   function selectOption(optionId: QuestionOptionId) {
-    selectQuestionOption(question, optionId, isSubmitting || hasSubmitted);
+    const nextSelection = selectQuestionOption(
+      question,
+      optionId,
+      isSubmitting || hasSubmitted,
+    );
+    if (!nextSelection) {
+      return;
+    }
+
+    persistSelection(nextSelection);
   }
 
   async function submit() {
@@ -197,79 +202,36 @@ export function useQuestion({
       return;
     }
 
-    if (!hasSubmitted) {
-      try {
-        await consumeQuestionQuota();
-      } catch (error) {
-        if (isAnonymousQuestionLimitError(error)) {
-          setSignInDemand("more_questions");
-          return;
-        }
-
+    await submitQuestion({
+      hasSubmitted,
+      consumeQuestionQuota,
+      isQuestionLimitError: isAnonymousQuestionLimitError,
+      onQuestionLimitReached: () => {
+        setSignInDemand("more_questions");
+      },
+      onError: (error) => {
         toast.error(error, {
           fallbackDescription: "Failed to submit answer.",
         });
-        return;
-      }
-
-      dispatchUiState({ type: "submissionMarked" });
-      return;
-    }
-
-    dispatchUiState({ type: "submitFetchStarted" });
-
-    try {
-      await loadAndApplyQuestion(() => questionSession.consumeNextQuestion());
-    } finally {
-      dispatchUiState({ type: "submitFetchFinished" });
-    }
-  }
-
-  async function toggleFavorite() {
-    if (!question || isFavoriteSubmitting) {
-      return;
-    }
-
-    const targetQuestionId = question.id;
-    const nextFavoriteState = !isFavorite;
-    setIsFavoriteSubmitting(true);
-
-    try {
-      if (isFavorite) {
-        await removeFavoriteQuestion(question.id);
-      } else {
-        await addFavoriteQuestion({
-          subjectId,
-          subcategoryId,
-          difficulty,
-          goal,
-          question,
-        });
-      }
-
-      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
-        return;
-      }
-
-      setIsFavorite(nextFavoriteState);
-    } catch (error) {
-      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
-        return;
-      }
-
-      if (isFavoriteAuthError(error)) {
-        setSignInDemand("favorite");
-        return;
-      }
-
-      toast.error(error, {
-        fallbackDescription: isFavorite
-          ? "Failed to remove favorite."
-          : "Failed to favorite question.",
-      });
-    } finally {
-      setIsFavoriteSubmitting(false);
-    }
+      },
+      onSubmissionMarked: () => {
+        dispatchUiState({ type: "submissionMarked" });
+      },
+      persistSubmission,
+      goToNextQuestion,
+      onNextQuestionLoadStarted: () => {
+        dispatchUiState({ type: "submitFetchStarted" });
+      },
+      onNextQuestionLoadFinished: () => {
+        dispatchUiState({ type: "submitFetchFinished" });
+      },
+      loadNextQuestion: () =>
+        loadAndApplyQuestion({
+          load: () => questionSession.consumeNextQuestion(),
+          onError: showLoadError,
+          pushLoadedQuestion,
+        }),
+    });
   }
 
   const isSignInRequired = signInDemand !== null;
@@ -279,12 +241,14 @@ export function useQuestion({
     isSubmitting,
     isFavorite,
     isFavoriteSubmitting,
+    canGoToPreviousQuestion,
     isSignInRequired,
     signInDemand,
     hasSubmitted,
     selectedOptionIds,
+    goToPreviousQuestion,
     selectOption,
-    toggleFavorite,
+    toggleFavorite: () => toggleFavorite(question),
     submit,
   };
 }

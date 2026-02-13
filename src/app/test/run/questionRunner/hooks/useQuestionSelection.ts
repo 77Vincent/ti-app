@@ -6,19 +6,19 @@ import type { Question as QuestionType, QuestionOptionId } from "../types";
 
 export type UseQuestionSelectionResult = {
   selectedOptionIds: QuestionOptionId[];
-  resetSelection: () => void;
+  setSelection: (selectedOptionIds: QuestionOptionId[]) => void;
   selectOption: (
     question: QuestionType | null,
     optionId: QuestionOptionId,
     disabled?: boolean,
-  ) => void;
+  ) => QuestionOptionId[] | null;
 };
 
 export function useQuestionSelection(): UseQuestionSelectionResult {
   const [selectedOptionIds, setSelectedOptionIds] = useState<QuestionOptionId[]>([]);
 
-  const resetSelection = useCallback(() => {
-    setSelectedOptionIds([]);
+  const setSelection = useCallback((nextSelection: QuestionOptionId[]) => {
+    setSelectedOptionIds([...nextSelection]);
   }, []);
 
   const selectOption = useCallback((
@@ -27,24 +27,25 @@ export function useQuestionSelection(): UseQuestionSelectionResult {
     disabled = false,
   ) => {
     if (!question || disabled) {
-      return;
+      return null;
     }
 
+    let nextSelection: QuestionOptionId[];
     if (question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER) {
-      setSelectedOptionIds((prevIds) =>
-        prevIds.includes(optionId)
-          ? prevIds.filter((id) => id !== optionId)
-          : [...prevIds, optionId],
-      );
-      return;
+      nextSelection = selectedOptionIds.includes(optionId)
+        ? selectedOptionIds.filter((id) => id !== optionId)
+        : [...selectedOptionIds, optionId];
+    } else {
+      nextSelection = [optionId];
     }
 
-    setSelectedOptionIds([optionId]);
-  }, []);
+    setSelectedOptionIds(nextSelection);
+    return nextSelection;
+  }, [selectedOptionIds]);
 
   return {
     selectedOptionIds,
-    resetSelection,
+    setSelection,
     selectOption,
   };
 }

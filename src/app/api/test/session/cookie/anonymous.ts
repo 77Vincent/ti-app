@@ -4,7 +4,7 @@ import {
   parseTestSession,
   type TestSession,
 } from "@/lib/validation/testSession";
-import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
+import { ANONYMOUS_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
 import { isNonEmptyString } from "@/lib/string";
 
@@ -36,7 +36,7 @@ export function persistAnonymousTestSessionCookie(
     encodeURIComponent(JSON.stringify(session)),
     {
       httpOnly: true,
-      maxAge: ANONYMOUS_SESSION_TTL,
+      maxAge: ANONYMOUS_TTL,
       path: COOKIE_PATHS.ROOT,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

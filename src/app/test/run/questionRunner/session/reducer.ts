@@ -17,7 +17,7 @@ export const INITIAL_QUESTION_SESSION_UI_STATE: QuestionSessionUiState = {
 export type QuestionSessionUiAction =
   | { type: "initialLoadStarted" }
   | { type: "initialLoadFinished" }
-  | { type: "questionApplied"; question: Question }
+  | { type: "questionApplied"; question: Question; hasSubmitted?: boolean }
   | { type: "submissionMarked" }
   | { type: "submitFetchStarted" }
   | { type: "submitFetchFinished" };
@@ -41,7 +41,7 @@ export function questionSessionUiReducer(
       return {
         ...state,
         question: action.question,
-        hasSubmitted: false,
+        hasSubmitted: action.hasSubmitted ?? false,
       };
     case "submissionMarked":
       return {

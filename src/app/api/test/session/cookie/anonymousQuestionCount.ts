@@ -1,4 +1,4 @@
-import { ANONYMOUS_SESSION_TTL } from "@/lib/config/testPolicy";
+import { ANONYMOUS_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
@@ -36,7 +36,7 @@ export function incrementAnonymousQuestionCountCookie(
     String(anonymousQuestionCount + 1),
     {
       httpOnly: true,
-      maxAge: ANONYMOUS_SESSION_TTL,
+      maxAge: ANONYMOUS_TTL,
       path: COOKIE_PATHS.ROOT,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
