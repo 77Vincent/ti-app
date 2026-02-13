@@ -6,6 +6,8 @@ describe("submitQuestion", () => {
     const recordQuestionResult = vi
       .fn<(isCorrect: boolean) => Promise<void>>()
       .mockResolvedValueOnce(undefined);
+    const onSubmitRequestStarted = vi.fn();
+    const onSubmitRequestFinished = vi.fn();
     const onSubmissionMarked = vi.fn();
     const persistSubmission = vi.fn();
 
@@ -13,6 +15,8 @@ describe("submitQuestion", () => {
       hasSubmitted: false,
       isCurrentAnswerCorrect: true,
       recordQuestionResult,
+      onSubmitRequestStarted,
+      onSubmitRequestFinished,
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -25,12 +29,16 @@ describe("submitQuestion", () => {
     });
 
     expect(recordQuestionResult).toHaveBeenCalledWith(true);
+    expect(onSubmitRequestStarted).toHaveBeenCalledTimes(1);
+    expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
     expect(onSubmissionMarked).toHaveBeenCalledTimes(1);
     expect(persistSubmission).toHaveBeenCalledTimes(1);
   });
 
   it("requests sign-in when quota limit is reached", async () => {
     const limitError = new Error("limit");
+    const onSubmitRequestStarted = vi.fn();
+    const onSubmitRequestFinished = vi.fn();
     const onQuestionLimitReached = vi.fn();
     const onError = vi.fn();
 
@@ -40,6 +48,8 @@ describe("submitQuestion", () => {
       recordQuestionResult: vi
         .fn<(isCorrect: boolean) => Promise<void>>()
         .mockRejectedValueOnce(limitError),
+      onSubmitRequestStarted,
+      onSubmitRequestFinished,
       isQuestionLimitError: (error) => error === limitError,
       onQuestionLimitReached,
       onError,
@@ -53,10 +63,14 @@ describe("submitQuestion", () => {
 
     expect(onQuestionLimitReached).toHaveBeenCalledTimes(1);
     expect(onError).not.toHaveBeenCalled();
+    expect(onSubmitRequestStarted).toHaveBeenCalledTimes(1);
+    expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
   });
 
   it("forwards non-limit errors", async () => {
     const requestError = new Error("request");
+    const onSubmitRequestStarted = vi.fn();
+    const onSubmitRequestFinished = vi.fn();
     const onError = vi.fn();
 
     await submitQuestion({
@@ -65,6 +79,8 @@ describe("submitQuestion", () => {
       recordQuestionResult: vi
         .fn<(isCorrect: boolean) => Promise<void>>()
         .mockRejectedValueOnce(requestError),
+      onSubmitRequestStarted,
+      onSubmitRequestFinished,
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError,
@@ -77,6 +93,8 @@ describe("submitQuestion", () => {
     });
 
     expect(onError).toHaveBeenCalledWith(requestError);
+    expect(onSubmitRequestStarted).toHaveBeenCalledTimes(1);
+    expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
   });
 
   it("does nothing when next question is already available", async () => {
@@ -88,6 +106,8 @@ describe("submitQuestion", () => {
       hasSubmitted: true,
       isCurrentAnswerCorrect: false,
       recordQuestionResult: vi.fn(async () => undefined),
+      onSubmitRequestStarted: vi.fn(),
+      onSubmitRequestFinished: vi.fn(),
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -113,6 +133,8 @@ describe("submitQuestion", () => {
       hasSubmitted: true,
       isCurrentAnswerCorrect: false,
       recordQuestionResult: vi.fn(async () => undefined),
+      onSubmitRequestStarted: vi.fn(),
+      onSubmitRequestFinished: vi.fn(),
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -138,6 +160,8 @@ describe("submitQuestion", () => {
         hasSubmitted: true,
         isCurrentAnswerCorrect: false,
         recordQuestionResult: vi.fn(async () => undefined),
+        onSubmitRequestStarted: vi.fn(),
+        onSubmitRequestFinished: vi.fn(),
         isQuestionLimitError: () => false,
         onQuestionLimitReached: vi.fn(),
         onError: vi.fn(),

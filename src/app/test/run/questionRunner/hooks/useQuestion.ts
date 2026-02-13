@@ -226,6 +226,12 @@ export function useQuestion({
       hasSubmitted,
       isCurrentAnswerCorrect: isAnswerCorrect(question, selectedOptionIds),
       recordQuestionResult,
+      onSubmitRequestStarted: () => {
+        dispatchUiState({ type: "submitFetchStarted" });
+      },
+      onSubmitRequestFinished: () => {
+        dispatchUiState({ type: "submitFetchFinished" });
+      },
       isQuestionLimitError: isAnonymousQuestionLimitError,
       onQuestionLimitReached: () => {
         setSignInDemand("more_questions");

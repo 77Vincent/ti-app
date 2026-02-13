@@ -2,6 +2,8 @@ export type SubmitQuestionInput = {
   hasSubmitted: boolean;
   isCurrentAnswerCorrect: boolean;
   recordQuestionResult: (isCorrect: boolean) => Promise<void>;
+  onSubmitRequestStarted: () => void;
+  onSubmitRequestFinished: () => void;
   isQuestionLimitError: (error: unknown) => boolean;
   onQuestionLimitReached: () => void;
   onError: (error: unknown) => void;
@@ -17,6 +19,8 @@ export async function submitQuestion({
   hasSubmitted,
   isCurrentAnswerCorrect,
   recordQuestionResult,
+  onSubmitRequestStarted,
+  onSubmitRequestFinished,
   isQuestionLimitError,
   onQuestionLimitReached,
   onError,
@@ -28,6 +32,7 @@ export async function submitQuestion({
   loadNextQuestion,
 }: SubmitQuestionInput): Promise<void> {
   if (!hasSubmitted) {
+    onSubmitRequestStarted();
     try {
       await recordQuestionResult(isCurrentAnswerCorrect);
     } catch (error) {
@@ -38,6 +43,8 @@ export async function submitQuestion({
 
       onError(error);
       return;
+    } finally {
+      onSubmitRequestFinished();
     }
 
     onSubmissionMarked();
