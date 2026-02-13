@@ -3,7 +3,7 @@
 import QuestionSkeleton from "./QuestionSkeleton";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { canSubmitQuestion } from "./utils/questionGuards";
@@ -99,18 +99,23 @@ export default function QuestionRunner({
               <div className="flex items-center justify-end gap-4">
                 {
                   canGoToPreviousQuestion ? (
-                    <Button
-                      isDisabled={
-                        !canGoToPreviousQuestion ||
-                        isSubmitting ||
-                        isFavoriteSubmitting
-                      }
-                      onPress={goToPreviousQuestion}
-                      isIconOnly
-                      radius="full"
-                      startContent={<ChevronLeft aria-hidden size={20} />}
-                      variant="light"
-                    />
+                    <Tooltip content="Previous question" placement="left">
+                      <span>
+                        <Button
+                          aria-label="Previous question"
+                          isDisabled={
+                            !canGoToPreviousQuestion ||
+                            isSubmitting ||
+                            isFavoriteSubmitting
+                          }
+                          onPress={goToPreviousQuestion}
+                          isIconOnly
+                          radius="full"
+                          startContent={<ChevronLeft aria-hidden size={20} />}
+                          variant="light"
+                        />
+                      </span>
+                    </Tooltip>
                   ) : null
                 }
 
