@@ -135,6 +135,24 @@ export function upsertLocalTestSessionSnapshotQuestion(
   snapshot: LocalTestSessionSnapshot,
   question: Question,
 ): LocalTestSessionSnapshot {
+  const currentQuestionEntry = snapshot.questions[snapshot.currentQuestionIndex];
+  if (currentQuestionEntry?.hasSubmitted) {
+    const nextQuestions = [
+      ...snapshot.questions,
+      {
+        question,
+        selectedOptionIds: [],
+        hasSubmitted: false,
+      },
+    ];
+
+    return {
+      sessionId: snapshot.sessionId,
+      questions: nextQuestions,
+      currentQuestionIndex: nextQuestions.length - 1,
+    };
+  }
+
   const existingQuestionIndex = snapshot.questions.findIndex(
     (item) => item.question.id === question.id,
   );

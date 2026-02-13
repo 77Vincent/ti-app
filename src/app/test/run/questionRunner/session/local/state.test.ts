@@ -64,6 +64,29 @@ describe("local test session state", () => {
     });
   });
 
+  it("appends as next question when current question is already submitted", () => {
+    const snapshot: LocalTestSessionSnapshot = {
+      sessionId: "session-1",
+      questions: [
+        {
+          question: createQuestion("q1"),
+          selectedOptionIds: ["A"],
+          hasSubmitted: true,
+        },
+      ],
+      currentQuestionIndex: 0,
+    };
+
+    const next = upsertLocalTestSessionSnapshotQuestion(snapshot, createQuestion("q1"));
+    expect(next.currentQuestionIndex).toBe(1);
+    expect(next.questions).toHaveLength(2);
+    expect(next.questions[1]).toEqual({
+      question: expect.objectContaining({ id: "q1" }),
+      selectedOptionIds: [],
+      hasSubmitted: false,
+    });
+  });
+
   it("shifts and updates current question entry", () => {
     const snapshot: LocalTestSessionSnapshot = {
       sessionId: "session-1",
