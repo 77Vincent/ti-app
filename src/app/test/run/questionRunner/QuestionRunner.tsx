@@ -70,11 +70,6 @@ export default function QuestionRunner({
           <div className="space-y-4">
             <QuestionPrompt markdown={question.prompt} />
 
-            <p className="font-light text-sm text-default-500">
-              Select {question.correctOptionIds.length}{" "}
-              {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
-            </p>
-
             <div className="space-y-3">
               {question.options.map((option) => (
                 <QuestionChoice
@@ -95,37 +90,47 @@ export default function QuestionRunner({
               ))}
             </div>
 
-            <div className="flex items-center justify-end gap-3">
-              <Button
-                isDisabled={
-                  !canGoToPreviousQuestion ||
-                  isSubmitting ||
-                  isFavoriteSubmitting
-                }
-                onPress={goToPreviousQuestion}
-                isIconOnly
-                radius="full"
-                startContent={<ChevronLeft aria-hidden size={20} />}
-                variant="light"
-              >
-              </Button>
+            <div className="flex gap-4 justify-between items-center">
+              <p className="font-light text-sm text-default-500">
+                Select {question.correctOptionIds.length}{" "}
+                {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
+              </p>
 
-              <Button
-                color="primary"
-                isDisabled={
-                  isFavoriteSubmitting ||
-                  !canSubmitQuestion({
-                    hasQuestion: true,
-                    hasSubmitted,
-                    selectedOptionCount: selectedOptionIds.length,
-                    isSubmitting,
-                  })
+              <div className="flex items-center justify-end gap-4">
+                {
+                  canGoToPreviousQuestion ? (
+                    <Button
+                      isDisabled={
+                        !canGoToPreviousQuestion ||
+                        isSubmitting ||
+                        isFavoriteSubmitting
+                      }
+                      onPress={goToPreviousQuestion}
+                      isIconOnly
+                      radius="full"
+                      startContent={<ChevronLeft aria-hidden size={20} />}
+                      variant="light"
+                    />
+                  ) : null
                 }
-                isLoading={isSubmitting}
-                onPress={submit}
-              >
-                {hasSubmitted ? "Next" : "Submit"}
-              </Button>
+
+                <Button
+                  color="primary"
+                  isDisabled={
+                    isFavoriteSubmitting ||
+                    !canSubmitQuestion({
+                      hasQuestion: true,
+                      hasSubmitted,
+                      selectedOptionCount: selectedOptionIds.length,
+                      isSubmitting,
+                    })
+                  }
+                  isLoading={isSubmitting}
+                  onPress={submit}
+                >
+                  {hasSubmitted ? "Next" : "Submit"}
+                </Button>
+              </div>
             </div>
           </div>
         )}
