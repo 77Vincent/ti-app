@@ -10,6 +10,13 @@ describe("getDifficulty", () => {
     });
   });
 
+  it("returns mapped JLPT level for japanese", () => {
+    expect(getDifficulty("language", "japanese", "advanced")).toEqual({
+      framework: "JLPT",
+      level: "N2",
+    });
+  });
+
   it("returns null when no mapping exists", () => {
     expect(
       getDifficulty("language", "unknown" as SubcategoryEnum, "beginner"),

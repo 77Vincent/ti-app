@@ -6,10 +6,10 @@ import type {
 } from "@/lib/meta";
 
 export const START_FORM_STEP_TITLES = {
-  subject: "Subject of your test",
-  subcategory: "Subcategory of your test",
+  subject: "Subject",
+  subcategory: "Subcategory",
   difficulty: "Difficulty",
-  goal: "Goal of your test",
+  goal: "Mode",
 } as const;
 
 export type StartFormStep = keyof typeof START_FORM_STEP_TITLES;
