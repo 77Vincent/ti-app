@@ -2,6 +2,29 @@ import { QUESTION_TYPES, type QuestionType } from "@/lib/meta";
 import { isNonEmptyString } from "@/lib/string";
 
 export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
+export type QuestionOption = {
+  id: QuestionOptionId;
+  text: string;
+  explanation: string;
+};
+
+type BaseQuestion = {
+  id: string;
+  prompt: string;
+  questionType: QuestionType;
+  options: QuestionOption[];
+  correctOptionIds: QuestionOptionId[];
+};
+
+export type MultipleChoiceQuestion = BaseQuestion & {
+  questionType: typeof QUESTION_TYPES.MULTIPLE_CHOICE;
+};
+
+export type MultipleAnswerQuestion = BaseQuestion & {
+  questionType: typeof QUESTION_TYPES.MULTIPLE_ANSWER;
+};
+
+export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
 const OPTION_IDS: QuestionOptionId[] = ["A", "B", "C", "D", "E", "F"];
 
@@ -11,11 +34,7 @@ type ParseQuestionOptionsConfig = {
   requireSequentialFromA?: boolean;
 };
 
-export type ParsedQuestionOption = {
-  id: QuestionOptionId;
-  text: string;
-  explanation: string;
-};
+export type ParsedQuestionOption = QuestionOption;
 
 export function isQuestionType(value: unknown): value is QuestionType {
   return (

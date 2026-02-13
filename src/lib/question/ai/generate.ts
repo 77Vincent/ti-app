@@ -1,20 +1,7 @@
-import type { QuestionType } from "@/lib/meta";
-import type { QuestionOptionId } from "@/lib/validation/question";
+import type { Question } from "@/lib/validation/question";
 import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 import { requestOpenAIQuestionContent } from "./client";
 import { parseAIQuestionPayload } from "./payload";
-
-export type Question = {
-  id: string;
-  prompt: string;
-  questionType: QuestionType;
-  options: Array<{
-    id: QuestionOptionId;
-    text: string;
-    explanation: string;
-  }>;
-  correctOptionIds: QuestionOptionId[];
-};
 
 function createQuestionId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
