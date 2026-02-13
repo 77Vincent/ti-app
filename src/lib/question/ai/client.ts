@@ -1,8 +1,8 @@
 import { isNonEmptyString } from "@/lib/string";
 import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 import {
-  buildQuestionUserPrompt,
   OPENAI_QUESTION_SYSTEM_PROMPT,
+  buildQuestionUserPrompt,
 } from "./prompt";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";

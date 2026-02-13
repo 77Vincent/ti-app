@@ -28,7 +28,7 @@ describe("requestOpenAIQuestionContent", () => {
   it("calls OpenAI and returns message content", async () => {
     process.env.OPENAI_API_KEY = "test-key";
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
         JSON.stringify({
           choices: [
@@ -47,6 +47,12 @@ describe("requestOpenAIQuestionContent", () => {
       '{"ok":true}',
     );
 
+    const [, options] = fetchSpy.mock.calls[0] ?? [];
+    const body =
+      options && typeof options === "object" && "body" in options
+        ? (options as { body?: string }).body
+        : undefined;
+
     expect(globalThis.fetch).toHaveBeenCalledWith(
       OPENAI_URL,
       expect.objectContaining({
@@ -57,6 +63,8 @@ describe("requestOpenAIQuestionContent", () => {
         method: "POST",
       }),
     );
+    expect(body).toContain("q length must be exactly 2");
+    expect(body).toContain("use only keys q, t, p, o, a");
   });
 
   it("throws provider error for non-ok response", async () => {

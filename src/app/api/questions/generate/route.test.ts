@@ -47,6 +47,22 @@ const VALID_QUESTION = {
   correctOptionIds: ["A"],
 } as const;
 
+const VALID_NEXT_QUESTION = {
+  id: "question-2",
+  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+  prompt: "Which city is the capital of Japan?",
+  options: [
+    { id: "A", text: "Kyoto", explanation: "Incorrect." },
+    { id: "B", text: "Tokyo", explanation: "Correct." },
+    { id: "C", text: "Osaka", explanation: "Incorrect." },
+  ],
+  correctOptionIds: ["B"],
+} as const;
+
+function mockTwoGeneratedQuestions() {
+  buildQuestion.mockResolvedValueOnce([VALID_QUESTION, VALID_NEXT_QUESTION]);
+}
+
 describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
@@ -59,7 +75,7 @@ describe("generate question route", () => {
     parseQuestionParam.mockReturnValue(VALID_INPUT);
     countQuestionPoolMatches.mockResolvedValue(0);
     readQuestionFromPool.mockResolvedValue(null);
-    buildQuestion.mockResolvedValue(VALID_QUESTION);
+    buildQuestion.mockResolvedValue([VALID_QUESTION, VALID_NEXT_QUESTION]);
     upsertQuestionPool.mockResolvedValue(undefined);
   });
 
@@ -88,6 +104,7 @@ describe("generate question route", () => {
   });
 
   it("returns question when request succeeds", async () => {
+    mockTwoGeneratedQuestions();
     const route = await import("./route");
 
     const response = await route.POST(
@@ -100,11 +117,13 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
+      nextQuestion: VALID_NEXT_QUESTION,
     });
     expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
     expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(buildQuestion).toHaveBeenCalledTimes(1);
     expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
-    expect(upsertQuestionPool).toHaveBeenCalledWith({
+    expect(upsertQuestionPool).toHaveBeenNthCalledWith(1, {
       id: VALID_QUESTION.id,
       subjectId: VALID_INPUT.subjectId,
       subcategoryId: VALID_INPUT.subcategoryId,
@@ -113,6 +132,16 @@ describe("generate question route", () => {
       prompt: VALID_QUESTION.prompt,
       options: VALID_QUESTION.options,
       correctOptionIds: VALID_QUESTION.correctOptionIds,
+    });
+    expect(upsertQuestionPool).toHaveBeenNthCalledWith(2, {
+      id: VALID_NEXT_QUESTION.id,
+      subjectId: VALID_INPUT.subjectId,
+      subcategoryId: VALID_INPUT.subcategoryId,
+      difficulty: VALID_INPUT.difficulty,
+      questionType: VALID_NEXT_QUESTION.questionType,
+      prompt: VALID_NEXT_QUESTION.prompt,
+      options: VALID_NEXT_QUESTION.options,
+      correctOptionIds: VALID_NEXT_QUESTION.correctOptionIds,
     });
   });
 
@@ -160,6 +189,7 @@ describe("generate question route", () => {
   });
 
   it("returns question even when pool persistence fails", async () => {
+    mockTwoGeneratedQuestions();
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
@@ -176,9 +206,11 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
+      nextQuestion: VALID_NEXT_QUESTION,
     });
     expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
     expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(upsertQuestionPool).toHaveBeenCalledTimes(2);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "Failed to persist generated question.",
       expect.any(Error),
@@ -187,6 +219,7 @@ describe("generate question route", () => {
   });
 
   it("skips pool read when probability falls through", async () => {
+    mockTwoGeneratedQuestions();
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.9);
     countQuestionPoolMatches.mockResolvedValueOnce(100);
     const route = await import("./route");
@@ -201,8 +234,10 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
+      nextQuestion: VALID_NEXT_QUESTION,
     });
     expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(buildQuestion).toHaveBeenCalledTimes(1);
     expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
     randomSpy.mockRestore();
   });

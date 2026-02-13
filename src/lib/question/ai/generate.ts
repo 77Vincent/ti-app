@@ -13,12 +13,18 @@ function createQuestionId(): string {
 
 export async function generateQuestionWithAI(
   input: GenerateQuestionRequest,
-): Promise<Question> {
+): Promise<[Question, Question]> {
   const content = await requestOpenAIQuestionContent(input);
-  const parsedQuestion = parseAIQuestionPayload(content);
+  const [firstQuestion, secondQuestion] = parseAIQuestionPayload(content);
 
-  return {
-    id: createQuestionId(),
-    ...parsedQuestion,
-  };
+  return [
+    {
+      id: createQuestionId(),
+      ...firstQuestion,
+    },
+    {
+      id: createQuestionId(),
+      ...secondQuestion,
+    },
+  ];
 }

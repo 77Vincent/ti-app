@@ -5,10 +5,15 @@ import {
 } from "./prompt";
 
 describe("aiPrompt", () => {
-  it("keeps the system prompt stable for JSON-only output", () => {
+  it("defines a stable prompt with strict question length", () => {
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"correctOptionIds"');
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("objectively gradable");
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"q"');
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"t"');
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"o"');
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"a"');
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain(
+      "q length must be exactly 2",
+    );
   });
 
   it("builds user prompt from test context", () => {

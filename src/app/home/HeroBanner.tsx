@@ -105,11 +105,13 @@ function buildScatteredMiniChipVariants(length: number, seed: number): MiniChipV
 }
 
 const ROW_MOTION = [
-  { keyframe: "heroMarquee", durationSeconds: 58 },
-  { keyframe: "heroMarqueeReverse", durationSeconds: 68 },
-  { keyframe: "heroMarquee", durationSeconds: 78 },
-  { keyframe: "heroMarqueeReverse", durationSeconds: 64 },
+  { keyframe: "heroMarquee", durationSeconds: 90 },
+  { keyframe: "heroMarqueeReverse", durationSeconds: 106 },
+  { keyframe: "heroMarquee", durationSeconds: 124 },
+  { keyframe: "heroMarqueeReverse", durationSeconds: 99 },
 ] as const;
+
+const ROW_OPACITY = [0.9, 0.75, 0.85, 0.7] as const;
 
 export default function HeroBanner() {
   const [seed, setSeed] = useState(0);
@@ -131,7 +133,7 @@ export default function HeroBanner() {
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(var(--heroui-content1)/0.7)_0%,hsl(var(--heroui-background)/0.9)_100%)]" />
         <div
-          className="relative z-0 flex flex-col gap-1.5 sm:gap-2"
+          className="relative z-0 flex flex-col gap-2"
           style={{
             maskImage:
               "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
@@ -146,9 +148,14 @@ export default function HeroBanner() {
               seed + rowIndex + 1,
             );
             const motion = ROW_MOTION[rowIndex % ROW_MOTION.length];
+            const rowOpacity = ROW_OPACITY[rowIndex % ROW_OPACITY.length];
 
             return (
-              <div key={`hero-word-row-${rowIndex}`} className="overflow-hidden">
+              <div
+                key={`hero-word-row-${rowIndex}`}
+                className="overflow-hidden"
+                style={{ opacity: rowOpacity }}
+              >
                 <div
                   className="flex w-max gap-2"
                   style={{

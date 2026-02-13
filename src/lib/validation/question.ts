@@ -27,7 +27,14 @@ export type MultipleAnswerQuestion = BaseQuestion & {
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
-const OPTION_IDS: QuestionOptionId[] = ["A", "B", "C", "D", "E", "F"];
+export const QUESTION_OPTION_IDS: QuestionOptionId[] = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+];
 
 type ParseQuestionOptionsConfig = {
   minOptions?: number;
@@ -45,7 +52,7 @@ export function isQuestionType(value: unknown): value is QuestionType {
 }
 
 export function isQuestionOptionId(value: string): value is QuestionOptionId {
-  return OPTION_IDS.includes(value as QuestionOptionId);
+  return QUESTION_OPTION_IDS.includes(value as QuestionOptionId);
 }
 
 export function parseQuestionOptions(
@@ -92,7 +99,7 @@ export function parseQuestionOptions(
   }
 
   if (config?.requireSequentialFromA) {
-    const expectedIds = OPTION_IDS.slice(0, options.length);
+    const expectedIds = QUESTION_OPTION_IDS.slice(0, options.length);
 
     if (!expectedIds.every((expectedId, index) => ids[index] === expectedId)) {
       return null;

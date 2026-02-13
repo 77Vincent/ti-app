@@ -49,17 +49,19 @@ export async function POST(request: Request) {
       }
     }
 
-    const question = await buildQuestion(input);
+    const [question, nextQuestion] = await buildQuestion(input);
 
-    try {
-      await upsertQuestionPool(
-        mapGeneratedQuestionToQuestionPoolInput(input, question),
-      );
-    } catch (error) {
-      console.error("Failed to persist generated question.", error);
+    for (const generatedQuestion of [question, nextQuestion]) {
+      try {
+        await upsertQuestionPool(
+          mapGeneratedQuestionToQuestionPoolInput(input, generatedQuestion),
+        );
+      } catch (error) {
+        console.error("Failed to persist generated question.", error);
+      }
     }
 
-    return NextResponse.json({ question });
+    return NextResponse.json({ question, nextQuestion });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to generate question.";
