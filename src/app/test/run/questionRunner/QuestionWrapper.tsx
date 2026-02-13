@@ -11,7 +11,7 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { LogOut, Star, Target } from "lucide-react";
+import { LogOut, Star } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
 import type { SignInDemand } from "./types";
@@ -19,6 +19,7 @@ import { readLocalTestSessionProgress } from "./session";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
 import ElapsedSessionTimer from "./ElapsedSessionTimer";
+import SessionAccuracy from "./SessionAccuracy";
 
 type SessionProgress = {
   currentQuestionIndex: number | null;
@@ -111,7 +112,6 @@ export default function QuestionWrapper({
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
   const difficultyLabel = getDifficultyLabel(difficulty);
   const goalLabel = getGoalLabel(goal);
-  const accuracyLabel = `${Math.round(sessionProgress.accuracyRate * 100)}% (${sessionProgress.correctCount}/${sessionProgress.submittedCount})`;
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -144,10 +144,11 @@ export default function QuestionWrapper({
         </div>
 
         <div className="flex items-center gap-3">
-          <p className="inline-flex items-center gap-1.5 tabular-nums">
-            <Target aria-hidden size={18} />
-            {accuracyLabel}
-          </p>
+          <SessionAccuracy
+            accuracyRate={sessionProgress.accuracyRate}
+            correctCount={sessionProgress.correctCount}
+            submittedCount={sessionProgress.submittedCount}
+          />
           <ElapsedSessionTimer startedAtMs={startedAtMs} />
           <Tooltip content="End test">
             <Button
