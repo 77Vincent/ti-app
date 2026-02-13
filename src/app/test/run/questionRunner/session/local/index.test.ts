@@ -4,6 +4,8 @@ import type { Question } from "../../types";
 import {
   clearLocalTestSession,
   markLocalTestSessionQuestionSubmitted,
+  readLocalTestSessionAccuracy,
+  readLocalTestSessionProgress,
   readLocalTestSessionQuestionState,
   shiftLocalTestSessionQuestion,
   writeLocalTestSessionQuestionSelection,
@@ -110,6 +112,31 @@ describe("local test session", () => {
       hasSubmitted: false,
       currentQuestionIndex: 1,
     });
+  });
+
+  it("reads real-time accuracy for current session", () => {
+    writeLocalTestSession("session-1");
+    writeLocalTestSessionQuestion(createQuestion("q1"));
+    writeLocalTestSessionQuestionSelection("session-1", ["A"]);
+    markLocalTestSessionQuestionSubmitted("session-1");
+    writeLocalTestSessionQuestion(createQuestion("q2"));
+    writeLocalTestSessionQuestionSelection("session-1", ["B"]);
+    markLocalTestSessionQuestionSubmitted("session-1");
+
+    expect(readLocalTestSessionAccuracy("session-1")).toEqual({
+      submittedCount: 2,
+      correctCount: 1,
+      accuracyRate: 0.5,
+    });
+    expect(readLocalTestSessionAccuracy("session-2")).toBeNull();
+
+    expect(readLocalTestSessionProgress("session-1")).toEqual({
+      currentQuestionIndex: 1,
+      submittedCount: 2,
+      correctCount: 1,
+      accuracyRate: 0.5,
+    });
+    expect(readLocalTestSessionProgress("session-2")).toBeNull();
   });
 
   it("does not move cursor out of bounds or across mismatched sessions", () => {

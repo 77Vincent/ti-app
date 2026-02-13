@@ -1,12 +1,14 @@
 import type { Question, QuestionOptionId } from "../../types";
 import { parseLocalTestSessionSnapshotJson } from "./codec";
 import {
+  calculateLocalTestSessionAccuracy,
   initializeLocalTestSessionSnapshot,
   shiftLocalTestSessionSnapshotQuestion,
   toLocalTestSessionQuestionState,
   updateCurrentLocalTestSessionSnapshotQuestion,
   upsertLocalTestSessionSnapshotQuestion,
   type LocalTestSessionQuestionEntry,
+  type LocalTestSessionAccuracy,
   type LocalTestSessionQuestionState,
   type LocalTestSessionSnapshot,
 } from "./state";
@@ -62,6 +64,10 @@ function updateCurrentLocalTestSessionQuestion(
   );
 }
 
+export type LocalTestSessionProgress = LocalTestSessionAccuracy & {
+  currentQuestionIndex: number;
+};
+
 export function readLocalTestSessionSnapshot(): LocalTestSessionSnapshot | null {
   const raw = readLocalTestSessionRaw();
   if (!raw) {
@@ -80,6 +86,31 @@ export function readLocalTestSessionQuestionState(
   }
 
   return toLocalTestSessionQuestionState(snapshot);
+}
+
+export function readLocalTestSessionAccuracy(
+  sessionId: string,
+): LocalTestSessionAccuracy | null {
+  const snapshot = readSnapshotBySessionId(sessionId);
+  if (!snapshot) {
+    return null;
+  }
+
+  return calculateLocalTestSessionAccuracy(snapshot);
+}
+
+export function readLocalTestSessionProgress(
+  sessionId: string,
+): LocalTestSessionProgress | null {
+  const snapshot = readSnapshotBySessionId(sessionId);
+  if (!snapshot) {
+    return null;
+  }
+
+  return {
+    currentQuestionIndex: snapshot.currentQuestionIndex,
+    ...calculateLocalTestSessionAccuracy(snapshot),
+  };
 }
 
 export function shiftLocalTestSessionQuestion(
@@ -133,7 +164,9 @@ export function clearLocalTestSession(): void {
   clearLocalTestSessionRaw();
 }
 
+export { calculateLocalTestSessionAccuracy } from "./state";
 export type {
+  LocalTestSessionAccuracy,
   LocalTestSessionQuestionEntry,
   LocalTestSessionQuestionState,
   LocalTestSessionSnapshot,

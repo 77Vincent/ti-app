@@ -11,14 +11,28 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { LogOut, Star, Timer } from "lucide-react";
+import { LogOut, Star, Target, Timer } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
 import type { SignInDemand } from "./types";
-import { readLocalTestSessionSnapshot } from "./session";
+import { readLocalTestSessionProgress } from "./session";
 import { formatElapsedTime } from "./utils/timer";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
+
+type SessionProgress = {
+  currentQuestionIndex: number | null;
+  submittedCount: number;
+  correctCount: number;
+  accuracyRate: number;
+};
+
+const DEFAULT_SESSION_PROGRESS: SessionProgress = {
+  currentQuestionIndex: null,
+  submittedCount: 0,
+  correctCount: 0,
+  accuracyRate: 0,
+};
 
 export default function QuestionWrapper({
   id,
@@ -31,27 +45,10 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
-  const readCurrentSessionQuestionIndex = useCallback((): number | null => {
-    const snapshot = readLocalTestSessionSnapshot();
-    if (!snapshot) {
-      return null;
-    }
-
-    const { sessionId, currentQuestionIndex } = snapshot;
-    const isCurrentSession = sessionId === id;
-
-    return isCurrentSession ? currentQuestionIndex : null;
-  }, [id]);
 
   const [elapsedSeconds, setElapsedSeconds] = useState(() =>
     Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000)),
   );
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(() =>
-    readCurrentSessionQuestionIndex(),
-  );
-  const handleQuestionApplied = useCallback(() => {
-    setCurrentQuestionIndex(readCurrentSessionQuestionIndex());
-  }, [readCurrentSessionQuestionIndex]);
 
   const {
     question,
@@ -71,7 +68,6 @@ export default function QuestionWrapper({
     subcategoryId,
     difficulty,
     goal,
-    onQuestionApplied: handleQuestionApplied,
   });
   const handleFavoriteAuthRequired = useCallback(() => {
     if (!question) {
@@ -110,6 +106,7 @@ export default function QuestionWrapper({
     return null;
   }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
   const isSignInRequired = signInDemand !== null;
+  const sessionProgress = readLocalTestSessionProgress(id) ?? DEFAULT_SESSION_PROGRESS;
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
@@ -119,6 +116,7 @@ export default function QuestionWrapper({
   const difficultyLabel = getDifficultyLabel(difficulty);
   const goalLabel = getGoalLabel(goal);
   const elapsedLabel = formatElapsedTime(elapsedSeconds);
+  const accuracyLabel = `${Math.round(sessionProgress.accuracyRate * 100)}% (${sessionProgress.correctCount}/${sessionProgress.submittedCount})`;
 
   useEffect(() => {
     const getElapsedSeconds = () =>
@@ -136,9 +134,11 @@ export default function QuestionWrapper({
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {currentQuestionIndex !== null ? (
-            <span className="font-medium tabular-nums">Question {currentQuestionIndex + 1}</span>
+        <div className="flex items-center gap-1">
+          {sessionProgress.currentQuestionIndex !== null ? (
+            <span className="font-medium tabular-nums">
+              Q{sessionProgress.currentQuestionIndex + 1}
+            </span>
           ) : null}
           <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
             <Button
@@ -163,22 +163,24 @@ export default function QuestionWrapper({
 
         <div className="flex items-center gap-3">
           <p className="inline-flex items-center gap-1.5 tabular-nums">
+            <Target aria-hidden size={18} />
+            {accuracyLabel}
+          </p>
+          <p className="inline-flex items-center gap-1.5 tabular-nums">
             <Timer aria-hidden size={18} />
             {elapsedLabel}
           </p>
           <Tooltip content="End test">
             <Button
               aria-label="End test"
-              onPress={onEndTest}
-              size="sm"
               isIconOnly
+              onPress={onEndTest}
               radius="full"
+              size="sm"
               variant="light"
-              startContent={
-                <LogOut aria-hidden size={18} />
-              }
-
-            />
+            >
+              <LogOut aria-hidden size={18} />
+            </Button>
           </Tooltip>
         </div>
       </div>

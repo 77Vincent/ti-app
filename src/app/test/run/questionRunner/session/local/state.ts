@@ -19,6 +19,12 @@ export type LocalTestSessionQuestionState = {
   currentQuestionIndex: number;
 };
 
+export type LocalTestSessionAccuracy = {
+  submittedCount: number;
+  correctCount: number;
+  accuracyRate: number;
+};
+
 export function toLocalTestSessionQuestionState(
   snapshot: LocalTestSessionSnapshot,
 ): LocalTestSessionQuestionState | null {
@@ -32,6 +38,46 @@ export function toLocalTestSessionQuestionState(
     selectedOptionIds: questionEntry.selectedOptionIds,
     hasSubmitted: questionEntry.hasSubmitted,
     currentQuestionIndex: snapshot.currentQuestionIndex,
+  };
+}
+
+function isQuestionEntryCorrect(
+  questionEntry: LocalTestSessionQuestionEntry,
+): boolean {
+  if (!questionEntry.hasSubmitted) {
+    return false;
+  }
+
+  const { selectedOptionIds } = questionEntry;
+  const { correctOptionIds } = questionEntry.question;
+
+  if (selectedOptionIds.length !== correctOptionIds.length) {
+    return false;
+  }
+
+  const selectedOptionIdSet = new Set(selectedOptionIds);
+  if (selectedOptionIdSet.size !== selectedOptionIds.length) {
+    return false;
+  }
+
+  return correctOptionIds.every((optionId) =>
+    selectedOptionIdSet.has(optionId),
+  );
+}
+
+export function calculateLocalTestSessionAccuracy(
+  snapshot: LocalTestSessionSnapshot,
+): LocalTestSessionAccuracy {
+  const submittedQuestions = snapshot.questions.filter(
+    (questionEntry) => questionEntry.hasSubmitted,
+  );
+  const submittedCount = submittedQuestions.length;
+  const correctCount = submittedQuestions.filter(isQuestionEntryCorrect).length;
+
+  return {
+    submittedCount,
+    correctCount,
+    accuracyRate: submittedCount === 0 ? 0 : correctCount / submittedCount,
   };
 }
 

@@ -4,7 +4,10 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
+  calculateLocalTestSessionAccuracy,
   markLocalTestSessionQuestionSubmitted,
+  readLocalTestSessionAccuracy,
+  readLocalTestSessionProgress,
   readLocalTestSessionSnapshot,
   readLocalTestSessionQuestionState,
   shiftLocalTestSessionQuestion,
@@ -12,6 +15,8 @@ export {
   writeLocalTestSessionQuestion,
 } from "./local";
 export type {
+  LocalTestSessionAccuracy,
+  LocalTestSessionProgress,
   LocalTestSessionQuestionEntry,
   LocalTestSessionQuestionState,
   LocalTestSessionSnapshot,

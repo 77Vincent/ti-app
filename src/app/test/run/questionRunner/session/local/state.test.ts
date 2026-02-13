@@ -1,6 +1,7 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { describe, expect, it } from "vitest";
 import {
+  calculateLocalTestSessionAccuracy,
   initializeLocalTestSessionSnapshot,
   shiftLocalTestSessionSnapshotQuestion,
   toLocalTestSessionQuestionState,
@@ -14,7 +15,7 @@ function createQuestion(id: string) {
     id,
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: `Prompt ${id}`,
-    options: [{ id: "A", text: "A" }],
+    options: [{ id: "A", text: "A", explanation: "A" }],
     correctOptionIds: ["A"],
   };
 }
@@ -92,5 +93,49 @@ describe("local test session state", () => {
       }),
     );
     expect(updated?.questions[1]?.selectedOptionIds).toEqual(["A"]);
+  });
+
+  it("calculates submitted/correct counts and accuracy rate", () => {
+    const snapshot: LocalTestSessionSnapshot = {
+      sessionId: "session-1",
+      questions: [
+        {
+          question: {
+            ...createQuestion("q1"),
+            correctOptionIds: ["A"],
+          },
+          selectedOptionIds: ["A"],
+          hasSubmitted: true,
+        },
+        {
+          question: {
+            ...createQuestion("q2"),
+            correctOptionIds: ["A", "C"],
+          },
+          selectedOptionIds: ["C", "A"],
+          hasSubmitted: true,
+        },
+        {
+          question: {
+            ...createQuestion("q3"),
+            correctOptionIds: ["A"],
+          },
+          selectedOptionIds: ["B"],
+          hasSubmitted: true,
+        },
+        {
+          question: createQuestion("q4"),
+          selectedOptionIds: ["A"],
+          hasSubmitted: false,
+        },
+      ],
+      currentQuestionIndex: 0,
+    };
+
+    expect(calculateLocalTestSessionAccuracy(snapshot)).toEqual({
+      submittedCount: 3,
+      correctCount: 2,
+      accuracyRate: 2 / 3,
+    });
   });
 });
