@@ -45,19 +45,26 @@ export async function POST(request: Request) {
       const pooledQuestion = await readQuestionFromPool(input);
 
       if (pooledQuestion) {
-        return NextResponse.json({ question: pooledQuestion });
+        return NextResponse.json({
+          question: pooledQuestion,
+          nextQuestion: null,
+        });
       }
     }
 
     const [question, nextQuestion] = await buildQuestion(input);
 
-    for (const generatedQuestion of [question, nextQuestion]) {
-      try {
-        await upsertQuestionPool(
+    const persistResults = await Promise.allSettled(
+      [question, nextQuestion].map((generatedQuestion) =>
+        upsertQuestionPool(
           mapGeneratedQuestionToQuestionPoolInput(input, generatedQuestion),
-        );
-      } catch (error) {
-        console.error("Failed to persist generated question.", error);
+        ),
+      ),
+    );
+
+    for (const result of persistResults) {
+      if (result.status === "rejected") {
+        console.error("Failed to persist generated question.", result.reason);
       }
     }
 
