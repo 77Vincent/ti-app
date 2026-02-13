@@ -11,14 +11,14 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { LogOut, Star, Target, Timer } from "lucide-react";
+import { LogOut, Star, Target } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
 import type { SignInDemand } from "./types";
 import { readLocalTestSessionProgress } from "./session";
-import { formatElapsedTime } from "./utils/timer";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
+import ElapsedSessionTimer from "./ElapsedSessionTimer";
 
 type SessionProgress = {
   currentQuestionIndex: number | null;
@@ -45,10 +45,6 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
-
-  const [elapsedSeconds, setElapsedSeconds] = useState(() =>
-    Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000)),
-  );
 
   const {
     question,
@@ -115,21 +111,7 @@ export default function QuestionWrapper({
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
   const difficultyLabel = getDifficultyLabel(difficulty);
   const goalLabel = getGoalLabel(goal);
-  const elapsedLabel = formatElapsedTime(elapsedSeconds);
   const accuracyLabel = `${Math.round(sessionProgress.accuracyRate * 100)}% (${sessionProgress.correctCount}/${sessionProgress.submittedCount})`;
-
-  useEffect(() => {
-    const getElapsedSeconds = () =>
-      Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000));
-
-    const timer = setInterval(() => {
-      setElapsedSeconds(getElapsedSeconds());
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [startedAtMs]);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -166,10 +148,7 @@ export default function QuestionWrapper({
             <Target aria-hidden size={18} />
             {accuracyLabel}
           </p>
-          <p className="inline-flex items-center gap-1.5 tabular-nums">
-            <Timer aria-hidden size={18} />
-            {elapsedLabel}
-          </p>
+          <ElapsedSessionTimer startedAtMs={startedAtMs} />
           <Tooltip content="End test">
             <Button
               aria-label="End test"
