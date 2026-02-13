@@ -3,6 +3,7 @@
 import {
   Avatar,
   Button,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -29,11 +30,13 @@ import { clearTestSession } from "./test/run/questionRunner/session";
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userDisplayName, setUserDisplayName] = useState("");
   const SETTINGS_LABEL = "Settings";
   const SIGN_IN_LABEL = "Sign in";
   const DARK_MODE_LABEL = "Dark mode";
   const isDark = resolvedTheme === "dark";
   const USER_MENU_LABEL = "User menu";
+  const USER_NAME_KEY = "user-name";
 
   useEffect(() => {
     let active = true;
@@ -44,6 +47,7 @@ export default function AppBar() {
       }
 
       setIsAuthenticated(hasAuthenticatedUser(session));
+      setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
     });
 
     return () => {
@@ -97,6 +101,18 @@ export default function AppBar() {
               </DropdownTrigger>
 
               <DropdownMenu aria-label={USER_MENU_LABEL} onAction={handleUserMenuAction}>
+                <DropdownItem
+                  key={USER_NAME_KEY}
+                  className="text-foreground pointer-events-none font-medium"
+                  isReadOnly
+                >
+                  {userDisplayName}
+                </DropdownItem>
+                <DropdownItem
+                  className="pointer-events-none"
+                  key={"divider"} isReadOnly>
+                  <Divider />
+                </DropdownItem>
                 <DropdownItem
                   key={USER_MENU_LOGOUT_KEY}
                   startContent={<LogOut aria-hidden="true" size={16} />}
