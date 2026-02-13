@@ -82,6 +82,11 @@ export default function QuestionRunner({
           <div className="space-y-4">
             <QuestionPrompt markdown={question.prompt} />
 
+            <p className="font-light text-sm text-default-500">
+              Select {question.correctOptionIds.length}{" "}
+              {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
+            </p>
+
             <div className="space-y-3">
               {question.options.map((option) => (
                 <QuestionChoice
@@ -103,12 +108,26 @@ export default function QuestionRunner({
             </div>
 
             <div className="flex items-center justify-between gap-2">
-              <p className="font-light text-sm text-default-500">
-                Select {question.correctOptionIds.length}{" "}
-                {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
-              </p>
+              <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
+                <Button
+                  aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
+                  color={isFavorite ? "warning" : "default"}
+                  isIconOnly
+                  isDisabled={isFavoriteSubmitting}
+                  isLoading={isFavoriteSubmitting}
+                  onPress={toggleFavorite}
+                  radius="full"
+                  variant={"light"}
+                >
+                  <Star
+                    aria-hidden
+                    className={isFavorite ? "fill-current" : undefined}
+                    size={20}
+                  />
+                </Button>
+              </Tooltip>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <Button
                   isDisabled={
                     !canGoToPreviousQuestion ||
@@ -116,32 +135,12 @@ export default function QuestionRunner({
                     isFavoriteSubmitting
                   }
                   onPress={goToPreviousQuestion}
-                  size="sm"
-                  startContent={<ChevronLeft aria-hidden size={16} />}
+                  isIconOnly
+                  radius="full"
+                  startContent={<ChevronLeft aria-hidden size={20} />}
                   variant="light"
                 >
-                  Previous
                 </Button>
-
-                <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
-                  <Button
-                    aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
-                    color={isFavorite ? "warning" : "default"}
-                    isIconOnly
-                    isDisabled={isFavoriteSubmitting}
-                    isLoading={isFavoriteSubmitting}
-                    onPress={toggleFavorite}
-                    radius="full"
-                    size="sm"
-                    variant={"light"}
-                  >
-                    <Star
-                      aria-hidden
-                      className={isFavorite ? "fill-current" : undefined}
-                      size={20}
-                    />
-                  </Button>
-                </Tooltip>
 
                 <Button
                   color="primary"
