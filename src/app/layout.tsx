@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import AppBar from "./appbar";
@@ -23,6 +24,7 @@ export default function RootLayout({
             <main className="flex flex-1 flex-col p-4">{main}</main>
           </div>
         </Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
