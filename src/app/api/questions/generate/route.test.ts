@@ -4,10 +4,12 @@ import { QUESTION_TYPES } from "@/lib/meta";
 const {
   buildQuestion,
   parseTestParam,
+  readQuestionFromPool,
   upsertQuestionPool,
 } = vi.hoisted(() => ({
   buildQuestion: vi.fn(),
   parseTestParam: vi.fn(),
+  readQuestionFromPool: vi.fn(),
   upsertQuestionPool: vi.fn(),
 }));
 
@@ -20,6 +22,7 @@ vi.mock("./service/question", () => ({
 }));
 
 vi.mock("../pool/repo", () => ({
+  readQuestionFromPool,
   upsertQuestionPool,
 }));
 
@@ -46,11 +49,33 @@ describe("generate question route", () => {
     vi.resetModules();
     buildQuestion.mockReset();
     parseTestParam.mockReset();
+    readQuestionFromPool.mockReset();
     upsertQuestionPool.mockReset();
 
     parseTestParam.mockReturnValue(VALID_INPUT);
+    readQuestionFromPool.mockResolvedValue(null);
     buildQuestion.mockResolvedValue(VALID_QUESTION);
     upsertQuestionPool.mockResolvedValue(undefined);
+  });
+
+  it("returns pooled question without generating", async () => {
+    readQuestionFromPool.mockResolvedValueOnce(VALID_QUESTION);
+    const route = await import("./route");
+
+    const response = await route.POST(
+      new Request("http://localhost/api/questions/generate", {
+        body: JSON.stringify(VALID_INPUT),
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      question: VALID_QUESTION,
+    });
+    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+    expect(buildQuestion).not.toHaveBeenCalled();
+    expect(upsertQuestionPool).not.toHaveBeenCalled();
   });
 
   it("returns question when request succeeds", async () => {
@@ -67,6 +92,7 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
+    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
     expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
     expect(upsertQuestionPool).toHaveBeenCalledWith({
       id: VALID_QUESTION.id,
@@ -97,6 +123,7 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "subjectId, subcategoryId, difficulty, and goal are required.",
     });
+    expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(buildQuestion).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
   });
@@ -117,6 +144,7 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "provider down",
     });
+    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
     expect(upsertQuestionPool).not.toHaveBeenCalled();
   });
 

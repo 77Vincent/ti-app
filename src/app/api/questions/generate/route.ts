@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { parseTestParam } from "@/lib/validation/testSession";
 import { buildQuestion } from "./service/question";
 import { mapGeneratedQuestionToQuestionPoolInput } from "../pool/input";
-import { upsertQuestionPool } from "../pool/repo";
+import { readQuestionFromPool, upsertQuestionPool } from "../pool/repo";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -23,6 +23,12 @@ export async function POST(request: Request) {
   }
 
   try {
+    const pooledQuestion = await readQuestionFromPool(input);
+
+    if (pooledQuestion) {
+      return NextResponse.json({ question: pooledQuestion });
+    }
+
     const question = await buildQuestion(input);
 
     try {

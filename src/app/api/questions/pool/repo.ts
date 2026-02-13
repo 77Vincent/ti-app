@@ -6,7 +6,17 @@ import type {
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
-import type { QuestionOptionId } from "@/lib/validation/question";
+import type {
+  Question,
+  QuestionOptionId,
+} from "@/lib/validation/question";
+import {
+  hasValidCorrectOptionCount,
+  isQuestionType,
+  parseCorrectOptionIds,
+  parseQuestionOptions,
+} from "@/lib/validation/question";
+import type { TestParam } from "@/lib/validation/testSession";
 
 type QuestionPoolOption = {
   id: QuestionOptionId;
@@ -25,6 +35,56 @@ export type QuestionPoolUpsertInput = {
   options: readonly QuestionPoolOption[];
   correctOptionIds: readonly QuestionOptionId[];
 };
+
+export async function readQuestionFromPool(
+  input: TestParam,
+): Promise<Question | null> {
+  const row = await prisma.questionPool.findFirst({
+    where: {
+      subjectId: input.subjectId,
+      subcategoryId: input.subcategoryId,
+      difficulty: input.difficulty,
+      goal: input.goal,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+    select: {
+      id: true,
+      questionType: true,
+      prompt: true,
+      options: true,
+      correctOptionIds: true,
+    },
+  });
+
+  if (!row || !isQuestionType(row.questionType)) {
+    return null;
+  }
+
+  const options = parseQuestionOptions(row.options, { minOptions: 2, maxOptions: 6 });
+
+  if (!options) {
+    return null;
+  }
+
+  const correctOptionIds = parseCorrectOptionIds(row.correctOptionIds, options);
+
+  if (
+    !correctOptionIds ||
+    !hasValidCorrectOptionCount(row.questionType, correctOptionIds)
+  ) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    questionType: row.questionType,
+    prompt: row.prompt,
+    options,
+    correctOptionIds,
+  };
+}
 
 export async function upsertQuestionPool(
   input: QuestionPoolUpsertInput,
