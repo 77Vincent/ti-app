@@ -1,3 +1,4 @@
+import { getDifficulty } from "@/lib/difficulty/utils";
 import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
@@ -25,11 +26,17 @@ Rules:
 `.trim();
 
 export function buildQuestionUserPrompt(input: GenerateQuestionRequest): string {
+  const mappedDifficulty = getDifficulty(
+    input.subjectId,
+    input.subcategoryId,
+    input.difficulty,
+  );
+
   return `
 Generate one question for this context:
 - subjectId: ${input.subjectId}
 - subcategoryId: ${input.subcategoryId}
-- difficulty: ${input.difficulty}
+- difficulty: ${mappedDifficulty ? `${mappedDifficulty.framework} ${mappedDifficulty.level}` : "N/A"}
 - goal: ${input.goal}
 
 Keep the question clear, reliable, and objectively gradable.

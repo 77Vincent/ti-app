@@ -20,7 +20,18 @@ describe("aiPrompt", () => {
 
     expect(prompt).toContain("subjectId: language");
     expect(prompt).toContain("subcategoryId: english");
-    expect(prompt).toContain("difficulty: beginner");
+    expect(prompt).toContain("difficulty: CEFR A1-A2");
     expect(prompt).toContain("goal: study");
+  });
+
+  it("uses japanese mapped level as the difficulty line", () => {
+    const prompt = buildQuestionUserPrompt({
+      difficulty: "advanced",
+      goal: "exam",
+      subjectId: "language",
+      subcategoryId: "japanese",
+    });
+
+    expect(prompt).toContain("difficulty: JLPT N2");
   });
 });
