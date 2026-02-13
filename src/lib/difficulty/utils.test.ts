@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { SubcategoryEnum } from "@/lib/meta";
 import { getDifficulty } from "./utils";
 
 describe("getDifficulty", () => {
@@ -10,6 +11,8 @@ describe("getDifficulty", () => {
   });
 
   it("returns null when no mapping exists", () => {
-    expect(getDifficulty("language", "unknown", "beginner")).toBeNull();
+    expect(
+      getDifficulty("language", "unknown" as SubcategoryEnum, "beginner"),
+    ).toBeNull();
   });
 });

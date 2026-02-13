@@ -1,4 +1,8 @@
-import { type DifficultyEnum, type SubjectEnum } from "@/lib/meta";
+import {
+  type DifficultyEnum,
+  type SubjectEnum,
+  type SubcategoryEnum,
+} from "@/lib/meta";
 
 export type DifficultyStandard = {
   framework: string;
@@ -8,7 +12,7 @@ export type DifficultyStandard = {
 export const DIFFICULTY_MAP: Partial<
   Record<
     SubjectEnum,
-    Record<string, Partial<Record<DifficultyEnum, DifficultyStandard>>>
+    Partial<Record<SubcategoryEnum, Partial<Record<DifficultyEnum, DifficultyStandard>>>>
   >
 > = {
   language: {
