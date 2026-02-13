@@ -1,13 +1,11 @@
 "use client";
 
 import QuestionSkeleton from "./QuestionSkeleton";
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { QUESTION_TYPES } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { Button, Tooltip } from "@heroui/react";
-import { ChevronLeft, Star } from "lucide-react";
+import { Button } from "@heroui/react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useQuestion, type SignInDemand } from "./hooks/useQuestion";
 import { canSubmitQuestion } from "./utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
@@ -15,52 +13,44 @@ import {
   isOptionCorrect,
   isOptionWrongSelection,
 } from "./utils/evaluation";
+import type { Question, QuestionOptionId } from "./types";
+
+type SignInDemand = "favorite" | "more_questions";
 
 type QuestionProps = {
-  sessionId: string;
-  subjectId: SubjectEnum;
-  subcategoryId: string;
-  difficulty: DifficultyEnum;
-  goal: GoalEnum;
-  onQuestionApplied?: () => void;
+  question: Question | null;
+  isLoadingQuestion: boolean;
+  isSubmitting: boolean;
+  hasSubmitted: boolean;
+  selectedOptionIds: QuestionOptionId[];
+  canGoToPreviousQuestion: boolean;
+  isFavoriteSubmitting: boolean;
+  isSignInRequired: boolean;
+  signInDemand: SignInDemand | null;
+  goToPreviousQuestion: () => void;
+  selectOption: (optionId: QuestionOptionId) => void;
+  submit: () => Promise<void>;
 };
 
 const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
-  favorite: "Sign in to favorite",
+  favorite: "Sign in to save favorites",
   more_questions: "Sign in for more questions",
 };
 
 export default function QuestionRunner({
-  sessionId,
-  subjectId,
-  subcategoryId,
-  difficulty,
-  goal,
-  onQuestionApplied,
+  question,
+  isLoadingQuestion,
+  isSubmitting,
+  hasSubmitted,
+  selectedOptionIds,
+  canGoToPreviousQuestion,
+  isFavoriteSubmitting,
+  isSignInRequired,
+  signInDemand,
+  goToPreviousQuestion,
+  selectOption,
+  submit,
 }: QuestionProps) {
-  const {
-    question,
-    isLoadingQuestion,
-    isSubmitting,
-    isFavorite,
-    isFavoriteSubmitting,
-    canGoToPreviousQuestion,
-    isSignInRequired,
-    signInDemand,
-    hasSubmitted,
-    selectedOptionIds,
-    goToPreviousQuestion,
-    selectOption,
-    toggleFavorite,
-    submit,
-  } = useQuestion({
-    sessionId,
-    subjectId,
-    subcategoryId,
-    difficulty,
-    goal,
-    onQuestionApplied,
-  });
   const isLoading = isLoadingQuestion || !question;
 
   return (
@@ -107,58 +97,37 @@ export default function QuestionRunner({
               ))}
             </div>
 
-            <div className="flex items-center justify-between gap-2">
-              <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
-                <Button
-                  aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
-                  color={isFavorite ? "warning" : "default"}
-                  isIconOnly
-                  isDisabled={isFavoriteSubmitting}
-                  isLoading={isFavoriteSubmitting}
-                  onPress={toggleFavorite}
-                  radius="full"
-                  variant={"light"}
-                >
-                  <Star
-                    aria-hidden
-                    className={isFavorite ? "fill-current" : undefined}
-                    size={20}
-                  />
-                </Button>
-              </Tooltip>
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                isDisabled={
+                  !canGoToPreviousQuestion ||
+                  isSubmitting ||
+                  isFavoriteSubmitting
+                }
+                onPress={goToPreviousQuestion}
+                isIconOnly
+                radius="full"
+                startContent={<ChevronLeft aria-hidden size={20} />}
+                variant="light"
+              >
+              </Button>
 
-              <div className="flex items-center gap-3">
-                <Button
-                  isDisabled={
-                    !canGoToPreviousQuestion ||
-                    isSubmitting ||
-                    isFavoriteSubmitting
-                  }
-                  onPress={goToPreviousQuestion}
-                  isIconOnly
-                  radius="full"
-                  startContent={<ChevronLeft aria-hidden size={20} />}
-                  variant="light"
-                >
-                </Button>
-
-                <Button
-                  color="primary"
-                  isDisabled={
-                    !canSubmitQuestion({
-                      hasQuestion: true,
-                      hasSubmitted,
-                      selectedOptionCount: selectedOptionIds.length,
-                      isSubmitting,
-                      isFavoriteSubmitting,
-                    })
-                  }
-                  isLoading={isSubmitting}
-                  onPress={submit}
-                >
-                  {hasSubmitted ? "Next" : "Submit"}
-                </Button>
-              </div>
+              <Button
+                color="primary"
+                isDisabled={
+                  isFavoriteSubmitting ||
+                  !canSubmitQuestion({
+                    hasQuestion: true,
+                    hasSubmitted,
+                    selectedOptionCount: selectedOptionIds.length,
+                    isSubmitting,
+                  })
+                }
+                isLoading={isSubmitting}
+                onPress={submit}
+              >
+                {hasSubmitted ? "Next" : "Submit"}
+              </Button>
             </div>
           </div>
         )}

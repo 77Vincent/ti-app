@@ -5,7 +5,6 @@ type CanSubmitQuestionInput = {
   hasSubmitted: boolean;
   selectedOptionCount: number;
   isSubmitting: boolean;
-  isFavoriteSubmitting: boolean;
 };
 
 export function canSubmitQuestion({
@@ -13,9 +12,8 @@ export function canSubmitQuestion({
   hasSubmitted,
   selectedOptionCount,
   isSubmitting,
-  isFavoriteSubmitting,
 }: CanSubmitQuestionInput): boolean {
-  if (!hasQuestion || isSubmitting || isFavoriteSubmitting) {
+  if (!hasQuestion || isSubmitting) {
     return false;
   }
 

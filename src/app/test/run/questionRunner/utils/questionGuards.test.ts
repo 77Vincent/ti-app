@@ -14,29 +14,17 @@ describe("canSubmitQuestion", () => {
         hasSubmitted: false,
         selectedOptionCount: 1,
         isSubmitting: false,
-        isFavoriteSubmitting: false,
       }),
     ).toBe(false);
   });
 
-  it("returns false during submit or favorite request", () => {
+  it("returns false during submit request", () => {
     expect(
       canSubmitQuestion({
         hasQuestion: true,
         hasSubmitted: true,
         selectedOptionCount: 1,
         isSubmitting: true,
-        isFavoriteSubmitting: false,
-      }),
-    ).toBe(false);
-
-    expect(
-      canSubmitQuestion({
-        hasQuestion: true,
-        hasSubmitted: true,
-        selectedOptionCount: 1,
-        isSubmitting: false,
-        isFavoriteSubmitting: true,
       }),
     ).toBe(false);
   });
@@ -48,7 +36,6 @@ describe("canSubmitQuestion", () => {
         hasSubmitted: false,
         selectedOptionCount: 0,
         isSubmitting: false,
-        isFavoriteSubmitting: false,
       }),
     ).toBe(false);
 
@@ -58,7 +45,6 @@ describe("canSubmitQuestion", () => {
         hasSubmitted: false,
         selectedOptionCount: 1,
         isSubmitting: false,
-        isFavoriteSubmitting: false,
       }),
     ).toBe(true);
   });
@@ -70,7 +56,6 @@ describe("canSubmitQuestion", () => {
         hasSubmitted: true,
         selectedOptionCount: 0,
         isSubmitting: false,
-        isFavoriteSubmitting: false,
       }),
     ).toBe(true);
   });

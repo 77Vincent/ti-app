@@ -11,11 +11,15 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { LogOut, Timer } from "lucide-react";
-import { createElement, useCallback, useEffect, useState } from "react";
+import { LogOut, Star, Timer } from "lucide-react";
+import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
 import { readLocalTestSessionSnapshot } from "./session";
 import { formatElapsedTime } from "./utils/timer";
+import { useQuestion } from "./hooks/useQuestion";
+import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
+
+type SignInDemand = "favorite" | "more_questions";
 
 export default function QuestionWrapper({
   id,
@@ -26,6 +30,8 @@ export default function QuestionWrapper({
   startedAtMs,
   onEndTest,
 }: QuestionRunnerProps) {
+  const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
+    useState<string | null>(null);
   const readCurrentSessionQuestionIndex = useCallback((): number | null => {
     const snapshot = readLocalTestSessionSnapshot();
     if (!snapshot) {
@@ -47,6 +53,68 @@ export default function QuestionWrapper({
   const handleQuestionApplied = useCallback(() => {
     setCurrentQuestionIndex(readCurrentSessionQuestionIndex());
   }, [readCurrentSessionQuestionIndex]);
+
+  const {
+    question,
+    isLoadingQuestion,
+    isSubmitting,
+    canGoToPreviousQuestion,
+    isSignInRequired: isQuestionSignInRequired,
+    signInDemand: questionSignInDemand,
+    hasSubmitted,
+    selectedOptionIds,
+    goToPreviousQuestion,
+    selectOption,
+    submit,
+  } = useQuestion({
+    sessionId: id,
+    subjectId,
+    subcategoryId,
+    difficulty,
+    goal,
+    onQuestionApplied: handleQuestionApplied,
+  });
+  const handleFavoriteAuthRequired = useCallback(() => {
+    if (!question) {
+      return;
+    }
+
+    setFavoriteAuthRequiredQuestionId(question.id);
+  }, [question]);
+  const {
+    isFavorite,
+    isFavoriteSubmitting,
+    resetFavoriteState,
+    toggleFavorite,
+  } = useQuestionFavorite({
+    subjectId,
+    subcategoryId,
+    difficulty,
+    goal,
+    onAuthRequired: handleFavoriteAuthRequired,
+  });
+
+  useEffect(() => {
+    if (!question) {
+      return;
+    }
+
+    resetFavoriteState(question.id);
+  }, [question, resetFavoriteState]);
+
+  const signInDemand: SignInDemand | null = useMemo(() => {
+    if (isQuestionSignInRequired) {
+      return questionSignInDemand;
+    }
+
+    if (question && favoriteAuthRequiredQuestionId === question.id) {
+      return "favorite";
+    }
+
+    return null;
+  }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
+  const isSignInRequired = signInDemand !== null;
+
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
   const GoalIcon = getGoalIcon(goal);
@@ -83,6 +151,25 @@ export default function QuestionWrapper({
               <span className="font-medium tabular-nums">Question {currentQuestionIndex + 1}</span>
             </>
           ) : null}
+          <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
+            <Button
+              aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
+              color={isFavorite ? "warning" : "default"}
+              isIconOnly
+              isDisabled={isFavoriteSubmitting || !question || isSignInRequired}
+              isLoading={isFavoriteSubmitting}
+              onPress={() => toggleFavorite(question)}
+              radius="full"
+              size="sm"
+              variant="light"
+            >
+              <Star
+                aria-hidden
+                className={isFavorite ? "fill-current" : undefined}
+                size={18}
+              />
+            </Button>
+          </Tooltip>
         </div>
 
         <Tooltip content="End test">
@@ -102,12 +189,18 @@ export default function QuestionWrapper({
       <Card shadow="sm">
         <CardBody className="p-6">
           <QuestionRunner
-            difficulty={difficulty}
-            goal={goal}
-            onQuestionApplied={handleQuestionApplied}
-            sessionId={id}
-            subcategoryId={subcategoryId}
-            subjectId={subjectId}
+            canGoToPreviousQuestion={canGoToPreviousQuestion}
+            goToPreviousQuestion={goToPreviousQuestion}
+            hasSubmitted={hasSubmitted}
+            isFavoriteSubmitting={isFavoriteSubmitting}
+            isLoadingQuestion={isLoadingQuestion}
+            isSignInRequired={isSignInRequired}
+            isSubmitting={isSubmitting}
+            question={question}
+            selectOption={selectOption}
+            selectedOptionIds={selectedOptionIds}
+            signInDemand={signInDemand}
+            submit={submit}
           />
         </CardBody>
       </Card>

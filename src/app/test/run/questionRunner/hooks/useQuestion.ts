@@ -21,7 +21,6 @@ import {
 } from "../utils/questionGuards";
 import { loadAndApplyQuestion } from "../service/questionLoad";
 import { submitQuestion } from "../service/questionSubmit";
-import { useQuestionFavorite } from "./useQuestionFavorite";
 import { useQuestionHistory } from "./useQuestionHistory";
 import { useQuestionSelection } from "./useQuestionSelection";
 
@@ -38,20 +37,17 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
-  isFavorite: boolean;
-  isFavoriteSubmitting: boolean;
   canGoToPreviousQuestion: boolean;
   isSignInRequired: boolean;
-  signInDemand: SignInDemand | null;
+  signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
   goToPreviousQuestion: () => void;
   selectOption: (optionId: QuestionOptionId) => void;
-  toggleFavorite: () => Promise<void>;
   submit: () => Promise<void>;
 };
 
-export type SignInDemand = "more_questions" | "favorite";
+export type QuestionSignInDemand = "more_questions";
 
 export function useQuestion({
   sessionId,
@@ -61,7 +57,8 @@ export function useQuestion({
   goal,
   onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
-  const [signInDemand, setSignInDemand] = useState<SignInDemand | null>(null);
+  const [signInDemand, setSignInDemand] =
+    useState<QuestionSignInDemand | null>(null);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -69,20 +66,6 @@ export function useQuestion({
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIds, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
-  const {
-    isFavorite,
-    isFavoriteSubmitting,
-    resetFavoriteState,
-    toggleFavorite,
-  } = useQuestionFavorite({
-    subjectId,
-    subcategoryId,
-    difficulty,
-    goal,
-    onAuthRequired: () => {
-      setSignInDemand("favorite");
-    },
-  });
   const showLoadError = useCallback((error: unknown) => {
     if (isAnonymousQuestionLimitError(error)) {
       setSignInDemand("more_questions");
@@ -118,7 +101,6 @@ export function useQuestion({
       hasSubmitted: boolean;
     }) => {
       setSignInDemand(null);
-      resetFavoriteState(questionState.question.id);
       setSelection(questionState.selectedOptionIds);
       dispatchUiState({
         type: "questionApplied",
@@ -126,7 +108,7 @@ export function useQuestion({
         hasSubmitted: questionState.hasSubmitted,
       });
     },
-    [resetFavoriteState, setSelection],
+    [setSelection],
   );
 
   const {
@@ -196,7 +178,6 @@ export function useQuestion({
         hasSubmitted,
         selectedOptionCount: selectedOptionIds.length,
         isSubmitting,
-        isFavoriteSubmitting,
       })
     ) {
       return;
@@ -239,8 +220,6 @@ export function useQuestion({
     question,
     isLoadingQuestion,
     isSubmitting,
-    isFavorite,
-    isFavoriteSubmitting,
     canGoToPreviousQuestion,
     isSignInRequired,
     signInDemand,
@@ -248,7 +227,6 @@ export function useQuestion({
     selectedOptionIds,
     goToPreviousQuestion,
     selectOption,
-    toggleFavorite: () => toggleFavorite(question),
     submit,
   };
 }
