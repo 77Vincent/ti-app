@@ -13,7 +13,7 @@ import {
   NavbarItem,
   Switch,
 } from "@heroui/react";
-import { Settings, User, User2 } from "lucide-react";
+import { LogOut, Moon, Settings, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -97,7 +97,10 @@ export default function AppBar() {
               </DropdownTrigger>
 
               <DropdownMenu aria-label={USER_MENU_LABEL} onAction={handleUserMenuAction}>
-                <DropdownItem key={USER_MENU_LOGOUT_KEY}>
+                <DropdownItem
+                  key={USER_MENU_LOGOUT_KEY}
+                  startContent={<LogOut aria-hidden="true" size={16} />}
+                >
                   Logout
                 </DropdownItem>
               </DropdownMenu>
@@ -111,9 +114,10 @@ export default function AppBar() {
               radius="full"
               size="sm"
               variant="light"
-            >
-              <User2 aria-hidden="true" size={20} />
-            </Button>
+              startContent={
+                <User2 aria-hidden="true" size={20} />
+              }
+            />
           )}
         </NavbarItem>
 
@@ -127,13 +131,18 @@ export default function AppBar() {
                 size="sm"
                 title={SETTINGS_LABEL}
                 variant="light"
-              >
-                <Settings aria-hidden="true" size={20} />
-              </Button>
+                startContent={
+                  <Settings aria-hidden="true" size={20} />
+                }
+              />
             </DropdownTrigger>
 
             <DropdownMenu aria-label={SETTINGS_LABEL} closeOnSelect={false}>
-              <DropdownItem key="theme-toggle" textValue={DARK_MODE_LABEL}>
+              <DropdownItem
+                key="theme-toggle"
+                textValue={DARK_MODE_LABEL}
+                startContent={<Moon aria-hidden="true" size={16} />}
+              >
                 <div className="flex w-full items-center justify-between gap-3">
                   <span>{DARK_MODE_LABEL}</span>
                   <Switch
