@@ -109,7 +109,7 @@ function parseQuestionPoolRow(row: QuestionPoolReadRow | null): Question | null 
   }
 
   const options = parseQuestionOptions(row.options, {
-    minOptions: 2,
+    minOptions: 3,
     maxOptions: 6,
   });
 
