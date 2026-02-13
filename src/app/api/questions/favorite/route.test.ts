@@ -1,9 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QUESTION_TYPES } from "@/lib/meta";
 
-const { deleteFavoriteQuestion, readAuthenticatedUserId, upsertFavoriteQuestion } =
+const {
+  deleteFavoriteQuestion,
+  isQuestionFavorited,
+  readAuthenticatedUserId,
+  upsertFavoriteQuestion,
+} =
   vi.hoisted(() => ({
     deleteFavoriteQuestion: vi.fn(),
+    isQuestionFavorited: vi.fn(),
     readAuthenticatedUserId: vi.fn(),
     upsertFavoriteQuestion: vi.fn(),
   }));
@@ -14,6 +20,7 @@ vi.mock("@/app/api/test/session/auth", () => ({
 
 vi.mock("./repo", () => ({
   deleteFavoriteQuestion,
+  isQuestionFavorited,
   upsertFavoriteQuestion,
 }));
 
@@ -36,12 +43,60 @@ describe("favorite question route", () => {
   beforeEach(() => {
     vi.resetModules();
     deleteFavoriteQuestion.mockReset();
+    isQuestionFavorited.mockReset();
     readAuthenticatedUserId.mockReset();
     upsertFavoriteQuestion.mockReset();
 
     readAuthenticatedUserId.mockResolvedValue("user-1");
     deleteFavoriteQuestion.mockResolvedValue(undefined);
+    isQuestionFavorited.mockResolvedValue(false);
     upsertFavoriteQuestion.mockResolvedValue(undefined);
+  });
+
+  it("returns 400 when questionId is missing for get", async () => {
+    const route = await import("./route");
+
+    const response = await route.GET(
+      new Request("http://localhost/api/questions/favorite", {
+        method: "GET",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "questionId is required.",
+    });
+    expect(isQuestionFavorited).not.toHaveBeenCalled();
+  });
+
+  it("returns false for unauthenticated favorite get", async () => {
+    readAuthenticatedUserId.mockResolvedValue(null);
+    const route = await import("./route");
+
+    const response = await route.GET(
+      new Request("http://localhost/api/questions/favorite?questionId=question-1", {
+        method: "GET",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ isFavorite: false });
+    expect(isQuestionFavorited).not.toHaveBeenCalled();
+  });
+
+  it("returns favorite state for authenticated user", async () => {
+    isQuestionFavorited.mockResolvedValueOnce(true);
+    const route = await import("./route");
+
+    const response = await route.GET(
+      new Request("http://localhost/api/questions/favorite?questionId=question-1", {
+        method: "GET",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ isFavorite: true });
+    expect(isQuestionFavorited).toHaveBeenCalledWith("user-1", "question-1");
   });
 
   it("returns 401 for unauthenticated favorite create", async () => {

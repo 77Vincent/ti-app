@@ -11,6 +11,7 @@ import {
 } from "@/lib/validation/question";
 import {
   deleteFavoriteQuestion,
+  isQuestionFavorited,
   upsertFavoriteQuestion,
   type FavoriteQuestionInput,
 } from "./repo";
@@ -81,6 +82,40 @@ function parseDeletePayload(value: unknown): { questionId: string } | null {
   }
 
   return { questionId };
+}
+
+function parseQuestionIdFromRequest(
+  request: Request,
+): { questionId: string } | null {
+  const url = new URL(request.url);
+  const questionId = url.searchParams.get("questionId");
+
+  if (!isNonEmptyString(questionId)) {
+    return null;
+  }
+
+  return { questionId };
+}
+
+export async function GET(request: Request) {
+  const payload = parseQuestionIdFromRequest(request);
+
+  if (!payload) {
+    return NextResponse.json(
+      { error: "questionId is required." },
+      { status: 400 },
+    );
+  }
+
+  const userId = await readAuthenticatedUserId();
+
+  if (!userId) {
+    return NextResponse.json({ isFavorite: false });
+  }
+
+  const isFavorite = await isQuestionFavorited(userId, payload.questionId);
+
+  return NextResponse.json({ isFavorite });
 }
 
 export async function POST(request: Request) {

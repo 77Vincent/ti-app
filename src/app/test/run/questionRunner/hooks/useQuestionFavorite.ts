@@ -4,6 +4,7 @@ import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useRef, useState } from "react";
 import type { Question } from "../types";
+import { readFavoriteQuestionState } from "../api";
 import { toggleQuestionFavorite } from "../service/favorite";
 import { isActiveFavoriteMutation } from "../utils/questionGuards";
 
@@ -17,8 +18,9 @@ type UseQuestionFavoriteInput = {
 
 type UseQuestionFavoriteResult = {
   isFavorite: boolean;
+  isFavoriteSyncing: boolean;
   isFavoriteSubmitting: boolean;
-  resetFavoriteState: (questionId: string) => void;
+  syncFavoriteState: (question: Question | null) => Promise<void>;
   toggleFavorite: (question: Question | null) => Promise<void>;
 };
 
@@ -30,17 +32,58 @@ export function useQuestionFavorite({
   onAuthRequired,
 }: UseQuestionFavoriteInput): UseQuestionFavoriteResult {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteSyncing, setIsFavoriteSyncing] = useState(false);
   const [isFavoriteSubmitting, setIsFavoriteSubmitting] = useState(false);
   const activeQuestionIdRef = useRef<string | null>(null);
+  const favoriteByQuestionIdRef = useRef<Record<string, boolean>>({});
 
-  const resetFavoriteState = useCallback((questionId: string) => {
-    activeQuestionIdRef.current = questionId;
-    setIsFavorite(false);
-    setIsFavoriteSubmitting(false);
+  const syncFavoriteState = useCallback(async (question: Question | null) => {
+    if (!question) {
+      activeQuestionIdRef.current = null;
+      setIsFavorite(false);
+      setIsFavoriteSyncing(false);
+      setIsFavoriteSubmitting(false);
+      return;
+    }
+
+    const targetQuestionId = question.id;
+    activeQuestionIdRef.current = targetQuestionId;
+    const cachedFavoriteState = favoriteByQuestionIdRef.current[targetQuestionId];
+    if (typeof cachedFavoriteState === "boolean") {
+      setIsFavorite(cachedFavoriteState);
+      setIsFavoriteSyncing(false);
+      return;
+    }
+
+    setIsFavoriteSyncing(true);
+
+    try {
+      const favoriteState = await readFavoriteQuestionState(targetQuestionId);
+
+      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
+        return;
+      }
+
+      favoriteByQuestionIdRef.current[targetQuestionId] = favoriteState;
+      setIsFavorite(favoriteState);
+    } catch {
+      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
+        return;
+      }
+
+      // Intentionally silent: this runs during question navigation and should not spam
+      // users with toasts when favorite-state sync fails transiently.
+    } finally {
+      if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {
+        return;
+      }
+
+      setIsFavoriteSyncing(false);
+    }
   }, []);
 
   const toggleFavorite = useCallback(async (question: Question | null) => {
-    if (!question || isFavoriteSubmitting) {
+    if (!question || isFavoriteSubmitting || isFavoriteSyncing) {
       return;
     }
 
@@ -62,6 +105,7 @@ export function useQuestionFavorite({
       }
 
       if (result.type === "success") {
+        favoriteByQuestionIdRef.current[targetQuestionId] = result.isFavorite;
         setIsFavorite(result.isFavorite);
         return;
       }
@@ -89,12 +133,22 @@ export function useQuestionFavorite({
     } finally {
       setIsFavoriteSubmitting(false);
     }
-  }, [difficulty, goal, isFavorite, isFavoriteSubmitting, onAuthRequired, subcategoryId, subjectId]);
+  }, [
+    difficulty,
+    goal,
+    isFavorite,
+    isFavoriteSubmitting,
+    isFavoriteSyncing,
+    onAuthRequired,
+    subcategoryId,
+    subjectId,
+  ]);
 
   return {
     isFavorite,
+    isFavoriteSyncing,
     isFavoriteSubmitting,
-    resetFavoriteState,
+    syncFavoriteState,
     toggleFavorite,
   };
 }

@@ -3,10 +3,12 @@ import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
   favoriteQuestionDeleteMany,
+  favoriteQuestionFindUnique,
   favoriteQuestionUpsert,
   questionPoolUpsert,
 } = vi.hoisted(() => ({
   favoriteQuestionDeleteMany: vi.fn(),
+  favoriteQuestionFindUnique: vi.fn(),
   favoriteQuestionUpsert: vi.fn(),
   questionPoolUpsert: vi.fn(),
 }));
@@ -15,6 +17,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     favoriteQuestion: {
       deleteMany: favoriteQuestionDeleteMany,
+      findUnique: favoriteQuestionFindUnique,
       upsert: favoriteQuestionUpsert,
     },
     questionPool: {
@@ -23,7 +26,11 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { deleteFavoriteQuestion, upsertFavoriteQuestion } from "./repo";
+import {
+  deleteFavoriteQuestion,
+  isQuestionFavorited,
+  upsertFavoriteQuestion,
+} from "./repo";
 
 const VALID_INPUT = {
   questionId: "question-1",
@@ -43,6 +50,7 @@ const VALID_INPUT = {
 describe("favorite question repo", () => {
   beforeEach(() => {
     favoriteQuestionDeleteMany.mockReset();
+    favoriteQuestionFindUnique.mockReset();
     favoriteQuestionUpsert.mockReset();
     questionPoolUpsert.mockReset();
   });
@@ -108,5 +116,29 @@ describe("favorite question repo", () => {
         questionId: "question-1",
       },
     });
+  });
+
+  it("returns true when favorite exists", async () => {
+    favoriteQuestionFindUnique.mockResolvedValueOnce({ questionId: "question-1" });
+
+    await expect(isQuestionFavorited("user-1", "question-1")).resolves.toBe(true);
+
+    expect(favoriteQuestionFindUnique).toHaveBeenCalledWith({
+      where: {
+        userId_questionId: {
+          userId: "user-1",
+          questionId: "question-1",
+        },
+      },
+      select: {
+        questionId: true,
+      },
+    });
+  });
+
+  it("returns false when favorite does not exist", async () => {
+    favoriteQuestionFindUnique.mockResolvedValueOnce(null);
+
+    await expect(isQuestionFavorited("user-1", "question-1")).resolves.toBe(false);
   });
 });

@@ -5,6 +5,7 @@ export {
 } from "./question";
 export {
   addFavoriteQuestion,
+  readFavoriteQuestionState,
   removeFavoriteQuestion,
   type FavoriteQuestionInput,
 } from "./favorite";

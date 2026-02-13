@@ -82,8 +82,9 @@ export default function QuestionWrapper({
   }, [question]);
   const {
     isFavorite,
+    isFavoriteSyncing,
     isFavoriteSubmitting,
-    resetFavoriteState,
+    syncFavoriteState,
     toggleFavorite,
   } = useQuestionFavorite({
     subjectId,
@@ -94,12 +95,8 @@ export default function QuestionWrapper({
   });
 
   useEffect(() => {
-    if (!question) {
-      return;
-    }
-
-    resetFavoriteState(question.id);
-  }, [question, resetFavoriteState]);
+    void syncFavoriteState(question);
+  }, [question, syncFavoriteState]);
 
   const signInDemand: SignInDemand | null = useMemo(() => {
     if (isQuestionSignInRequired) {
@@ -148,8 +145,8 @@ export default function QuestionWrapper({
               aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
               color={isFavorite ? "warning" : "default"}
               isIconOnly
-              isDisabled={isFavoriteSubmitting || !question || isSignInRequired}
-              isLoading={isFavoriteSubmitting}
+              isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isSignInRequired}
+              isLoading={isFavoriteSubmitting || isFavoriteSyncing}
               onPress={() => toggleFavorite(question)}
               radius="full"
               size="sm"
@@ -166,7 +163,7 @@ export default function QuestionWrapper({
 
         <div className="flex items-center gap-3">
           <p className="inline-flex items-center gap-1.5 tabular-nums">
-            <Timer aria-hidden size={16} />
+            <Timer aria-hidden size={18} />
             {elapsedLabel}
           </p>
           <Tooltip content="End test">
@@ -177,9 +174,11 @@ export default function QuestionWrapper({
               isIconOnly
               radius="full"
               variant="light"
-            >
-              <LogOut aria-hidden size={18} />
-            </Button>
+              startContent={
+                <LogOut aria-hidden size={18} />
+              }
+
+            />
           </Tooltip>
         </div>
       </div>

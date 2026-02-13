@@ -55,6 +55,10 @@ const { toggleQuestionFavorite } = vi.hoisted(() => ({
   toggleQuestionFavorite: vi.fn(),
 }));
 
+const { readFavoriteQuestionState } = vi.hoisted(() => ({
+  readFavoriteQuestionState: vi.fn(),
+}));
+
 const { toastError } = vi.hoisted(() => ({
   toastError: vi.fn(),
 }));
@@ -67,6 +71,10 @@ vi.mock("react", () => ({
 
 vi.mock("../service/favorite", () => ({
   toggleQuestionFavorite,
+}));
+
+vi.mock("../api", () => ({
+  readFavoriteQuestionState,
 }));
 
 vi.mock("@/lib/toast", () => ({
@@ -112,13 +120,14 @@ describe("useQuestionFavorite", () => {
   });
 
   it("sets favorite on success", async () => {
+    readFavoriteQuestionState.mockResolvedValueOnce(false);
     toggleQuestionFavorite.mockResolvedValueOnce({
       type: "success",
       isFavorite: true,
     });
 
     const hook = useQuestionFavoriteHarness();
-    hook.resetFavoriteState(QUESTION.id);
+    await hook.syncFavoriteState(QUESTION);
 
     await hook.toggleFavorite(QUESTION);
 
@@ -128,11 +137,12 @@ describe("useQuestionFavorite", () => {
   });
 
   it("triggers auth callback on auth_required result", async () => {
+    readFavoriteQuestionState.mockResolvedValueOnce(false);
     toggleQuestionFavorite.mockResolvedValueOnce({ type: "auth_required" });
 
     const onAuthRequired = vi.fn();
     const hook = useQuestionFavoriteHarness(onAuthRequired);
-    hook.resetFavoriteState(QUESTION.id);
+    await hook.syncFavoriteState(QUESTION);
 
     await hook.toggleFavorite(QUESTION);
 
@@ -141,10 +151,11 @@ describe("useQuestionFavorite", () => {
 
   it("shows toast on error result", async () => {
     const error = new Error("boom");
+    readFavoriteQuestionState.mockResolvedValueOnce(false);
     toggleQuestionFavorite.mockResolvedValueOnce({ type: "error", error });
 
     const hook = useQuestionFavoriteHarness();
-    hook.resetFavoriteState(QUESTION.id);
+    await hook.syncFavoriteState(QUESTION);
 
     await hook.toggleFavorite(QUESTION);
 
@@ -154,6 +165,7 @@ describe("useQuestionFavorite", () => {
   });
 
   it("ignores stale mutation results", async () => {
+    readFavoriteQuestionState.mockResolvedValue(false);
     let resolveFirst!: (value: unknown) => void;
     toggleQuestionFavorite.mockImplementationOnce(
       () =>
@@ -163,15 +175,56 @@ describe("useQuestionFavorite", () => {
     );
 
     const hook = useQuestionFavoriteHarness();
-    hook.resetFavoriteState(QUESTION.id);
+    await hook.syncFavoriteState(QUESTION);
 
     const firstToggle = hook.toggleFavorite(QUESTION);
-    hook.resetFavoriteState("q-2");
+    await hook.syncFavoriteState({ ...QUESTION, id: "q-2" });
 
     resolveFirst({ type: "success", isFavorite: true });
     await firstToggle;
 
     const nextHook = useQuestionFavoriteHarness();
     expect(nextHook.isFavorite).toBe(false);
+  });
+
+  it("loads favorite state for active question", async () => {
+    readFavoriteQuestionState.mockResolvedValueOnce(true);
+
+    const hook = useQuestionFavoriteHarness();
+    await hook.syncFavoriteState(QUESTION);
+
+    const nextHook = useQuestionFavoriteHarness();
+    expect(nextHook.isFavorite).toBe(true);
+  });
+
+  it("uses cached favorite state for previously synced question", async () => {
+    readFavoriteQuestionState.mockResolvedValueOnce(true);
+
+    const hook = useQuestionFavoriteHarness();
+    await hook.syncFavoriteState(QUESTION);
+    await hook.syncFavoriteState(QUESTION);
+
+    expect(readFavoriteQuestionState).toHaveBeenCalledTimes(1);
+
+    const nextHook = useQuestionFavoriteHarness();
+    expect(nextHook.isFavorite).toBe(true);
+  });
+
+  it("uses cached toggled state without refetch", async () => {
+    readFavoriteQuestionState.mockResolvedValueOnce(false);
+    toggleQuestionFavorite.mockResolvedValueOnce({
+      type: "success",
+      isFavorite: true,
+    });
+
+    const hook = useQuestionFavoriteHarness();
+    await hook.syncFavoriteState(QUESTION);
+    await hook.toggleFavorite(QUESTION);
+    await hook.syncFavoriteState(QUESTION);
+
+    expect(readFavoriteQuestionState).toHaveBeenCalledTimes(1);
+
+    const nextHook = useQuestionFavoriteHarness();
+    expect(nextHook.isFavorite).toBe(true);
   });
 });

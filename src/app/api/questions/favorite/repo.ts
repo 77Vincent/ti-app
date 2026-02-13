@@ -15,8 +15,8 @@ export type FavoriteQuestionInput = {
   goal: GoalEnum;
   questionType: QuestionType;
   prompt: string;
-  options: FavoriteOption[];
-  correctOptionIds: string[];
+  options: readonly FavoriteOption[];
+  correctOptionIds: readonly string[];
 };
 
 export async function upsertFavoriteQuestion(
@@ -75,4 +75,23 @@ export async function deleteFavoriteQuestion(
       questionId,
     },
   });
+}
+
+export async function isQuestionFavorited(
+  userId: string,
+  questionId: string,
+): Promise<boolean> {
+  const favorite = await prisma.favoriteQuestion.findUnique({
+    where: {
+      userId_questionId: {
+        userId,
+        questionId,
+      },
+    },
+    select: {
+      questionId: true,
+    },
+  });
+
+  return Boolean(favorite);
 }
