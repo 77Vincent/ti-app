@@ -81,7 +81,7 @@ describe("test session repo", () => {
 
   it("upserts user-owned test session", async () => {
     testSessionUpsert.mockResolvedValueOnce(undefined);
-    const startedAtMs = 1_739_263_200_000;
+    const startedAt = new Date("2025-02-12T08:00:00.000Z");
 
     await upsertTestSession(
       { userId: "user-1" },
@@ -92,7 +92,7 @@ describe("test session repo", () => {
         subjectId: "language",
         subcategoryId: "english",
       },
-      startedAtMs,
+      startedAt,
     );
 
     expect(testSessionUpsert).toHaveBeenCalledWith({
@@ -101,7 +101,7 @@ describe("test session repo", () => {
         correctCount: 0,
         difficulty: "beginner",
         goal: "study",
-        startedAt: new Date(startedAtMs),
+        startedAt,
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
@@ -112,7 +112,7 @@ describe("test session repo", () => {
         id: "session-1",
         difficulty: "beginner",
         goal: "study",
-        startedAt: new Date(startedAtMs),
+        startedAt,
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",

@@ -78,7 +78,8 @@ export async function POST(request: Request) {
 
   const userId = await readAuthenticatedUserId();
   const id = crypto.randomUUID();
-  const startedAtMs = Date.now();
+  const startedAt = new Date();
+  const startedAtMs = startedAt.getTime();
   const session: TestSession = {
     correctCount: 0,
     ...params,
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
   const response = NextResponse.json({ session });
 
   if (userId) {
-    await upsertTestSession({ userId }, id, params, startedAtMs);
+    await upsertTestSession({ userId }, id, params, startedAt);
   } else {
     persistAnonymousTestSessionCookie(response, session);
   }

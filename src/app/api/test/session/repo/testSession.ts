@@ -38,10 +38,8 @@ export async function upsertTestSession(
   where: UserTestSessionWhere,
   id: string,
   params: TestParam,
-  startedAtMs: number,
+  startedAt: Date,
 ): Promise<void> {
-  const startedAt = new Date(startedAtMs);
-
   await prisma.testSession.upsert({
     where,
     create: {
