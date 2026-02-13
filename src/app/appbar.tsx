@@ -11,9 +11,11 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  Switch,
 } from "@heroui/react";
 import { Settings, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { type Key, useEffect, useState } from "react";
@@ -25,10 +27,12 @@ import {
 import { clearTestSession } from "./test/run/questionRunner/session";
 
 export default function AppBar() {
+  const { resolvedTheme, setTheme } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const SETTINGS_LABEL = "Settings";
-  const SETTINGS_PLACEHOLDER_LABEL = "Coming soon";
   const SIGN_IN_LABEL = "Sign in";
+  const DARK_MODE_LABEL = "Dark mode";
+  const isDark = resolvedTheme === "dark";
   const USER_MENU_LABEL = "User menu";
 
   useEffect(() => {
@@ -128,9 +132,17 @@ export default function AppBar() {
               </Button>
             </DropdownTrigger>
 
-            <DropdownMenu aria-label={SETTINGS_LABEL}>
-              <DropdownItem key="coming-soon" isDisabled>
-                {SETTINGS_PLACEHOLDER_LABEL}
+            <DropdownMenu aria-label={SETTINGS_LABEL} closeOnSelect={false}>
+              <DropdownItem key="theme-toggle" textValue={DARK_MODE_LABEL}>
+                <div className="flex w-full items-center justify-between gap-3">
+                  <span>{DARK_MODE_LABEL}</span>
+                  <Switch
+                    aria-label={DARK_MODE_LABEL}
+                    isSelected={isDark}
+                    onValueChange={(nextIsDark) => setTheme(nextIsDark ? "dark" : "light")}
+                    size="sm"
+                  />
+                </div>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
