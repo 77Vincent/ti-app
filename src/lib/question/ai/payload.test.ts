@@ -45,4 +45,15 @@ describe("parseAIQuestionPayload", () => {
       "AI multiple_choice must have exactly one correct option.",
     );
   });
+
+  it("accepts payload with three options", () => {
+    const payloadWithThreeOptions = {
+      ...VALID_PAYLOAD,
+      options: VALID_PAYLOAD.options.slice(0, 3),
+    };
+
+    expect(
+      parseAIQuestionPayload(JSON.stringify(payloadWithThreeOptions)),
+    ).toEqual(payloadWithThreeOptions);
+  });
 });

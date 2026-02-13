@@ -54,7 +54,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   }
 
   const parsedOptions = parseQuestionOptions(options, {
-    minOptions: 4,
+    minOptions: 3,
     maxOptions: 6,
     requireSequentialFromA: true,
   });

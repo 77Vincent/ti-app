@@ -8,6 +8,7 @@ describe("aiPrompt", () => {
   it("keeps the system prompt stable for JSON-only output", () => {
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"correctOptionIds"');
+    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("objectively gradable");
   });
 
   it("builds user prompt from test context", () => {
@@ -18,10 +19,12 @@ describe("aiPrompt", () => {
       subcategoryId: "english",
     });
 
-    expect(prompt).toContain("subjectId: language");
-    expect(prompt).toContain("subcategoryId: english");
+    expect(prompt).toContain("Context:");
+    expect(prompt).toContain("subject: language");
+    expect(prompt).toContain("subcategory: english");
     expect(prompt).toContain("difficulty: CEFR A1-A2");
     expect(prompt).toContain("goal: study");
+    expect(prompt).not.toContain("objectively gradable");
   });
 
   it("uses japanese mapped level as the difficulty line", () => {

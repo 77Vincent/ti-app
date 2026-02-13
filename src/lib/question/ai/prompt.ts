@@ -2,7 +2,7 @@ import { getDifficulty } from "@/lib/difficulty/utils";
 import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
-You generate high-quality assessment questions.
+You generate one high-quality assessment question.
 
 Return only valid JSON with this exact shape:
 {
@@ -15,7 +15,10 @@ Return only valid JSON with this exact shape:
 }
 
 Rules:
-- prompt, option text, and explanation may use markdown and LaTeX math syntax.
+- output only one JSON object, no markdown, no code fence, no extra prose.
+- question must be objectively gradable.
+- prioritize clarity, realism and factual correctness.
+- use markdown/LaTeX only when needed.
 - options count must be between 3 and 6.
 - option ids must start at A and be sequential without gaps.
 - correctOptionIds must be a non-empty subset of option ids.
@@ -31,14 +34,15 @@ export function buildQuestionUserPrompt(input: GenerateQuestionRequest): string 
     input.subcategoryId,
     input.difficulty,
   );
+  const difficulty = mappedDifficulty
+    ? `${mappedDifficulty.framework} ${mappedDifficulty.level}`
+    : input.difficulty;
 
   return `
-Generate one question for this context:
-- subjectId: ${input.subjectId}
-- subcategoryId: ${input.subcategoryId}
-- difficulty: ${mappedDifficulty ? `${mappedDifficulty.framework} ${mappedDifficulty.level}` : "N/A"}
+Context:
+- subject: ${input.subjectId}
+- subcategory: ${input.subcategoryId}
+- difficulty: ${difficulty}
 - goal: ${input.goal}
-
-Keep the question clear, reliable, and objectively gradable.
 `.trim();
 }
