@@ -9,7 +9,7 @@ export default function Home() {
     <div className="mx-auto w-full">
       <Card shadow="sm">
         <CardBody className="items-center gap-4 p-8 text-center">
-          <h1 className="text-4xl font-medium">Learning by testing</h1>
+          <h1 className="text-4xl font-medium">Learning through testing</h1>
           <Button as={Link} color="primary" href={PAGE_PATHS.TEST}>
             Test Now
           </Button>

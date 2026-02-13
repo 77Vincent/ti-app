@@ -8,7 +8,7 @@ import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "It",
-  description: "Instant learning through testing",
+  description: "Learning through testing",
 };
 
 export default function RootLayout({

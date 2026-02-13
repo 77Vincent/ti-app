@@ -12,7 +12,7 @@ export default function SignInPage() {
       <Card shadow="sm" className="w-full max-w-md">
         <CardBody className="gap-4 p-8 text-center">
           <h1 className="text-2xl font-semibold">Sign in to Ti</h1>
-          <p className="font-light text-default-500">Learning while testing</p>
+          <p className="font-light text-default-500">Learning through testing</p>
           <Button
             color="primary"
             fullWidth
