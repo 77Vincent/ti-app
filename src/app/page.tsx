@@ -7,18 +7,15 @@ import HeroBanner from "./home/HeroBanner";
 
 export default function Home() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 sm:space-y-10">
       <HeroBanner />
-      <div
-        aria-hidden
-        className="mx-auto -mt-2 h-5 w-full max-w-5xl bg-[linear-gradient(180deg,hsl(var(--heroui-primary)/0.18)_0%,transparent_100%)] blur-lg"
-      />
-      <section className="mx-auto max-w-5xl space-y-7 px-4 text-center">
+
+      <section className="mx-auto max-w-5xl space-y-6 sm:space-y-7 px-4 text-center">
         <div className="space-y-3">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Learning through testing
+          <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
+            Learning through <span className="text-primary-500">testing</span>
           </h1>
-          <p className="text-2xl font-light text-default-500">
+          <p className="text-xl sm:text-3xl font-light text-default-500">
             Infinite high-quality, tailored questions.
           </p>
         </div>
