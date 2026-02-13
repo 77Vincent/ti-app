@@ -8,6 +8,24 @@ type SessionAccuracyProps = {
   submittedCount: number;
 };
 
+export function getSessionAccuracyTextClass(accuracyRate: number): string {
+  const accuracyPercent = accuracyRate * 100;
+
+  if (accuracyPercent < 25) {
+    return "text-red-500";
+  }
+
+  if (accuracyPercent <= 50) {
+    return "text-amber-500";
+  }
+
+  if (accuracyPercent <= 75) {
+    return "text-primary";
+  }
+
+  return "text-green-500";
+}
+
 export function formatSessionAccuracyLabel({
   accuracyRate,
   correctCount,
@@ -21,14 +39,18 @@ export default function SessionAccuracy({
   correctCount,
   submittedCount,
 }: SessionAccuracyProps) {
+  const accuracyTextClass = getSessionAccuracyTextClass(accuracyRate);
+
   return (
     <p className="inline-flex items-center gap-1.5 tabular-nums">
       <Target aria-hidden size={18} />
-      {formatSessionAccuracyLabel({
-        accuracyRate,
-        correctCount,
-        submittedCount,
-      })}
+      <span className={`${accuracyTextClass} font-medium`}>
+        {formatSessionAccuracyLabel({
+          accuracyRate,
+          correctCount,
+          submittedCount,
+        })}
+      </span>
     </p>
   );
 }
