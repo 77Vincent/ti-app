@@ -11,7 +11,6 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Tooltip,
 } from "@heroui/react";
 import { Settings, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
@@ -28,7 +27,9 @@ import { clearTestSession } from "./test/run/questionRunner/session";
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const SETTINGS_LABEL = "Settings";
-  const USER_SESSION_LABEL = isAuthenticated ? "User menu" : "Sign in";
+  const SETTINGS_PLACEHOLDER_LABEL = "Coming soon";
+  const SIGN_IN_LABEL = "Sign in";
+  const USER_MENU_LABEL = "User menu";
 
   useEffect(() => {
     let active = true;
@@ -86,43 +87,53 @@ export default function AppBar() {
                   color="primary"
                   icon={<User aria-hidden="true" size={18} />}
                   size="sm"
+                  aria-label={USER_MENU_LABEL}
+                  title={USER_MENU_LABEL}
                 />
               </DropdownTrigger>
 
-              <DropdownMenu aria-label="User menu" onAction={handleUserMenuAction}>
+              <DropdownMenu aria-label={USER_MENU_LABEL} onAction={handleUserMenuAction}>
                 <DropdownItem key={USER_MENU_LOGOUT_KEY}>
                   Logout
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <Tooltip content={USER_SESSION_LABEL}>
-              <Button
-                aria-label={USER_SESSION_LABEL}
-                isIconOnly
-                onPress={handleSignIn}
-                radius="full"
-                size="sm"
-                variant="light"
-              >
-                <User2 aria-hidden="true" size={20} />
-              </Button>
-            </Tooltip>
-          )}
-        </NavbarItem>
-
-        <NavbarItem>
-          <Tooltip content={SETTINGS_LABEL}>
             <Button
-              aria-label={SETTINGS_LABEL}
+              aria-label={SIGN_IN_LABEL}
+              title={SIGN_IN_LABEL}
               isIconOnly
+              onPress={handleSignIn}
               radius="full"
               size="sm"
               variant="light"
             >
-              <Settings aria-hidden="true" size={20} />
+              <User2 aria-hidden="true" size={20} />
             </Button>
-          </Tooltip>
+          )}
+        </NavbarItem>
+
+        <NavbarItem>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Button
+                aria-label={SETTINGS_LABEL}
+                isIconOnly
+                radius="full"
+                size="sm"
+                title={SETTINGS_LABEL}
+                variant="light"
+              >
+                <Settings aria-hidden="true" size={20} />
+              </Button>
+            </DropdownTrigger>
+
+            <DropdownMenu aria-label={SETTINGS_LABEL}>
+              <DropdownItem key="coming-soon" isDisabled>
+                {SETTINGS_PLACEHOLDER_LABEL}
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </NavbarItem>
       </NavbarContent>
     </Navbar>
