@@ -14,7 +14,6 @@ import {
 import { LogOut, Star } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
-import { readLocalTestSessionProgress } from "./session";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
 import ElapsedSessionTimer from "./ElapsedSessionTimer";
@@ -37,6 +36,10 @@ export default function QuestionWrapper({
     isLoadingQuestion,
     isSubmitting,
     canGoToPreviousQuestion,
+    currentQuestionIndex,
+    submittedCount,
+    correctCount,
+    accuracyRate,
     isSignInRequired: isQuestionSignInRequired,
     signInDemand: questionSignInDemand,
     hasSubmitted,
@@ -88,11 +91,6 @@ export default function QuestionWrapper({
     return null;
   }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
   const isSignInRequired = signInDemand !== null;
-  const sessionProgress = readLocalTestSessionProgress(id);
-  const currentQuestionIndex = sessionProgress?.currentQuestionIndex ?? null;
-  const submittedCount = sessionProgress?.submittedCount ?? 0;
-  const correctCount = sessionProgress?.correctCount ?? 0;
-  const accuracyRate = sessionProgress?.accuracyRate ?? 0;
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);

@@ -10,6 +10,7 @@ import {
 import {
   recordQuestionResult,
   createQuestionSessionController,
+  readLocalTestSessionProgress,
 } from "../session";
 import type {
   Question as QuestionType,
@@ -43,6 +44,10 @@ export type UseQuestionResult = {
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
   canGoToPreviousQuestion: boolean;
+  currentQuestionIndex: number | null;
+  submittedCount: number;
+  correctCount: number;
+  accuracyRate: number;
   isSignInRequired: boolean;
   signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
@@ -52,6 +57,25 @@ export type UseQuestionResult = {
   submit: () => Promise<void>;
 };
 
+function buildSessionProgressState(sessionId: string): {
+  currentQuestionIndex: number | null;
+  submittedCount: number;
+  correctCount: number;
+  accuracyRate: number;
+} {
+  const progress = readLocalTestSessionProgress(sessionId);
+  if (!progress) {
+    return {
+      currentQuestionIndex: null,
+      submittedCount: 0,
+      correctCount: 0,
+      accuracyRate: 0,
+    };
+  }
+
+  return progress;
+}
+
 export function useQuestion({
   sessionId,
   subjectId,
@@ -60,6 +84,9 @@ export function useQuestion({
   goal,
   onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
+  const [sessionProgress, setSessionProgress] = useState(
+    () => buildSessionProgressState(sessionId),
+  );
   const [signInDemand, setSignInDemand] =
     useState<QuestionSignInDemand | null>(null);
   const [uiState, dispatchUiState] = useReducer(
@@ -114,6 +141,15 @@ export function useQuestion({
     [setSelection],
   );
 
+  const syncSessionProgress = useCallback(() => {
+    setSessionProgress(buildSessionProgressState(sessionId));
+  }, [sessionId]);
+
+  const handleQuestionApplied = useCallback(() => {
+    syncSessionProgress();
+    onQuestionApplied?.();
+  }, [onQuestionApplied, syncSessionProgress]);
+
   const {
     canGoToPreviousQuestion,
     restoreCurrentQuestion,
@@ -124,7 +160,7 @@ export function useQuestion({
     persistSubmission,
   } = useQuestionHistory({
     sessionId,
-    onQuestionApplied,
+    onQuestionApplied: handleQuestionApplied,
     onQuestionStateApplied: applyQuestionStateToUi,
   });
 
@@ -202,7 +238,10 @@ export function useQuestion({
       onSubmissionMarked: () => {
         dispatchUiState({ type: "submissionMarked" });
       },
-      persistSubmission,
+      persistSubmission: () => {
+        persistSubmission();
+        syncSessionProgress();
+      },
       goToNextQuestion,
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
@@ -225,6 +264,10 @@ export function useQuestion({
     isLoadingQuestion,
     isSubmitting,
     canGoToPreviousQuestion,
+    currentQuestionIndex: sessionProgress.currentQuestionIndex,
+    submittedCount: sessionProgress.submittedCount,
+    correctCount: sessionProgress.correctCount,
+    accuracyRate: sessionProgress.accuracyRate,
     isSignInRequired,
     signInDemand,
     hasSubmitted,
