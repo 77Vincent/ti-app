@@ -18,7 +18,9 @@ export default function Home() {
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
             Learning through testing
           </h1>
-          <p className="text-2xl font-light text-default-500">Infinite high quality questions tailored to your learning</p>
+          <p className="text-2xl font-light text-default-500">
+            Infinite high-quality, tailored questions.
+          </p>
         </div>
         <Button as={Link} color="primary" href={PAGE_PATHS.TEST} size="lg">
           Test Now

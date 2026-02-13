@@ -115,6 +115,7 @@ const ROW_OPACITY = [0.9, 0.75, 0.85, 0.7] as const;
 
 export default function HeroBanner() {
   const [seed, setSeed] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const animationFrameId = window.requestAnimationFrame(() => {
@@ -130,7 +131,11 @@ export default function HeroBanner() {
 
   return (
     <div className="relative left-1/2 w-screen -translate-x-1/2">
-      <section className="relative isolate overflow-hidden">
+      <section
+        className="relative isolate overflow-hidden"
+        onPointerEnter={() => setIsPaused(true)}
+        onPointerLeave={() => setIsPaused(false)}
+      >
         <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(var(--heroui-content1)/0.7)_0%,hsl(var(--heroui-background)/0.9)_100%)]" />
         <div
           className="relative z-0 flex flex-col gap-2"
@@ -160,6 +165,7 @@ export default function HeroBanner() {
                   className="flex w-max gap-2"
                   style={{
                     animation: `${motion.keyframe} ${motion.durationSeconds}s linear infinite`,
+                    animationPlayState: isPaused ? "paused" : "running",
                   }}
                 >
                   {repeatedRow.map((word, wordIndex) => (

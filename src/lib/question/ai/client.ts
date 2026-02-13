@@ -6,7 +6,7 @@ import {
 } from "./prompt";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const DEFAULT_OPENAI_MODEL = "o4-mini";
+const DEFAULT_OPENAI_MODEL = "gpt-5-nano";
 
 function getOpenAIConfig() {
   const apiKey = process.env.OPENAI_API_KEY;
