@@ -29,6 +29,33 @@ export async function upsertFavoriteQuestion(
   userId: string,
   input: FavoriteQuestionInput,
 ): Promise<void> {
+  await prisma.questionPool.upsert({
+    where: {
+      id: input.questionId,
+    },
+    create: {
+      id: input.questionId,
+      subjectId: input.subjectId,
+      subcategoryId: input.subcategoryId,
+      difficulty: input.difficulty,
+      goal: input.goal,
+      questionType: input.questionType,
+      prompt: input.prompt,
+      options: input.options,
+      correctOptionIds: input.correctOptionIds,
+    },
+    update: {
+      subjectId: input.subjectId,
+      subcategoryId: input.subcategoryId,
+      difficulty: input.difficulty,
+      goal: input.goal,
+      questionType: input.questionType,
+      prompt: input.prompt,
+      options: input.options,
+      correctOptionIds: input.correctOptionIds,
+    },
+  });
+
   await prisma.favoriteQuestion.upsert({
     where: {
       userId_questionId: {
