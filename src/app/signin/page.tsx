@@ -4,6 +4,7 @@ import { Button, Card, CardBody } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { GOOGLE_PROVIDER_ID } from "@/app/auth/signIn";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import Image from "next/image";
 
 export default function SignInPage() {
   return (
@@ -15,11 +16,21 @@ export default function SignInPage() {
           <Button
             color="primary"
             fullWidth
+            startContent={
+              <Image
+                alt=""
+                aria-hidden
+                height={18}
+                src="/google-icon.svg"
+                width={18}
+              />
+            }
             onPress={() => {
               void signIn(GOOGLE_PROVIDER_ID, {
                 callbackUrl: PAGE_PATHS.TEST,
               });
             }}
+            variant="bordered"
           >
             Continue with Google
           </Button>
