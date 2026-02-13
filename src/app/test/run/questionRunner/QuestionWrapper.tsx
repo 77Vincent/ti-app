@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps } from "./types";
-import { Button, Card, CardBody, Chip, Tooltip, Divider } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -140,17 +140,10 @@ export default function QuestionWrapper({
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <p className="inline-flex items-center gap-1.5 tabular-nums">
-            <Timer aria-hidden size={16} />
-            {elapsedLabel}
-          </p>
           {currentQuestionIndex !== null ? (
-            <>
-              <Divider className="h-4" orientation="vertical" />
-              <span className="font-medium tabular-nums">Question {currentQuestionIndex + 1}</span>
-            </>
+            <span className="font-medium tabular-nums">Question {currentQuestionIndex + 1}</span>
           ) : null}
-          <Tooltip placement="bottom" content={isFavorite ? "Remove favorite" : "Favorite this question"}>
+          <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
             <Button
               aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
               color={isFavorite ? "warning" : "default"}
@@ -171,18 +164,24 @@ export default function QuestionWrapper({
           </Tooltip>
         </div>
 
-        <Tooltip content="End test">
-          <Button
-            aria-label="End test"
-            onPress={onEndTest}
-            size="sm"
-            isIconOnly
-            radius="full"
-            variant="light"
-          >
-            <LogOut aria-hidden size={18} />
-          </Button>
-        </Tooltip>
+        <div className="flex items-center gap-3">
+          <p className="inline-flex items-center gap-1.5 tabular-nums">
+            <Timer aria-hidden size={16} />
+            {elapsedLabel}
+          </p>
+          <Tooltip content="End test">
+            <Button
+              aria-label="End test"
+              onPress={onEndTest}
+              size="sm"
+              isIconOnly
+              radius="full"
+              variant="light"
+            >
+              <LogOut aria-hidden size={18} />
+            </Button>
+          </Tooltip>
+        </div>
       </div>
 
       <Card shadow="sm">

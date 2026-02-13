@@ -1,11 +1,11 @@
-import type { DifficultyEnum, GoalEnum } from "@/lib/meta";
+import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
 import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
 import { QuestionRunnerApiError } from "./error";
 
 export type FetchQuestionInput = {
-  subjectId: string;
+  subjectId: SubjectEnum;
   subcategoryId: string;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
