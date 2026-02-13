@@ -37,7 +37,6 @@ const QUESTION: Question = {
 
 const BASE_INPUT = {
   difficulty: "beginner",
-  goal: "study",
   question: QUESTION,
   subjectId: "language",
   subcategoryId: "english",
@@ -67,7 +66,6 @@ describe("toggleQuestionFavorite", () => {
 
     expect(addFavoriteQuestion).toHaveBeenCalledWith({
       difficulty: "beginner",
-      goal: "study",
       question: QUESTION,
       subjectId: "language",
       subcategoryId: "english",

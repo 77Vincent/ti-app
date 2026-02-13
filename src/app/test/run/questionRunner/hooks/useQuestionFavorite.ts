@@ -2,7 +2,6 @@
 
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -17,7 +16,6 @@ type UseQuestionFavoriteInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
   onAuthRequired: () => void;
 };
 
@@ -33,7 +31,6 @@ export function useQuestionFavorite({
   subjectId,
   subcategoryId,
   difficulty,
-  goal,
   onAuthRequired,
 }: UseQuestionFavoriteInput): UseQuestionFavoriteResult {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -101,7 +98,6 @@ export function useQuestionFavorite({
         subjectId,
         subcategoryId,
         difficulty,
-        goal,
         question,
       });
 
@@ -140,7 +136,6 @@ export function useQuestionFavorite({
     }
   }, [
     difficulty,
-    goal,
     isFavorite,
     isFavoriteSubmitting,
     isFavoriteSyncing,

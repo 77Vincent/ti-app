@@ -38,7 +38,6 @@ const VALID_INPUT = {
   subjectId: "language",
   subcategoryId: "english",
   difficulty: "beginner",
-  goal: "study",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   options: [
@@ -67,7 +66,6 @@ describe("favorite question repo", () => {
       subjectId: "language",
       subcategoryId: "english",
       difficulty: "beginner",
-      goal: "study",
       questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
       prompt: "What is the capital of France?",
       options: VALID_INPUT.options,

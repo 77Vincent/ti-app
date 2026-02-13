@@ -1,6 +1,5 @@
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -16,7 +15,6 @@ export type ToggleQuestionFavoriteInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
   question: Question;
 };
 
@@ -38,7 +36,6 @@ export async function toggleQuestionFavorite(
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       difficulty: input.difficulty,
-      goal: input.goal,
       question: input.question,
     });
     return { type: "success", isFavorite: true };

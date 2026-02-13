@@ -11,7 +11,6 @@ import type { Question } from "../types";
 
 const VALID_INPUT = {
   difficulty: "beginner",
-  goal: "study",
   subjectId: "language",
   subcategoryId: "english",
   question: {
@@ -47,7 +46,6 @@ describe("addFavoriteQuestion", () => {
         subjectId: "language",
         subcategoryId: "english",
         difficulty: "beginner",
-        goal: "study",
         questionId: "q-1",
         questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
         prompt: "Prompt",

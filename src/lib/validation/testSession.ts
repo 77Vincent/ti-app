@@ -12,10 +12,13 @@ import type {
 } from "@/lib/meta";
 import { isNonEmptyString } from "@/lib/string";
 
-export type TestParam = {
+export type QuestionParam = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
+};
+
+export type TestParam = QuestionParam & {
   goal: GoalEnum;
 };
 
@@ -26,34 +29,31 @@ export type TestSession = TestParam & {
   startedAtMs: number;
 };
 
-export function parseTestParam(value: unknown): TestParam | null {
+export function parseQuestionParam(value: unknown): QuestionParam | null {
   if (!value || typeof value !== "object") {
     return null;
   }
 
-  const raw = value as Partial<TestParam>;
+  const raw = value as Partial<QuestionParam>;
   const subjectId = raw.subjectId;
   const subcategoryId = raw.subcategoryId;
   const difficulty = raw.difficulty;
-  const goal = raw.goal;
 
   if (
     !isNonEmptyString(subjectId) ||
     !isNonEmptyString(subcategoryId) ||
-    !isNonEmptyString(difficulty) ||
-    !isNonEmptyString(goal)
+    !isNonEmptyString(difficulty)
   ) {
     return null;
   }
 
   const isValidDifficulty = DIFFICULTIES.some((item) => item.id === difficulty);
-  const isValidGoal = GOALS.some((item) => item.id === goal);
   const isValidSubject = SUBJECTS.some((item) => item.id === subjectId);
   const isValidSubcategory = SUBCATEGORIES.some(
     (item) => item.id === subcategoryId && item.subjectId === subjectId,
   );
 
-  if (!isValidDifficulty || !isValidGoal || !isValidSubject || !isValidSubcategory) {
+  if (!isValidDifficulty || !isValidSubject || !isValidSubcategory) {
     return null;
   }
 
@@ -61,6 +61,28 @@ export function parseTestParam(value: unknown): TestParam | null {
     subjectId: subjectId as SubjectEnum,
     subcategoryId: subcategoryId as SubcategoryEnum,
     difficulty: difficulty as DifficultyEnum,
+  };
+}
+
+export function parseTestParam(value: unknown): TestParam | null {
+  const params = parseQuestionParam(value);
+  if (!params) {
+    return null;
+  }
+
+  const goal = (value as Partial<TestParam>).goal;
+
+  if (!isNonEmptyString(goal)) {
+    return null;
+  }
+
+  const isValidGoal = GOALS.some((item) => item.id === goal);
+  if (!isValidGoal) {
+    return null;
+  }
+
+  return {
+    ...params,
     goal: goal as GoalEnum,
   };
 }

@@ -2,7 +2,6 @@
 
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -40,7 +39,6 @@ export type UseQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
   onQuestionApplied?: () => void;
 };
 
@@ -83,7 +81,6 @@ export function useQuestion({
   subjectId,
   subcategoryId,
   difficulty,
-  goal,
   onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
   const [sessionProgress, setSessionProgress] = useState(
@@ -114,9 +111,8 @@ export function useQuestion({
       subjectId,
       subcategoryId,
       difficulty,
-      goal,
     });
-  }, [difficulty, goal, subcategoryId, subjectId]);
+  }, [difficulty, subcategoryId, subjectId]);
 
   const questionSession = useMemo(
     () =>

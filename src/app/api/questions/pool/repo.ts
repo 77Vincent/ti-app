@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type {
   DifficultyEnum,
-  GoalEnum,
   QuestionType,
   SubjectEnum,
   SubcategoryEnum,
@@ -16,7 +15,7 @@ import {
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/validation/question";
-import type { TestParam } from "@/lib/validation/testSession";
+import type { QuestionParam } from "@/lib/validation/testSession";
 
 type QuestionPoolOption = {
   id: QuestionOptionId;
@@ -29,7 +28,6 @@ export type QuestionPoolUpsertInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
   questionType: QuestionType;
   prompt: string;
   options: readonly QuestionPoolOption[];
@@ -37,14 +35,13 @@ export type QuestionPoolUpsertInput = {
 };
 
 export async function readQuestionFromPool(
-  input: TestParam,
+  input: QuestionParam,
 ): Promise<Question | null> {
   const row = await prisma.questionPool.findFirst({
     where: {
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       difficulty: input.difficulty,
-      goal: input.goal,
     },
     orderBy: {
       updatedAt: "desc",
@@ -98,7 +95,6 @@ export async function upsertQuestionPool(
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       difficulty: input.difficulty,
-      goal: input.goal,
       questionType: input.questionType,
       prompt: input.prompt,
       options: input.options,
@@ -108,7 +104,6 @@ export async function upsertQuestionPool(
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       difficulty: input.difficulty,
-      goal: input.goal,
       questionType: input.questionType,
       prompt: input.prompt,
       options: input.options,

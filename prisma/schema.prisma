@@ -68,7 +68,6 @@ model QuestionPool {
   subjectId        String
   subcategoryId    String
   difficulty       String
-  goal             String
   questionType     String
   prompt           String             @db.Text
   options          Json

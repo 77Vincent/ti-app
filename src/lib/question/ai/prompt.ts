@@ -1,5 +1,5 @@
 import { getDifficulty } from "@/lib/difficulty/utils";
-import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
 You generate one high-quality assessment question.
@@ -43,6 +43,5 @@ Context:
 - subject: ${input.subjectId}
 - subcategory: ${input.subcategoryId}
 - difficulty: ${difficulty}
-- goal: ${input.goal}
 `.trim();
 }

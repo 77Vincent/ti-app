@@ -1,6 +1,5 @@
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -13,7 +12,6 @@ export type FetchQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
 };
 
 type FetchQuestionResponse = {

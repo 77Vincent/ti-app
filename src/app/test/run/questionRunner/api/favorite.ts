@@ -1,6 +1,5 @@
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -13,7 +12,6 @@ export type FavoriteQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
-  goal: GoalEnum;
   question: Question;
 };
 
@@ -30,7 +28,6 @@ export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       difficulty: input.difficulty,
-      goal: input.goal,
       questionId: input.question.id,
       questionType: input.question.questionType,
       prompt: input.question.prompt,

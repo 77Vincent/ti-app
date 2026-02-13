@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseTestParam } from "@/lib/validation/testSession";
+import { parseQuestionParam } from "@/lib/validation/testSession";
 import { buildQuestion } from "./service/question";
 import { mapGeneratedQuestionToQuestionPoolInput } from "../pool/input";
 import { readQuestionFromPool, upsertQuestionPool } from "../pool/repo";
@@ -13,11 +13,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const input = parseTestParam(body);
+  const input = parseQuestionParam(body);
 
   if (!input) {
     return NextResponse.json(
-      { error: "subjectId, subcategoryId, difficulty, and goal are required." },
+      { error: "subjectId, subcategoryId, and difficulty are required." },
       { status: 400 },
     );
   }

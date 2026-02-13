@@ -3,18 +3,18 @@ import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
   buildQuestion,
-  parseTestParam,
+  parseQuestionParam,
   readQuestionFromPool,
   upsertQuestionPool,
 } = vi.hoisted(() => ({
   buildQuestion: vi.fn(),
-  parseTestParam: vi.fn(),
+  parseQuestionParam: vi.fn(),
   readQuestionFromPool: vi.fn(),
   upsertQuestionPool: vi.fn(),
 }));
 
 vi.mock("@/lib/validation/testSession", () => ({
-  parseTestParam,
+  parseQuestionParam,
 }));
 
 vi.mock("./service/question", () => ({
@@ -28,7 +28,6 @@ vi.mock("../pool/repo", () => ({
 
 const VALID_INPUT = {
   difficulty: "beginner",
-  goal: "study",
   subjectId: "language",
   subcategoryId: "english",
 };
@@ -48,11 +47,11 @@ describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
     buildQuestion.mockReset();
-    parseTestParam.mockReset();
+    parseQuestionParam.mockReset();
     readQuestionFromPool.mockReset();
     upsertQuestionPool.mockReset();
 
-    parseTestParam.mockReturnValue(VALID_INPUT);
+    parseQuestionParam.mockReturnValue(VALID_INPUT);
     readQuestionFromPool.mockResolvedValue(null);
     buildQuestion.mockResolvedValue(VALID_QUESTION);
     upsertQuestionPool.mockResolvedValue(undefined);
@@ -99,7 +98,6 @@ describe("generate question route", () => {
       subjectId: VALID_INPUT.subjectId,
       subcategoryId: VALID_INPUT.subcategoryId,
       difficulty: VALID_INPUT.difficulty,
-      goal: VALID_INPUT.goal,
       questionType: VALID_QUESTION.questionType,
       prompt: VALID_QUESTION.prompt,
       options: VALID_QUESTION.options,
@@ -108,7 +106,7 @@ describe("generate question route", () => {
   });
 
   it("returns 400 for invalid request payload", async () => {
-    parseTestParam.mockReturnValueOnce(null);
+    parseQuestionParam.mockReturnValueOnce(null);
 
     const route = await import("./route");
 
@@ -121,7 +119,7 @@ describe("generate question route", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "subjectId, subcategoryId, difficulty, and goal are required.",
+      error: "subjectId, subcategoryId, and difficulty are required.",
     });
     expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(buildQuestion).not.toHaveBeenCalled();

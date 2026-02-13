@@ -1,5 +1,5 @@
 import type { Question } from "@/lib/validation/question";
-import type { TestParam } from "@/lib/validation/testSession";
+import type { QuestionParam } from "@/lib/validation/testSession";
 import type { QuestionPoolUpsertInput } from "./repo";
 
 type QuestionPoolFavoriteSource = Omit<QuestionPoolUpsertInput, "id"> & {
@@ -7,7 +7,7 @@ type QuestionPoolFavoriteSource = Omit<QuestionPoolUpsertInput, "id"> & {
 };
 
 export function mapGeneratedQuestionToQuestionPoolInput(
-  params: TestParam,
+  params: QuestionParam,
   question: Question,
 ): QuestionPoolUpsertInput {
   return {
@@ -15,7 +15,6 @@ export function mapGeneratedQuestionToQuestionPoolInput(
     subjectId: params.subjectId,
     subcategoryId: params.subcategoryId,
     difficulty: params.difficulty,
-    goal: params.goal,
     questionType: question.questionType,
     prompt: question.prompt,
     options: question.options,
@@ -31,7 +30,6 @@ export function mapFavoriteQuestionToQuestionPoolInput(
     subjectId: input.subjectId,
     subcategoryId: input.subcategoryId,
     difficulty: input.difficulty,
-    goal: input.goal,
     questionType: input.questionType,
     prompt: input.prompt,
     options: input.options,

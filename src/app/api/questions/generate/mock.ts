@@ -1,5 +1,5 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type { TestParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
 import type { Question } from "@/app/test/run/questionRunner/types";
 
 function createMockQuestionId(): string {
@@ -14,7 +14,7 @@ export function generateMockQuestion(input: GenerateQuestionRequest): Question {
   return {
     id: createMockQuestionId(),
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-    prompt: `**Mock question** (${new Date().toISOString()} / ${input.subjectId} / ${input.subcategoryId} / ${input.difficulty} / ${input.goal})\n\nWhat is the capital of France?`,
+    prompt: `**Mock question** (${new Date().toISOString()} / ${input.subjectId} / ${input.subcategoryId} / ${input.difficulty})\n\nWhat is the capital of France?`,
     options: [
       {
         id: "A",

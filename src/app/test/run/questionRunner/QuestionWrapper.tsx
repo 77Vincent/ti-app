@@ -51,7 +51,6 @@ export default function QuestionWrapper({
     subjectId,
     subcategoryId,
     difficulty,
-    goal,
   });
   const handleFavoriteAuthRequired = useCallback(() => {
     if (!question) {
@@ -70,7 +69,6 @@ export default function QuestionWrapper({
     subjectId,
     subcategoryId,
     difficulty,
-    goal,
     onAuthRequired: handleFavoriteAuthRequired,
   });
 

@@ -14,7 +14,6 @@ describe("aiPrompt", () => {
   it("builds user prompt from test context", () => {
     const prompt = buildQuestionUserPrompt({
       difficulty: "beginner",
-      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -23,14 +22,13 @@ describe("aiPrompt", () => {
     expect(prompt).toContain("subject: language");
     expect(prompt).toContain("subcategory: english");
     expect(prompt).toContain("difficulty: CEFR A1-A2");
-    expect(prompt).toContain("goal: study");
+    expect(prompt).not.toContain("goal:");
     expect(prompt).not.toContain("objectively gradable");
   });
 
   it("uses japanese mapped level as the difficulty line", () => {
     const prompt = buildQuestionUserPrompt({
       difficulty: "advanced",
-      goal: "exam",
       subjectId: "language",
       subcategoryId: "japanese",
     });
