@@ -13,12 +13,11 @@ import {
   NavbarItem,
   Tooltip,
 } from "@heroui/react";
-import { Moon, Sun, User, User2 } from "lucide-react";
+import { Settings, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { type Key, useEffect, useState, useSyncExternalStore } from "react";
+import { type Key, useEffect, useState } from "react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import {
   hasAuthenticatedUser,
@@ -27,18 +26,8 @@ import {
 import { clearTestSession } from "./test/run/questionRunner/session";
 
 export default function AppBar() {
-  const { resolvedTheme, setTheme } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const isMounted = useSyncExternalStore(
-    () => () => undefined,
-    () => true,
-    () => false,
-  );
-
-  const isDark = isMounted && resolvedTheme === "dark";
-  const THEME_TOGGLE_LABEL = isMounted
-    ? (isDark ? "Light theme" : "Dark theme")
-    : "Toggle theme";
+  const SETTINGS_LABEL = "Settings";
   const USER_SESSION_LABEL = isAuthenticated ? "User menu" : "Sign in";
 
   useEffect(() => {
@@ -56,14 +45,6 @@ export default function AppBar() {
       active = false;
     };
   }, []);
-
-  function handleToggleTheme() {
-    if (!isMounted) {
-      return;
-    }
-
-    setTheme(isDark ? "light" : "dark");
-  }
 
   function clearSessionThen(action: () => void) {
     void clearTestSession()
@@ -122,29 +103,24 @@ export default function AppBar() {
                 onPress={handleSignIn}
                 radius="full"
                 size="sm"
-                variant="bordered"
+                variant="light"
               >
-                <User2 aria-hidden="true" size={18} />
+                <User2 aria-hidden="true" size={20} />
               </Button>
             </Tooltip>
           )}
         </NavbarItem>
 
         <NavbarItem>
-          <Tooltip content={THEME_TOGGLE_LABEL}>
+          <Tooltip content={SETTINGS_LABEL}>
             <Button
-              aria-label={THEME_TOGGLE_LABEL}
+              aria-label={SETTINGS_LABEL}
               isIconOnly
-              onPress={handleToggleTheme}
               radius="full"
               size="sm"
-              variant="bordered"
+              variant="light"
             >
-              {isDark ? (
-                <Sun aria-hidden="true" size={18} />
-              ) : (
-                <Moon aria-hidden="true" size={18} />
-              )}
+              <Settings aria-hidden="true" size={20} />
             </Button>
           </Tooltip>
         </NavbarItem>
