@@ -7,6 +7,7 @@ import {
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/validation/question";
+import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 
 type QuestionOption = {
@@ -54,8 +55,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   }
 
   const parsedOptions = parseQuestionOptions(options, {
-    minOptions: 3,
-    maxOptions: 6,
+    ...QUESTION_OPTION_LIMITS,
     requireSequentialFromA: true,
   });
   if (!parsedOptions) {

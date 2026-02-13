@@ -43,6 +43,7 @@ const VALID_INPUT = {
   options: [
     { id: "A", text: "Berlin", explanation: "Wrong." },
     { id: "B", text: "Paris", explanation: "Correct." },
+    { id: "C", text: "Madrid", explanation: "Wrong." },
   ],
   correctOptionIds: ["B"],
 } as const;

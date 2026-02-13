@@ -1,5 +1,6 @@
 import { getDifficulty } from "@/lib/difficulty/utils";
 import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
 You generate one high-quality assessment question.
@@ -19,7 +20,7 @@ Rules:
 - question must be objectively gradable.
 - prioritize clarity, realism and factual correctness.
 - use markdown/LaTeX only when needed.
-- options count must be between 3 and 6.
+- options count must be between ${QUESTION_OPTION_LIMITS.minOptions} and ${QUESTION_OPTION_LIMITS.maxOptions}.
 - option ids must start at A and be sequential without gaps.
 - correctOptionIds must be a non-empty subset of option ids.
 - for "multiple_choice", correctOptionIds length must be exactly 1.

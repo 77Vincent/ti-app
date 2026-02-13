@@ -19,10 +19,12 @@ describe("question validation helpers", () => {
       parseQuestionOptions([
         { id: "A", text: "A", explanation: "A" },
         { id: "B", text: "B", explanation: "B" },
+        { id: "C", text: "C", explanation: "C" },
       ]),
     ).toEqual([
       { id: "A", text: "A", explanation: "A" },
       { id: "B", text: "B", explanation: "B" },
+      { id: "C", text: "C", explanation: "C" },
     ]);
 
     expect(
@@ -39,6 +41,7 @@ describe("question validation helpers", () => {
         [
           { id: "A", text: "A", explanation: "A" },
           { id: "C", text: "C", explanation: "C" },
+          { id: "D", text: "D", explanation: "D" },
         ],
         { requireSequentialFromA: true },
       ),

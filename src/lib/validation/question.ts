@@ -1,4 +1,5 @@
 import { QUESTION_TYPES, type QuestionType } from "@/lib/meta";
+import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 
 export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
@@ -51,8 +52,8 @@ export function parseQuestionOptions(
   value: unknown,
   config?: ParseQuestionOptionsConfig,
 ): ParsedQuestionOption[] | null {
-  const minOptions = config?.minOptions ?? 2;
-  const maxOptions = config?.maxOptions ?? 6;
+  const minOptions = config?.minOptions ?? QUESTION_OPTION_LIMITS.minOptions;
+  const maxOptions = config?.maxOptions ?? QUESTION_OPTION_LIMITS.maxOptions;
 
   if (!Array.isArray(value) || value.length < minOptions || value.length > maxOptions) {
     return null;

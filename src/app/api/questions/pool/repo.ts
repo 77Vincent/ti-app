@@ -16,6 +16,7 @@ import {
   parseQuestionOptions,
 } from "@/lib/validation/question";
 import type { QuestionParam } from "@/lib/validation/testSession";
+import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 
 type QuestionPoolOption = {
   id: QuestionOptionId;
@@ -108,10 +109,7 @@ function parseQuestionPoolRow(row: QuestionPoolReadRow | null): Question | null 
     return null;
   }
 
-  const options = parseQuestionOptions(row.options, {
-    minOptions: 3,
-    maxOptions: 6,
-  });
+  const options = parseQuestionOptions(row.options, QUESTION_OPTION_LIMITS);
 
   if (!options) {
     return null;

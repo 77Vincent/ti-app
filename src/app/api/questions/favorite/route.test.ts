@@ -34,6 +34,7 @@ const VALID_FAVORITE_PAYLOAD = {
   options: [
     { id: "A", text: "Paris", explanation: "Correct." },
     { id: "B", text: "Berlin", explanation: "Incorrect." },
+    { id: "C", text: "Madrid", explanation: "Incorrect." },
   ],
   correctOptionIds: ["A"],
 } as const;

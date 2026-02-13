@@ -9,6 +9,7 @@ import {
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/validation/question";
+import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import {
   deleteFavoriteQuestion,
   isQuestionFavorited,
@@ -28,7 +29,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   const questionId = raw.questionId;
   const questionType = raw.questionType;
   const prompt = raw.prompt;
-  const options = parseQuestionOptions(raw.options, { minOptions: 2, maxOptions: 6 });
+  const options = parseQuestionOptions(raw.options, QUESTION_OPTION_LIMITS);
 
   if (
     !params ||
