@@ -11,7 +11,11 @@ import {
   consumeQuestionQuota,
   createQuestionSessionController,
 } from "../session";
-import type { Question as QuestionType, QuestionOptionId } from "../types";
+import type {
+  Question as QuestionType,
+  QuestionOptionId,
+  QuestionSignInDemand,
+} from "../types";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
@@ -46,8 +50,6 @@ export type UseQuestionResult = {
   selectOption: (optionId: QuestionOptionId) => void;
   submit: () => Promise<void>;
 };
-
-export type QuestionSignInDemand = "more_questions";
 
 export function useQuestion({
   sessionId,

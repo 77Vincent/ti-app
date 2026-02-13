@@ -14,12 +14,11 @@ import {
 import { LogOut, Star, Timer } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
+import type { SignInDemand } from "./types";
 import { readLocalTestSessionSnapshot } from "./session";
 import { formatElapsedTime } from "./utils/timer";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
-
-type SignInDemand = "favorite" | "more_questions";
 
 export default function QuestionWrapper({
   id,

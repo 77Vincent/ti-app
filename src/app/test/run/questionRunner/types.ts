@@ -32,4 +32,7 @@ export type MultipleAnswerQuestion = BaseQuestion & {
 
 export type Question = MultipleChoiceQuestion | MultipleAnswerQuestion;
 
+export type SignInDemand = "favorite" | "more_questions";
+export type QuestionSignInDemand = Extract<SignInDemand, "more_questions">;
+
 export type QuestionRunnerProps = TestSession & TestRunnerActions;

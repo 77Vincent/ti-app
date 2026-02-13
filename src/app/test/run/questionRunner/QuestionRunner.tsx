@@ -13,9 +13,7 @@ import {
   isOptionCorrect,
   isOptionWrongSelection,
 } from "./utils/evaluation";
-import type { Question, QuestionOptionId } from "./types";
-
-type SignInDemand = "favorite" | "more_questions";
+import type { Question, QuestionOptionId, SignInDemand } from "./types";
 
 type QuestionProps = {
   question: Question | null;
