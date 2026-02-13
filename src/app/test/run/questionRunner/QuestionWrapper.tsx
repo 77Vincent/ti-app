@@ -143,13 +143,21 @@ export default function QuestionWrapper({
           </Tooltip>
         </div>
 
-        <div className="flex items-center gap-3">
-          <SessionAccuracy
-            accuracyRate={sessionProgress.accuracyRate}
-            correctCount={sessionProgress.correctCount}
-            submittedCount={sessionProgress.submittedCount}
-          />
-          <ElapsedSessionTimer startedAtMs={startedAtMs} />
+        <div className="flex items-center gap-4">
+          <Tooltip content="Accuracy">
+            <span>
+              <SessionAccuracy
+                accuracyRate={sessionProgress.accuracyRate}
+                correctCount={sessionProgress.correctCount}
+                submittedCount={sessionProgress.submittedCount}
+              />
+            </span>
+          </Tooltip>
+          <Tooltip content="Elapsed time">
+            <span>
+              <ElapsedSessionTimer startedAtMs={startedAtMs} />
+            </span>
+          </Tooltip>
           <Tooltip content="End test">
             <Button
               aria-label="End test"
