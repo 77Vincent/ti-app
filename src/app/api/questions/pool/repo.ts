@@ -23,6 +23,14 @@ type QuestionPoolOption = {
   explanation: string;
 };
 
+type QuestionPoolReadRow = {
+  id: string;
+  questionType: string;
+  prompt: string;
+  options: unknown;
+  correctOptionIds: unknown;
+};
+
 export type QuestionPoolUpsertInput = {
   id: string;
   subjectId: SubjectEnum;
@@ -49,14 +57,23 @@ export async function countQuestionPoolMatches(
 export async function readQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
+  const where = {
+    subjectId: input.subjectId,
+    subcategoryId: input.subcategoryId,
+    difficulty: input.difficulty,
+  } as const;
+
+  const randomThreshold = Math.random();
+
   const row = await prisma.questionPool.findFirst({
     where: {
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
+      ...where,
+      randomKey: {
+        gte: randomThreshold,
+      },
     },
     orderBy: {
-      updatedAt: "desc",
+      randomKey: "asc",
     },
     select: {
       id: true,
@@ -67,11 +84,34 @@ export async function readQuestionFromPool(
     },
   });
 
+  const selectedRow =
+    row ??
+    (await prisma.questionPool.findFirst({
+      where,
+      orderBy: {
+        randomKey: "asc",
+      },
+      select: {
+        id: true,
+        questionType: true,
+        prompt: true,
+        options: true,
+        correctOptionIds: true,
+      },
+    }));
+
+  return parseQuestionPoolRow(selectedRow);
+}
+
+function parseQuestionPoolRow(row: QuestionPoolReadRow | null): Question | null {
   if (!row || !isQuestionType(row.questionType)) {
     return null;
   }
 
-  const options = parseQuestionOptions(row.options, { minOptions: 2, maxOptions: 6 });
+  const options = parseQuestionOptions(row.options, {
+    minOptions: 2,
+    maxOptions: 6,
+  });
 
   if (!options) {
     return null;
