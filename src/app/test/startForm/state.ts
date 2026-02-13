@@ -20,7 +20,7 @@ export function selectSubject(
 
 export function selectSubcategory(
   state: StartFormState,
-  subcategoryId: string,
+  subcategoryId: NonNullable<StartFormSelectionState["selectedSubcategoryId"]>,
 ): StartFormState {
   return {
     ...state,

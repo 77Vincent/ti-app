@@ -1,6 +1,11 @@
 "use client";
 
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
@@ -33,7 +38,7 @@ import { useQuestionSelection } from "./useQuestionSelection";
 export type UseQuestionInput = {
   sessionId: string;
   subjectId: SubjectEnum;
-  subcategoryId: string;
+  subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
   onQuestionApplied?: () => void;

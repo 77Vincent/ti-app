@@ -4,8 +4,10 @@ import {
 import type { QuestionType } from "./questionTypes";
 import type { SubjectEnum } from "./subjects";
 
+export type SubcategoryEnum = "english";
+
 export type SubcategoryOption = {
-  id: string;
+  id: SubcategoryEnum;
   label: string;
   subjectId: SubjectEnum;
   order: number;

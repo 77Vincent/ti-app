@@ -9,7 +9,12 @@ import {
   SUBCATEGORIES,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { writeTestSession } from "@/app/test/run/questionRunner/session";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
@@ -59,7 +64,7 @@ export default function StartForm() {
   const handleSelectSubject = (subjectId: SubjectEnum) =>
     setState(selectSubject(subjectId));
 
-  const handleSelectSubcategory = (subcategoryId: string) =>
+  const handleSelectSubcategory = (subcategoryId: SubcategoryEnum) =>
     setState((prevState) => selectSubcategory(prevState, subcategoryId));
 
   const handleSelectDifficulty = (difficulty: DifficultyEnum) => {

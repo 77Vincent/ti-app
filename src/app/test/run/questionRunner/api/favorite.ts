@@ -1,4 +1,9 @@
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
@@ -6,7 +11,7 @@ import { QuestionRunnerApiError } from "./error";
 
 export type FavoriteQuestionInput = {
   subjectId: SubjectEnum;
-  subcategoryId: string;
+  subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
   question: Question;

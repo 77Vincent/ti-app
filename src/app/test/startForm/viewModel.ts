@@ -1,5 +1,10 @@
 import { DIFFICULTIES, GOALS } from "@/lib/meta";
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import type { StartFormStep } from "./constants";
 
 type StepOption<TValue extends string> = {
@@ -15,8 +20,8 @@ type SubjectStepViewConfig = {
 
 type SubcategoryStepViewConfig = {
   step: "subcategory";
-  selectedValue: string | null;
-  options: StepOption<string>[];
+  selectedValue: SubcategoryEnum | null;
+  options: StepOption<SubcategoryEnum>[];
 };
 
 type DifficultyStepViewConfig = {
@@ -40,9 +45,9 @@ export type StartFormStepViewConfig =
 type BuildCurrentStepViewConfigInput = {
   currentStep: StartFormStep;
   subjects: Array<{ id: SubjectEnum; label: string }>;
-  subcategories: Array<{ id: string; label: string }>;
+  subcategories: Array<{ id: SubcategoryEnum; label: string }>;
   selectedSubjectId: SubjectEnum | null;
-  selectedSubcategoryId: string | null;
+  selectedSubcategoryId: SubcategoryEnum | null;
   selectedDifficulty: DifficultyEnum | null;
   selectedGoal: GoalEnum | null;
 };

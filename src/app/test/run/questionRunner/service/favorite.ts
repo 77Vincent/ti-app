@@ -1,4 +1,9 @@
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import {
   addFavoriteQuestion,
   removeFavoriteQuestion,
@@ -9,7 +14,7 @@ import { isFavoriteAuthError } from "../utils/questionGuards";
 export type ToggleQuestionFavoriteInput = {
   isFavorite: boolean;
   subjectId: SubjectEnum;
-  subcategoryId: string;
+  subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
   question: Question;

@@ -1,6 +1,11 @@
 "use client";
 
-import type { DifficultyEnum, GoalEnum, SubjectEnum } from "@/lib/meta";
+import type {
+  DifficultyEnum,
+  GoalEnum,
+  SubjectEnum,
+  SubcategoryEnum,
+} from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useRef, useState } from "react";
 import type { Question } from "../types";
@@ -10,7 +15,7 @@ import { isActiveFavoriteMutation } from "../utils/questionGuards";
 
 type UseQuestionFavoriteInput = {
   subjectId: SubjectEnum;
-  subcategoryId: string;
+  subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
   goal: GoalEnum;
   onAuthRequired: () => void;

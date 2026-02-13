@@ -13,7 +13,7 @@ export { getDifficultyIcon, getGoalIcon, getSubjectIcon } from "./icons";
 export { GOALS } from "./goals";
 
 export type { QuestionType } from "./questionTypes";
-export type { SubcategoryOption } from "./subcategories";
+export type { SubcategoryEnum, SubcategoryOption } from "./subcategories";
 export type { SubjectEnum, SubjectType } from "./subjects";
 export type { DifficultyEnum, DifficultyType } from "./difficulties";
 export type { GoalEnum, GoalType } from "./goals";
