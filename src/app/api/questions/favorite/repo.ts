@@ -6,9 +6,11 @@ import type {
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
+import type { QuestionOptionId } from "@/lib/validation/question";
+import { upsertQuestionPool } from "../pool/repo";
 
 type FavoriteOption = {
-  id: string;
+  id: QuestionOptionId;
   text: string;
   explanation: string;
 };
@@ -22,38 +24,23 @@ export type FavoriteQuestionInput = {
   questionType: QuestionType;
   prompt: string;
   options: readonly FavoriteOption[];
-  correctOptionIds: readonly string[];
+  correctOptionIds: readonly QuestionOptionId[];
 };
 
 export async function upsertFavoriteQuestion(
   userId: string,
   input: FavoriteQuestionInput,
 ): Promise<void> {
-  await prisma.questionPool.upsert({
-    where: {
-      id: input.questionId,
-    },
-    create: {
-      id: input.questionId,
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
-      goal: input.goal,
-      questionType: input.questionType,
-      prompt: input.prompt,
-      options: input.options,
-      correctOptionIds: input.correctOptionIds,
-    },
-    update: {
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
-      goal: input.goal,
-      questionType: input.questionType,
-      prompt: input.prompt,
-      options: input.options,
-      correctOptionIds: input.correctOptionIds,
-    },
+  await upsertQuestionPool({
+    id: input.questionId,
+    subjectId: input.subjectId,
+    subcategoryId: input.subcategoryId,
+    difficulty: input.difficulty,
+    goal: input.goal,
+    questionType: input.questionType,
+    prompt: input.prompt,
+    options: input.options,
+    correctOptionIds: input.correctOptionIds,
   });
 
   await prisma.favoriteQuestion.upsert({

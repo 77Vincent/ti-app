@@ -13,7 +13,7 @@ export default function Providers({ children }: ProvidersProps) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <ToastProvider
           maxVisibleToasts={3}
-          placement="top-center"
+          placement="bottom-center"
           toastOffset={16}
         />
         {children}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseTestParam } from "@/lib/validation/testSession";
 import { buildQuestion } from "./service/question";
+import { upsertQuestionPool } from "../pool/repo";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -22,6 +23,23 @@ export async function POST(request: Request) {
 
   try {
     const question = await buildQuestion(input);
+
+    try {
+      await upsertQuestionPool({
+        id: question.id,
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
+        goal: input.goal,
+        questionType: question.questionType,
+        prompt: question.prompt,
+        options: question.options,
+        correctOptionIds: question.correctOptionIds,
+      });
+    } catch (error) {
+      console.error("Failed to persist generated question.", error);
+    }
+
     return NextResponse.json({ question });
   } catch (error) {
     const message =

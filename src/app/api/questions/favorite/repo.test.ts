@@ -5,12 +5,12 @@ const {
   favoriteQuestionDeleteMany,
   favoriteQuestionFindUnique,
   favoriteQuestionUpsert,
-  questionPoolUpsert,
+  upsertQuestionPool,
 } = vi.hoisted(() => ({
   favoriteQuestionDeleteMany: vi.fn(),
   favoriteQuestionFindUnique: vi.fn(),
   favoriteQuestionUpsert: vi.fn(),
-  questionPoolUpsert: vi.fn(),
+  upsertQuestionPool: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -20,10 +20,11 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: favoriteQuestionFindUnique,
       upsert: favoriteQuestionUpsert,
     },
-    questionPool: {
-      upsert: questionPoolUpsert,
-    },
   },
+}));
+
+vi.mock("../pool/repo", () => ({
+  upsertQuestionPool,
 }));
 
 import {
@@ -52,40 +53,25 @@ describe("favorite question repo", () => {
     favoriteQuestionDeleteMany.mockReset();
     favoriteQuestionFindUnique.mockReset();
     favoriteQuestionUpsert.mockReset();
-    questionPoolUpsert.mockReset();
+    upsertQuestionPool.mockReset();
   });
 
   it("upserts question pool first, then favorite mapping", async () => {
-    questionPoolUpsert.mockResolvedValueOnce(undefined);
+    upsertQuestionPool.mockResolvedValueOnce(undefined);
     favoriteQuestionUpsert.mockResolvedValueOnce(undefined);
 
     await upsertFavoriteQuestion("user-1", VALID_INPUT);
 
-    expect(questionPoolUpsert).toHaveBeenCalledWith({
-      where: {
-        id: "question-1",
-      },
-      create: {
-        id: "question-1",
-        subjectId: "language",
-        subcategoryId: "english",
-        difficulty: "beginner",
-        goal: "study",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-        prompt: "What is the capital of France?",
-        options: VALID_INPUT.options,
-        correctOptionIds: ["B"],
-      },
-      update: {
-        subjectId: "language",
-        subcategoryId: "english",
-        difficulty: "beginner",
-        goal: "study",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-        prompt: "What is the capital of France?",
-        options: VALID_INPUT.options,
-        correctOptionIds: ["B"],
-      },
+    expect(upsertQuestionPool).toHaveBeenCalledWith({
+      id: "question-1",
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "beginner",
+      goal: "study",
+      questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+      prompt: "What is the capital of France?",
+      options: VALID_INPUT.options,
+      correctOptionIds: ["B"],
     });
     expect(favoriteQuestionUpsert).toHaveBeenCalledWith({
       where: {
@@ -100,7 +86,7 @@ describe("favorite question repo", () => {
       },
       update: {},
     });
-    expect(questionPoolUpsert.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(upsertQuestionPool.mock.invocationCallOrder[0]).toBeLessThan(
       favoriteQuestionUpsert.mock.invocationCallOrder[0],
     );
   });

@@ -115,6 +115,7 @@ export default function StartForm() {
 
           return (
             <Button
+              color="primary"
               size="lg"
               key={option.value}
               onPress={() => handleSelectSubject(option.value)}
@@ -127,6 +128,7 @@ export default function StartForm() {
       case "subcategory":
         return currentStepViewConfig.options.map((option) => (
           <Button
+            color="primary"
             size="lg"
             key={option.value}
             onPress={() => handleSelectSubcategory(option.value)}
@@ -140,6 +142,7 @@ export default function StartForm() {
 
           return (
             <Button
+              color="primary"
               size="lg"
               key={option.value}
               onPress={() => handleSelectDifficulty(option.value)}
@@ -155,6 +158,7 @@ export default function StartForm() {
 
           return (
             <Button
+              color="primary"
               key={option.value}
               size="lg"
               onPress={() => handleSelectGoal(option.value)}
