@@ -2,7 +2,23 @@ import { NextResponse } from "next/server";
 import { parseQuestionParam } from "@/lib/validation/testSession";
 import { buildQuestion } from "./service/question";
 import { mapGeneratedQuestionToQuestionPoolInput } from "../pool/input";
-import { readQuestionFromPool, upsertQuestionPool } from "../pool/repo";
+import {
+  countQuestionPoolMatches,
+  readQuestionFromPool,
+  upsertQuestionPool,
+} from "../pool/repo";
+
+const DB_SOURCE_BASE_SCORE = 100;
+
+function shouldUseQuestionPool(matchCount: number): boolean {
+  if (matchCount <= 0) {
+    return false;
+  }
+
+  const probability = matchCount / (DB_SOURCE_BASE_SCORE + matchCount);
+
+  return Math.random() < probability;
+}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -23,10 +39,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const pooledQuestion = await readQuestionFromPool(input);
+    const poolMatchCount = await countQuestionPoolMatches(input);
 
-    if (pooledQuestion) {
-      return NextResponse.json({ question: pooledQuestion });
+    if (shouldUseQuestionPool(poolMatchCount)) {
+      const pooledQuestion = await readQuestionFromPool(input);
+
+      if (pooledQuestion) {
+        return NextResponse.json({ question: pooledQuestion });
+      }
     }
 
     const question = await buildQuestion(input);

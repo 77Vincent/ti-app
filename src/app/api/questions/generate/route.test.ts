@@ -3,11 +3,13 @@ import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
   buildQuestion,
+  countQuestionPoolMatches,
   parseQuestionParam,
   readQuestionFromPool,
   upsertQuestionPool,
 } = vi.hoisted(() => ({
   buildQuestion: vi.fn(),
+  countQuestionPoolMatches: vi.fn(),
   parseQuestionParam: vi.fn(),
   readQuestionFromPool: vi.fn(),
   upsertQuestionPool: vi.fn(),
@@ -22,6 +24,7 @@ vi.mock("./service/question", () => ({
 }));
 
 vi.mock("../pool/repo", () => ({
+  countQuestionPoolMatches,
   readQuestionFromPool,
   upsertQuestionPool,
 }));
@@ -47,17 +50,21 @@ describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
     buildQuestion.mockReset();
+    countQuestionPoolMatches.mockReset();
     parseQuestionParam.mockReset();
     readQuestionFromPool.mockReset();
     upsertQuestionPool.mockReset();
 
     parseQuestionParam.mockReturnValue(VALID_INPUT);
+    countQuestionPoolMatches.mockResolvedValue(0);
     readQuestionFromPool.mockResolvedValue(null);
     buildQuestion.mockResolvedValue(VALID_QUESTION);
     upsertQuestionPool.mockResolvedValue(undefined);
   });
 
   it("returns pooled question without generating", async () => {
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
+    countQuestionPoolMatches.mockResolvedValueOnce(100);
     readQuestionFromPool.mockResolvedValueOnce(VALID_QUESTION);
     const route = await import("./route");
 
@@ -72,9 +79,11 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
+    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
     expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
     expect(buildQuestion).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
+    randomSpy.mockRestore();
   });
 
   it("returns question when request succeeds", async () => {
@@ -91,7 +100,8 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
-    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
+    expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
     expect(upsertQuestionPool).toHaveBeenCalledWith({
       id: VALID_QUESTION.id,
@@ -121,6 +131,7 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "subjectId, subcategoryId, and difficulty are required.",
     });
+    expect(countQuestionPoolMatches).not.toHaveBeenCalled();
     expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(buildQuestion).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
@@ -142,7 +153,8 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "provider down",
     });
-    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
+    expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
   });
 
@@ -164,10 +176,33 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
+    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
+    expect(readQuestionFromPool).not.toHaveBeenCalled();
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "Failed to persist generated question.",
       expect.any(Error),
     );
     consoleErrorSpy.mockRestore();
+  });
+
+  it("skips pool read when probability falls through", async () => {
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.9);
+    countQuestionPoolMatches.mockResolvedValueOnce(100);
+    const route = await import("./route");
+
+    const response = await route.POST(
+      new Request("http://localhost/api/questions/generate", {
+        body: JSON.stringify(VALID_INPUT),
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      question: VALID_QUESTION,
+    });
+    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(buildQuestion).toHaveBeenCalledWith(VALID_INPUT);
+    randomSpy.mockRestore();
   });
 });

@@ -75,6 +75,8 @@ model QuestionPool {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   favorites        FavoriteQuestion[]
+
+  @@index([subjectId, subcategoryId, difficulty])
 }
 
 model FavoriteQuestion {

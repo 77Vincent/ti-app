@@ -34,6 +34,18 @@ export type QuestionPoolUpsertInput = {
   correctOptionIds: readonly QuestionOptionId[];
 };
 
+export async function countQuestionPoolMatches(
+  input: QuestionParam,
+): Promise<number> {
+  return prisma.questionPool.count({
+    where: {
+      subjectId: input.subjectId,
+      subcategoryId: input.subcategoryId,
+      difficulty: input.difficulty,
+    },
+  });
+}
+
 export async function readQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
