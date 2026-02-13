@@ -16,6 +16,7 @@ import { readAuthenticatedUserId } from "./auth";
 import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {
   deleteTestSession,
+  incrementTestSessionProgress,
   readTestSession,
   upsertTestSession,
 } from "./repo/testSession";
@@ -41,8 +42,10 @@ async function readActiveSession(
 
   return {
     ...params,
+    correctCount: session.correctCount,
     id: session.id,
-    startedAtMs: session.updatedAt.getTime(),
+    submittedCount: session.submittedCount,
+    startedAtMs: session.startedAt.getTime(),
   };
 }
 
@@ -77,14 +80,16 @@ export async function POST(request: Request) {
   const id = crypto.randomUUID();
   const startedAtMs = Date.now();
   const session: TestSession = {
+    correctCount: 0,
     ...params,
     id,
     startedAtMs,
+    submittedCount: 0,
   };
   const response = NextResponse.json({ session });
 
   if (userId) {
-    await upsertTestSession({ userId }, id, params);
+    await upsertTestSession({ userId }, id, params, startedAtMs);
   } else {
     persistAnonymousTestSessionCookie(response, session);
   }
@@ -105,11 +110,30 @@ export async function DELETE() {
   return response;
 }
 
-export async function PATCH() {
+export async function PATCH(request: Request) {
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    body = null;
+  }
+
   const userId = await readAuthenticatedUserId();
   const response = NextResponse.json({ ok: true });
 
   if (userId) {
+    const isCorrect = (body as { isCorrect?: unknown } | null)?.isCorrect;
+    if (typeof isCorrect !== "boolean") {
+      return NextResponse.json(
+        {
+          error: "isCorrect must be a boolean.",
+        },
+        { status: 400 },
+      );
+    }
+
+    await incrementTestSessionProgress({ userId }, isCorrect);
     return response;
   }
 

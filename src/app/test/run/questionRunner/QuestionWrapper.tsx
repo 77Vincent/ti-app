@@ -116,7 +116,7 @@ export default function QuestionWrapper({
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {sessionProgress.currentQuestionIndex !== null ? (
             <span className="font-medium tabular-nums">
               Q{sessionProgress.currentQuestionIndex + 1}

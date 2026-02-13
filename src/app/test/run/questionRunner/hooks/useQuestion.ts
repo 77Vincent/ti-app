@@ -8,7 +8,7 @@ import {
   isAnonymousQuestionLimitError,
 } from "../api";
 import {
-  consumeQuestionQuota,
+  recordQuestionResult,
   createQuestionSessionController,
 } from "../session";
 import type {
@@ -23,6 +23,7 @@ import {
 import {
   canSubmitQuestion,
 } from "../utils/questionGuards";
+import { isAnswerCorrect } from "../utils/evaluation";
 import { loadAndApplyQuestion } from "../service/questionLoad";
 import { submitQuestion } from "../service/questionSubmit";
 import { useQuestionHistory } from "./useQuestionHistory";
@@ -187,7 +188,8 @@ export function useQuestion({
 
     await submitQuestion({
       hasSubmitted,
-      consumeQuestionQuota,
+      isCurrentAnswerCorrect: isAnswerCorrect(question, selectedOptionIds),
+      recordQuestionResult,
       isQuestionLimitError: isAnonymousQuestionLimitError,
       onQuestionLimitReached: () => {
         setSignInDemand("more_questions");

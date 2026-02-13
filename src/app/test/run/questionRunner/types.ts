@@ -1,4 +1,4 @@
-import type { TestSession } from "@/lib/validation/testSession";
+import type { TestParam } from "@/lib/validation/testSession";
 import type {
   MultipleAnswerQuestion,
   MultipleChoiceQuestion,
@@ -22,4 +22,8 @@ export type {
 export type SignInDemand = "favorite" | "more_questions";
 export type QuestionSignInDemand = Extract<SignInDemand, "more_questions">;
 
-export type QuestionRunnerProps = TestSession & TestRunnerActions;
+export type QuestionRunnerProps = TestParam &
+  TestRunnerActions & {
+    id: string;
+    startedAtMs: number;
+  };

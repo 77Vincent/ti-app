@@ -110,8 +110,9 @@ export async function clearTestSession(): Promise<void> {
   });
 }
 
-export async function consumeQuestionQuota(): Promise<void> {
+export async function recordQuestionResult(isCorrect: boolean): Promise<void> {
   await requestSession({
+    body: JSON.stringify({ isCorrect }),
     method: "PATCH",
   });
 }

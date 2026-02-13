@@ -17,16 +17,18 @@ vi.mock("./local", () => ({
   writeLocalTestSession,
 }));
 
-import { clearTestSession, readTestSession } from "./storage";
+import { clearTestSession, recordQuestionResult, readTestSession } from "./storage";
 
 const REMOTE_SESSION_PAYLOAD = {
   session: {
+    correctCount: 0,
     id: "session-1",
     subjectId: "language",
     subcategoryId: "english",
     difficulty: "beginner",
     goal: "study",
     startedAtMs: 1739395200000,
+    submittedCount: 0,
   },
 } as const;
 
@@ -124,6 +126,23 @@ describe("session storage", () => {
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,
       expect.objectContaining({ method: "DELETE" }),
+    );
+  });
+
+  it("recordQuestionResult sends isCorrect payload to session PATCH", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
+
+    await expect(recordQuestionResult(true)).resolves.toBeUndefined();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      API_PATHS.TEST_SESSION,
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ isCorrect: true }),
+        headers: { "content-type": "application/json" },
+      }),
     );
   });
 });

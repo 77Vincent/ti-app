@@ -35,10 +35,12 @@ describe("anonymous session cookie helpers", () => {
       return {
         value: encodeURIComponent(
           JSON.stringify({
+            correctCount: 0,
             difficulty: "beginner",
             goal: "study",
             id: "session-1",
             startedAtMs: 1_738_000_000_000,
+            submittedCount: 0,
             subjectId: "language",
             subcategoryId: "english",
           }),
@@ -50,7 +52,9 @@ describe("anonymous session cookie helpers", () => {
       difficulty: "beginner",
       goal: "study",
       id: "session-1",
+      correctCount: 0,
       startedAtMs: 1_738_000_000_000,
+      submittedCount: 0,
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -77,10 +81,12 @@ describe("anonymous session cookie helpers", () => {
     const result = persistAnonymousTestSessionCookie(
       response as unknown as NextResponse,
       {
+        correctCount: 0,
         difficulty: "beginner",
         goal: "study",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
+        submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -91,10 +97,12 @@ describe("anonymous session cookie helpers", () => {
       "ti-app-anon-test-session",
       encodeURIComponent(
         JSON.stringify({
+          correctCount: 0,
           difficulty: "beginner",
           goal: "study",
           id: "session-1",
           startedAtMs: 1_738_000_000_000,
+          submittedCount: 0,
           subjectId: "language",
           subcategoryId: "english",
         }),

@@ -23,7 +23,7 @@ export type {
 } from "./local";
 export {
   clearTestSession,
-  consumeQuestionQuota,
+  recordQuestionResult,
   readTestSession,
   writeTestSession,
 } from "./storage";

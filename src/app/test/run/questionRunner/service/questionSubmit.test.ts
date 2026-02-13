@@ -3,13 +3,16 @@ import { submitQuestion } from "./questionSubmit";
 
 describe("submitQuestion", () => {
   it("marks submission and persists when quota consume succeeds", async () => {
-    const consumeQuestionQuota = vi.fn<() => Promise<void>>().mockResolvedValueOnce(undefined);
+    const recordQuestionResult = vi
+      .fn<(isCorrect: boolean) => Promise<void>>()
+      .mockResolvedValueOnce(undefined);
     const onSubmissionMarked = vi.fn();
     const persistSubmission = vi.fn();
 
     await submitQuestion({
       hasSubmitted: false,
-      consumeQuestionQuota,
+      isCurrentAnswerCorrect: true,
+      recordQuestionResult,
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -21,6 +24,7 @@ describe("submitQuestion", () => {
       loadNextQuestion: vi.fn(async () => undefined),
     });
 
+    expect(recordQuestionResult).toHaveBeenCalledWith(true);
     expect(onSubmissionMarked).toHaveBeenCalledTimes(1);
     expect(persistSubmission).toHaveBeenCalledTimes(1);
   });
@@ -32,7 +36,10 @@ describe("submitQuestion", () => {
 
     await submitQuestion({
       hasSubmitted: false,
-      consumeQuestionQuota: vi.fn<() => Promise<void>>().mockRejectedValueOnce(limitError),
+      isCurrentAnswerCorrect: false,
+      recordQuestionResult: vi
+        .fn<(isCorrect: boolean) => Promise<void>>()
+        .mockRejectedValueOnce(limitError),
       isQuestionLimitError: (error) => error === limitError,
       onQuestionLimitReached,
       onError,
@@ -54,7 +61,10 @@ describe("submitQuestion", () => {
 
     await submitQuestion({
       hasSubmitted: false,
-      consumeQuestionQuota: vi.fn<() => Promise<void>>().mockRejectedValueOnce(requestError),
+      isCurrentAnswerCorrect: false,
+      recordQuestionResult: vi
+        .fn<(isCorrect: boolean) => Promise<void>>()
+        .mockRejectedValueOnce(requestError),
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError,
@@ -76,7 +86,8 @@ describe("submitQuestion", () => {
 
     await submitQuestion({
       hasSubmitted: true,
-      consumeQuestionQuota: vi.fn(async () => undefined),
+      isCurrentAnswerCorrect: false,
+      recordQuestionResult: vi.fn(async () => undefined),
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -100,7 +111,8 @@ describe("submitQuestion", () => {
 
     await submitQuestion({
       hasSubmitted: true,
-      consumeQuestionQuota: vi.fn(async () => undefined),
+      isCurrentAnswerCorrect: false,
+      recordQuestionResult: vi.fn(async () => undefined),
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError: vi.fn(),
@@ -124,7 +136,8 @@ describe("submitQuestion", () => {
     await expect(
       submitQuestion({
         hasSubmitted: true,
-        consumeQuestionQuota: vi.fn(async () => undefined),
+        isCurrentAnswerCorrect: false,
+        recordQuestionResult: vi.fn(async () => undefined),
         isQuestionLimitError: () => false,
         onQuestionLimitReached: vi.fn(),
         onError: vi.fn(),

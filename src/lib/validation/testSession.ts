@@ -16,6 +16,8 @@ export type TestParam = {
 
 export type TestSession = TestParam & {
   id: string;
+  correctCount: number;
+  submittedCount: number;
   startedAtMs: number;
 };
 
@@ -82,9 +84,29 @@ export function parseTestSession(value: unknown): TestSession | null {
     return null;
   }
 
+  const correctCount = (value as { correctCount?: unknown }).correctCount;
+  if (
+    typeof correctCount !== "number" ||
+    !Number.isFinite(correctCount) ||
+    correctCount < 0
+  ) {
+    return null;
+  }
+
+  const submittedCount = (value as { submittedCount?: unknown }).submittedCount;
+  if (
+    typeof submittedCount !== "number" ||
+    !Number.isFinite(submittedCount) ||
+    submittedCount < 0
+  ) {
+    return null;
+  }
+
   return {
     ...params,
     id,
+    correctCount: Math.floor(correctCount),
+    submittedCount: Math.floor(submittedCount),
     startedAtMs: Math.floor(startedAtMs),
   };
 }

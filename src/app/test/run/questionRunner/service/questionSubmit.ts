@@ -1,6 +1,7 @@
 export type SubmitQuestionInput = {
   hasSubmitted: boolean;
-  consumeQuestionQuota: () => Promise<void>;
+  isCurrentAnswerCorrect: boolean;
+  recordQuestionResult: (isCorrect: boolean) => Promise<void>;
   isQuestionLimitError: (error: unknown) => boolean;
   onQuestionLimitReached: () => void;
   onError: (error: unknown) => void;
@@ -14,7 +15,8 @@ export type SubmitQuestionInput = {
 
 export async function submitQuestion({
   hasSubmitted,
-  consumeQuestionQuota,
+  isCurrentAnswerCorrect,
+  recordQuestionResult,
   isQuestionLimitError,
   onQuestionLimitReached,
   onError,
@@ -27,7 +29,7 @@ export async function submitQuestion({
 }: SubmitQuestionInput): Promise<void> {
   if (!hasSubmitted) {
     try {
-      await consumeQuestionQuota();
+      await recordQuestionResult(isCurrentAnswerCorrect);
     } catch (error) {
       if (isQuestionLimitError(error)) {
         onQuestionLimitReached();
