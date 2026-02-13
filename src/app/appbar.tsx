@@ -18,7 +18,7 @@ import { getSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { type Key, useEffect, useState } from "react";
+import { type Key, useEffect, useState, useSyncExternalStore } from "react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import {
   hasAuthenticatedUser,
@@ -29,9 +29,16 @@ import { clearTestSession } from "./test/run/questionRunner/session";
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isMounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
-  const isDark = resolvedTheme === "dark";
-  const THEME_TOGGLE_LABEL = isDark ? "Light theme" : "Dark theme";
+  const isDark = isMounted && resolvedTheme === "dark";
+  const THEME_TOGGLE_LABEL = isMounted
+    ? (isDark ? "Light theme" : "Dark theme")
+    : "Toggle theme";
   const USER_SESSION_LABEL = isAuthenticated ? "User menu" : "Sign in";
 
   useEffect(() => {
@@ -51,6 +58,10 @@ export default function AppBar() {
   }, []);
 
   function handleToggleTheme() {
+    if (!isMounted) {
+      return;
+    }
+
     setTheme(isDark ? "light" : "dark");
   }
 
