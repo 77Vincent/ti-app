@@ -118,11 +118,6 @@ export default function StartForm() {
               key={option.value}
               onPress={() => handleSelectSubject(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
-              variant={
-                currentStepViewConfig.selectedValue === option.value
-                  ? "solid"
-                  : "bordered"
-              }
             >
               {option.label}
             </Button>
@@ -134,11 +129,6 @@ export default function StartForm() {
             size="lg"
             key={option.value}
             onPress={() => handleSelectSubcategory(option.value)}
-            variant={
-              currentStepViewConfig.selectedValue === option.value
-                ? "solid"
-                : "bordered"
-            }
           >
             {option.label}
           </Button>
@@ -153,11 +143,6 @@ export default function StartForm() {
               key={option.value}
               onPress={() => handleSelectDifficulty(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
-              variant={
-                currentStepViewConfig.selectedValue === option.value
-                  ? "solid"
-                  : "bordered"
-              }
             >
               {option.label}
             </Button>
@@ -173,11 +158,6 @@ export default function StartForm() {
               size="lg"
               onPress={() => handleSelectGoal(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
-              variant={
-                currentStepViewConfig.selectedValue === option.value
-                  ? "solid"
-                  : "bordered"
-              }
             >
               {option.label}
             </Button>
