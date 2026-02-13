@@ -1,6 +1,6 @@
 "use client";
 
-import type { QuestionRunnerProps } from "./types";
+import type { QuestionRunnerProps, SignInDemand } from "./types";
 import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
@@ -14,26 +14,11 @@ import {
 import { LogOut, Star } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
-import type { SignInDemand } from "./types";
 import { readLocalTestSessionProgress } from "./session";
 import { useQuestion } from "./hooks/useQuestion";
 import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
 import ElapsedSessionTimer from "./ElapsedSessionTimer";
 import SessionAccuracy from "./SessionAccuracy";
-
-type SessionProgress = {
-  currentQuestionIndex: number | null;
-  submittedCount: number;
-  correctCount: number;
-  accuracyRate: number;
-};
-
-const DEFAULT_SESSION_PROGRESS: SessionProgress = {
-  currentQuestionIndex: null,
-  submittedCount: 0,
-  correctCount: 0,
-  accuracyRate: 0,
-};
 
 export default function QuestionWrapper({
   id,
@@ -103,7 +88,11 @@ export default function QuestionWrapper({
     return null;
   }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
   const isSignInRequired = signInDemand !== null;
-  const sessionProgress = readLocalTestSessionProgress(id) ?? DEFAULT_SESSION_PROGRESS;
+  const sessionProgress = readLocalTestSessionProgress(id);
+  const currentQuestionIndex = sessionProgress?.currentQuestionIndex ?? null;
+  const submittedCount = sessionProgress?.submittedCount ?? 0;
+  const correctCount = sessionProgress?.correctCount ?? 0;
+  const accuracyRate = sessionProgress?.accuracyRate ?? 0;
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
@@ -117,9 +106,9 @@ export default function QuestionWrapper({
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          {sessionProgress.currentQuestionIndex !== null ? (
+          {currentQuestionIndex !== null ? (
             <span className="font-medium tabular-nums">
-              Q{sessionProgress.currentQuestionIndex + 1}
+              Q{currentQuestionIndex + 1}
             </span>
           ) : null}
           <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
@@ -147,9 +136,9 @@ export default function QuestionWrapper({
           <Tooltip content="Accuracy">
             <span>
               <SessionAccuracy
-                accuracyRate={sessionProgress.accuracyRate}
-                correctCount={sessionProgress.correctCount}
-                submittedCount={sessionProgress.submittedCount}
+                accuracyRate={accuracyRate}
+                correctCount={correctCount}
+                submittedCount={submittedCount}
               />
             </span>
           </Tooltip>

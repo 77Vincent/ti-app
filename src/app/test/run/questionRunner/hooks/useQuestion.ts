@@ -80,7 +80,7 @@ export function useQuestion({
     });
   }, []);
 
-  const loadQuestion = useCallback(async () => {
+  const loadQuestion = useCallback(() => {
     return fetchQuestion({
       subjectId,
       subcategoryId,
