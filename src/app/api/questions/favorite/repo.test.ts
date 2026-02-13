@@ -5,12 +5,10 @@ const {
   favoriteQuestionDeleteMany,
   favoriteQuestionFindUnique,
   favoriteQuestionUpsert,
-  questionPoolUpsert,
 } = vi.hoisted(() => ({
   favoriteQuestionDeleteMany: vi.fn(),
   favoriteQuestionFindUnique: vi.fn(),
   favoriteQuestionUpsert: vi.fn(),
-  questionPoolUpsert: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -19,9 +17,6 @@ vi.mock("@/lib/prisma", () => ({
       deleteMany: favoriteQuestionDeleteMany,
       findUnique: favoriteQuestionFindUnique,
       upsert: favoriteQuestionUpsert,
-    },
-    questionPool: {
-      upsert: questionPoolUpsert,
     },
   },
 }));
@@ -52,41 +47,13 @@ describe("favorite question repo", () => {
     favoriteQuestionDeleteMany.mockReset();
     favoriteQuestionFindUnique.mockReset();
     favoriteQuestionUpsert.mockReset();
-    questionPoolUpsert.mockReset();
   });
 
-  it("upserts question pool first, then favorite mapping", async () => {
-    questionPoolUpsert.mockResolvedValueOnce(undefined);
+  it("upserts favorite mapping", async () => {
     favoriteQuestionUpsert.mockResolvedValueOnce(undefined);
 
     await upsertFavoriteQuestion("user-1", VALID_INPUT);
 
-    expect(questionPoolUpsert).toHaveBeenCalledWith({
-      where: {
-        id: "question-1",
-      },
-      create: {
-        id: "question-1",
-        subjectId: "language",
-        subcategoryId: "english",
-        difficulty: "beginner",
-        goal: "study",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-        prompt: "What is the capital of France?",
-        options: VALID_INPUT.options,
-        correctOptionIds: ["B"],
-      },
-      update: {
-        subjectId: "language",
-        subcategoryId: "english",
-        difficulty: "beginner",
-        goal: "study",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-        prompt: "What is the capital of France?",
-        options: VALID_INPUT.options,
-        correctOptionIds: ["B"],
-      },
-    });
     expect(favoriteQuestionUpsert).toHaveBeenCalledWith({
       where: {
         userId_questionId: {
@@ -100,9 +67,6 @@ describe("favorite question repo", () => {
       },
       update: {},
     });
-    expect(questionPoolUpsert.mock.invocationCallOrder[0]).toBeLessThan(
-      favoriteQuestionUpsert.mock.invocationCallOrder[0],
-    );
   });
 
   it("deletes favorite question by user and question id", async () => {
