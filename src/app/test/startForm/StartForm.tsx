@@ -87,6 +87,7 @@ export default function StartForm() {
 
     void writeTestSession(testSession)
       .then(() => {
+        toast.success("Your test is starting.");
         router.push(PAGE_PATHS.TEST_RUN);
       })
       .catch((error) => {
