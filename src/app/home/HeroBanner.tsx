@@ -81,11 +81,15 @@ type MiniChipVariant = "solidPrimary" | "solidPrimaryDark" | "borderedPrimary";
 
 const MINI_CHIP_VARIANT_CLASSES: Record<MiniChipVariant, string> = {
   solidPrimary: "border-primary bg-primary text-primary-foreground",
-  solidPrimaryDark: "border-primary-700 bg-primary-700 text-primary-foreground",
-  borderedPrimary: "border-primary bg-content1/30 text-primary",
+  solidPrimaryDark:
+    "border-primary-800 bg-primary-800 text-primary-foreground dark:border-primary-200 dark:bg-primary-200",
+  borderedPrimary:
+    "border-primary/45 bg-content1/20 text-primary/85 dark:border-primary/55 dark:bg-primary/25 dark:text-primary-foreground",
 };
 
 const BASE_MINI_CHIP_VARIANTS: readonly MiniChipVariant[] = [
+  "solidPrimary",
+  "solidPrimaryDark",
   "solidPrimary",
   "solidPrimaryDark",
   "borderedPrimary",
@@ -100,6 +104,13 @@ function buildScatteredMiniChipVariants(length: number, seed: number): MiniChipV
   return shuffleDeterministic(variants, seed);
 }
 
+const ROW_MOTION = [
+  { keyframe: "heroMarquee", durationSeconds: 58 },
+  { keyframe: "heroMarqueeReverse", durationSeconds: 68 },
+  { keyframe: "heroMarquee", durationSeconds: 78 },
+  { keyframe: "heroMarqueeReverse", durationSeconds: 64 },
+] as const;
+
 export default function HeroBanner() {
   const [seed, setSeed] = useState(0);
 
@@ -113,28 +124,36 @@ export default function HeroBanner() {
     };
   }, []);
 
-  const heroWordRows = useMemo(() => buildMixedWordRows(5, seed), [seed]);
+  const heroWordRows = useMemo(() => buildMixedWordRows(4, seed), [seed]);
 
   return (
     <div className="relative left-1/2 w-screen -translate-x-1/2">
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(var(--heroui-content1)/0.7)_0%,hsl(var(--heroui-background)/0.9)_100%)]" />
-        <div className="relative z-0 flex flex-col gap-1.5 sm:gap-2">
+        <div
+          className="relative z-0 flex flex-col gap-1.5 sm:gap-2"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
+          }}
+        >
           {heroWordRows.map((row, rowIndex) => {
             const repeatedRow = [...row, ...row, ...row];
             const rowVariants = buildScatteredMiniChipVariants(
               repeatedRow.length,
               seed + rowIndex + 1,
             );
+            const motion = ROW_MOTION[rowIndex % ROW_MOTION.length];
 
             return (
               <div key={`hero-word-row-${rowIndex}`} className="overflow-hidden">
                 <div
-                  className={`flex w-max gap-2 ${
-                    rowIndex % 2 === 0
-                      ? "animate-[heroMarquee_48s_linear_infinite]"
-                      : "animate-[heroMarqueeReverse_52s_linear_infinite]"
-                  }`}
+                  className="flex w-max gap-2"
+                  style={{
+                    animation: `${motion.keyframe} ${motion.durationSeconds}s linear infinite`,
+                  }}
                 >
                   {repeatedRow.map((word, wordIndex) => (
                     <span
