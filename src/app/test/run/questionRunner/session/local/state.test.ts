@@ -135,7 +135,6 @@ describe("local test session state", () => {
     expect(calculateLocalTestSessionAccuracy(snapshot)).toEqual({
       submittedCount: 3,
       correctCount: 2,
-      accuracyRate: 2 / 3,
     });
   });
 });

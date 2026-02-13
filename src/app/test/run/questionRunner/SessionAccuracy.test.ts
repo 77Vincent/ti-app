@@ -8,7 +8,6 @@ describe("formatSessionAccuracyLabel", () => {
   it("formats percent and score counts", () => {
     expect(
       formatSessionAccuracyLabel({
-        accuracyRate: 0.5,
         correctCount: 1,
         submittedCount: 2,
       }),
@@ -18,7 +17,6 @@ describe("formatSessionAccuracyLabel", () => {
   it("rounds accuracy percentage", () => {
     expect(
       formatSessionAccuracyLabel({
-        accuracyRate: 0.666,
         correctCount: 2,
         submittedCount: 3,
       }),

@@ -126,7 +126,6 @@ describe("local test session", () => {
     expect(readLocalTestSessionAccuracy("session-1")).toEqual({
       submittedCount: 2,
       correctCount: 1,
-      accuracyRate: 0.5,
     });
     expect(readLocalTestSessionAccuracy("session-2")).toBeNull();
 
@@ -134,7 +133,6 @@ describe("local test session", () => {
       currentQuestionIndex: 1,
       submittedCount: 2,
       correctCount: 1,
-      accuracyRate: 0.5,
     });
     expect(readLocalTestSessionProgress("session-2")).toBeNull();
   });

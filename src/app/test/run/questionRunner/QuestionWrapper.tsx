@@ -39,7 +39,6 @@ export default function QuestionWrapper({
     currentQuestionIndex,
     submittedCount,
     correctCount,
-    accuracyRate,
     isSignInRequired: isQuestionSignInRequired,
     signInDemand: questionSignInDemand,
     hasSubmitted,
@@ -134,7 +133,6 @@ export default function QuestionWrapper({
           <Tooltip content="Accuracy">
             <span>
               <SessionAccuracy
-                accuracyRate={accuracyRate}
                 correctCount={correctCount}
                 submittedCount={submittedCount}
               />

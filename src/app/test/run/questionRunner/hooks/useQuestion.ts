@@ -47,7 +47,6 @@ export type UseQuestionResult = {
   currentQuestionIndex: number | null;
   submittedCount: number;
   correctCount: number;
-  accuracyRate: number;
   isSignInRequired: boolean;
   signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
@@ -61,7 +60,6 @@ function buildSessionProgressState(sessionId: string): {
   currentQuestionIndex: number | null;
   submittedCount: number;
   correctCount: number;
-  accuracyRate: number;
 } {
   const progress = readLocalTestSessionProgress(sessionId);
   if (!progress) {
@@ -69,7 +67,6 @@ function buildSessionProgressState(sessionId: string): {
       currentQuestionIndex: null,
       submittedCount: 0,
       correctCount: 0,
-      accuracyRate: 0,
     };
   }
 
@@ -273,7 +270,6 @@ export function useQuestion({
     currentQuestionIndex: sessionProgress.currentQuestionIndex,
     submittedCount: sessionProgress.submittedCount,
     correctCount: sessionProgress.correctCount,
-    accuracyRate: sessionProgress.accuracyRate,
     isSignInRequired,
     signInDemand,
     hasSubmitted,

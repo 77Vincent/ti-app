@@ -22,7 +22,6 @@ export type LocalTestSessionQuestionState = {
 export type LocalTestSessionAccuracy = {
   submittedCount: number;
   correctCount: number;
-  accuracyRate: number;
 };
 
 export function toLocalTestSessionQuestionState(
@@ -77,7 +76,6 @@ export function calculateLocalTestSessionAccuracy(
   return {
     submittedCount,
     correctCount,
-    accuracyRate: submittedCount === 0 ? 0 : correctCount / submittedCount,
   };
 }
 

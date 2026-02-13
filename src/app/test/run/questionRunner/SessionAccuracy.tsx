@@ -3,7 +3,6 @@
 import { Target } from "lucide-react";
 
 type SessionAccuracyProps = {
-  accuracyRate: number;
   correctCount: number;
   submittedCount: number;
 };
@@ -27,18 +26,21 @@ export function getSessionAccuracyTextClass(accuracyRate: number): string {
 }
 
 export function formatSessionAccuracyLabel({
-  accuracyRate,
   correctCount,
   submittedCount,
 }: SessionAccuracyProps): string {
+  const accuracyRate =
+    submittedCount === 0 ? 0 : correctCount / submittedCount;
+
   return `${Math.round(accuracyRate * 100)}% (${correctCount}/${submittedCount})`;
 }
 
 export default function SessionAccuracy({
-  accuracyRate,
   correctCount,
   submittedCount,
 }: SessionAccuracyProps) {
+  const accuracyRate =
+    submittedCount === 0 ? 0 : correctCount / submittedCount;
   const accuracyTextClass = getSessionAccuracyTextClass(accuracyRate);
 
   return (
@@ -46,7 +48,6 @@ export default function SessionAccuracy({
       <Target aria-hidden size={18} />
       <span className={`${accuracyTextClass} font-medium`}>
         {formatSessionAccuracyLabel({
-          accuracyRate,
           correctCount,
           submittedCount,
         })}
