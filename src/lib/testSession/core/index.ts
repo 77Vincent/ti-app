@@ -14,8 +14,3 @@ export {
   updateCurrentLocalTestSessionSnapshotQuestion,
   upsertLocalTestSessionSnapshotQuestion,
 } from "./history";
-export {
-  consumeLocalTestSessionSnapshotQueuedQuestion,
-  countLocalTestSessionSnapshotQueuedQuestions,
-  enqueueLocalTestSessionSnapshotQuestion,
-} from "./queue";

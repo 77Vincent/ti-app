@@ -8,40 +8,30 @@ describe("questionSessionWorkflow", () => {
   describe("initializeQuestionSessionState", () => {
     it("restores current question and skips initial load", async () => {
       const restoreCurrentQuestion = vi.fn(() => true);
-      const loadInitialQuestions = vi.fn(async () => ({
-        question: "Q1",
-        nextQuestion: "Q2",
-      }));
+      const loadInitialQuestion = vi.fn(async () => "Q1");
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion,
-        loadInitialQuestions,
+        loadInitialQuestion,
         pushLoadedQuestion: vi.fn(() => true),
-        enqueueQuestion: vi.fn(() => true),
         onError: vi.fn(),
       });
 
       expect(restoreCurrentQuestion).toHaveBeenCalledTimes(1);
-      expect(loadInitialQuestions).not.toHaveBeenCalled();
+      expect(loadInitialQuestion).not.toHaveBeenCalled();
     });
 
-    it("loads initial questions and applies current + enqueues next", async () => {
+    it("loads initial question and applies it", async () => {
       const pushLoadedQuestion = vi.fn(() => true);
-      const enqueueQuestion = vi.fn(() => true);
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion: () => false,
-        loadInitialQuestions: async () => ({
-          question: "Q1",
-          nextQuestion: "Q2",
-        }),
+        loadInitialQuestion: async () => "Q1",
         pushLoadedQuestion,
-        enqueueQuestion,
         onError: vi.fn(),
       });
 
       expect(pushLoadedQuestion).toHaveBeenCalledWith("Q1");
-      expect(enqueueQuestion).toHaveBeenCalledWith("Q2");
     });
 
     it("forwards load errors", async () => {
@@ -50,10 +40,9 @@ describe("questionSessionWorkflow", () => {
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion: () => false,
-        loadInitialQuestions: vi.fn<() => Promise<{ question: string; nextQuestion: string }>>()
+        loadInitialQuestion: vi.fn<() => Promise<string>>()
           .mockRejectedValue(error),
         pushLoadedQuestion: vi.fn(() => true),
-        enqueueQuestion: vi.fn(() => true),
         onError,
       });
 
@@ -65,12 +54,8 @@ describe("questionSessionWorkflow", () => {
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion: () => false,
-        loadInitialQuestions: async () => ({
-          question: "Q1",
-          nextQuestion: "Q2",
-        }),
+        loadInitialQuestion: async () => "Q1",
         pushLoadedQuestion: vi.fn(() => false),
-        enqueueQuestion: vi.fn(() => true),
         onError,
       });
 
@@ -79,23 +64,17 @@ describe("questionSessionWorkflow", () => {
 
     it("ignores success result when shouldIgnoreResult is true", async () => {
       const pushLoadedQuestion = vi.fn(() => true);
-      const enqueueQuestion = vi.fn(() => true);
       const onError = vi.fn();
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion: () => false,
-        loadInitialQuestions: async () => ({
-          question: "Q1",
-          nextQuestion: "Q2",
-        }),
+        loadInitialQuestion: async () => "Q1",
         pushLoadedQuestion,
-        enqueueQuestion,
         onError,
         shouldIgnoreResult: () => true,
       });
 
       expect(pushLoadedQuestion).not.toHaveBeenCalled();
-      expect(enqueueQuestion).not.toHaveBeenCalled();
       expect(onError).not.toHaveBeenCalled();
     });
 
@@ -104,10 +83,9 @@ describe("questionSessionWorkflow", () => {
 
       await initializeQuestionSessionState({
         restoreCurrentQuestion: () => false,
-        loadInitialQuestions: vi.fn<() => Promise<{ question: string; nextQuestion: string }>>()
+        loadInitialQuestion: vi.fn<() => Promise<string>>()
           .mockRejectedValue(new Error("x")),
         pushLoadedQuestion: vi.fn(() => true),
-        enqueueQuestion: vi.fn(() => true),
         onError,
         shouldIgnoreResult: () => true,
       });
@@ -117,40 +95,79 @@ describe("questionSessionWorkflow", () => {
   });
 
   describe("advanceQuestionSession", () => {
-    it("consumes and notifies queue provider", async () => {
-      const onQuestionConsumed = vi.fn(async () => undefined);
+    it("consumes from existing history without loading", async () => {
+      const loadNextQuestion = vi.fn(async () => "Q2");
+      const pushLoadedQuestion = vi.fn(() => true);
 
       await advanceQuestionSession({
         consumeNextQuestion: () => true,
-        onQuestionConsumed,
+        loadNextQuestion,
+        pushLoadedQuestion,
+        onError: vi.fn(),
       });
 
-      expect(onQuestionConsumed).toHaveBeenCalledTimes(1);
+      expect(loadNextQuestion).not.toHaveBeenCalled();
+      expect(pushLoadedQuestion).not.toHaveBeenCalled();
     });
 
-    it("does nothing when consume fails", async () => {
-      const onQuestionConsumed = vi.fn(async () => undefined);
+    it("loads and applies next question when history has no next", async () => {
+      const loadNextQuestion = vi.fn(async () => "Q2");
+      const pushLoadedQuestion = vi.fn(() => true);
 
       await advanceQuestionSession({
         consumeNextQuestion: () => false,
-        onQuestionConsumed,
+        loadNextQuestion,
+        pushLoadedQuestion,
+        onError: vi.fn(),
       });
 
-      expect(onQuestionConsumed).not.toHaveBeenCalled();
+      expect(loadNextQuestion).toHaveBeenCalledTimes(1);
+      expect(pushLoadedQuestion).toHaveBeenCalledWith("Q2");
     });
 
     it("does nothing when shouldIgnoreResult is true", async () => {
-      const onQuestionConsumed = vi.fn(async () => undefined);
+      const loadNextQuestion = vi.fn(async () => "Q2");
+      const pushLoadedQuestion = vi.fn(() => true);
       const consumeNextQuestion = vi.fn(() => true);
 
       await advanceQuestionSession({
         consumeNextQuestion,
-        onQuestionConsumed,
+        loadNextQuestion,
+        pushLoadedQuestion,
+        onError: vi.fn(),
         shouldIgnoreResult: () => true,
       });
 
       expect(consumeNextQuestion).not.toHaveBeenCalled();
-      expect(onQuestionConsumed).not.toHaveBeenCalled();
+      expect(loadNextQuestion).not.toHaveBeenCalled();
+      expect(pushLoadedQuestion).not.toHaveBeenCalled();
+    });
+
+    it("forwards load errors", async () => {
+      const error = new Error("load failed");
+      const onError = vi.fn();
+
+      await advanceQuestionSession({
+        consumeNextQuestion: () => false,
+        loadNextQuestion: vi.fn<() => Promise<string>>().mockRejectedValue(error),
+        pushLoadedQuestion: vi.fn(() => true),
+        onError,
+      });
+
+      expect(onError).toHaveBeenCalledWith(error);
+    });
+
+    it("forwards apply failures", async () => {
+      const onError = vi.fn();
+
+      await advanceQuestionSession({
+        consumeNextQuestion: () => false,
+        loadNextQuestion: async () => "Q2",
+        pushLoadedQuestion: vi.fn(() => false),
+        onError,
+      });
+
+      expect(onError).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,8 +1,5 @@
 import { parseLocalTestSessionSnapshotJson } from "@/lib/testSession/codec/snapshot";
 import {
-  consumeLocalTestSessionSnapshotQueuedQuestion,
-  countLocalTestSessionSnapshotQueuedQuestions,
-  enqueueLocalTestSessionSnapshotQuestion,
   shiftLocalTestSessionSnapshotQuestion,
   updateCurrentLocalTestSessionSnapshotQuestion,
   upsertLocalTestSessionSnapshotQuestion,
@@ -120,15 +117,6 @@ export function createLocalTestSessionService(
     };
   }
 
-  function countLocalTestSessionQueuedQuestions(sessionId: string): number {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return 0;
-    }
-
-    return countLocalTestSessionSnapshotQueuedQuestions(snapshot);
-  }
-
   function shiftLocalTestSessionQuestion(
     sessionId: string,
     step: -1 | 1,
@@ -157,28 +145,6 @@ export function createLocalTestSessionService(
     return toLocalTestSessionQuestionState(nextSnapshot);
   }
 
-  function enqueueLocalTestSessionQuestion(
-    sessionId: string,
-    question: Question,
-  ): boolean {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return false;
-    }
-
-    const nextSnapshot = enqueueLocalTestSessionSnapshotQuestion(snapshot, question);
-    persistSnapshot(nextSnapshot);
-    return true;
-  }
-
-  function consumeLocalTestSessionQueuedQuestion(
-    sessionId: string,
-  ): LocalTestSessionQuestionState | null {
-    return mutateSnapshotForSession(sessionId, (snapshot) =>
-      consumeLocalTestSessionSnapshotQueuedQuestion(snapshot),
-    );
-  }
-
   function writeLocalTestSessionQuestionSelection(
     sessionId: string,
     selectedOptionIds: QuestionOptionId[],
@@ -204,8 +170,6 @@ export function createLocalTestSessionService(
 
   return {
     clearLocalTestSession,
-    consumeLocalTestSessionQueuedQuestion,
-    countLocalTestSessionQueuedQuestions,
     markLocalTestSessionQuestionSubmitted,
     readLocalTestSessionAccuracy,
     readLocalTestSessionProgress,
@@ -215,6 +179,5 @@ export function createLocalTestSessionService(
     writeLocalTestSession,
     writeLocalTestSessionQuestion,
     writeLocalTestSessionQuestionSelection,
-    enqueueLocalTestSessionQuestion,
   };
 }

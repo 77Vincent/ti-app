@@ -6,11 +6,10 @@ import type {
   SubcategoryEnum,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import {
   fetchQuestion,
   isAnonymousQuestionLimitError,
-  type FetchQuestionResult,
 } from "../api";
 import { recordQuestionResult } from "../session/storage";
 import type {
@@ -18,7 +17,6 @@ import type {
   QuestionOptionId,
   QuestionSignInDemand,
 } from "../types";
-import { createQuestionQueueReplenisher } from "@/lib/testSession/service/questionQueueReplenisher";
 import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
@@ -116,6 +114,11 @@ export function useQuestion({
     });
   }, [difficulty, subcategoryId, subjectId]);
 
+  const loadOneQuestion = useCallback(async (): Promise<QuestionType> => {
+    const { question } = await loadQuestion();
+    return question;
+  }, [loadQuestion]);
+
   const applyQuestionStateToUi = useCallback(
     (questionState: {
       question: QuestionType;
@@ -156,29 +159,6 @@ export function useQuestion({
     onQuestionStateApplied: applyQuestionStateToUi,
   });
 
-  const questionQueueReplenisher = useMemo(
-    () =>
-      createQuestionQueueReplenisher<FetchQuestionResult["question"]>({
-        sessionId,
-        loadQuestions: loadQuestion,
-        enqueueQuestion: (providerSessionId, nextQuestion) =>
-          localTestSessionService.enqueueLocalTestSessionQuestion(
-            providerSessionId,
-            nextQuestion,
-          ),
-        countQueuedQuestions: (providerSessionId) =>
-          localTestSessionService.countLocalTestSessionQueuedQuestions(
-            providerSessionId,
-          ),
-        onError: showLoadError,
-      }),
-    [
-      loadQuestion,
-      sessionId,
-      showLoadError,
-    ],
-  );
-
   useEffect(() => {
     let cancelled = false;
 
@@ -186,13 +166,8 @@ export function useQuestion({
       dispatchUiState({ type: "initialLoadStarted" });
       await initializeQuestionSessionState({
         restoreCurrentQuestion,
-        loadInitialQuestions: loadQuestion,
+        loadInitialQuestion: loadOneQuestion,
         pushLoadedQuestion,
-        enqueueQuestion: (question) =>
-          localTestSessionService.enqueueLocalTestSessionQuestion(
-            sessionId,
-            question,
-          ),
         onError: showLoadError,
         shouldIgnoreResult: () => cancelled,
       });
@@ -206,14 +181,11 @@ export function useQuestion({
 
     return () => {
       cancelled = true;
-      questionQueueReplenisher.clear();
     };
   }, [
-    loadQuestion,
+    loadOneQuestion,
     pushLoadedQuestion,
-    questionQueueReplenisher,
     restoreCurrentQuestion,
-    sessionId,
     showLoadError,
   ]);
 
@@ -271,7 +243,9 @@ export function useQuestion({
       advanceToNextQuestion: () =>
         advanceQuestionSession({
           consumeNextQuestion: goToNextQuestion,
-          onQuestionConsumed: questionQueueReplenisher.onQuestionConsumed,
+          loadNextQuestion: loadOneQuestion,
+          pushLoadedQuestion,
+          onError: showLoadError,
         }),
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });

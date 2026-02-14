@@ -146,22 +146,4 @@ describe("local test session", () => {
     expect(localTestSessionService.readLocalTestSessionQuestionState("session-1")).toBeNull();
   });
 
-  it("enqueues and consumes queued questions for the same session", () => {
-    localTestSessionService.writeLocalTestSession("session-1");
-    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
-
-    expect(
-      localTestSessionService.enqueueLocalTestSessionQuestion("session-1", createQuestion("q2")),
-    ).toBe(true);
-    expect(localTestSessionService.countLocalTestSessionQueuedQuestions("session-1")).toBe(1);
-
-    const consumed = localTestSessionService.consumeLocalTestSessionQueuedQuestion("session-1");
-    expect(consumed).toEqual({
-      question: expect.objectContaining({ id: "q2" }),
-      selectedOptionIds: [],
-      hasSubmitted: false,
-      currentQuestionIndex: 1,
-    });
-    expect(localTestSessionService.countLocalTestSessionQueuedQuestions("session-1")).toBe(0);
-  });
 });

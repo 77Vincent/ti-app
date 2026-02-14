@@ -1,24 +1,17 @@
 type ShouldIgnoreResult = () => boolean;
 
-export type LoadedQuestions<T> = {
-  question: T;
-  nextQuestion: T;
-};
-
 export type InitializeQuestionSessionStateInput<T> = {
   restoreCurrentQuestion: () => boolean;
-  loadInitialQuestions: () => Promise<LoadedQuestions<T>>;
+  loadInitialQuestion: () => Promise<T>;
   pushLoadedQuestion: (question: T) => boolean;
-  enqueueQuestion: (question: T) => boolean;
   onError: (error: unknown) => void;
   shouldIgnoreResult?: ShouldIgnoreResult;
 };
 
 export async function initializeQuestionSessionState<T>({
   restoreCurrentQuestion,
-  loadInitialQuestions,
+  loadInitialQuestion,
   pushLoadedQuestion,
-  enqueueQuestion,
   onError,
   shouldIgnoreResult,
 }: InitializeQuestionSessionStateInput<T>): Promise<void> {
@@ -27,17 +20,15 @@ export async function initializeQuestionSessionState<T>({
   }
 
   try {
-    const loadedQuestions = await loadInitialQuestions();
+    const loadedQuestion = await loadInitialQuestion();
     if (shouldIgnoreResult?.()) {
       return;
     }
 
-    const applied = pushLoadedQuestion(loadedQuestions.question);
+    const applied = pushLoadedQuestion(loadedQuestion);
     if (!applied) {
       throw new Error("Failed to persist question in local session.");
     }
-
-    enqueueQuestion(loadedQuestions.nextQuestion);
   } catch (error) {
     if (shouldIgnoreResult?.()) {
       return;
@@ -47,25 +38,45 @@ export async function initializeQuestionSessionState<T>({
   }
 }
 
-export type AdvanceQuestionSessionInput = {
+export type AdvanceQuestionSessionInput<T> = {
   consumeNextQuestion: () => boolean;
-  onQuestionConsumed: (shouldIgnoreResult?: ShouldIgnoreResult) => Promise<void>;
+  loadNextQuestion: () => Promise<T>;
+  pushLoadedQuestion: (question: T) => boolean;
+  onError: (error: unknown) => void;
   shouldIgnoreResult?: ShouldIgnoreResult;
 };
 
-export async function advanceQuestionSession({
+export async function advanceQuestionSession<T>({
   consumeNextQuestion,
-  onQuestionConsumed,
+  loadNextQuestion,
+  pushLoadedQuestion,
+  onError,
   shouldIgnoreResult,
-}: AdvanceQuestionSessionInput): Promise<void> {
+}: AdvanceQuestionSessionInput<T>): Promise<void> {
   if (shouldIgnoreResult?.()) {
     return;
   }
 
   const consumed = consumeNextQuestion();
-  if (!consumed || shouldIgnoreResult?.()) {
+  if (consumed || shouldIgnoreResult?.()) {
     return;
   }
 
-  await onQuestionConsumed(shouldIgnoreResult);
+  try {
+    const loadedQuestion = await loadNextQuestion();
+    if (shouldIgnoreResult?.()) {
+      return;
+    }
+
+    const applied = pushLoadedQuestion(loadedQuestion);
+    if (!applied) {
+      throw new Error("Failed to persist question in local session.");
+    }
+  } catch (error) {
+    if (shouldIgnoreResult?.()) {
+      return;
+    }
+
+    onError(error);
+  }
 }
