@@ -102,7 +102,7 @@ export default function QuestionWrapper({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {currentQuestionIndex !== null ? (
-            <span className="font-semibold tabular-nums">
+            <span className="font-bold tabular-nums">
               Q{currentQuestionIndex + 1}
             </span>
           ) : null}
