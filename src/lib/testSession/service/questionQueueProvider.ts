@@ -17,7 +17,6 @@ export type QuestionQueueProviderInput<T> = {
   consumeNextQuestion?: () => boolean;
   enqueueQuestion: (sessionId: string, question: T) => boolean;
   countQueuedQuestions: (sessionId: string) => number;
-  hasCurrentQuestion: (sessionId: string) => boolean;
   onError: (error: unknown) => void;
   minQueuedQuestions?: number;
 };
@@ -37,7 +36,6 @@ export function createQuestionQueueProvider<T>({
   consumeNextQuestion,
   enqueueQuestion,
   countQueuedQuestions,
-  hasCurrentQuestion,
   onError,
   minQueuedQuestions = LOCAL_TEST_SESSION_MIN_QUEUED_QUESTIONS,
 }: QuestionQueueProviderInput<T>): QuestionQueueProvider {
@@ -53,29 +51,6 @@ export function createQuestionQueueProvider<T>({
     enqueueQuestion(sessionId, loadedQuestions.nextQuestion);
   }
 
-  async function loadAndApplyQuestions(
-    loadQuestions: LoadQuestions<T>,
-    shouldIgnoreResult?: ShouldIgnoreResult,
-  ): Promise<boolean> {
-    try {
-      const loadedQuestions = await loadQuestions();
-
-      if (isDisposed || shouldIgnoreResult?.()) {
-        return false;
-      }
-
-      applyLoadedQuestions(loadedQuestions);
-      return true;
-    } catch (error) {
-      if (isDisposed || shouldIgnoreResult?.()) {
-        return false;
-      }
-
-      onError(error);
-      return false;
-    }
-  }
-
   function scheduleReplenish(shouldIgnoreResult?: ShouldIgnoreResult): void {
     void replenishQueue(shouldIgnoreResult);
   }
@@ -87,7 +62,20 @@ export function createQuestionQueueProvider<T>({
       return;
     }
 
-    await loadAndApplyQuestions(loadInitialQuestions, shouldIgnoreResult);
+    try {
+      const loadedQuestions = await loadInitialQuestions();
+      if (isDisposed || shouldIgnoreResult?.()) {
+        return;
+      }
+
+      applyLoadedQuestions(loadedQuestions);
+    } catch (error) {
+      if (isDisposed || shouldIgnoreResult?.()) {
+        return;
+      }
+
+      onError(error);
+    }
   }
 
   async function requestNextQuestion(
@@ -102,7 +90,7 @@ export function createQuestionQueueProvider<T>({
   async function replenishQueue(
     shouldIgnoreResult?: ShouldIgnoreResult,
   ): Promise<void> {
-    if (isDisposed || isReplenishing || !hasCurrentQuestion(sessionId)) {
+    if (isDisposed || isReplenishing) {
       return;
     }
 

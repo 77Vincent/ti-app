@@ -17,7 +17,6 @@ describe("questionQueueProvider", () => {
       pushLoadedQuestion,
       enqueueQuestion,
       countQueuedQuestions: vi.fn(() => 1),
-      hasCurrentQuestion: vi.fn(() => true),
       onError: vi.fn(),
       minQueuedQuestions: 1,
     });
@@ -39,7 +38,6 @@ describe("questionQueueProvider", () => {
       pushLoadedQuestion: vi.fn(() => true),
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions: vi.fn(() => 0),
-      hasCurrentQuestion: vi.fn(() => true),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
@@ -53,7 +51,7 @@ describe("questionQueueProvider", () => {
     expect(loadNextQuestions).not.toHaveBeenCalled();
   });
 
-  it("does not replenish when there is no current question", async () => {
+  it("replenishes based on queue inventory only", async () => {
     const loadNextQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
     const provider = createQuestionQueueProvider({
@@ -63,9 +61,12 @@ describe("questionQueueProvider", () => {
       pushLoadedQuestion: vi.fn(() => true),
       consumeNextQuestion: vi.fn(() => true),
       enqueueQuestion: vi.fn(() => true),
-      countQueuedQuestions: vi.fn(() => 0),
-      hasCurrentQuestion: vi.fn(() => false),
+      countQueuedQuestions: vi
+        .fn<(sessionId: string) => number>()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(2),
       onError: vi.fn(),
+      minQueuedQuestions: 2,
     });
 
     await provider.requestNextQuestion();
@@ -74,7 +75,7 @@ describe("questionQueueProvider", () => {
       setTimeout(resolve, 0);
     });
 
-    expect(loadNextQuestions).not.toHaveBeenCalled();
+    expect(loadNextQuestions).toHaveBeenCalledTimes(1);
   });
 
   it("initializes from restored current question without loading initial questions", async () => {
@@ -90,7 +91,6 @@ describe("questionQueueProvider", () => {
       restoreCurrentQuestion,
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions: vi.fn(() => 2),
-      hasCurrentQuestion: vi.fn(() => true),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
@@ -118,7 +118,6 @@ describe("questionQueueProvider", () => {
       consumeNextQuestion: vi.fn(() => true),
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions,
-      hasCurrentQuestion: vi.fn(() => true),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
@@ -146,7 +145,6 @@ describe("questionQueueProvider", () => {
       consumeNextQuestion: vi.fn(() => false),
       enqueueQuestion,
       countQueuedQuestions: vi.fn(() => 2),
-      hasCurrentQuestion: vi.fn(() => true),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });

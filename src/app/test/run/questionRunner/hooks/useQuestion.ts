@@ -181,10 +181,6 @@ export function useQuestion({
           localTestSessionService.countLocalTestSessionQueuedQuestions(
             providerSessionId,
           ),
-        hasCurrentQuestion: (providerSessionId) =>
-          localTestSessionService.readLocalTestSessionQuestionState(
-            providerSessionId,
-          ) !== null,
         onError: showLoadError,
       }),
     [
