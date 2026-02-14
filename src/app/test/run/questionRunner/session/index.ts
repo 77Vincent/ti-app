@@ -4,7 +4,6 @@ export {
   questionSessionUiReducer,
 } from "./reducer";
 export {
-  calculateLocalTestSessionAccuracy,
   consumeLocalTestSessionQueuedQuestion,
   countLocalTestSessionQueuedQuestions,
   enqueueLocalTestSessionQuestion,
@@ -16,14 +15,15 @@ export {
   shiftLocalTestSessionQuestion,
   writeLocalTestSessionQuestionSelection,
   writeLocalTestSessionQuestion,
-} from "./local";
+} from "@/lib/testSession/service";
+export { calculateLocalTestSessionAccuracy } from "@/lib/testSession/core";
 export type {
   LocalTestSessionAccuracy,
-  LocalTestSessionProgress,
   LocalTestSessionQuestionEntry,
   LocalTestSessionQuestionState,
   LocalTestSessionSnapshot,
-} from "./local";
+} from "@/lib/testSession/core";
+export type { LocalTestSessionProgress } from "@/lib/testSession/service";
 export {
   clearTestSession,
   recordQuestionResult,

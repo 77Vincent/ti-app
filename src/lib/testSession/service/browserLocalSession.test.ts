@@ -1,8 +1,11 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Question } from "../../types";
+import type { Question } from "@/lib/validation/question";
 import {
   clearLocalTestSession,
+  consumeLocalTestSessionQueuedQuestion,
+  countLocalTestSessionQueuedQuestions,
+  enqueueLocalTestSessionQuestion,
   markLocalTestSessionQuestionSubmitted,
   readLocalTestSessionAccuracy,
   readLocalTestSessionProgress,
@@ -11,7 +14,7 @@ import {
   writeLocalTestSessionQuestionSelection,
   writeLocalTestSession,
   writeLocalTestSessionQuestion,
-} from "./index";
+} from "./browserLocalSession";
 
 function createQuestion(id: string): Question {
   return {
@@ -154,5 +157,24 @@ describe("local test session", () => {
     clearLocalTestSession();
 
     expect(readLocalTestSessionQuestionState("session-1")).toBeNull();
+  });
+
+  it("enqueues and consumes queued questions for the same session", () => {
+    writeLocalTestSession("session-1");
+    writeLocalTestSessionQuestion(createQuestion("q1"));
+
+    expect(
+      enqueueLocalTestSessionQuestion("session-1", createQuestion("q2")),
+    ).toBe(true);
+    expect(countLocalTestSessionQueuedQuestions("session-1")).toBe(1);
+
+    const consumed = consumeLocalTestSessionQueuedQuestion("session-1");
+    expect(consumed).toEqual({
+      question: expect.objectContaining({ id: "q2" }),
+      selectedOptionIds: [],
+      hasSubmitted: false,
+      currentQuestionIndex: 1,
+    });
+    expect(countLocalTestSessionQueuedQuestions("session-1")).toBe(0);
   });
 });

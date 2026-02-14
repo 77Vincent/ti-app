@@ -5,12 +5,12 @@ import {
 } from "@/lib/testSession/validation";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
-import { QuestionRunnerApiError } from "../api/error";
 import {
   clearLocalTestSession,
   readLocalTestSessionSnapshot,
   writeLocalTestSession,
-} from "./local";
+} from "@/lib/testSession/service";
+import { QuestionRunnerApiError } from "../api/error";
 
 type TestSessionResponse = {
   session?: unknown;

@@ -3,7 +3,7 @@ import {
   clearLocalTestSessionRaw,
   readLocalTestSessionRaw,
   writeLocalTestSessionRaw,
-} from "./store";
+} from "./localStorage";
 
 function createLocalStorage() {
   const store = new Map<string, string>();
