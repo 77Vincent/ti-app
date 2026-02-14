@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseLocalTestSessionSnapshot,
   parseLocalTestSessionSnapshotJson,
-} from "./codec";
+} from "./snapshot";
 
 const VALID_SNAPSHOT = {
   sessionId: "session-1",
