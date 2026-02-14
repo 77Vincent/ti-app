@@ -6,14 +6,14 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button, Tooltip } from "@heroui/react";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { canSubmitQuestion } from "./utils/questionGuards";
+import { canSubmitQuestion } from "../utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
 import {
   isOptionCorrect,
   isOptionWrongSelection,
-} from "./utils/evaluation";
-import type { Question, QuestionOptionId, SignInDemand } from "./types";
+} from "../utils/evaluation";
+import type { Question, QuestionOptionId, SignInDemand } from "../types";
 
 type QuestionProps = {
   question: Question | null;

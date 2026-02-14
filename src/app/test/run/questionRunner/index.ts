@@ -1,4 +1,4 @@
-export { default as QuestionRunner } from "./QuestionWrapper";
+export { default as QuestionRunner } from "./components/QuestionWrapper";
 export type {
   MultipleAnswerQuestion,
   MultipleChoiceQuestion,

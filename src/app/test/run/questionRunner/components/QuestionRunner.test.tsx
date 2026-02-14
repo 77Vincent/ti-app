@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
 import React from "react";
 import QuestionRunner from "./QuestionRunner";
-import type { Question } from "./types";
+import type { Question } from "../types";
 
 const MOCK_QUESTION: Question = {
   id: "question-1",

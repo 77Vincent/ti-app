@@ -4,7 +4,7 @@ import { Card, CardBody } from "@heroui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import type { QuestionOption } from "./types";
+import type { QuestionOption } from "../types";
 
 type QuestionChoiceProps = {
   option: QuestionOption;

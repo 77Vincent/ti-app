@@ -2,7 +2,7 @@
 
 import { Timer } from "lucide-react";
 import { useEffect, useState } from "react";
-import { formatElapsedTime } from "./utils/timer";
+import { formatElapsedTime } from "../utils/timer";
 
 export function computeElapsedSessionSeconds(
   startedAtMs: number,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { QuestionRunnerProps, SignInDemand } from "./types";
+import type { QuestionRunnerProps, SignInDemand } from "../types";
 import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
@@ -14,8 +14,8 @@ import {
 import { LogOut, Star } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
-import { useQuestion } from "./hooks/useQuestion";
-import { useQuestionFavorite } from "./hooks/useQuestionFavorite";
+import { useQuestion } from "../hooks/useQuestion";
+import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import ElapsedSessionTimer from "./ElapsedSessionTimer";
 import SessionAccuracy from "./SessionAccuracy";
 
