@@ -14,8 +14,14 @@ export type FetchQuestionInput = {
   difficulty: DifficultyEnum;
 };
 
+export type FetchQuestionResult = {
+  question: Question;
+  nextQuestion: Question;
+};
+
 type FetchQuestionResponse = {
   question?: Question;
+  nextQuestion?: Question;
   error?: string;
 };
 
@@ -25,7 +31,7 @@ export function isAnonymousQuestionLimitError(error: unknown): boolean {
 
 export async function fetchQuestion(
   input: FetchQuestionInput,
-): Promise<Question> {
+): Promise<FetchQuestionResult> {
   const response = await fetch(API_PATHS.QUESTIONS_GENERATE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -41,12 +47,15 @@ export async function fetchQuestion(
 
   const payload = (await response.json()) as FetchQuestionResponse;
 
-  if (!payload.question) {
+  if (!payload.question || !payload.nextQuestion) {
     throw new QuestionRunnerApiError(
       payload.error ?? "Failed to load question.",
       response.status,
     );
   }
 
-  return payload.question;
+  return {
+    question: payload.question,
+    nextQuestion: payload.nextQuestion,
+  };
 }

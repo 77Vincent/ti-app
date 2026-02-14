@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
   fetchQuestion,
   isAnonymousQuestionLimitError,
+  type FetchQuestionResult,
 } from "../api";
 import { recordQuestionResult } from "../session/storage";
 import type {
@@ -20,8 +21,8 @@ import type {
 import {
   createQuestionSessionController,
 } from "@/lib/testSession/service/questionSessionController";
+import { createQuestionQueueProvider } from "@/lib/testSession/service/questionQueueProvider";
 import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
-import { loadAndApplyQuestion } from "@/lib/testSession/service/questionLoad";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
@@ -116,7 +117,7 @@ export function useQuestion({
 
   const questionSession = useMemo(
     () =>
-      createQuestionSessionController<QuestionType>({
+      createQuestionSessionController<FetchQuestionResult>({
         loadQuestion,
       }),
     [loadQuestion],
@@ -162,25 +163,47 @@ export function useQuestion({
     onQuestionStateApplied: applyQuestionStateToUi,
   });
 
+  const questionQueueProvider = useMemo(
+    () =>
+      createQuestionQueueProvider<FetchQuestionResult["question"]>({
+        sessionId,
+        loadInitialQuestions: () => questionSession.loadInitialQuestion(),
+        loadNextQuestions: () => questionSession.consumeNextQuestion(),
+        pushLoadedQuestion,
+        restoreCurrentQuestion,
+        consumeNextQuestion: goToNextQuestion,
+        enqueueQuestion: (providerSessionId, nextQuestion) =>
+          localTestSessionService.enqueueLocalTestSessionQuestion(
+            providerSessionId,
+            nextQuestion,
+          ),
+        countQueuedQuestions: (providerSessionId) =>
+          localTestSessionService.countLocalTestSessionQueuedQuestions(
+            providerSessionId,
+          ),
+        hasCurrentQuestion: (providerSessionId) =>
+          localTestSessionService.readLocalTestSessionQuestionState(
+            providerSessionId,
+          ) !== null,
+        onError: showLoadError,
+      }),
+    [
+      goToNextQuestion,
+      pushLoadedQuestion,
+      questionSession,
+      restoreCurrentQuestion,
+      sessionId,
+      showLoadError,
+    ],
+  );
+
   useEffect(() => {
     let cancelled = false;
 
     async function loadInitialQuestion() {
       dispatchUiState({ type: "initialLoadStarted" });
 
-      if (restoreCurrentQuestion()) {
-        if (!cancelled) {
-          dispatchUiState({ type: "initialLoadFinished" });
-        }
-        return;
-      }
-
-      await loadAndApplyQuestion({
-        load: () => questionSession.loadInitialQuestion(),
-        onError: showLoadError,
-        pushLoadedQuestion,
-        shouldIgnoreResult: () => cancelled,
-      });
+      await questionQueueProvider.initialize(() => cancelled);
 
       if (!cancelled) {
         dispatchUiState({ type: "initialLoadFinished" });
@@ -191,9 +214,13 @@ export function useQuestion({
 
     return () => {
       cancelled = true;
+      questionQueueProvider.clear();
       questionSession.clear();
     };
-  }, [pushLoadedQuestion, questionSession, restoreCurrentQuestion, showLoadError]);
+  }, [
+    questionQueueProvider,
+    questionSession,
+  ]);
 
   function selectOption(optionId: QuestionOptionId) {
     const nextSelection = selectQuestionOption(
@@ -246,19 +273,13 @@ export function useQuestion({
         persistSubmission();
         syncSessionProgress();
       },
-      goToNextQuestion,
+      advanceToNextQuestion: () => questionQueueProvider.requestNextQuestion(),
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },
       onNextQuestionLoadFinished: () => {
         dispatchUiState({ type: "submitFetchFinished" });
       },
-      loadNextQuestion: () =>
-        loadAndApplyQuestion({
-          load: () => questionSession.consumeNextQuestion(),
-          onError: showLoadError,
-          pushLoadedQuestion,
-        }),
     });
   }
 

@@ -9,10 +9,9 @@ export type SubmitQuestionInput = {
   onError: (error: unknown) => void;
   onSubmissionMarked: () => void;
   persistSubmission: () => void;
-  goToNextQuestion: () => boolean;
   onNextQuestionLoadStarted: () => void;
   onNextQuestionLoadFinished: () => void;
-  loadNextQuestion: () => Promise<void>;
+  advanceToNextQuestion: () => Promise<void>;
 };
 
 export async function submitQuestion({
@@ -26,10 +25,9 @@ export async function submitQuestion({
   onError,
   onSubmissionMarked,
   persistSubmission,
-  goToNextQuestion,
   onNextQuestionLoadStarted,
   onNextQuestionLoadFinished,
-  loadNextQuestion,
+  advanceToNextQuestion,
 }: SubmitQuestionInput): Promise<void> {
   if (!hasSubmitted) {
     onSubmitRequestStarted();
@@ -52,13 +50,9 @@ export async function submitQuestion({
     return;
   }
 
-  if (goToNextQuestion()) {
-    return;
-  }
-
   onNextQuestionLoadStarted();
   try {
-    await loadNextQuestion();
+    await advanceToNextQuestion();
   } finally {
     onNextQuestionLoadFinished();
   }

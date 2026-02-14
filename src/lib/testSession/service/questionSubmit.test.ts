@@ -22,10 +22,9 @@ describe("submitQuestion", () => {
       onError: vi.fn(),
       onSubmissionMarked,
       persistSubmission,
-      goToNextQuestion: vi.fn(() => false),
       onNextQuestionLoadStarted: vi.fn(),
       onNextQuestionLoadFinished: vi.fn(),
-      loadNextQuestion: vi.fn(async () => undefined),
+      advanceToNextQuestion: vi.fn(async () => undefined),
     });
 
     expect(recordQuestionResult).toHaveBeenCalledWith(true);
@@ -55,10 +54,9 @@ describe("submitQuestion", () => {
       onError,
       onSubmissionMarked: vi.fn(),
       persistSubmission: vi.fn(),
-      goToNextQuestion: vi.fn(() => false),
       onNextQuestionLoadStarted: vi.fn(),
       onNextQuestionLoadFinished: vi.fn(),
-      loadNextQuestion: vi.fn(async () => undefined),
+      advanceToNextQuestion: vi.fn(async () => undefined),
     });
 
     expect(onQuestionLimitReached).toHaveBeenCalledTimes(1);
@@ -86,10 +84,9 @@ describe("submitQuestion", () => {
       onError,
       onSubmissionMarked: vi.fn(),
       persistSubmission: vi.fn(),
-      goToNextQuestion: vi.fn(() => false),
       onNextQuestionLoadStarted: vi.fn(),
       onNextQuestionLoadFinished: vi.fn(),
-      loadNextQuestion: vi.fn(async () => undefined),
+      advanceToNextQuestion: vi.fn(async () => undefined),
     });
 
     expect(onError).toHaveBeenCalledWith(requestError);
@@ -97,10 +94,10 @@ describe("submitQuestion", () => {
     expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
   });
 
-  it("does nothing when next question is already available", async () => {
+  it("advances to next question and toggles loading state", async () => {
     const onNextQuestionLoadStarted = vi.fn();
     const onNextQuestionLoadFinished = vi.fn();
-    const loadNextQuestion = vi.fn(async () => undefined);
+    const advanceToNextQuestion = vi.fn(async () => undefined);
 
     await submitQuestion({
       hasSubmitted: true,
@@ -113,41 +110,13 @@ describe("submitQuestion", () => {
       onError: vi.fn(),
       onSubmissionMarked: vi.fn(),
       persistSubmission: vi.fn(),
-      goToNextQuestion: vi.fn(() => true),
       onNextQuestionLoadStarted,
       onNextQuestionLoadFinished,
-      loadNextQuestion,
-    });
-
-    expect(onNextQuestionLoadStarted).not.toHaveBeenCalled();
-    expect(loadNextQuestion).not.toHaveBeenCalled();
-    expect(onNextQuestionLoadFinished).not.toHaveBeenCalled();
-  });
-
-  it("loads next question when needed and always finishes loading state", async () => {
-    const onNextQuestionLoadStarted = vi.fn();
-    const onNextQuestionLoadFinished = vi.fn();
-    const loadNextQuestion = vi.fn<() => Promise<void>>().mockResolvedValueOnce(undefined);
-
-    await submitQuestion({
-      hasSubmitted: true,
-      isCurrentAnswerCorrect: false,
-      recordQuestionResult: vi.fn(async () => undefined),
-      onSubmitRequestStarted: vi.fn(),
-      onSubmitRequestFinished: vi.fn(),
-      isQuestionLimitError: () => false,
-      onQuestionLimitReached: vi.fn(),
-      onError: vi.fn(),
-      onSubmissionMarked: vi.fn(),
-      persistSubmission: vi.fn(),
-      goToNextQuestion: vi.fn(() => false),
-      onNextQuestionLoadStarted,
-      onNextQuestionLoadFinished,
-      loadNextQuestion,
+      advanceToNextQuestion,
     });
 
     expect(onNextQuestionLoadStarted).toHaveBeenCalledTimes(1);
-    expect(loadNextQuestion).toHaveBeenCalledTimes(1);
+    expect(advanceToNextQuestion).toHaveBeenCalledTimes(1);
     expect(onNextQuestionLoadFinished).toHaveBeenCalledTimes(1);
   });
 
@@ -167,10 +136,9 @@ describe("submitQuestion", () => {
         onError: vi.fn(),
         onSubmissionMarked: vi.fn(),
         persistSubmission: vi.fn(),
-        goToNextQuestion: vi.fn(() => false),
         onNextQuestionLoadStarted: vi.fn(),
         onNextQuestionLoadFinished,
-        loadNextQuestion: vi.fn<() => Promise<void>>().mockRejectedValueOnce(loadError),
+        advanceToNextQuestion: vi.fn<() => Promise<void>>().mockRejectedValueOnce(loadError),
       }),
     ).rejects.toThrow(loadError);
 
