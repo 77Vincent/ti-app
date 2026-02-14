@@ -8,7 +8,7 @@ export type LoadedQuestions<T> = {
 type LoadQuestions<T> = () => Promise<LoadedQuestions<T>>;
 type ShouldIgnoreResult = () => boolean;
 
-export type QuestionQueueProviderInput<T> = {
+export type QuestionQueueReplenisherInput<T> = {
   sessionId: string;
   loadQuestions: LoadQuestions<T>;
   enqueueQuestion: (sessionId: string, question: T) => boolean;
@@ -17,19 +17,19 @@ export type QuestionQueueProviderInput<T> = {
   minQueuedQuestions?: number;
 };
 
-export type QuestionQueueProvider = {
+export type QuestionQueueReplenisher = {
   onQuestionConsumed: (shouldIgnoreResult?: ShouldIgnoreResult) => Promise<void>;
   clear: () => void;
 };
 
-export function createQuestionQueueProvider<T>({
+export function createQuestionQueueReplenisher<T>({
   sessionId,
   loadQuestions,
   enqueueQuestion,
   countQueuedQuestions,
   onError,
   minQueuedQuestions = LOCAL_TEST_SESSION_MIN_QUEUED_QUESTIONS,
-}: QuestionQueueProviderInput<T>): QuestionQueueProvider {
+}: QuestionQueueReplenisherInput<T>): QuestionQueueReplenisher {
   let isReplenishing = false;
   let isDisposed = false;
 

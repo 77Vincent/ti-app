@@ -18,12 +18,13 @@ import type {
   QuestionOptionId,
   QuestionSignInDemand,
 } from "../types";
-import {
-  createQuestionSessionController,
-} from "@/lib/testSession/service/questionSessionController";
-import { createQuestionQueueProvider } from "@/lib/testSession/service/questionQueueProvider";
+import { createQuestionQueueReplenisher } from "@/lib/testSession/service/questionQueueReplenisher";
 import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
+import {
+  advanceQuestionSession,
+  initializeQuestionSessionState,
+} from "@/lib/testSession/service/questionSessionWorkflow";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
@@ -115,14 +116,6 @@ export function useQuestion({
     });
   }, [difficulty, subcategoryId, subjectId]);
 
-  const questionSession = useMemo(
-    () =>
-      createQuestionSessionController<FetchQuestionResult>({
-        loadQuestion,
-      }),
-    [loadQuestion],
-  );
-
   const applyQuestionStateToUi = useCallback(
     (questionState: {
       question: QuestionType;
@@ -163,11 +156,11 @@ export function useQuestion({
     onQuestionStateApplied: applyQuestionStateToUi,
   });
 
-  const questionQueueProvider = useMemo(
+  const questionQueueReplenisher = useMemo(
     () =>
-      createQuestionQueueProvider<FetchQuestionResult["question"]>({
+      createQuestionQueueReplenisher<FetchQuestionResult["question"]>({
         sessionId,
-        loadQuestions: () => questionSession.consumeNextQuestion(),
+        loadQuestions: loadQuestion,
         enqueueQuestion: (providerSessionId, nextQuestion) =>
           localTestSessionService.enqueueLocalTestSessionQuestion(
             providerSessionId,
@@ -180,7 +173,7 @@ export function useQuestion({
         onError: showLoadError,
       }),
     [
-      questionSession,
+      loadQuestion,
       sessionId,
       showLoadError,
     ],
@@ -191,34 +184,18 @@ export function useQuestion({
 
     async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
-
-      if (restoreCurrentQuestion()) {
-        if (!cancelled) {
-          dispatchUiState({ type: "initialLoadFinished" });
-        }
-        return;
-      }
-
-      try {
-        const loadedQuestions = await questionSession.loadInitialQuestion();
-        if (cancelled) {
-          return;
-        }
-
-        const applied = pushLoadedQuestion(loadedQuestions.question);
-        if (!applied) {
-          throw new Error("Failed to persist question in local session.");
-        }
-
-        localTestSessionService.enqueueLocalTestSessionQuestion(
-          sessionId,
-          loadedQuestions.nextQuestion,
-        );
-      } catch (error) {
-        if (!cancelled) {
-          showLoadError(error);
-        }
-      }
+      await initializeQuestionSessionState({
+        restoreCurrentQuestion,
+        loadInitialQuestions: loadQuestion,
+        pushLoadedQuestion,
+        enqueueQuestion: (question) =>
+          localTestSessionService.enqueueLocalTestSessionQuestion(
+            sessionId,
+            question,
+          ),
+        onError: showLoadError,
+        shouldIgnoreResult: () => cancelled,
+      });
 
       if (!cancelled) {
         dispatchUiState({ type: "initialLoadFinished" });
@@ -229,13 +206,12 @@ export function useQuestion({
 
     return () => {
       cancelled = true;
-      questionQueueProvider.clear();
-      questionSession.clear();
+      questionQueueReplenisher.clear();
     };
   }, [
+    loadQuestion,
     pushLoadedQuestion,
-    questionQueueProvider,
-    questionSession,
+    questionQueueReplenisher,
     restoreCurrentQuestion,
     sessionId,
     showLoadError,
@@ -292,14 +268,11 @@ export function useQuestion({
         persistSubmission();
         syncSessionProgress();
       },
-      advanceToNextQuestion: async () => {
-        const consumed = goToNextQuestion();
-        if (!consumed) {
-          return;
-        }
-
-        await questionQueueProvider.onQuestionConsumed();
-      },
+      advanceToNextQuestion: () =>
+        advanceQuestionSession({
+          consumeNextQuestion: goToNextQuestion,
+          onQuestionConsumed: questionQueueReplenisher.onQuestionConsumed,
+        }),
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },

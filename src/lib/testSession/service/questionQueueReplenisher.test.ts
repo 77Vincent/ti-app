@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  createQuestionQueueProvider,
+  createQuestionQueueReplenisher,
   type LoadedQuestions,
-} from "./questionQueueProvider";
+} from "./questionQueueReplenisher";
 
-describe("questionQueueProvider", () => {
+describe("questionQueueReplenisher", () => {
   it("replenishes queue after a consume event when inventory is below threshold", async () => {
     const loadedQuestions: LoadedQuestions<string> = {
       question: "Q1",
@@ -19,7 +19,7 @@ describe("questionQueueProvider", () => {
       .mockReturnValue(true);
     const loadQuestions = vi.fn(async () => loadedQuestions);
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions,
       enqueueQuestion,
@@ -41,7 +41,7 @@ describe("questionQueueProvider", () => {
   it("does only one replenish fetch per consume event", async () => {
     const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions,
       enqueueQuestion: vi.fn(() => true),
@@ -61,7 +61,7 @@ describe("questionQueueProvider", () => {
   it("does not fetch when queue is already at threshold", async () => {
     const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions,
       enqueueQuestion: vi.fn(() => true),
@@ -81,7 +81,7 @@ describe("questionQueueProvider", () => {
   it("ignores consume events after clear", async () => {
     const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions,
       enqueueQuestion: vi.fn(() => true),
@@ -103,7 +103,7 @@ describe("questionQueueProvider", () => {
     const loadError = new Error("load failed");
     const onError = vi.fn();
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions: vi.fn<() => Promise<LoadedQuestions<string>>>().mockRejectedValue(loadError),
       enqueueQuestion: vi.fn(() => true),
@@ -131,7 +131,7 @@ describe("questionQueueProvider", () => {
       .mockReturnValueOnce(0);
     const loadQuestions = vi.fn(async () => loadedQuestions);
 
-    const provider = createQuestionQueueProvider({
+    const provider = createQuestionQueueReplenisher({
       sessionId: "session-1",
       loadQuestions,
       enqueueQuestion: vi.fn(() => true),
