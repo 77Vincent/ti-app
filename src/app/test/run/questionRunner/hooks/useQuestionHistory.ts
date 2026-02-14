@@ -1,14 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import {
-  markLocalTestSessionQuestionSubmitted,
-  readLocalTestSessionQuestionState,
-  shiftLocalTestSessionQuestion,
-  writeLocalTestSessionQuestion,
-  writeLocalTestSessionQuestionSelection,
-  type LocalTestSessionQuestionState,
-} from "../session";
+import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
+import type { LocalTestSessionQuestionState } from "@/lib/testSession/core";
 import type { Question, QuestionOptionId } from "../types";
 
 type UseQuestionHistoryInput = {
@@ -42,7 +36,7 @@ export function useQuestionHistory({
   }, [onQuestionApplied, onQuestionStateApplied]);
 
   const restoreCurrentQuestion = useCallback((): boolean => {
-    const questionState = readLocalTestSessionQuestionState(sessionId);
+    const questionState = localTestSessionService.readLocalTestSessionQuestionState(sessionId);
     if (!questionState) {
       return false;
     }
@@ -51,7 +45,7 @@ export function useQuestionHistory({
   }, [applyQuestionState, sessionId]);
 
   const pushLoadedQuestion = useCallback((question: Question): boolean => {
-    const questionState = writeLocalTestSessionQuestion(question);
+    const questionState = localTestSessionService.writeLocalTestSessionQuestion(question);
     if (!questionState) {
       return false;
     }
@@ -60,7 +54,7 @@ export function useQuestionHistory({
   }, [applyQuestionState]);
 
   const goToPreviousQuestion = useCallback((): boolean => {
-    const questionState = shiftLocalTestSessionQuestion(sessionId, -1);
+    const questionState = localTestSessionService.shiftLocalTestSessionQuestion(sessionId, -1);
     if (!questionState) {
       return false;
     }
@@ -69,7 +63,7 @@ export function useQuestionHistory({
   }, [applyQuestionState, sessionId]);
 
   const goToNextQuestion = useCallback((): boolean => {
-    const questionState = shiftLocalTestSessionQuestion(sessionId, 1);
+    const questionState = localTestSessionService.shiftLocalTestSessionQuestion(sessionId, 1);
     if (!questionState) {
       return false;
     }
@@ -78,11 +72,11 @@ export function useQuestionHistory({
   }, [applyQuestionState, sessionId]);
 
   const persistSelection = useCallback((selectedOptionIds: QuestionOptionId[]) => {
-    writeLocalTestSessionQuestionSelection(sessionId, selectedOptionIds);
+    localTestSessionService.writeLocalTestSessionQuestionSelection(sessionId, selectedOptionIds);
   }, [sessionId]);
 
   const persistSubmission = useCallback(() => {
-    markLocalTestSessionQuestionSubmitted(sessionId);
+    localTestSessionService.markLocalTestSessionQuestionSubmitted(sessionId);
   }, [sessionId]);
 
   return {

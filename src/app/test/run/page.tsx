@@ -3,10 +3,10 @@
 import {
   clearTestSession,
   readTestSession,
-  type TestSession,
-} from "@/app/test/run/questionRunner/session";
+} from "@/app/test/run/questionRunner/session/storage";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import type { TestSession } from "@/lib/testSession/validation";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 

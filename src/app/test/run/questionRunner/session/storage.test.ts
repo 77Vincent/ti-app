@@ -11,10 +11,12 @@ const {
   writeLocalTestSession: vi.fn(),
 }));
 
-vi.mock("@/lib/testSession/service", () => ({
-  clearLocalTestSession,
-  readLocalTestSessionSnapshot,
-  writeLocalTestSession,
+vi.mock("@/lib/testSession/service/browserLocalSession", () => ({
+  localTestSessionService: {
+    clearLocalTestSession,
+    readLocalTestSessionSnapshot,
+    writeLocalTestSession,
+  },
 }));
 
 import { clearTestSession, recordQuestionResult, readTestSession } from "./storage";

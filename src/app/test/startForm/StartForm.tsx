@@ -16,7 +16,7 @@ import type {
   SubcategoryEnum,
 } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { writeTestSession } from "@/app/test/run/questionRunner/session";
+import { writeTestSession } from "@/app/test/run/questionRunner/session/storage";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";

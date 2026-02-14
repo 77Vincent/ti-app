@@ -1,4 +1,4 @@
-import type { LocalTestSessionQuestionState } from "../session";
+import type { LocalTestSessionQuestionState } from "@/lib/testSession/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Question } from "../types";
 
@@ -60,7 +60,9 @@ vi.mock("react", () => ({
   useState: react.useState,
 }));
 
-vi.mock("../session", () => session);
+vi.mock("@/lib/testSession/service/browserLocalSession", () => ({
+  localTestSessionService: session,
+}));
 
 import { useQuestionHistory } from "./useQuestionHistory";
 

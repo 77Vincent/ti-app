@@ -5,11 +5,7 @@ import {
 } from "@/lib/testSession/validation";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
-import {
-  clearLocalTestSession,
-  readLocalTestSessionSnapshot,
-  writeLocalTestSession,
-} from "@/lib/testSession/service";
+import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
 import { QuestionRunnerApiError } from "../api/error";
 
 type TestSessionResponse = {
@@ -71,11 +67,11 @@ export async function readTestSession(): Promise<TestSession | null> {
   const session = parseSessionFromResponse(payload);
 
   if (!session) {
-    clearLocalTestSession();
+    localTestSessionService.clearLocalTestSession();
     return null;
   }
 
-  const localSession = readLocalTestSessionSnapshot();
+  const localSession = localTestSessionService.readLocalTestSessionSnapshot();
   const isLocalSessionConsistent =
     localSession !== null && localSession.sessionId === session.id;
 
@@ -99,11 +95,11 @@ export async function writeTestSession(
     throw new QuestionRunnerApiError("Failed to start test session.", 500);
   }
 
-  writeLocalTestSession(session.id);
+  localTestSessionService.writeLocalTestSession(session.id);
 }
 
 export async function clearTestSession(): Promise<void> {
-  clearLocalTestSession();
+  localTestSessionService.clearLocalTestSession();
 
   await requestSession({
     method: "DELETE",

@@ -11,18 +11,18 @@ import {
   fetchQuestion,
   isAnonymousQuestionLimitError,
 } from "../api";
-import {
-  recordQuestionResult,
-  createQuestionSessionController,
-  readLocalTestSessionProgress,
-  loadAndApplyQuestion,
-  submitQuestion,
-} from "../session";
+import { recordQuestionResult } from "../session/storage";
 import type {
   Question as QuestionType,
   QuestionOptionId,
   QuestionSignInDemand,
 } from "../types";
+import {
+  createQuestionSessionController,
+} from "@/lib/testSession/service/questionSessionController";
+import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
+import { loadAndApplyQuestion } from "@/lib/testSession/service/questionLoad";
+import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
@@ -64,7 +64,7 @@ function buildSessionProgressState(sessionId: string): {
   submittedCount: number;
   correctCount: number;
 } {
-  const progress = readLocalTestSessionProgress(sessionId);
+  const progress = localTestSessionService.readLocalTestSessionProgress(sessionId);
   if (!progress) {
     return {
       currentQuestionIndex: null,

@@ -25,7 +25,7 @@ import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
 } from "./auth/sessionState";
-import { clearTestSession } from "./test/run/questionRunner/session";
+import { clearTestSession } from "./test/run/questionRunner/session/storage";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();

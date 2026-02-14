@@ -1,20 +1,7 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Question } from "@/lib/validation/question";
-import {
-  clearLocalTestSession,
-  consumeLocalTestSessionQueuedQuestion,
-  countLocalTestSessionQueuedQuestions,
-  enqueueLocalTestSessionQuestion,
-  markLocalTestSessionQuestionSubmitted,
-  readLocalTestSessionAccuracy,
-  readLocalTestSessionProgress,
-  readLocalTestSessionQuestionState,
-  shiftLocalTestSessionQuestion,
-  writeLocalTestSessionQuestionSelection,
-  writeLocalTestSession,
-  writeLocalTestSessionQuestion,
-} from "./browserLocalSession";
+import { localTestSessionService } from "./browserLocalSession";
 
 function createQuestion(id: string): Question {
   return {
@@ -60,10 +47,10 @@ describe("local test session", () => {
   });
 
   it("reads current question state for matching session", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
 
-    expect(readLocalTestSessionQuestionState("session-1")).toEqual({
+    expect(localTestSessionService.readLocalTestSessionQuestionState("session-1")).toEqual({
       question: expect.objectContaining({ id: "q1" }),
       selectedOptionIds: [],
       hasSubmitted: false,
@@ -72,11 +59,11 @@ describe("local test session", () => {
   });
 
   it("moves cursor backward and forward within bounds", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
-    writeLocalTestSessionQuestion(createQuestion("q2"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    const previous = shiftLocalTestSessionQuestion("session-1", -1);
+    const previous = localTestSessionService.shiftLocalTestSessionQuestion("session-1", -1);
     expect(previous).toEqual({
       question: expect.objectContaining({ id: "q1" }),
       selectedOptionIds: [],
@@ -84,7 +71,7 @@ describe("local test session", () => {
       currentQuestionIndex: 0,
     });
 
-    const next = shiftLocalTestSessionQuestion("session-1", 1);
+    const next = localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1);
     expect(next).toEqual({
       question: expect.objectContaining({ id: "q2" }),
       selectedOptionIds: [],
@@ -94,13 +81,13 @@ describe("local test session", () => {
   });
 
   it("persists selected options and submitted status per question", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
-    writeLocalTestSessionQuestionSelection("session-1", ["A", "C"]);
-    markLocalTestSessionQuestionSubmitted("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q2"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSessionQuestionSelection("session-1", ["A", "C"]);
+    localTestSessionService.markLocalTestSessionQuestionSubmitted("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    const q1 = shiftLocalTestSessionQuestion("session-1", -1);
+    const q1 = localTestSessionService.shiftLocalTestSessionQuestion("session-1", -1);
     expect(q1).toEqual({
       question: expect.objectContaining({ id: "q1" }),
       selectedOptionIds: ["A", "C"],
@@ -108,7 +95,7 @@ describe("local test session", () => {
       currentQuestionIndex: 0,
     });
 
-    const q2 = shiftLocalTestSessionQuestion("session-1", 1);
+    const q2 = localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1);
     expect(q2).toEqual({
       question: expect.objectContaining({ id: "q2" }),
       selectedOptionIds: [],
@@ -118,63 +105,63 @@ describe("local test session", () => {
   });
 
   it("reads real-time accuracy for current session", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
-    writeLocalTestSessionQuestionSelection("session-1", ["A"]);
-    markLocalTestSessionQuestionSubmitted("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q2"));
-    writeLocalTestSessionQuestionSelection("session-1", ["B"]);
-    markLocalTestSessionQuestionSubmitted("session-1");
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSessionQuestionSelection("session-1", ["A"]);
+    localTestSessionService.markLocalTestSessionQuestionSubmitted("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
+    localTestSessionService.writeLocalTestSessionQuestionSelection("session-1", ["B"]);
+    localTestSessionService.markLocalTestSessionQuestionSubmitted("session-1");
 
-    expect(readLocalTestSessionAccuracy("session-1")).toEqual({
+    expect(localTestSessionService.readLocalTestSessionAccuracy("session-1")).toEqual({
       submittedCount: 2,
       correctCount: 1,
     });
-    expect(readLocalTestSessionAccuracy("session-2")).toBeNull();
+    expect(localTestSessionService.readLocalTestSessionAccuracy("session-2")).toBeNull();
 
-    expect(readLocalTestSessionProgress("session-1")).toEqual({
+    expect(localTestSessionService.readLocalTestSessionProgress("session-1")).toEqual({
       currentQuestionIndex: 1,
       submittedCount: 2,
       correctCount: 1,
     });
-    expect(readLocalTestSessionProgress("session-2")).toBeNull();
+    expect(localTestSessionService.readLocalTestSessionProgress("session-2")).toBeNull();
   });
 
   it("does not move cursor out of bounds or across mismatched sessions", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
-    writeLocalTestSessionQuestion(createQuestion("q2"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    expect(shiftLocalTestSessionQuestion("session-1", 1)).toBeNull();
-    expect(shiftLocalTestSessionQuestion("session-2", -1)).toBeNull();
-    expect(readLocalTestSessionQuestionState("session-2")).toBeNull();
+    expect(localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1)).toBeNull();
+    expect(localTestSessionService.shiftLocalTestSessionQuestion("session-2", -1)).toBeNull();
+    expect(localTestSessionService.readLocalTestSessionQuestionState("session-2")).toBeNull();
   });
 
   it("clears local session state", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
 
-    clearLocalTestSession();
+    localTestSessionService.clearLocalTestSession();
 
-    expect(readLocalTestSessionQuestionState("session-1")).toBeNull();
+    expect(localTestSessionService.readLocalTestSessionQuestionState("session-1")).toBeNull();
   });
 
   it("enqueues and consumes queued questions for the same session", () => {
-    writeLocalTestSession("session-1");
-    writeLocalTestSessionQuestion(createQuestion("q1"));
+    localTestSessionService.writeLocalTestSession("session-1");
+    localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
 
     expect(
-      enqueueLocalTestSessionQuestion("session-1", createQuestion("q2")),
+      localTestSessionService.enqueueLocalTestSessionQuestion("session-1", createQuestion("q2")),
     ).toBe(true);
-    expect(countLocalTestSessionQueuedQuestions("session-1")).toBe(1);
+    expect(localTestSessionService.countLocalTestSessionQueuedQuestions("session-1")).toBe(1);
 
-    const consumed = consumeLocalTestSessionQueuedQuestion("session-1");
+    const consumed = localTestSessionService.consumeLocalTestSessionQueuedQuestion("session-1");
     expect(consumed).toEqual({
       question: expect.objectContaining({ id: "q2" }),
       selectedOptionIds: [],
       hasSubmitted: false,
       currentQuestionIndex: 1,
     });
-    expect(countLocalTestSessionQueuedQuestions("session-1")).toBe(0);
+    expect(localTestSessionService.countLocalTestSessionQueuedQuestions("session-1")).toBe(0);
   });
 });

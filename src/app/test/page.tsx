@@ -2,7 +2,7 @@
 
 import {
   readTestSession,
-} from "@/app/test/run/questionRunner/session";
+} from "@/app/test/run/questionRunner/session/storage";
 import { StartForm } from "@/app/test/startForm";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { useRouter } from "next/navigation";
