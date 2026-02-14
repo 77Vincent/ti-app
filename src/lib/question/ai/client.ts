@@ -1,5 +1,5 @@
 import { isNonEmptyString } from "@/lib/string";
-import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
 import {
   OPENAI_QUESTION_SYSTEM_PROMPT,
   buildQuestionUserPrompt,

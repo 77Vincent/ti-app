@@ -1,5 +1,5 @@
 import { getDifficulty } from "@/lib/difficulty/utils";
-import type { QuestionParam as GenerateQuestionRequest } from "@/lib/validation/testSession";
+import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `

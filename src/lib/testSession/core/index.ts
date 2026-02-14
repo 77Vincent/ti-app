@@ -7,3 +7,8 @@ export {
   type LocalTestSessionQuestionState,
   type LocalTestSessionSnapshot,
 } from "./snapshot";
+export {
+  shiftLocalTestSessionSnapshotQuestion,
+  updateCurrentLocalTestSessionSnapshotQuestion,
+  upsertLocalTestSessionSnapshotQuestion,
+} from "./history";
