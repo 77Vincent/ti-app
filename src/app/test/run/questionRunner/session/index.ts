@@ -5,6 +5,9 @@ export {
 } from "./reducer";
 export {
   calculateLocalTestSessionAccuracy,
+  consumeLocalTestSessionQueuedQuestion,
+  countLocalTestSessionQueuedQuestions,
+  enqueueLocalTestSessionQuestion,
   markLocalTestSessionQuestionSubmitted,
   readLocalTestSessionAccuracy,
   readLocalTestSessionProgress,
@@ -27,4 +30,4 @@ export {
   readTestSession,
   writeTestSession,
 } from "./storage";
-export type { TestParam, TestSession } from "@/lib/validation/testSession";
+export type { TestParam, TestSession } from "@/lib/testSession/validation";
