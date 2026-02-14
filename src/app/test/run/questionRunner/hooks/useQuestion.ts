@@ -15,6 +15,8 @@ import {
   recordQuestionResult,
   createQuestionSessionController,
   readLocalTestSessionProgress,
+  loadAndApplyQuestion,
+  submitQuestion,
 } from "../session";
 import type {
   Question as QuestionType,
@@ -29,8 +31,6 @@ import {
   canSubmitQuestion,
 } from "../utils/questionGuards";
 import { isAnswerCorrect } from "../utils/evaluation";
-import { loadAndApplyQuestion } from "../service/questionLoad";
-import { submitQuestion } from "../service/questionSubmit";
 import { useQuestionHistory } from "./useQuestionHistory";
 import { useQuestionSelection } from "./useQuestionSelection";
 

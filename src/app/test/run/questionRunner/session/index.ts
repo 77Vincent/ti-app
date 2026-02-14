@@ -4,6 +4,8 @@ export {
 } from "./reducer";
 export {
   createQuestionSessionController,
+  loadAndApplyQuestion,
+  submitQuestion,
   consumeLocalTestSessionQueuedQuestion,
   countLocalTestSessionQueuedQuestions,
   enqueueLocalTestSessionQuestion,
