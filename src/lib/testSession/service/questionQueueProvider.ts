@@ -10,11 +10,7 @@ type ShouldIgnoreResult = () => boolean;
 
 export type QuestionQueueProviderInput<T> = {
   sessionId: string;
-  loadInitialQuestions: LoadQuestions<T>;
-  loadNextQuestions: LoadQuestions<T>;
-  pushLoadedQuestion: (question: T) => boolean;
-  restoreCurrentQuestion?: () => boolean;
-  consumeNextQuestion?: () => boolean;
+  loadQuestions: LoadQuestions<T>;
   enqueueQuestion: (sessionId: string, question: T) => boolean;
   countQueuedQuestions: (sessionId: string) => number;
   onError: (error: unknown) => void;
@@ -22,18 +18,13 @@ export type QuestionQueueProviderInput<T> = {
 };
 
 export type QuestionQueueProvider = {
-  initialize: (shouldIgnoreResult?: ShouldIgnoreResult) => Promise<void>;
-  requestNextQuestion: (shouldIgnoreResult?: ShouldIgnoreResult) => Promise<void>;
+  onQuestionConsumed: (shouldIgnoreResult?: ShouldIgnoreResult) => Promise<void>;
   clear: () => void;
 };
 
 export function createQuestionQueueProvider<T>({
   sessionId,
-  loadInitialQuestions,
-  loadNextQuestions,
-  pushLoadedQuestion,
-  restoreCurrentQuestion,
-  consumeNextQuestion,
+  loadQuestions,
   enqueueQuestion,
   countQueuedQuestions,
   onError,
@@ -42,48 +33,11 @@ export function createQuestionQueueProvider<T>({
   let isReplenishing = false;
   let isDisposed = false;
 
-  function applyLoadedQuestions(loadedQuestions: LoadedQuestions<T>): void {
-    const applied = pushLoadedQuestion(loadedQuestions.question);
-    if (!applied) {
-      throw new Error("Failed to persist question in local session.");
-    }
-
-    enqueueQuestion(sessionId, loadedQuestions.nextQuestion);
-  }
-
-  function scheduleReplenish(shouldIgnoreResult?: ShouldIgnoreResult): void {
-    void replenishQueue(shouldIgnoreResult);
-  }
-
-  async function initialize(
+  async function onQuestionConsumed(
     shouldIgnoreResult?: ShouldIgnoreResult,
   ): Promise<void> {
-    if (restoreCurrentQuestion?.()) {
-      return;
-    }
-
-    try {
-      const loadedQuestions = await loadInitialQuestions();
-      if (isDisposed || shouldIgnoreResult?.()) {
-        return;
-      }
-
-      applyLoadedQuestions(loadedQuestions);
-    } catch (error) {
-      if (isDisposed || shouldIgnoreResult?.()) {
-        return;
-      }
-
-      onError(error);
-    }
-  }
-
-  async function requestNextQuestion(
-    shouldIgnoreResult?: ShouldIgnoreResult,
-  ): Promise<void> {
-    const consumed = consumeNextQuestion?.() ?? false;
-    if (consumed && !shouldIgnoreResult?.()) {
-      scheduleReplenish(shouldIgnoreResult);
+    if (!shouldIgnoreResult?.()) {
+      void replenishQueue(shouldIgnoreResult);
     }
   }
 
@@ -96,29 +50,31 @@ export function createQuestionQueueProvider<T>({
 
     isReplenishing = true;
     try {
-      while (!isDisposed && !shouldIgnoreResult?.()) {
-        const queuedCount = countQueuedQuestions(sessionId);
-        if (queuedCount >= minQueuedQuestions) {
-          return;
-        }
+      if (shouldIgnoreResult?.()) {
+        return;
+      }
 
-        const loadedQuestions = await loadNextQuestions();
-        if (isDisposed || shouldIgnoreResult?.()) {
-          return;
-        }
+      const queuedCount = countQueuedQuestions(sessionId);
+      if (queuedCount >= minQueuedQuestions) {
+        return;
+      }
 
-        const firstQueued = enqueueQuestion(
-          sessionId,
-          loadedQuestions.question,
-        );
-        const secondQueued = enqueueQuestion(
-          sessionId,
-          loadedQuestions.nextQuestion,
-        );
+      const loadedQuestions = await loadQuestions();
+      if (isDisposed || shouldIgnoreResult?.()) {
+        return;
+      }
 
-        if (!firstQueued && !secondQueued) {
-          return;
-        }
+      const firstQueued = enqueueQuestion(
+        sessionId,
+        loadedQuestions.question,
+      );
+      const secondQueued = enqueueQuestion(
+        sessionId,
+        loadedQuestions.nextQuestion,
+      );
+
+      if (!firstQueued && !secondQueued) {
+        return;
       }
     } catch (error) {
       if (!shouldIgnoreResult?.()) {
@@ -135,8 +91,7 @@ export function createQuestionQueueProvider<T>({
   }
 
   return {
-    initialize,
-    requestNextQuestion,
+    onQuestionConsumed,
     clear,
   };
 }

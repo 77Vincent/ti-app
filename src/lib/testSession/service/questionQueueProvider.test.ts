@@ -5,154 +5,147 @@ import {
 } from "./questionQueueProvider";
 
 describe("questionQueueProvider", () => {
-  it("initializes by loading questions and applying first + enqueuing second", async () => {
-    const loadedQuestions: LoadedQuestions<string> = { question: "Q1", nextQuestion: "Q2" };
-    const pushLoadedQuestion = vi.fn<(question: string) => boolean>().mockReturnValue(true);
-    const enqueueQuestion = vi.fn<(sessionId: string, question: string) => boolean>().mockReturnValue(true);
+  it("replenishes queue after a consume event when inventory is below threshold", async () => {
+    const loadedQuestions: LoadedQuestions<string> = {
+      question: "Q1",
+      nextQuestion: "Q2",
+    };
+    const countQueuedQuestions = vi
+      .fn<(sessionId: string) => number>()
+      .mockReturnValue(2)
+      .mockReturnValueOnce(0);
+    const enqueueQuestion = vi
+      .fn<(sessionId: string, question: string) => boolean>()
+      .mockReturnValue(true);
+    const loadQuestions = vi.fn(async () => loadedQuestions);
 
     const provider = createQuestionQueueProvider({
       sessionId: "session-1",
-      loadInitialQuestions: vi.fn(async () => loadedQuestions),
-      loadNextQuestions: vi.fn(async () => loadedQuestions),
-      pushLoadedQuestion,
+      loadQuestions,
       enqueueQuestion,
-      countQueuedQuestions: vi.fn(() => 1),
+      countQueuedQuestions,
       onError: vi.fn(),
-      minQueuedQuestions: 1,
+      minQueuedQuestions: 2,
     });
 
-    await provider.initialize();
+    await provider.onQuestionConsumed();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
-    expect(pushLoadedQuestion).toHaveBeenCalledWith("Q1");
+    expect(loadQuestions).toHaveBeenCalledTimes(1);
+    expect(enqueueQuestion).toHaveBeenCalledWith("session-1", "Q1");
     expect(enqueueQuestion).toHaveBeenCalledWith("session-1", "Q2");
   });
 
-  it("initialization does not trigger replenish", async () => {
-    const loadedQuestions: LoadedQuestions<string> = { question: "Q1", nextQuestion: "Q2" };
-    const loadNextQuestions = vi.fn(async () => loadedQuestions);
+  it("does only one replenish fetch per consume event", async () => {
+    const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
     const provider = createQuestionQueueProvider({
       sessionId: "session-1",
-      loadInitialQuestions: vi.fn(async () => loadedQuestions),
-      loadNextQuestions,
-      pushLoadedQuestion: vi.fn(() => true),
+      loadQuestions,
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions: vi.fn(() => 0),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
 
-    await provider.initialize();
-
+    await provider.onQuestionConsumed();
     await new Promise((resolve) => {
       setTimeout(resolve, 0);
     });
 
-    expect(loadNextQuestions).not.toHaveBeenCalled();
+    expect(loadQuestions).toHaveBeenCalledTimes(1);
   });
 
-  it("replenishes based on queue inventory only", async () => {
-    const loadNextQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
+  it("does not fetch when queue is already at threshold", async () => {
+    const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
     const provider = createQuestionQueueProvider({
       sessionId: "session-1",
-      loadInitialQuestions: vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" })),
-      loadNextQuestions,
-      pushLoadedQuestion: vi.fn(() => true),
-      consumeNextQuestion: vi.fn(() => true),
-      enqueueQuestion: vi.fn(() => true),
-      countQueuedQuestions: vi
-        .fn<(sessionId: string) => number>()
-        .mockReturnValueOnce(0)
-        .mockReturnValueOnce(2),
-      onError: vi.fn(),
-      minQueuedQuestions: 2,
-    });
-
-    await provider.requestNextQuestion();
-
-    await new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
-
-    expect(loadNextQuestions).toHaveBeenCalledTimes(1);
-  });
-
-  it("initializes from restored current question without loading initial questions", async () => {
-    const restoreCurrentQuestion = vi.fn(() => true);
-    const loadInitialQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
-    const loadNextQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
-
-    const provider = createQuestionQueueProvider({
-      sessionId: "session-1",
-      loadInitialQuestions,
-      loadNextQuestions,
-      pushLoadedQuestion: vi.fn(() => true),
-      restoreCurrentQuestion,
+      loadQuestions,
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions: vi.fn(() => 2),
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
 
-    await provider.initialize();
+    await provider.onQuestionConsumed();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
-    expect(restoreCurrentQuestion).toHaveBeenCalledTimes(1);
-    expect(loadInitialQuestions).not.toHaveBeenCalled();
-    expect(loadNextQuestions).not.toHaveBeenCalled();
+    expect(loadQuestions).not.toHaveBeenCalled();
   });
 
-  it("requesting next question consumes queue and triggers background replenish", async () => {
-    const loadedQuestions: LoadedQuestions<string> = { question: "Q1", nextQuestion: "Q2" };
-    const countQueuedQuestions = vi
-      .fn<(sessionId: string) => number>()
-      .mockReturnValueOnce(0)
-      .mockReturnValueOnce(2);
-    const loadNextQuestions = vi.fn(async () => loadedQuestions);
+  it("ignores consume events after clear", async () => {
+    const loadQuestions = vi.fn(async () => ({ question: "Q1", nextQuestion: "Q2" }));
 
     const provider = createQuestionQueueProvider({
       sessionId: "session-1",
-      loadInitialQuestions: vi.fn(async () => loadedQuestions),
-      loadNextQuestions,
-      pushLoadedQuestion: vi.fn(() => true),
-      consumeNextQuestion: vi.fn(() => true),
+      loadQuestions,
+      enqueueQuestion: vi.fn(() => true),
+      countQueuedQuestions: vi.fn(() => 0),
+      onError: vi.fn(),
+      minQueuedQuestions: 2,
+    });
+
+    provider.clear();
+    await provider.onQuestionConsumed();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(loadQuestions).not.toHaveBeenCalled();
+  });
+
+  it("forwards replenish fetch errors to onError", async () => {
+    const loadError = new Error("load failed");
+    const onError = vi.fn();
+
+    const provider = createQuestionQueueProvider({
+      sessionId: "session-1",
+      loadQuestions: vi.fn<() => Promise<LoadedQuestions<string>>>().mockRejectedValue(loadError),
+      enqueueQuestion: vi.fn(() => true),
+      countQueuedQuestions: vi.fn(() => 0),
+      onError,
+      minQueuedQuestions: 2,
+    });
+
+    await provider.onQuestionConsumed();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(onError).toHaveBeenCalledWith(loadError);
+  });
+
+  it("prevents overlapping replenish loops", async () => {
+    const loadedQuestions: LoadedQuestions<string> = {
+      question: "Q1",
+      nextQuestion: "Q2",
+    };
+    const countQueuedQuestions = vi
+      .fn<(sessionId: string) => number>()
+      .mockReturnValue(2)
+      .mockReturnValueOnce(0);
+    const loadQuestions = vi.fn(async () => loadedQuestions);
+
+    const provider = createQuestionQueueProvider({
+      sessionId: "session-1",
+      loadQuestions,
       enqueueQuestion: vi.fn(() => true),
       countQueuedQuestions,
       onError: vi.fn(),
       minQueuedQuestions: 2,
     });
 
-    await provider.requestNextQuestion();
-
+    await provider.onQuestionConsumed();
+    await provider.onQuestionConsumed();
     await new Promise((resolve) => {
       setTimeout(resolve, 0);
     });
 
-    expect(loadNextQuestions).toHaveBeenCalledTimes(1);
-  });
-
-  it("requesting next question does not fetch when queue is empty", async () => {
-    const loadedQuestions: LoadedQuestions<string> = { question: "Q1", nextQuestion: "Q2" };
-    const pushLoadedQuestion = vi.fn<(question: string) => boolean>().mockReturnValue(true);
-    const enqueueQuestion = vi.fn<(sessionId: string, question: string) => boolean>().mockReturnValue(true);
-    const loadNextQuestions = vi.fn(async () => loadedQuestions);
-
-    const provider = createQuestionQueueProvider({
-      sessionId: "session-1",
-      loadInitialQuestions: vi.fn(async () => loadedQuestions),
-      loadNextQuestions,
-      pushLoadedQuestion,
-      consumeNextQuestion: vi.fn(() => false),
-      enqueueQuestion,
-      countQueuedQuestions: vi.fn(() => 2),
-      onError: vi.fn(),
-      minQueuedQuestions: 2,
-    });
-
-    await provider.requestNextQuestion();
-
-    expect(loadNextQuestions).not.toHaveBeenCalled();
-    expect(pushLoadedQuestion).not.toHaveBeenCalled();
-    expect(enqueueQuestion).not.toHaveBeenCalled();
+    expect(loadQuestions).toHaveBeenCalledTimes(1);
   });
 });

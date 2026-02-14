@@ -167,11 +167,7 @@ export function useQuestion({
     () =>
       createQuestionQueueProvider<FetchQuestionResult["question"]>({
         sessionId,
-        loadInitialQuestions: () => questionSession.loadInitialQuestion(),
-        loadNextQuestions: () => questionSession.consumeNextQuestion(),
-        pushLoadedQuestion,
-        restoreCurrentQuestion,
-        consumeNextQuestion: goToNextQuestion,
+        loadQuestions: () => questionSession.consumeNextQuestion(),
         enqueueQuestion: (providerSessionId, nextQuestion) =>
           localTestSessionService.enqueueLocalTestSessionQuestion(
             providerSessionId,
@@ -184,10 +180,7 @@ export function useQuestion({
         onError: showLoadError,
       }),
     [
-      goToNextQuestion,
-      pushLoadedQuestion,
       questionSession,
-      restoreCurrentQuestion,
       sessionId,
       showLoadError,
     ],
@@ -196,17 +189,43 @@ export function useQuestion({
   useEffect(() => {
     let cancelled = false;
 
-    async function loadInitialQuestion() {
+    async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
 
-      await questionQueueProvider.initialize(() => cancelled);
+      if (restoreCurrentQuestion()) {
+        if (!cancelled) {
+          dispatchUiState({ type: "initialLoadFinished" });
+        }
+        return;
+      }
+
+      try {
+        const loadedQuestions = await questionSession.loadInitialQuestion();
+        if (cancelled) {
+          return;
+        }
+
+        const applied = pushLoadedQuestion(loadedQuestions.question);
+        if (!applied) {
+          throw new Error("Failed to persist question in local session.");
+        }
+
+        localTestSessionService.enqueueLocalTestSessionQuestion(
+          sessionId,
+          loadedQuestions.nextQuestion,
+        );
+      } catch (error) {
+        if (!cancelled) {
+          showLoadError(error);
+        }
+      }
 
       if (!cancelled) {
         dispatchUiState({ type: "initialLoadFinished" });
       }
     }
 
-    loadInitialQuestion();
+    initializeQuestionState();
 
     return () => {
       cancelled = true;
@@ -214,8 +233,12 @@ export function useQuestion({
       questionSession.clear();
     };
   }, [
+    pushLoadedQuestion,
     questionQueueProvider,
     questionSession,
+    restoreCurrentQuestion,
+    sessionId,
+    showLoadError,
   ]);
 
   function selectOption(optionId: QuestionOptionId) {
@@ -269,7 +292,14 @@ export function useQuestion({
         persistSubmission();
         syncSessionProgress();
       },
-      advanceToNextQuestion: () => questionQueueProvider.requestNextQuestion(),
+      advanceToNextQuestion: async () => {
+        const consumed = goToNextQuestion();
+        if (!consumed) {
+          return;
+        }
+
+        await questionQueueProvider.onQuestionConsumed();
+      },
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },
