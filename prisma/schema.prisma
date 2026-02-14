@@ -63,6 +63,20 @@ model TestSession {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model AnonymousTestSession {
+  id                 String   @id @default(cuid())
+  anonymousSessionId String   @unique
+  subjectId          String
+  subcategoryId      String
+  difficulty         String
+  goal               String   @default("study")
+  correctCount       Int      @default(0)
+  submittedCount     Int      @default(0)
+  startedAt          DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
 model QuestionPool {
   id               String             @id
   subjectId        String

@@ -58,6 +58,23 @@ CREATE TABLE "TestSession" (
 );
 
 -- CreateTable
+CREATE TABLE "AnonymousTestSession" (
+    "id" TEXT NOT NULL,
+    "anonymousSessionId" TEXT NOT NULL,
+    "subjectId" TEXT NOT NULL,
+    "subcategoryId" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
+    "goal" TEXT NOT NULL DEFAULT 'study',
+    "correctCount" INTEGER NOT NULL DEFAULT 0,
+    "submittedCount" INTEGER NOT NULL DEFAULT 0,
+    "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AnonymousTestSession_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "QuestionPool" (
     "id" TEXT NOT NULL,
     "subjectId" TEXT NOT NULL,
@@ -103,6 +120,9 @@ CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TestSession_userId_key" ON "TestSession"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AnonymousTestSession_anonymousSessionId_key" ON "AnonymousTestSession"("anonymousSessionId");
 
 -- CreateIndex
 CREATE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_randomKey_idx" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "randomKey");
