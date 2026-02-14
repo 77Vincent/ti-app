@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/question/validation";
+import type { Question } from "@/lib/question/model";
 import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
 import { requestOpenAIQuestionContent } from "./client";
 import { parseAIQuestionPayload } from "./payload";

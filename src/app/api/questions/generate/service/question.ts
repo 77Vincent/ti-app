@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/question/validation";
+import type { Question } from "@/lib/question/model";
 import type { QuestionParam } from "@/lib/testSession/validation";
 import { generateQuestionWithAI } from "@/lib/question/ai";
 import { generateMockQuestion } from "../mock";

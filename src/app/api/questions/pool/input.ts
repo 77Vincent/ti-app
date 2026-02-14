@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/question/validation";
+import type { Question } from "@/lib/question/model";
 import type { QuestionParam } from "@/lib/testSession/validation";
 import type { QuestionPoolUpsertInput } from "./repo";
 

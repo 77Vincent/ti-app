@@ -1,6 +1,6 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Question } from "@/lib/question/validation";
+import type { Question } from "@/lib/question/model";
 import { localTestSessionService } from "./browserLocalSession";
 
 function createQuestion(id: string): Question {

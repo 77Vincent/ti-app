@@ -3,12 +3,14 @@ import type { QuestionType } from "@/lib/meta";
 import {
   hasValidCorrectOptionCount,
   type ParsedQuestionOption,
-  QUESTION_OPTION_IDS,
-  type QuestionOption,
-  type QuestionOptionId,
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/question/validation";
+import {
+  QUESTION_OPTION_IDS,
+  type QuestionOption,
+  type QuestionOptionId,
+} from "@/lib/question/model";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 

@@ -1,2 +1,2 @@
 export { generateQuestionWithAI } from "./generate";
-export type { Question } from "@/lib/question/validation";
+export type { Question } from "@/lib/question/model";
