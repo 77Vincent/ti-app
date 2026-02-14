@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { parseQuestionParam } from "@/lib/testSession/validation";
-import { buildQuestion } from "./service/question";
 import { mapGeneratedQuestionToQuestionPoolInput } from "../pool/input";
 import {
   countQuestionPoolMatches,
   readQuestionFromPool,
   upsertQuestionPool,
 } from "../pool/repo";
+import { generateMockQuestion } from "./mock";
+import { generateQuestionWithAI } from "@/lib/question/ai";
 
 const DB_SOURCE_BASE_SCORE = 100;
 
@@ -18,6 +19,10 @@ function shouldUseQuestionPool(matchCount: number): boolean {
   const probability = matchCount / (DB_SOURCE_BASE_SCORE + matchCount);
 
   return Math.random() < probability;
+}
+
+function hasOpenAiApiKey(): boolean {
+  return Boolean(process.env.OPENAI_API_KEY?.trim());
 }
 
 export async function POST(request: Request) {
@@ -38,6 +43,16 @@ export async function POST(request: Request) {
     );
   }
 
+  // a short-circuit for testing with mock data
+  // without real fetching from ai or question pool
+  if (!hasOpenAiApiKey()) {
+    const m = generateMockQuestion(input)
+    return NextResponse.json({
+      question: m,
+      nextQuestion: m,
+    });
+  }
+
   try {
     const poolMatchCount = await countQuestionPoolMatches(input);
 
@@ -50,7 +65,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const [question, nextQuestion] = await buildQuestion(input);
+    const [question, nextQuestion] = await generateQuestionWithAI(input);
 
     const persistResults = await Promise.allSettled(
       [question, nextQuestion].map((generatedQuestion) =>
