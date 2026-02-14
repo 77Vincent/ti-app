@@ -1,4 +1,4 @@
-import type { Question, QuestionOptionId } from "@/lib/validation/question";
+import type { Question, QuestionOptionId } from "@/lib/question/validation";
 
 export type LocalTestSessionSnapshot = {
   sessionId: string;

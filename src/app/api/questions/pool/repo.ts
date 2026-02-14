@@ -8,7 +8,7 @@ import type {
 import type {
   Question,
   QuestionOptionId,
-} from "@/lib/validation/question";
+} from "@/lib/question/validation";
 import type { QuestionParam } from "@/lib/testSession/validation";
 
 type QuestionPoolOption = {

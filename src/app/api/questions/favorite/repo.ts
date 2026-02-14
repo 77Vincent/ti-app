@@ -5,7 +5,7 @@ import type {
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
-import type { QuestionOptionId } from "@/lib/validation/question";
+import type { QuestionOptionId } from "@/lib/question/validation";
 import { mapFavoriteQuestionToQuestionPoolInput } from "../pool/input";
 import { upsertQuestionPool } from "../pool/repo";
 

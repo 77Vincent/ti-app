@@ -14,7 +14,7 @@ import {
   type LocalTestSessionQuestionState,
   type LocalTestSessionSnapshot,
 } from "@/lib/testSession/core";
-import type { Question, QuestionOptionId } from "@/lib/validation/question";
+import type { Question, QuestionOptionId } from "@/lib/question/validation";
 
 export type LocalTestSessionProgress = LocalTestSessionAccuracy & {
   currentQuestionIndex: number;

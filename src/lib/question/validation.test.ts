@@ -5,7 +5,7 @@ import {
   isQuestionType,
   parseCorrectOptionIds,
   parseQuestionOptions,
-} from "./question";
+} from "./validation";
 
 describe("question validation helpers", () => {
   it("recognizes supported question types", () => {

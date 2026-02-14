@@ -5,7 +5,7 @@ import type {
   Question,
   QuestionOption,
   QuestionOptionId,
-} from "@/lib/validation/question";
+} from "@/lib/question/validation";
 
 export type TestRunnerActions = {
   onEndTest: () => void;

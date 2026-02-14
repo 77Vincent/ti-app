@@ -1,5 +1,5 @@
 import { LOCAL_TEST_SESSION_MAX_QUEUED_QUESTIONS } from "@/lib/config/testPolicy";
-import type { Question } from "@/lib/validation/question";
+import type { Question } from "@/lib/question/validation";
 import type { LocalTestSessionSnapshot } from "./model";
 import { shiftLocalTestSessionSnapshotQuestion } from "./history";
 

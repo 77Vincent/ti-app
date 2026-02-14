@@ -8,7 +8,7 @@ import {
   type QuestionOptionId,
   parseCorrectOptionIds,
   parseQuestionOptions,
-} from "@/lib/validation/question";
+} from "@/lib/question/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 

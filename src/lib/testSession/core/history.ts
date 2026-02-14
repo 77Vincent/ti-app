@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/validation/question";
+import type { Question } from "@/lib/question/validation";
 import type {
   LocalTestSessionQuestionEntry,
   LocalTestSessionSnapshot,
