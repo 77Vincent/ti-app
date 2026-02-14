@@ -2,7 +2,7 @@ import { isNonEmptyString } from "@/lib/string";
 import type {
   LocalTestSessionQuestionEntry,
   LocalTestSessionSnapshot,
-} from "./state";
+} from "@/lib/testSession/core";
 
 function parseLocalTestSessionQuestionEntry(
   payload: unknown,

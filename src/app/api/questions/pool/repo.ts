@@ -9,7 +9,7 @@ import type {
   Question,
   QuestionOptionId,
 } from "@/lib/validation/question";
-import type { QuestionParam } from "@/lib/validation/testSession";
+import type { QuestionParam } from "@/lib/testSession/validation";
 
 type QuestionPoolOption = {
   id: QuestionOptionId;

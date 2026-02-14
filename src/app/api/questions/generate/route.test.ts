@@ -15,7 +15,7 @@ const {
   upsertQuestionPool: vi.fn(),
 }));
 
-vi.mock("@/lib/validation/testSession", () => ({
+vi.mock("@/lib/testSession/validation", () => ({
   parseQuestionParam,
 }));
 

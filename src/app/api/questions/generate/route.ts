@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseQuestionParam } from "@/lib/validation/testSession";
+import { parseQuestionParam } from "@/lib/testSession/validation";
 import { buildQuestion } from "./service/question";
 import { mapGeneratedQuestionToQuestionPoolInput } from "../pool/input";
 import {

@@ -1,5 +1,5 @@
 import type { Question } from "@/lib/validation/question";
-import type { QuestionParam } from "@/lib/validation/testSession";
+import type { QuestionParam } from "@/lib/testSession/validation";
 import type { QuestionPoolUpsertInput } from "./repo";
 
 type QuestionPoolFavoriteSource = Omit<QuestionPoolUpsertInput, "id"> & {

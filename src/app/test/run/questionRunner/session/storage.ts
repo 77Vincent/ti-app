@@ -2,7 +2,7 @@ import {
   parseTestSession,
   type TestParam,
   type TestSession,
-} from "@/lib/validation/testSession";
+} from "@/lib/testSession/validation";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
 import { QuestionRunnerApiError } from "../api/error";

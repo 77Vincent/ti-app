@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { QUESTION_TYPES } from "@/lib/meta";
-import { parseQuestionParam } from "@/lib/validation/testSession";
+import { parseQuestionParam } from "@/lib/testSession/validation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
 import {

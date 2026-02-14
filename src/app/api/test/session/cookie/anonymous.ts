@@ -3,7 +3,7 @@ import type { NextResponse } from "next/server";
 import {
   parseTestSession,
   type TestSession,
-} from "@/lib/validation/testSession";
+} from "@/lib/testSession/validation";
 import { ANONYMOUS_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
 import { isNonEmptyString } from "@/lib/string";

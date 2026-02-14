@@ -1,4 +1,4 @@
-import type { TestParam } from "@/lib/validation/testSession";
+import type { TestParam } from "@/lib/testSession/validation";
 import { prisma } from "@/lib/prisma";
 
 export type UserTestSessionWhere = {
