@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTestParam, parseTestSession } from "./testSession";
+import { parseTestParam, parseTestSession } from "@/lib/testSession/validation";
 
 describe("parseTestParam", () => {
   it("parses a valid test session payload", () => {
