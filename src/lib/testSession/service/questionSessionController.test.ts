@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createQuestionSessionController } from "./controller";
+import { createQuestionSessionController } from "./questionSessionController";
 
 describe("question session controller", () => {
   it("loads initial question", async () => {

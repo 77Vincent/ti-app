@@ -3,6 +3,11 @@ export {
   type LocalTestSessionProgress,
 } from "./localSession";
 export {
+  createQuestionSessionController,
+  type QuestionSessionController,
+  type QuestionSessionControllerInput,
+} from "./questionSessionController";
+export {
   clearLocalTestSession,
   consumeLocalTestSessionQueuedQuestion,
   countLocalTestSessionQueuedQuestions,
