@@ -11,7 +11,7 @@ import {
 const DB_SOURCE_BASE_SCORE = 100;
 
 function shouldUseQuestionPool(matchCount: number): boolean {
-  if (matchCount <= 0) {
+  if (matchCount <= 1) {
     return false;
   }
 
@@ -42,13 +42,11 @@ export async function POST(request: Request) {
     const poolMatchCount = await countQuestionPoolMatches(input);
 
     if (shouldUseQuestionPool(poolMatchCount)) {
-      const pooledQuestion = await readQuestionFromPool(input);
+      const pooledQuestions = await readQuestionFromPool(input);
 
-      if (pooledQuestion) {
-        return NextResponse.json({
-          question: pooledQuestion,
-          nextQuestion: null,
-        });
+      if (pooledQuestions) {
+        const [question, nextQuestion] = pooledQuestions;
+        return NextResponse.json({ question, nextQuestion });
       }
     }
 

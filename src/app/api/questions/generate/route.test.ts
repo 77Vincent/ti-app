@@ -82,7 +82,10 @@ describe("generate question route", () => {
   it("returns pooled question without generating", async () => {
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
     countQuestionPoolMatches.mockResolvedValueOnce(100);
-    readQuestionFromPool.mockResolvedValueOnce(VALID_QUESTION);
+    readQuestionFromPool.mockResolvedValueOnce([
+      VALID_QUESTION,
+      VALID_NEXT_QUESTION,
+    ]);
     const route = await import("./route");
 
     const response = await route.POST(
@@ -95,7 +98,7 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
-      nextQuestion: null,
+      nextQuestion: VALID_NEXT_QUESTION,
     });
     expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
     expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
