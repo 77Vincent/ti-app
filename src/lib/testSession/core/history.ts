@@ -2,7 +2,7 @@ import type { Question } from "@/lib/validation/question";
 import type {
   LocalTestSessionQuestionEntry,
   LocalTestSessionSnapshot,
-} from "./snapshot";
+} from "./model";
 
 export function shiftLocalTestSessionSnapshotQuestion(
   snapshot: LocalTestSessionSnapshot,

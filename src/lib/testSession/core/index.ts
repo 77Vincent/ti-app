@@ -1,11 +1,13 @@
+export type {
+  LocalTestSessionAccuracy,
+  LocalTestSessionQuestionEntry,
+  LocalTestSessionQuestionState,
+  LocalTestSessionSnapshot,
+} from "./model";
 export {
   calculateLocalTestSessionAccuracy,
   initializeLocalTestSessionSnapshot,
   toLocalTestSessionQuestionState,
-  type LocalTestSessionAccuracy,
-  type LocalTestSessionQuestionEntry,
-  type LocalTestSessionQuestionState,
-  type LocalTestSessionSnapshot,
 } from "./snapshot";
 export {
   shiftLocalTestSessionSnapshotQuestion,
