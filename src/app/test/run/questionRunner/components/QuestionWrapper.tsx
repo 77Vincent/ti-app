@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps, SignInDemand } from "../types";
-import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -97,6 +97,8 @@ export default function QuestionWrapper({
   const difficultyLabel = getDifficultyLabel(difficulty);
   const goalLabel = getGoalLabel(goal);
 
+  const END_TEST_LABEL = "End test"
+
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -141,18 +143,32 @@ export default function QuestionWrapper({
               <ElapsedSessionTimer startedAtMs={startedAtMs} />
             </span>
           </Tooltip>
-          <Tooltip content="End test">
-            <Button
-              aria-label="End test"
-              isIconOnly
-              onPress={onEndTest}
-              radius="full"
-              size="sm"
-              variant="light"
-            >
-              <LogOut aria-hidden size={18} />
-            </Button>
-          </Tooltip>
+
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Button
+                aria-label={END_TEST_LABEL}
+                isIconOnly
+                radius="full"
+                size="sm"
+                title={END_TEST_LABEL}
+                variant="light"
+              >
+                <LogOut aria-hidden size={18} />
+              </Button>
+            </DropdownTrigger>
+
+            <DropdownMenu>
+              <DropdownItem
+                key={END_TEST_LABEL}
+                textValue={END_TEST_LABEL}
+                onPress={onEndTest}
+                startContent={<LogOut aria-hidden size={18} />}
+              >
+                End test
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
 

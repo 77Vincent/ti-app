@@ -39,14 +39,11 @@ export default function SessionAccuracy({
   correctCount,
   submittedCount,
 }: SessionAccuracyProps) {
-  const accuracyRate =
-    submittedCount === 0 ? 0 : correctCount / submittedCount;
-  const accuracyTextClass = getSessionAccuracyTextClass(accuracyRate);
 
   return (
     <p className="inline-flex items-center gap-1.5 tabular-nums">
       <Target aria-hidden size={18} />
-      <span className={`${accuracyTextClass} font-medium`}>
+      <span>
         {formatSessionAccuracyLabel({
           correctCount,
           submittedCount,
