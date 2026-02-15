@@ -11,9 +11,10 @@ import BestTestTakers from "./components/statistics/BestTestTakers";
 
 export default function Home() {
   return (
-    <div className="space-y-4">
-      <section className="mx-auto max-w-5xl space-y-6 sm:space-y-7 px-4 text-center">
+    <div className="space-y-8">
+      <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8 px-4 text-center">
         <HeroBanner />
+
         <div className="space-y-3">
           <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
             Learning through <span className="text-primary-500">testing</span>
@@ -31,17 +32,9 @@ export default function Home() {
         </Button>
       </section>
 
-      <Divider className="mt-8"/>
+      <GlobalStatistics />
 
-      <section className="space-y-4">
-        <p className="text-xl font-medium">Global Statistics</p>
-        <GlobalStatistics />
-      </section>
-
-      <section className="space-y-4">
-        <p className="text-xl font-medium">Best test takers</p>
-        <BestTestTakers />
-      </section>
+      <BestTestTakers />
     </div>
   );
 }
