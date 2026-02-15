@@ -26,8 +26,8 @@ const primaryDark = {
   700: primary[200],
   800: primary[100],
   900: primary[50],
-  DEFAULT: primary.DEFAULT,
-  foreground: primary.foreground,
+  DEFAULT: primary[300],
+  foreground: "#000000",
 } as const;
 
 export default heroui({

@@ -117,9 +117,10 @@ export default function StartForm() {
             <Button
               color="primary"
               size="lg"
+              variant="bordered"
               key={option.value}
               onPress={() => handleSelectSubject(option.value)}
-              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
             >
               {option.label}
             </Button>
@@ -130,6 +131,7 @@ export default function StartForm() {
           <Button
             color="primary"
             size="lg"
+            variant="bordered"
             key={option.value}
             onPress={() => handleSelectSubcategory(option.value)}
           >
@@ -144,9 +146,10 @@ export default function StartForm() {
             <Button
               color="primary"
               size="lg"
+              variant="bordered"
               key={option.value}
               onPress={() => handleSelectDifficulty(option.value)}
-              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
             >
               {option.label}
             </Button>
@@ -161,8 +164,9 @@ export default function StartForm() {
               color="primary"
               key={option.value}
               size="lg"
+              variant="bordered"
               onPress={() => handleSelectGoal(option.value)}
-              startContent={createElement(Icon, { "aria-hidden": true, size: 16 })}
+              startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
             >
               {option.label}
             </Button>
