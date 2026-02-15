@@ -9,6 +9,7 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import type { TestSession } from "@/lib/testSession/validation";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { HeroBanner } from "@/app/components";
 
 export default function TestRunPage() {
   const router = useRouter();
@@ -52,7 +53,11 @@ export default function TestRunPage() {
   }
 
   return (
-    <section className="flex flex-1 justify-center">
+    <section className="relative flex flex-1 justify-center">
+      <div aria-hidden className="blur opacity-30 pointer-events-none absolute inset-x-0 top-0 z-0">
+        <HeroBanner />
+      </div>
+
       <QuestionRunner
         difficulty={params.difficulty}
         goal={params.goal}

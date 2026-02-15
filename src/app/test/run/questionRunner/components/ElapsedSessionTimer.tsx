@@ -33,7 +33,7 @@ export default function ElapsedSessionTimer({
   }, [startedAtMs]);
 
   return (
-    <p className="inline-flex items-center gap-1.5 tabular-nums">
+    <p className="inline-flex items-center font-medium gap-1.5 tabular-nums">
       <Timer aria-hidden size={20} />
       {formatElapsedTime(elapsedSeconds)}
     </p>

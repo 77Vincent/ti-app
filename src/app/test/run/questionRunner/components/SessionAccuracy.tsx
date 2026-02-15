@@ -41,7 +41,7 @@ export default function SessionAccuracy({
 }: SessionAccuracyProps) {
 
   return (
-    <p className="inline-flex items-center gap-1.5 tabular-nums">
+    <p className="inline-flex items-center gap-1.5 font-medium tabular-nums">
       <Target aria-hidden size={19} />
       <span>
         {formatSessionAccuracyLabel({

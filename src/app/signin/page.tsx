@@ -10,7 +10,7 @@ import { HeroBanner } from "@/app/components";
 export default function SignInPage() {
   return (
     <div className="relative">
-      <div aria-hidden className="blur-xs opacity-90 pointer-events-none absolute inset-x-0 top-0 z-0">
+      <div aria-hidden className="blur opacity-50 pointer-events-none absolute inset-x-0 top-0 z-0">
         <HeroBanner />
       </div>
 
