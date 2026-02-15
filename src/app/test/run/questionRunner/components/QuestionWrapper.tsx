@@ -104,7 +104,7 @@ export default function QuestionWrapper({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {currentQuestionIndex !== null ? (
-            <span className="font-bold tabular-nums">
+            <span className="font-bold text-lg tabular-nums">
               Q{currentQuestionIndex + 1}
             </span>
           ) : null}
@@ -123,7 +123,7 @@ export default function QuestionWrapper({
               <Star
                 aria-hidden
                 className={isFavorite ? "fill-current" : undefined}
-                size={18}
+                size={19}
               />
             </Button>
           </Tooltip>
@@ -154,7 +154,7 @@ export default function QuestionWrapper({
                 title={END_TEST_LABEL}
                 variant="light"
               >
-                <LogOut aria-hidden size={18} />
+                <LogOut aria-hidden size={20} />
               </Button>
             </DropdownTrigger>
 
@@ -163,7 +163,7 @@ export default function QuestionWrapper({
                 key={END_TEST_LABEL}
                 textValue={END_TEST_LABEL}
                 onPress={onEndTest}
-                startContent={<LogOut aria-hidden size={18} />}
+                startContent={<LogOut aria-hidden size={20} />}
               >
                 End test
               </DropdownItem>

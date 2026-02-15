@@ -34,7 +34,7 @@ export default function ElapsedSessionTimer({
 
   return (
     <p className="inline-flex items-center gap-1.5 tabular-nums">
-      <Timer aria-hidden size={18} />
+      <Timer aria-hidden size={20} />
       {formatElapsedTime(elapsedSeconds)}
     </p>
   );
