@@ -1,19 +1,19 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button, Divider } from "@heroui/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Link from "next/link";
 import { HeroBanner } from "./components";
 import { PlayIcon } from "lucide-react";
 import GlobalStatistics from "./components/statistics/GlobalStatistics";
+import BestTestTakers from "./components/statistics/BestTestTakers";
 
 
 export default function Home() {
   return (
-    <div className="space-y-8 sm:space-y-10">
-      <HeroBanner />
-
+    <div className="space-y-4">
       <section className="mx-auto max-w-5xl space-y-6 sm:space-y-7 px-4 text-center">
+        <HeroBanner />
         <div className="space-y-3">
           <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
             Learning through <span className="text-primary-500">testing</span>
@@ -29,16 +29,18 @@ export default function Home() {
         >
           Start
         </Button>
-
       </section>
 
+      <Divider className="mt-8"/>
+
       <section className="space-y-4">
-        <p className="text-2xl font-medium text-center">Global Statistics</p>
+        <p className="text-xl font-medium">Global Statistics</p>
         <GlobalStatistics />
       </section>
 
       <section className="space-y-4">
-        <p className="text-2xl font-medium text-center">Best test takers</p>
+        <p className="text-xl font-medium">Best test takers</p>
+        <BestTestTakers />
       </section>
     </div>
   );
