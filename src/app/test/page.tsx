@@ -46,7 +46,7 @@ export default function TestPage() {
 
   return (
     <section className="relative flex flex-1 justify-center">
-      <div aria-hidden className="blur-sm pointer-events-none absolute inset-x-0 top-0 z-0">
+      <div aria-hidden className="blur-xs opacity-90 pointer-events-none absolute inset-x-0 top-0 z-0">
         <HeroBanner />
       </div>
       <StartForm />

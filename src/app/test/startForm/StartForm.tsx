@@ -174,7 +174,7 @@ export default function StartForm() {
   return (
     <Card shadow="sm" className="w-full max-w-2xl self-start">
       <CardHeader className="pt-6">
-        <h1 className="mx-auto text-2xl font-medium">
+        <h1 className="mx-auto text-3xl font-medium">
           {START_FORM_STEP_TITLES[currentStep]}
         </h1>
       </CardHeader>
