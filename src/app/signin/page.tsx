@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { GOOGLE_PROVIDER_ID } from "@/app/auth/signIn";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Image from "next/image";
-import HeroBanner from "@/app/heroBanner/HeroBanner";
+import HeroBanner from "@/app/components/heroBanner/HeroBanner";
 
 export default function SignInPage() {
   return (
