@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import AppBar from "./appbar";
+import { AppBar } from "./components";
 import Providers from "./providers";
 
 export const metadata: Metadata = {

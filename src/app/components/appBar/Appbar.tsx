@@ -24,8 +24,8 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import {
   hasAuthenticatedUser,
   USER_MENU_LOGOUT_KEY,
-} from "./auth/sessionState";
-import { clearTestSession } from "./test/run/questionRunner/session/storage";
+} from "../../auth/sessionState";
+import { clearTestSession } from "../../test/run/questionRunner/session/storage";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
