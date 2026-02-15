@@ -3,7 +3,7 @@
 import { Button } from "@heroui/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Link from "next/link";
-import HeroBanner from "./home/HeroBanner";
+import HeroBanner from "./heroBanner/HeroBanner";
 
 export default function Home() {
   return (
