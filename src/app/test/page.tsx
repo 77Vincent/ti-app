@@ -7,6 +7,7 @@ import { StartForm } from "@/app/test/startForm";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { HeroBanner } from "../components";
 
 export default function TestPage() {
   const router = useRouter();
@@ -44,7 +45,10 @@ export default function TestPage() {
   }
 
   return (
-    <section className="flex flex-1 justify-center">
+    <section className="relative flex flex-1 justify-center">
+      <div aria-hidden className="blur-sm pointer-events-none absolute inset-x-0 top-0 z-0">
+        <HeroBanner />
+      </div>
       <StartForm />
     </section>
   );
