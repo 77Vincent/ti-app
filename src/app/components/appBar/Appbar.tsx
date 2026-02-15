@@ -26,6 +26,7 @@ import {
   USER_MENU_LOGOUT_KEY,
 } from "../../auth/sessionState";
 import { clearTestSession } from "../../test/run/questionRunner/session/storage";
+import Menu from "./Settings";
 
 export default function AppBar() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -153,23 +154,7 @@ export default function AppBar() {
               />
             </DropdownTrigger>
 
-            <DropdownMenu aria-label={SETTINGS_LABEL} closeOnSelect={false}>
-              <DropdownItem
-                key="theme-toggle"
-                textValue={DARK_MODE_LABEL}
-                startContent={<Moon aria-hidden="true" size={16} />}
-              >
-                <div className="flex w-full items-center justify-between gap-3">
-                  <span>{DARK_MODE_LABEL}</span>
-                  <Switch
-                    aria-label={DARK_MODE_LABEL}
-                    isSelected={isDark}
-                    onValueChange={(nextIsDark) => setTheme(nextIsDark ? "dark" : "light")}
-                    size="sm"
-                  />
-                </div>
-              </DropdownItem>
-            </DropdownMenu>
+            <Menu />
           </Dropdown>
         </NavbarItem>
       </NavbarContent>
