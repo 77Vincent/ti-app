@@ -4,6 +4,9 @@ import { Button } from "@heroui/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Link from "next/link";
 import { HeroBanner } from "./components";
+import { PlayIcon } from "lucide-react";
+import GlobalStatistics from "./components/statistics/GlobalStatistics";
+
 
 export default function Home() {
   return (
@@ -12,16 +15,30 @@ export default function Home() {
 
       <section className="mx-auto max-w-5xl space-y-6 sm:space-y-7 px-4 text-center">
         <div className="space-y-3">
-          <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
+          <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
             Learning through <span className="text-primary-500">testing</span>
           </h1>
-          <p className="text-xl sm:text-3xl font-light text-default-500">
-            Infinite high-quality, tailored questions.
+          <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
+            Infinite high-quality, tailored questions of various subjects.
           </p>
         </div>
-        <Button as={Link} color="primary" href={PAGE_PATHS.TEST} size="lg">
-          Test Now
+
+        <Button
+          as={Link} color="primary" href={PAGE_PATHS.TEST} size="lg"
+          endContent={<PlayIcon size={24} />}
+        >
+          Start
         </Button>
+
+      </section>
+
+      <section className="space-y-4">
+        <p className="text-2xl font-medium text-center">Global Statistics</p>
+        <GlobalStatistics />
+      </section>
+
+      <section className="space-y-4">
+        <p className="text-2xl font-medium text-center">Best test takers</p>
       </section>
     </div>
   );
