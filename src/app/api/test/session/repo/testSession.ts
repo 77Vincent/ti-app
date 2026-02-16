@@ -1,9 +1,17 @@
 import type { TestParam } from "@/lib/testSession/validation";
 import { prisma } from "@/lib/prisma";
 
-export type UserTestSessionWhere = {
+export type AuthTestSessionWhere = {
   userId: string;
 };
+
+export type AnonymousTestSessionWhere = {
+  anonymousSessionId: string;
+};
+
+export type TestSessionWhere =
+  | AuthTestSessionWhere
+  | AnonymousTestSessionWhere;
 
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
@@ -16,34 +24,67 @@ const TEST_RUN_PARAMS_SELECT = {
   subcategoryId: true,
 } as const;
 
+function isAuthTestSessionWhere(
+  where: TestSessionWhere,
+): where is AuthTestSessionWhere {
+  return "userId" in where;
+}
+
 export async function readTestSession(
-  where: UserTestSessionWhere,
-): Promise<{
-  id: string;
-  correctCount: number;
-  difficulty: string;
-  goal: string;
-  startedAt: Date;
-  submittedCount: number;
-  subjectId: string;
-  subcategoryId: string;
-} | null> {
-  return prisma.testSession.findUnique({
+  where: TestSessionWhere,
+) {
+  if (isAuthTestSessionWhere(where)) {
+    return prisma.testSession.findUnique({
+      where,
+      select: TEST_RUN_PARAMS_SELECT,
+    });
+  }
+
+  return prisma.anonymousTestSession.findUnique({
     where,
     select: TEST_RUN_PARAMS_SELECT,
   });
 }
 
 export async function upsertTestSession(
-  where: UserTestSessionWhere,
+  where: TestSessionWhere,
   id: string,
   params: TestParam,
   startedAt: Date,
 ): Promise<void> {
-  await prisma.testSession.upsert({
+  if (isAuthTestSessionWhere(where)) {
+    await prisma.testSession.upsert({
+      where,
+      create: {
+        id: id,
+        correctCount: 0,
+        difficulty: params.difficulty,
+        goal: params.goal,
+        startedAt,
+        submittedCount: 0,
+        subjectId: params.subjectId,
+        subcategoryId: params.subcategoryId,
+        userId: where.userId,
+      },
+      update: {
+        correctCount: 0,
+        id: id,
+        difficulty: params.difficulty,
+        goal: params.goal,
+        startedAt,
+        submittedCount: 0,
+        subjectId: params.subjectId,
+        subcategoryId: params.subcategoryId,
+      },
+    });
+    return;
+  }
+
+  await prisma.anonymousTestSession.upsert({
     where,
     create: {
       id: id,
+      anonymousSessionId: where.anonymousSessionId,
       correctCount: 0,
       difficulty: params.difficulty,
       goal: params.goal,
@@ -51,15 +92,12 @@ export async function upsertTestSession(
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
-      userId: where.userId,
     },
     update: {
-      correctCount: 0,
       id: id,
       difficulty: params.difficulty,
       goal: params.goal,
       startedAt,
-      submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
     },
@@ -67,30 +105,47 @@ export async function upsertTestSession(
 }
 
 export async function incrementTestSessionProgress(
-  where: UserTestSessionWhere,
+  where: TestSessionWhere,
   isCorrect: boolean,
 ): Promise<void> {
-  await prisma.testSession.updateMany({
-    where,
-    data: {
-      submittedCount: {
-        increment: 1,
-      },
-      ...(isCorrect
-        ? {
-            correctCount: {
-              increment: 1,
-            },
-          }
-        : {}),
+  const data = {
+    submittedCount: {
+      increment: 1,
     },
+    ...(isCorrect
+      ? {
+          correctCount: {
+            increment: 1,
+          },
+        }
+      : {}),
+  };
+
+  if (isAuthTestSessionWhere(where)) {
+    await prisma.testSession.updateMany({
+      where,
+      data,
+    });
+    return;
+  }
+
+  await prisma.anonymousTestSession.updateMany({
+    where,
+    data,
   });
 }
 
 export async function deleteTestSession(
-  where: UserTestSessionWhere,
+  where: TestSessionWhere,
 ): Promise<void> {
-  await prisma.testSession.deleteMany({
+  if (isAuthTestSessionWhere(where)) {
+    await prisma.testSession.deleteMany({
+      where,
+    });
+    return;
+  }
+
+  await prisma.anonymousTestSession.deleteMany({
     where,
   });
 }

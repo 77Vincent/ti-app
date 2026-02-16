@@ -1,16 +1,12 @@
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
-import {
-  parseTestSession,
-  type TestSession,
-} from "@/lib/testSession/validation";
 import { ANONYMOUS_TTL } from "@/lib/config/testPolicy";
 import { COOKIE_PATHS } from "@/lib/config/paths";
 import { isNonEmptyString } from "@/lib/string";
 
 const ANONYMOUS_TEST_SESSION_COOKIE_NAME = "ti-app-anon-test-session";
 
-export async function readAnonymousTestSessionCookie(): Promise<TestSession | null> {
+export async function readAnonymousTestSessionCookie(): Promise<string | null> {
   const cookieStore = await cookies();
   const rawSessionValue =
     cookieStore.get(ANONYMOUS_TEST_SESSION_COOKIE_NAME)?.value || null;
@@ -20,8 +16,7 @@ export async function readAnonymousTestSessionCookie(): Promise<TestSession | nu
   }
 
   try {
-    const parsed = JSON.parse(decodeURIComponent(rawSessionValue));
-    return parseTestSession(parsed);
+    return decodeURIComponent(rawSessionValue);
   } catch {
     return null;
   }
@@ -29,11 +24,11 @@ export async function readAnonymousTestSessionCookie(): Promise<TestSession | nu
 
 export function persistAnonymousTestSessionCookie(
   response: NextResponse,
-  session: TestSession,
+  anonymousSessionId: string,
 ): NextResponse {
   response.cookies.set(
     ANONYMOUS_TEST_SESSION_COOKIE_NAME,
-    encodeURIComponent(JSON.stringify(session)),
+    encodeURIComponent(anonymousSessionId),
     {
       httpOnly: true,
       maxAge: ANONYMOUS_TTL,

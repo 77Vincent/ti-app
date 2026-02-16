@@ -3,17 +3,13 @@ import {
   parseTestParam,
   type TestSession,
 } from "@/lib/testSession/validation";
+import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
 } from "./cookie/anonymous";
-import {
-  incrementAnonymousQuestionCountCookie,
-  readAnonymousQuestionCount,
-} from "./cookie/anonymousQuestionCount";
 import { readAuthenticatedUserId } from "./auth";
-import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
 import {
   deleteTestSession,
   incrementTestSessionProgress,
@@ -26,11 +22,17 @@ export const runtime = "nodejs";
 async function readActiveSession(
   userId: string | null,
 ): Promise<TestSession | null> {
-  if (!userId) {
-    return readAnonymousTestSessionCookie();
-  }
+  const session = userId
+    ? await readTestSession({ userId })
+    : await (async () => {
+        const anonymousSessionId = await readAnonymousTestSessionCookie();
+        if (!anonymousSessionId) {
+          return null;
+        }
 
-  const session = await readTestSession({ userId });
+        return readTestSession({ anonymousSessionId });
+      })();
+
   if (!session) {
     return null;
   }
@@ -91,9 +93,13 @@ export async function POST(request: Request) {
 
   if (userId) {
     await upsertTestSession({ userId }, id, params, startedAt);
-  } else {
-    persistAnonymousTestSessionCookie(response, session);
+    return response;
   }
+
+  const anonymousSessionId =
+    (await readAnonymousTestSessionCookie()) ?? crypto.randomUUID();
+  await upsertTestSession({ anonymousSessionId }, id, params, startedAt);
+  persistAnonymousTestSessionCookie(response, anonymousSessionId);
 
   return response;
 }
@@ -104,6 +110,13 @@ export async function DELETE() {
 
   if (userId) {
     await deleteTestSession({ userId });
+    clearAnonymousTestSessionCookie(response);
+    return response;
+  }
+
+  const anonymousSessionId = await readAnonymousTestSessionCookie();
+  if (anonymousSessionId) {
+    await deleteTestSession({ anonymousSessionId });
   }
 
   clearAnonymousTestSessionCookie(response);
@@ -117,29 +130,47 @@ export async function PATCH(request: Request) {
   try {
     body = await request.json();
   } catch {
-    body = null;
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
   const userId = await readAuthenticatedUserId();
   const response = NextResponse.json({ ok: true });
+  const isCorrect = (body as { isCorrect?: unknown } | null)?.isCorrect;
+  if (typeof isCorrect !== "boolean") {
+    return NextResponse.json(
+      {
+        error: "isCorrect must be a boolean.",
+      },
+      { status: 400 },
+    );
+  }
 
   if (userId) {
-    const isCorrect = (body as { isCorrect?: unknown } | null)?.isCorrect;
-    if (typeof isCorrect !== "boolean") {
-      return NextResponse.json(
-        {
-          error: "isCorrect must be a boolean.",
-        },
-        { status: 400 },
-      );
-    }
-
     await incrementTestSessionProgress({ userId }, isCorrect);
     return response;
   }
 
-  const anonymousQuestionCount = await readAnonymousQuestionCount();
-  if (anonymousQuestionCount >= MAX_ANONYMOUS_QUESTION_COUNT) {
+  const anonymousSessionId = await readAnonymousTestSessionCookie();
+  if (!anonymousSessionId) {
+    return NextResponse.json(
+      {
+        error: "Anonymous test session not found.",
+      },
+      { status: 404 },
+    );
+  }
+
+  const session = await readTestSession({ anonymousSessionId });
+  if (!session) {
+    return NextResponse.json(
+      {
+        error: "Anonymous test session not found.",
+      },
+      { status: 404 },
+    );
+  }
+
+  if (session.submittedCount >= MAX_ANONYMOUS_QUESTION_COUNT) {
     return NextResponse.json(
       {
         error: `You have reached the anonymous limit of ${MAX_ANONYMOUS_QUESTION_COUNT} questions. Please log in to continue.`,
@@ -148,5 +179,6 @@ export async function PATCH(request: Request) {
     );
   }
 
-  return incrementAnonymousQuestionCountCookie(response, anonymousQuestionCount);
+  await incrementTestSessionProgress({ anonymousSessionId }, isCorrect);
+  return response;
 }

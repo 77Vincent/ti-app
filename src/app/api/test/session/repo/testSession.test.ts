@@ -1,12 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  anonymousTestSessionDeleteMany,
+  anonymousTestSessionFindUnique,
+  anonymousTestSessionUpdateMany,
+  anonymousTestSessionUpsert,
   testSessionDeleteMany,
   testSessionFindUnique,
   testSessionUpdateMany,
   testSessionUpsert,
 } =
   vi.hoisted(() => ({
+    anonymousTestSessionDeleteMany: vi.fn(),
+    anonymousTestSessionFindUnique: vi.fn(),
+    anonymousTestSessionUpdateMany: vi.fn(),
+    anonymousTestSessionUpsert: vi.fn(),
     testSessionDeleteMany: vi.fn(),
     testSessionFindUnique: vi.fn(),
     testSessionUpdateMany: vi.fn(),
@@ -15,6 +23,12 @@ const {
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    anonymousTestSession: {
+      deleteMany: anonymousTestSessionDeleteMany,
+      findUnique: anonymousTestSessionFindUnique,
+      updateMany: anonymousTestSessionUpdateMany,
+      upsert: anonymousTestSessionUpsert,
+    },
     testSession: {
       deleteMany: testSessionDeleteMany,
       findUnique: testSessionFindUnique,
@@ -33,6 +47,10 @@ import {
 
 describe("test session repo", () => {
   beforeEach(() => {
+    anonymousTestSessionDeleteMany.mockReset();
+    anonymousTestSessionFindUnique.mockReset();
+    anonymousTestSessionUpdateMany.mockReset();
+    anonymousTestSessionUpsert.mockReset();
     testSessionDeleteMany.mockReset();
     testSessionFindUnique.mockReset();
     testSessionUpdateMany.mockReset();
@@ -75,6 +93,48 @@ describe("test session repo", () => {
       },
       where: {
         userId: "user-1",
+      },
+    });
+  });
+
+  it("reads a stored anonymous test session payload", async () => {
+    anonymousTestSessionFindUnique.mockResolvedValueOnce({
+      id: "anon-session-1",
+      correctCount: 2,
+      difficulty: "advanced",
+      goal: "exam",
+      startedAt: new Date("2026-02-12T09:00:00.000Z"),
+      submittedCount: 4,
+      subjectId: "language",
+      subcategoryId: "japanese",
+    });
+
+    await expect(
+      readTestSession({ anonymousSessionId: "anon-1" }),
+    ).resolves.toEqual({
+      id: "anon-session-1",
+      correctCount: 2,
+      difficulty: "advanced",
+      goal: "exam",
+      startedAt: new Date("2026-02-12T09:00:00.000Z"),
+      submittedCount: 4,
+      subjectId: "language",
+      subcategoryId: "japanese",
+    });
+
+    expect(anonymousTestSessionFindUnique).toHaveBeenCalledWith({
+      select: {
+        id: true,
+        correctCount: true,
+        difficulty: true,
+        goal: true,
+        startedAt: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+      },
+      where: {
+        anonymousSessionId: "anon-1",
       },
     });
   });
@@ -123,6 +183,48 @@ describe("test session repo", () => {
     });
   });
 
+  it("upserts anonymous test session", async () => {
+    anonymousTestSessionUpsert.mockResolvedValueOnce(undefined);
+    const startedAt = new Date("2026-02-12T08:00:00.000Z");
+
+    await upsertTestSession(
+      { anonymousSessionId: "anon-1" },
+      "anon-session-1",
+      {
+        difficulty: "beginner",
+        goal: "study",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      startedAt,
+    );
+
+    expect(anonymousTestSessionUpsert).toHaveBeenCalledWith({
+      create: {
+        id: "anon-session-1",
+        anonymousSessionId: "anon-1",
+        correctCount: 0,
+        difficulty: "beginner",
+        goal: "study",
+        startedAt,
+        submittedCount: 0,
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      update: {
+        id: "anon-session-1",
+        difficulty: "beginner",
+        goal: "study",
+        startedAt,
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      where: {
+        anonymousSessionId: "anon-1",
+      },
+    });
+  });
+
   it("increments submission count for incorrect answer", async () => {
     testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
@@ -131,6 +233,23 @@ describe("test session repo", () => {
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
         userId: "user-1",
+      },
+      data: {
+        submittedCount: {
+          increment: 1,
+        },
+      },
+    });
+  });
+
+  it("increments anonymous submission count for incorrect answer", async () => {
+    anonymousTestSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+
+    await incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, false);
+
+    expect(anonymousTestSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        anonymousSessionId: "anon-1",
       },
       data: {
         submittedCount: {
@@ -160,6 +279,26 @@ describe("test session repo", () => {
     });
   });
 
+  it("increments anonymous submission and correct counts for correct answer", async () => {
+    anonymousTestSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+
+    await incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, true);
+
+    expect(anonymousTestSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        anonymousSessionId: "anon-1",
+      },
+      data: {
+        submittedCount: {
+          increment: 1,
+        },
+        correctCount: {
+          increment: 1,
+        },
+      },
+    });
+  });
+
   it("deletes by identity selector", async () => {
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
@@ -168,6 +307,18 @@ describe("test session repo", () => {
     expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
         userId: "user-1",
+      },
+    });
+  });
+
+  it("deletes anonymous session by identity selector", async () => {
+    anonymousTestSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
+
+    await deleteTestSession({ anonymousSessionId: "anon-1" });
+
+    expect(anonymousTestSessionDeleteMany).toHaveBeenCalledWith({
+      where: {
+        anonymousSessionId: "anon-1",
       },
     });
   });

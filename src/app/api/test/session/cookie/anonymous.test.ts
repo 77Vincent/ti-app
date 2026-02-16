@@ -33,31 +33,11 @@ describe("anonymous session cookie helpers", () => {
       }
 
       return {
-        value: encodeURIComponent(
-          JSON.stringify({
-            correctCount: 0,
-            difficulty: "beginner",
-            goal: "study",
-            id: "session-1",
-            startedAtMs: 1_738_000_000_000,
-            submittedCount: 0,
-            subjectId: "language",
-            subcategoryId: "english",
-          }),
-        ),
+        value: encodeURIComponent("anon-session-1"),
       };
     });
 
-    await expect(readAnonymousTestSessionCookie()).resolves.toEqual({
-      difficulty: "beginner",
-      goal: "study",
-      id: "session-1",
-      correctCount: 0,
-      startedAtMs: 1_738_000_000_000,
-      submittedCount: 0,
-      subjectId: "language",
-      subcategoryId: "english",
-    });
+    await expect(readAnonymousTestSessionCookie()).resolves.toBe("anon-session-1");
   });
 
   it("returns null when anonymous test session cookie is malformed", async () => {
@@ -67,7 +47,7 @@ describe("anonymous session cookie helpers", () => {
       }
 
       return {
-        value: "not-json",
+        value: "%",
       };
     });
 
@@ -80,33 +60,13 @@ describe("anonymous session cookie helpers", () => {
 
     const result = persistAnonymousTestSessionCookie(
       response as unknown as NextResponse,
-      {
-        correctCount: 0,
-        difficulty: "beginner",
-        goal: "study",
-        id: "session-1",
-        startedAtMs: 1_738_000_000_000,
-        submittedCount: 0,
-        subjectId: "language",
-        subcategoryId: "english",
-      },
+      "anon-session-1",
     );
 
     expect(result).toBe(response);
     expect(set).toHaveBeenCalledWith(
       "ti-app-anon-test-session",
-      encodeURIComponent(
-        JSON.stringify({
-          correctCount: 0,
-          difficulty: "beginner",
-          goal: "study",
-          id: "session-1",
-          startedAtMs: 1_738_000_000_000,
-          submittedCount: 0,
-          subjectId: "language",
-          subcategoryId: "english",
-        }),
-      ),
+      encodeURIComponent("anon-session-1"),
       {
         httpOnly: true,
         maxAge: ANONYMOUS_TTL,
