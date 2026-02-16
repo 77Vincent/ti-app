@@ -12,11 +12,9 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Switch,
 } from "@heroui/react";
-import { LogOut, Moon, Settings, User, User2 } from "lucide-react";
+import { LogOut, Settings, User, User2 } from "lucide-react";
 import { getSession, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { type Key, useEffect, useState } from "react";
@@ -29,13 +27,10 @@ import { clearTestSession } from "../../test/run/questionRunner/session/storage"
 import Menu from "./Settings";
 
 export default function AppBar() {
-  const { resolvedTheme, setTheme } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userDisplayName, setUserDisplayName] = useState("");
   const SETTINGS_LABEL = "Settings";
   const SIGN_IN_LABEL = "Sign in";
-  const DARK_MODE_LABEL = "Dark mode";
-  const isDark = resolvedTheme === "dark";
   const USER_MENU_LABEL = "User menu";
   const USER_NAME_KEY = "user-name";
 
