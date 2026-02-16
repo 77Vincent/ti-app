@@ -1,10 +1,6 @@
 import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  fetchQuestion,
-  isAnonymousQuestionLimitError,
-} from "./question";
-import { QuestionRunnerApiError } from "./error";
+import { fetchQuestion } from "./question";
 import type { Question } from "../types";
 
 const VALID_INPUT = {
@@ -87,25 +83,5 @@ describe("fetchQuestion", () => {
       name: "QuestionRunnerApiError",
       status: 403,
     });
-  });
-});
-
-describe("isAnonymousQuestionLimitError", () => {
-  it("returns true for anonymous limit request error", () => {
-    expect(
-      isAnonymousQuestionLimitError(
-        new QuestionRunnerApiError("limit", 403),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns false for non-limit errors", () => {
-    expect(
-      isAnonymousQuestionLimitError(
-        new QuestionRunnerApiError("not-limit", 500),
-      ),
-    ).toBe(false);
-    expect(isAnonymousQuestionLimitError(new Error("x"))).toBe(false);
-    expect(isAnonymousQuestionLimitError("x")).toBe(false);
   });
 });

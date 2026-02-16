@@ -9,8 +9,8 @@ import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import {
   fetchQuestion,
-  isAnonymousQuestionLimitError,
 } from "../api";
+import { QuestionRunnerApiError } from "../api/error";
 import { recordQuestionResult } from "../session/storage";
 import type {
   Question as QuestionType,
@@ -96,11 +96,6 @@ export function useQuestion({
   const { selectedOptionIds, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
   const showLoadError = useCallback((error: unknown) => {
-    if (isAnonymousQuestionLimitError(error)) {
-      setSignInDemand("more_questions");
-      return;
-    }
-
     toast.error(error, {
       fallbackDescription: "Failed to load question.",
     });
@@ -224,7 +219,8 @@ export function useQuestion({
       onSubmitRequestFinished: () => {
         dispatchUiState({ type: "submitFetchFinished" });
       },
-      isQuestionLimitError: isAnonymousQuestionLimitError,
+      isQuestionLimitError: (error) =>
+        error instanceof QuestionRunnerApiError && error.status === 403,
       onQuestionLimitReached: () => {
         setSignInDemand("more_questions");
       },

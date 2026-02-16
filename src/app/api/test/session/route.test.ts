@@ -53,7 +53,7 @@ describe("test session route PATCH", () => {
     });
   });
 
-  it("does not apply anonymous limit for authenticated users", async () => {
+  it("increments authenticated test session progress", async () => {
     readAuthenticatedUserId.mockResolvedValue("user-1");
 
     const response = await PATCH(

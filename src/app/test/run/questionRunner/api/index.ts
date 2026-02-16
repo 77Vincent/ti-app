@@ -1,6 +1,5 @@
 export {
   fetchQuestion,
-  isAnonymousQuestionLimitError,
   type FetchQuestionInput,
   type FetchQuestionResult,
 } from "./question";

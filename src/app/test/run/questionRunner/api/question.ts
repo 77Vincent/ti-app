@@ -25,10 +25,6 @@ type FetchQuestionResponse = {
   error?: string;
 };
 
-export function isAnonymousQuestionLimitError(error: unknown): boolean {
-  return error instanceof QuestionRunnerApiError && error.status === 403;
-}
-
 export async function fetchQuestion(
   input: FetchQuestionInput,
 ): Promise<FetchQuestionResult> {
