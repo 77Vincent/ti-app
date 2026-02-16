@@ -98,6 +98,7 @@ export default function QuestionWrapper({
   const goalLabel = getGoalLabel(goal);
 
   const END_TEST_LABEL = "End test"
+  const isEndTestDisabled = isSubmitting;
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -149,6 +150,7 @@ export default function QuestionWrapper({
               <Button
                 aria-label={END_TEST_LABEL}
                 isIconOnly
+                isDisabled={isEndTestDisabled}
                 radius="full"
                 size="sm"
                 title={END_TEST_LABEL}

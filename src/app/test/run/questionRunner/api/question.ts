@@ -14,20 +14,14 @@ export type FetchQuestionInput = {
   difficulty: DifficultyEnum;
 };
 
-export type FetchQuestionResult = {
-  question: Question;
-  nextQuestion: Question;
-};
-
 type FetchQuestionResponse = {
   question?: Question;
-  nextQuestion?: Question;
   error?: string;
 };
 
 export async function fetchQuestion(
   input: FetchQuestionInput,
-): Promise<FetchQuestionResult> {
+): Promise<Question> {
   const response = await fetch(API_PATHS.QUESTIONS_GENERATE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -43,15 +37,12 @@ export async function fetchQuestion(
 
   const payload = (await response.json()) as FetchQuestionResponse;
 
-  if (!payload.question || !payload.nextQuestion) {
+  if (!payload.question) {
     throw new QuestionRunnerApiError(
       payload.error ?? "Failed to load question.",
       response.status,
     );
   }
 
-  return {
-    question: payload.question,
-    nextQuestion: payload.nextQuestion,
-  };
+  return payload.question;
 }

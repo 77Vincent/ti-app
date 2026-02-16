@@ -90,8 +90,23 @@ model QuestionPool {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   favorites        FavoriteQuestion[]
+  testSessionLinks TestSessionQuestionPool[]
 
   @@index([subjectId, subcategoryId, difficulty, randomKey])
+}
+
+model TestSessionQuestionPool {
+  id        String   @id @default(cuid())
+  sessionId String
+  questionId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question  QuestionPool @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, questionId])
+  @@index([sessionId, createdAt])
+  @@index([questionId])
 }
 
 model FavoriteQuestion {

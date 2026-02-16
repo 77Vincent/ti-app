@@ -25,6 +25,11 @@ type QuestionPoolReadRow = {
   correctOptionIds: unknown;
 };
 
+type TestSessionQuestionPoolReadRow = {
+  id: string;
+  question: QuestionPoolReadRow;
+};
+
 const QUESTION_POOL_READ_SELECT = {
   id: true,
   questionType: true,
@@ -44,67 +49,43 @@ export type QuestionPoolUpsertInput = {
   correctOptionIds: readonly QuestionOptionId[];
 };
 
-export async function countQuestionPoolMatches(
+export async function consumeQuestionFromTestSessionPool(
+  sessionId: string,
   input: QuestionParam,
-): Promise<number> {
-  return prisma.questionPool.count({
-    where: {
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
-    },
-  });
-}
-
-export async function readQuestionFromPool(
-  input: QuestionParam,
-): Promise<[Question, Question] | null> {
-  const where = {
-    subjectId: input.subjectId,
-    subcategoryId: input.subcategoryId,
-    difficulty: input.difficulty,
-  } as const;
-
-  const randomThreshold = Math.random();
-
-  const rowsAfterThreshold = await prisma.questionPool.findMany({
-    where: {
-      ...where,
-      randomKey: {
-        gte: randomThreshold,
+): Promise<Question | null> {
+  return prisma.$transaction(async (tx) => {
+    const row = await tx.testSessionQuestionPool.findFirst({
+      where: {
+        sessionId,
+        question: {
+          subjectId: input.subjectId,
+          subcategoryId: input.subcategoryId,
+          difficulty: input.difficulty,
+        },
       },
-    },
-    orderBy: { randomKey: "asc" },
-    take: 2,
-    select: QUESTION_POOL_READ_SELECT,
+      orderBy: {
+        createdAt: "asc",
+      },
+      select: {
+        id: true,
+        question: {
+          select: QUESTION_POOL_READ_SELECT,
+        },
+      },
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    await tx.testSessionQuestionPool.delete({
+      where: {
+        id: row.id,
+      },
+    });
+
+    return toQuestion((row as TestSessionQuestionPoolReadRow).question);
   });
-
-  const remainingCount = 2 - rowsAfterThreshold.length;
-  const rows =
-    remainingCount <= 0
-      ? rowsAfterThreshold
-      : [
-          ...rowsAfterThreshold,
-          ...(await prisma.questionPool.findMany({
-            where: {
-              ...where,
-              id: {
-                notIn: rowsAfterThreshold.map((row) => row.id),
-              },
-            },
-            orderBy: { randomKey: "asc" },
-            take: remainingCount,
-            select: QUESTION_POOL_READ_SELECT,
-          })),
-        ];
-
-  if (rows.length !== 2) {
-    return null;
-  }
-
-  const [firstRow, secondRow] = rows as [QuestionPoolReadRow, QuestionPoolReadRow];
-
-  return [toQuestion(firstRow), toQuestion(secondRow)];
 }
 
 function toQuestion(row: QuestionPoolReadRow): Question {
@@ -143,5 +124,24 @@ export async function upsertQuestionPool(
       options: input.options,
       correctOptionIds: input.correctOptionIds,
     },
+  });
+}
+
+export async function upsertTestSessionQuestionPoolLink(
+  sessionId: string,
+  questionId: string,
+): Promise<void> {
+  await prisma.testSessionQuestionPool.upsert({
+    where: {
+      sessionId_questionId: {
+        sessionId,
+        questionId,
+      },
+    },
+    create: {
+      sessionId,
+      questionId,
+    },
+    update: {},
   });
 }

@@ -22,44 +22,27 @@ const MOCK_QUESTION: Question = {
   correctOptionIds: ["A"],
 };
 
-const MOCK_NEXT_QUESTION: Question = {
-  id: "q-2",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-  prompt: "Prompt 2",
-  options: [
-    { id: "A", text: "Option A2", explanation: "A2" },
-    { id: "B", text: "Option B2", explanation: "B2" },
-    { id: "C", text: "Option C2", explanation: "C2" },
-    { id: "D", text: "Option D2", explanation: "D2" },
-  ],
-  correctOptionIds: ["B"],
-};
-
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
 describe("fetchQuestion", () => {
-  it("returns two questions when response is ok", async () => {
+  it("returns one question when response is ok", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
         JSON.stringify({
           question: MOCK_QUESTION,
-          nextQuestion: MOCK_NEXT_QUESTION,
         }),
         { status: 200 },
       ),
     );
 
-    await expect(fetchQuestion(VALID_INPUT)).resolves.toEqual({
-      question: MOCK_QUESTION,
-      nextQuestion: MOCK_NEXT_QUESTION,
-    });
+    await expect(fetchQuestion(VALID_INPUT)).resolves.toEqual(MOCK_QUESTION);
   });
 
-  it("throws when next question is missing in response", async () => {
+  it("throws when question is missing in response", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ question: MOCK_QUESTION }), { status: 200 }),
+      new Response(JSON.stringify({}), { status: 200 }),
     );
 
     await expect(fetchQuestion(VALID_INPUT)).rejects.toMatchObject({

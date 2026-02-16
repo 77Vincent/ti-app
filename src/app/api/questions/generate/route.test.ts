@@ -2,18 +2,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
-  countQuestionPoolMatches,
+  consumeQuestionFromTestSessionPool,
   generateMockQuestion,
   generateQuestionWithAI,
+  isTestSessionActive,
   parseQuestionParam,
-  readQuestionFromPool,
+  readAnonymousTestSessionCookie,
+  readAuthenticatedUserId,
+  readTestSession,
+  upsertTestSessionQuestionPoolLink,
   upsertQuestionPool,
 } = vi.hoisted(() => ({
-  countQuestionPoolMatches: vi.fn(),
+  consumeQuestionFromTestSessionPool: vi.fn(),
   generateMockQuestion: vi.fn(),
   generateQuestionWithAI: vi.fn(),
+  isTestSessionActive: vi.fn(),
   parseQuestionParam: vi.fn(),
-  readQuestionFromPool: vi.fn(),
+  readAnonymousTestSessionCookie: vi.fn(),
+  readAuthenticatedUserId: vi.fn(),
+  readTestSession: vi.fn(),
+  upsertTestSessionQuestionPoolLink: vi.fn(),
   upsertQuestionPool: vi.fn(),
 }));
 
@@ -30,9 +38,22 @@ vi.mock("./mock", () => ({
 }));
 
 vi.mock("../pool/repo", () => ({
-  countQuestionPoolMatches,
-  readQuestionFromPool,
+  consumeQuestionFromTestSessionPool,
+  upsertTestSessionQuestionPoolLink,
   upsertQuestionPool,
+}));
+
+vi.mock("@/app/api/test/session/auth", () => ({
+  readAuthenticatedUserId,
+}));
+
+vi.mock("@/app/api/test/session/cookie/anonymous", () => ({
+  readAnonymousTestSessionCookie,
+}));
+
+vi.mock("@/app/api/test/session/repo/testSession", () => ({
+  isTestSessionActive,
+  readTestSession,
 }));
 
 const VALID_INPUT = {
@@ -76,22 +97,39 @@ function mockTwoGeneratedQuestions() {
 describe("generate question route", () => {
   beforeEach(() => {
     vi.resetModules();
-    countQuestionPoolMatches.mockReset();
+    consumeQuestionFromTestSessionPool.mockReset();
     generateMockQuestion.mockReset();
     generateQuestionWithAI.mockReset();
+    isTestSessionActive.mockReset();
     parseQuestionParam.mockReset();
-    readQuestionFromPool.mockReset();
+    readAnonymousTestSessionCookie.mockReset();
+    readAuthenticatedUserId.mockReset();
+    readTestSession.mockReset();
+    upsertTestSessionQuestionPoolLink.mockReset();
     upsertQuestionPool.mockReset();
     process.env.OPENAI_API_KEY = "test-key";
 
     parseQuestionParam.mockReturnValue(VALID_INPUT);
-    countQuestionPoolMatches.mockResolvedValue(0);
-    readQuestionFromPool.mockResolvedValue(null);
+    isTestSessionActive.mockResolvedValue(true);
+    readAuthenticatedUserId.mockResolvedValue(null);
+    readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
+    readTestSession.mockResolvedValue({
+      id: "session-1",
+      correctCount: 0,
+      difficulty: "beginner",
+      goal: "study",
+      startedAt: new Date("2026-02-12T09:00:00.000Z"),
+      submittedCount: 0,
+      subjectId: "language",
+      subcategoryId: "english",
+    });
+    consumeQuestionFromTestSessionPool.mockResolvedValue(null);
     generateQuestionWithAI.mockResolvedValue([
       VALID_QUESTION,
       VALID_NEXT_QUESTION,
     ]);
     generateMockQuestion.mockReturnValue(VALID_QUESTION);
+    upsertTestSessionQuestionPoolLink.mockResolvedValue(undefined);
     upsertQuestionPool.mockResolvedValue(undefined);
   });
 
@@ -104,12 +142,11 @@ describe("generate question route", () => {
     delete process.env.OPENAI_API_KEY;
   });
 
-  it("returns pooled question without generating", async () => {
-    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
-    countQuestionPoolMatches.mockResolvedValueOnce(100);
-    readQuestionFromPool.mockResolvedValueOnce([
-      VALID_QUESTION,
+  it("returns test-session pooled questions first", async () => {
+    consumeQuestionFromTestSessionPool.mockResolvedValueOnce(VALID_QUESTION);
+    generateQuestionWithAI.mockResolvedValueOnce([
       VALID_NEXT_QUESTION,
+      VALID_QUESTION,
     ]);
     const route = await import("./route");
 
@@ -123,16 +160,14 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
-      nextQuestion: VALID_NEXT_QUESTION,
     });
-    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
-    expect(readQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
-    expect(generateQuestionWithAI).not.toHaveBeenCalled();
-    expect(upsertQuestionPool).not.toHaveBeenCalled();
-    randomSpy.mockRestore();
+    expect(consumeQuestionFromTestSessionPool).toHaveBeenCalledWith(
+      "session-1",
+      VALID_INPUT,
+    );
   });
 
-  it("returns question when request succeeds", async () => {
+  it("returns generated questions when session pool misses", async () => {
     mockTwoGeneratedQuestions();
     const route = await import("./route");
 
@@ -146,10 +181,11 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
-      nextQuestion: VALID_NEXT_QUESTION,
     });
-    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(consumeQuestionFromTestSessionPool).toHaveBeenCalledWith(
+      "session-1",
+      VALID_INPUT,
+    );
     expect(generateQuestionWithAI).toHaveBeenCalledTimes(1);
     expect(generateQuestionWithAI).toHaveBeenCalledWith(VALID_INPUT);
     expect(upsertQuestionPool).toHaveBeenNthCalledWith(1, {
@@ -172,11 +208,20 @@ describe("generate question route", () => {
       options: VALID_NEXT_QUESTION.options,
       correctOptionIds: VALID_NEXT_QUESTION.correctOptionIds,
     });
+    expect(upsertTestSessionQuestionPoolLink).toHaveBeenNthCalledWith(
+      1,
+      "session-1",
+      VALID_QUESTION.id,
+    );
+    expect(upsertTestSessionQuestionPoolLink).toHaveBeenNthCalledWith(
+      2,
+      "session-1",
+      VALID_NEXT_QUESTION.id,
+    );
   });
 
   it("returns 400 for invalid request payload", async () => {
     parseQuestionParam.mockReturnValueOnce(null);
-
     const route = await import("./route");
 
     const response = await route.POST(
@@ -190,15 +235,14 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "subjectId, subcategoryId, and difficulty are required.",
     });
-    expect(countQuestionPoolMatches).not.toHaveBeenCalled();
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(consumeQuestionFromTestSessionPool).not.toHaveBeenCalled();
     expect(generateQuestionWithAI).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
+    expect(upsertTestSessionQuestionPoolLink).not.toHaveBeenCalled();
   });
 
   it("returns 500 when question generation throws", async () => {
     generateQuestionWithAI.mockRejectedValueOnce(new Error("provider down"));
-
     const route = await import("./route");
 
     const response = await route.POST(
@@ -212,9 +256,12 @@ describe("generate question route", () => {
     await expect(response.json()).resolves.toEqual({
       error: "provider down",
     });
-    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(consumeQuestionFromTestSessionPool).toHaveBeenCalledWith(
+      "session-1",
+      VALID_INPUT,
+    );
     expect(upsertQuestionPool).not.toHaveBeenCalled();
+    expect(upsertTestSessionQuestionPoolLink).not.toHaveBeenCalled();
   });
 
   it("returns question even when pool persistence fails", async () => {
@@ -235,11 +282,13 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
-      nextQuestion: VALID_NEXT_QUESTION,
     });
-    expect(countQuestionPoolMatches).toHaveBeenCalledWith(VALID_INPUT);
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(consumeQuestionFromTestSessionPool).toHaveBeenCalledWith(
+      "session-1",
+      VALID_INPUT,
+    );
     expect(upsertQuestionPool).toHaveBeenCalledTimes(2);
+    expect(upsertTestSessionQuestionPoolLink).toHaveBeenCalledTimes(2);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "Failed to persist generated question.",
       expect.any(Error),
@@ -247,35 +296,9 @@ describe("generate question route", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it("skips pool read when probability falls through", async () => {
-    mockTwoGeneratedQuestions();
-    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.9);
-    countQuestionPoolMatches.mockResolvedValueOnce(100);
-    const route = await import("./route");
-
-    const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
-        body: JSON.stringify(VALID_INPUT),
-        method: "POST",
-      }),
-    );
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      question: VALID_QUESTION,
-      nextQuestion: VALID_NEXT_QUESTION,
-    });
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
-    expect(generateQuestionWithAI).toHaveBeenCalledTimes(1);
-    expect(generateQuestionWithAI).toHaveBeenCalledWith(VALID_INPUT);
-    randomSpy.mockRestore();
-  });
-
   it("short-circuits to mock questions when OPENAI_API_KEY is missing", async () => {
     delete process.env.OPENAI_API_KEY;
-    generateMockQuestion
-      .mockReturnValueOnce(VALID_QUESTION)
-      .mockReturnValueOnce(VALID_NEXT_QUESTION);
+    generateMockQuestion.mockReturnValueOnce(VALID_QUESTION);
     const route = await import("./route");
 
     const response = await route.POST(
@@ -288,12 +311,14 @@ describe("generate question route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
-      nextQuestion: VALID_QUESTION,
     });
-    expect(countQuestionPoolMatches).not.toHaveBeenCalled();
-    expect(readQuestionFromPool).not.toHaveBeenCalled();
+    expect(readAuthenticatedUserId).not.toHaveBeenCalled();
+    expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
+    expect(readTestSession).not.toHaveBeenCalled();
+    expect(consumeQuestionFromTestSessionPool).not.toHaveBeenCalled();
     expect(generateQuestionWithAI).not.toHaveBeenCalled();
     expect(upsertQuestionPool).not.toHaveBeenCalled();
+    expect(upsertTestSessionQuestionPoolLink).not.toHaveBeenCalled();
     expect(generateMockQuestion).toHaveBeenCalledTimes(1);
   });
 });

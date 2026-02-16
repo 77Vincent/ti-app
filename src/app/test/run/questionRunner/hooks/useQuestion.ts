@@ -109,9 +109,8 @@ export function useQuestion({
     });
   }, [difficulty, subcategoryId, subjectId]);
 
-  const loadOneQuestion = useCallback(async (): Promise<QuestionType> => {
-    const { question } = await loadQuestion();
-    return question;
+  const loadOneQuestion = useCallback((): Promise<QuestionType> => {
+    return loadQuestion();
   }, [loadQuestion]);
 
   const applyQuestionStateToUi = useCallback(

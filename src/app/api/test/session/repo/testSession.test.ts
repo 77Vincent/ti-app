@@ -5,6 +5,7 @@ const {
   anonymousTestSessionFindUnique,
   anonymousTestSessionUpdateMany,
   anonymousTestSessionUpsert,
+  testSessionQuestionPoolDeleteMany,
   testSessionDeleteMany,
   testSessionFindUnique,
   testSessionUpdateMany,
@@ -15,6 +16,7 @@ const {
     anonymousTestSessionFindUnique: vi.fn(),
     anonymousTestSessionUpdateMany: vi.fn(),
     anonymousTestSessionUpsert: vi.fn(),
+    testSessionQuestionPoolDeleteMany: vi.fn(),
     testSessionDeleteMany: vi.fn(),
     testSessionFindUnique: vi.fn(),
     testSessionUpdateMany: vi.fn(),
@@ -29,6 +31,9 @@ vi.mock("@/lib/prisma", () => ({
       updateMany: anonymousTestSessionUpdateMany,
       upsert: anonymousTestSessionUpsert,
     },
+    testSessionQuestionPool: {
+      deleteMany: testSessionQuestionPoolDeleteMany,
+    },
     testSession: {
       deleteMany: testSessionDeleteMany,
       findUnique: testSessionFindUnique,
@@ -41,6 +46,7 @@ vi.mock("@/lib/prisma", () => ({
 import {
   deleteTestSession,
   incrementTestSessionProgress,
+  isTestSessionActive,
   readTestSession,
   upsertTestSession,
 } from "./testSession";
@@ -51,6 +57,7 @@ describe("test session repo", () => {
     anonymousTestSessionFindUnique.mockReset();
     anonymousTestSessionUpdateMany.mockReset();
     anonymousTestSessionUpsert.mockReset();
+    testSessionQuestionPoolDeleteMany.mockReset();
     testSessionDeleteMany.mockReset();
     testSessionFindUnique.mockReset();
     testSessionUpdateMany.mockReset();
@@ -139,8 +146,49 @@ describe("test session repo", () => {
     });
   });
 
+  it("returns true when auth test session id exists", async () => {
+    testSessionFindUnique.mockResolvedValueOnce({ id: "session-1" });
+    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
+
+    await expect(isTestSessionActive("session-1")).resolves.toBe(true);
+
+    expect(testSessionFindUnique).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+      },
+      select: {
+        id: true,
+      },
+    });
+    expect(anonymousTestSessionFindUnique).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+      },
+      select: {
+        id: true,
+      },
+    });
+  });
+
+  it("returns true when anonymous test session id exists", async () => {
+    testSessionFindUnique.mockResolvedValueOnce(null);
+    anonymousTestSessionFindUnique.mockResolvedValueOnce({
+      id: "anon-session-1",
+    });
+
+    await expect(isTestSessionActive("anon-session-1")).resolves.toBe(true);
+  });
+
+  it("returns false when test session id does not exist", async () => {
+    testSessionFindUnique.mockResolvedValueOnce(null);
+    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
+
+    await expect(isTestSessionActive("missing-session")).resolves.toBe(false);
+  });
+
   it("upserts user-owned test session", async () => {
     testSessionUpsert.mockResolvedValueOnce(undefined);
+    testSessionFindUnique.mockResolvedValueOnce(null);
     const startedAt = new Date("2025-02-12T08:00:00.000Z");
 
     await upsertTestSession(
@@ -185,6 +233,7 @@ describe("test session repo", () => {
 
   it("upserts anonymous test session", async () => {
     anonymousTestSessionUpsert.mockResolvedValueOnce(undefined);
+    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
     const startedAt = new Date("2026-02-12T08:00:00.000Z");
 
     await upsertTestSession(
@@ -300,9 +349,19 @@ describe("test session repo", () => {
   });
 
   it("deletes by identity selector", async () => {
+    testSessionFindUnique.mockResolvedValueOnce({
+      id: "session-1",
+    });
+    testSessionQuestionPoolDeleteMany.mockResolvedValueOnce({ count: 2 });
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ userId: "user-1" });
+
+    expect(testSessionQuestionPoolDeleteMany).toHaveBeenCalledWith({
+      where: {
+        sessionId: "session-1",
+      },
+    });
 
     expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
@@ -312,9 +371,19 @@ describe("test session repo", () => {
   });
 
   it("deletes anonymous session by identity selector", async () => {
+    anonymousTestSessionFindUnique.mockResolvedValueOnce({
+      id: "anon-session-1",
+    });
+    testSessionQuestionPoolDeleteMany.mockResolvedValueOnce({ count: 2 });
     anonymousTestSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ anonymousSessionId: "anon-1" });
+
+    expect(testSessionQuestionPoolDeleteMany).toHaveBeenCalledWith({
+      where: {
+        sessionId: "anon-session-1",
+      },
+    });
 
     expect(anonymousTestSessionDeleteMany).toHaveBeenCalledWith({
       where: {

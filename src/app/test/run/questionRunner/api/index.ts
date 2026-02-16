@@ -1,7 +1,6 @@
 export {
   fetchQuestion,
   type FetchQuestionInput,
-  type FetchQuestionResult,
 } from "./question";
 export {
   addFavoriteQuestion,

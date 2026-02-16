@@ -24,10 +24,40 @@ const TEST_RUN_PARAMS_SELECT = {
   subcategoryId: true,
 } as const;
 
+const TEST_SESSION_ID_SELECT = {
+  id: true,
+} as const;
+
 function isAuthTestSessionWhere(
   where: TestSessionWhere,
 ): where is AuthTestSessionWhere {
   return "userId" in where;
+}
+
+async function readPersistedSessionId(
+  where: TestSessionWhere,
+): Promise<string | null> {
+  if (isAuthTestSessionWhere(where)) {
+    const session = await prisma.testSession.findUnique({
+      where,
+      select: TEST_SESSION_ID_SELECT,
+    });
+    return session?.id ?? null;
+  }
+
+  const session = await prisma.anonymousTestSession.findUnique({
+    where,
+    select: TEST_SESSION_ID_SELECT,
+  });
+  return session?.id ?? null;
+}
+
+async function clearTestSessionQuestionPool(sessionId: string): Promise<void> {
+  await prisma.testSessionQuestionPool.deleteMany({
+    where: {
+      sessionId,
+    },
+  });
 }
 
 export async function readTestSession(
@@ -46,12 +76,32 @@ export async function readTestSession(
   });
 }
 
+export async function isTestSessionActive(sessionId: string): Promise<boolean> {
+  const [authSession, anonymousSession] = await Promise.all([
+    prisma.testSession.findUnique({
+      where: { id: sessionId },
+      select: TEST_SESSION_ID_SELECT,
+    }),
+    prisma.anonymousTestSession.findUnique({
+      where: { id: sessionId },
+      select: TEST_SESSION_ID_SELECT,
+    }),
+  ]);
+
+  return Boolean(authSession || anonymousSession);
+}
+
 export async function upsertTestSession(
   where: TestSessionWhere,
   id: string,
   params: TestParam,
   startedAt: Date,
 ): Promise<void> {
+  const persistedSessionId = await readPersistedSessionId(where);
+  if (persistedSessionId && persistedSessionId !== id) {
+    await clearTestSessionQuestionPool(persistedSessionId);
+  }
+
   if (isAuthTestSessionWhere(where)) {
     await prisma.testSession.upsert({
       where,
@@ -138,6 +188,11 @@ export async function incrementTestSessionProgress(
 export async function deleteTestSession(
   where: TestSessionWhere,
 ): Promise<void> {
+  const persistedSessionId = await readPersistedSessionId(where);
+  if (persistedSessionId) {
+    await clearTestSessionQuestionPool(persistedSessionId);
+  }
+
   if (isAuthTestSessionWhere(where)) {
     await prisma.testSession.deleteMany({
       where,
