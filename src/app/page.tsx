@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Divider } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Link from "next/link";
 import { HeroBanner } from "./components";

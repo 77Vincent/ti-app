@@ -1,36 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
-  anonymousTestSessionDeleteMany,
-  anonymousTestSessionFindUnique,
-  anonymousTestSessionUpdateMany,
-  anonymousTestSessionUpsert,
-  testSessionQuestionPoolDeleteMany,
   testSessionDeleteMany,
   testSessionFindUnique,
+  testSessionQuestionPoolDeleteMany,
   testSessionUpdateMany,
   testSessionUpsert,
 } =
   vi.hoisted(() => ({
-    anonymousTestSessionDeleteMany: vi.fn(),
-    anonymousTestSessionFindUnique: vi.fn(),
-    anonymousTestSessionUpdateMany: vi.fn(),
-    anonymousTestSessionUpsert: vi.fn(),
-    testSessionQuestionPoolDeleteMany: vi.fn(),
     testSessionDeleteMany: vi.fn(),
     testSessionFindUnique: vi.fn(),
+    testSessionQuestionPoolDeleteMany: vi.fn(),
     testSessionUpdateMany: vi.fn(),
     testSessionUpsert: vi.fn(),
   }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    anonymousTestSession: {
-      deleteMany: anonymousTestSessionDeleteMany,
-      findUnique: anonymousTestSessionFindUnique,
-      updateMany: anonymousTestSessionUpdateMany,
-      upsert: anonymousTestSessionUpsert,
-    },
     testSessionQuestionPool: {
       deleteMany: testSessionQuestionPoolDeleteMany,
     },
@@ -46,25 +32,20 @@ vi.mock("@/lib/prisma", () => ({
 import {
   deleteTestSession,
   incrementTestSessionProgress,
-  isTestSessionActive,
   readTestSession,
   upsertTestSession,
 } from "./testSession";
 
 describe("test session repo", () => {
   beforeEach(() => {
-    anonymousTestSessionDeleteMany.mockReset();
-    anonymousTestSessionFindUnique.mockReset();
-    anonymousTestSessionUpdateMany.mockReset();
-    anonymousTestSessionUpsert.mockReset();
-    testSessionQuestionPoolDeleteMany.mockReset();
     testSessionDeleteMany.mockReset();
     testSessionFindUnique.mockReset();
+    testSessionQuestionPoolDeleteMany.mockReset();
     testSessionUpdateMany.mockReset();
     testSessionUpsert.mockReset();
   });
 
-  it("reads a stored test session payload", async () => {
+  it("reads a stored user test session payload", async () => {
     testSessionFindUnique.mockResolvedValueOnce({
       id: "session-1",
       correctCount: 3,
@@ -105,7 +86,7 @@ describe("test session repo", () => {
   });
 
   it("reads a stored anonymous test session payload", async () => {
-    anonymousTestSessionFindUnique.mockResolvedValueOnce({
+    testSessionFindUnique.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 2,
       difficulty: "advanced",
@@ -129,7 +110,7 @@ describe("test session repo", () => {
       subcategoryId: "japanese",
     });
 
-    expect(anonymousTestSessionFindUnique).toHaveBeenCalledWith({
+    expect(testSessionFindUnique).toHaveBeenCalledWith({
       select: {
         id: true,
         correctCount: true,
@@ -146,49 +127,9 @@ describe("test session repo", () => {
     });
   });
 
-  it("returns true when auth test session id exists", async () => {
-    testSessionFindUnique.mockResolvedValueOnce({ id: "session-1" });
-    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
-
-    await expect(isTestSessionActive("session-1")).resolves.toBe(true);
-
-    expect(testSessionFindUnique).toHaveBeenCalledWith({
-      where: {
-        id: "session-1",
-      },
-      select: {
-        id: true,
-      },
-    });
-    expect(anonymousTestSessionFindUnique).toHaveBeenCalledWith({
-      where: {
-        id: "session-1",
-      },
-      select: {
-        id: true,
-      },
-    });
-  });
-
-  it("returns true when anonymous test session id exists", async () => {
-    testSessionFindUnique.mockResolvedValueOnce(null);
-    anonymousTestSessionFindUnique.mockResolvedValueOnce({
-      id: "anon-session-1",
-    });
-
-    await expect(isTestSessionActive("anon-session-1")).resolves.toBe(true);
-  });
-
-  it("returns false when test session id does not exist", async () => {
-    testSessionFindUnique.mockResolvedValueOnce(null);
-    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
-
-    await expect(isTestSessionActive("missing-session")).resolves.toBe(false);
-  });
-
   it("upserts user-owned test session", async () => {
-    testSessionUpsert.mockResolvedValueOnce(undefined);
     testSessionFindUnique.mockResolvedValueOnce(null);
+    testSessionUpsert.mockResolvedValueOnce(undefined);
     const startedAt = new Date("2025-02-12T08:00:00.000Z");
 
     await upsertTestSession(
@@ -232,8 +173,8 @@ describe("test session repo", () => {
   });
 
   it("upserts anonymous test session", async () => {
-    anonymousTestSessionUpsert.mockResolvedValueOnce(undefined);
-    anonymousTestSessionFindUnique.mockResolvedValueOnce(null);
+    testSessionFindUnique.mockResolvedValueOnce(null);
+    testSessionUpsert.mockResolvedValueOnce(undefined);
     const startedAt = new Date("2026-02-12T08:00:00.000Z");
 
     await upsertTestSession(
@@ -248,7 +189,7 @@ describe("test session repo", () => {
       startedAt,
     );
 
-    expect(anonymousTestSessionUpsert).toHaveBeenCalledWith({
+    expect(testSessionUpsert).toHaveBeenCalledWith({
       create: {
         id: "anon-session-1",
         anonymousSessionId: "anon-1",
@@ -261,10 +202,12 @@ describe("test session repo", () => {
         subcategoryId: "english",
       },
       update: {
+        correctCount: 0,
         id: "anon-session-1",
         difficulty: "beginner",
         goal: "study",
         startedAt,
+        submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -291,49 +234,12 @@ describe("test session repo", () => {
     });
   });
 
-  it("increments anonymous submission count for incorrect answer", async () => {
-    anonymousTestSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
-
-    await incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, false);
-
-    expect(anonymousTestSessionUpdateMany).toHaveBeenCalledWith({
-      where: {
-        anonymousSessionId: "anon-1",
-      },
-      data: {
-        submittedCount: {
-          increment: 1,
-        },
-      },
-    });
-  });
-
-  it("increments submission and correct counts for correct answer", async () => {
-    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
-
-    await incrementTestSessionProgress({ userId: "user-1" }, true);
-
-    expect(testSessionUpdateMany).toHaveBeenCalledWith({
-      where: {
-        userId: "user-1",
-      },
-      data: {
-        submittedCount: {
-          increment: 1,
-        },
-        correctCount: {
-          increment: 1,
-        },
-      },
-    });
-  });
-
   it("increments anonymous submission and correct counts for correct answer", async () => {
-    anonymousTestSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
     await incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, true);
 
-    expect(anonymousTestSessionUpdateMany).toHaveBeenCalledWith({
+    expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
         anonymousSessionId: "anon-1",
       },
@@ -348,7 +254,7 @@ describe("test session repo", () => {
     });
   });
 
-  it("deletes by identity selector", async () => {
+  it("deletes user session by identity selector", async () => {
     testSessionFindUnique.mockResolvedValueOnce({
       id: "session-1",
     });
@@ -371,11 +277,11 @@ describe("test session repo", () => {
   });
 
   it("deletes anonymous session by identity selector", async () => {
-    anonymousTestSessionFindUnique.mockResolvedValueOnce({
+    testSessionFindUnique.mockResolvedValueOnce({
       id: "anon-session-1",
     });
     testSessionQuestionPoolDeleteMany.mockResolvedValueOnce({ count: 2 });
-    anonymousTestSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
+    testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ anonymousSessionId: "anon-1" });
 
@@ -385,7 +291,7 @@ describe("test session repo", () => {
       },
     });
 
-    expect(anonymousTestSessionDeleteMany).toHaveBeenCalledWith({
+    expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
         anonymousSessionId: "anon-1",
       },

@@ -5,7 +5,6 @@ const {
   consumeQuestionFromTestSessionPool,
   generateMockQuestion,
   generateQuestionWithAI,
-  isTestSessionActive,
   parseQuestionParam,
   readAnonymousTestSessionCookie,
   readAuthenticatedUserId,
@@ -16,7 +15,6 @@ const {
   consumeQuestionFromTestSessionPool: vi.fn(),
   generateMockQuestion: vi.fn(),
   generateQuestionWithAI: vi.fn(),
-  isTestSessionActive: vi.fn(),
   parseQuestionParam: vi.fn(),
   readAnonymousTestSessionCookie: vi.fn(),
   readAuthenticatedUserId: vi.fn(),
@@ -52,7 +50,6 @@ vi.mock("@/app/api/test/session/cookie/anonymous", () => ({
 }));
 
 vi.mock("@/app/api/test/session/repo/testSession", () => ({
-  isTestSessionActive,
   readTestSession,
 }));
 
@@ -100,7 +97,6 @@ describe("generate question route", () => {
     consumeQuestionFromTestSessionPool.mockReset();
     generateMockQuestion.mockReset();
     generateQuestionWithAI.mockReset();
-    isTestSessionActive.mockReset();
     parseQuestionParam.mockReset();
     readAnonymousTestSessionCookie.mockReset();
     readAuthenticatedUserId.mockReset();
@@ -110,7 +106,6 @@ describe("generate question route", () => {
     process.env.OPENAI_API_KEY = "test-key";
 
     parseQuestionParam.mockReturnValue(VALID_INPUT);
-    isTestSessionActive.mockResolvedValue(true);
     readAuthenticatedUserId.mockResolvedValue(null);
     readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
     readTestSession.mockResolvedValue({

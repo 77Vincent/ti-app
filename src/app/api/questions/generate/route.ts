@@ -10,10 +10,7 @@ import { generateMockQuestion } from "./mock";
 import { generateQuestionWithAI } from "@/lib/question/ai";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { readAnonymousTestSessionCookie } from "@/app/api/test/session/cookie/anonymous";
-import {
-  isTestSessionActive,
-  readTestSession,
-} from "@/app/api/test/session/repo/testSession";
+import { readTestSession } from "@/app/api/test/session/repo/testSession";
 import type { Question } from "@/lib/question/model";
 import type { QuestionParam } from "@/lib/testSession/validation";
 
@@ -50,10 +47,6 @@ async function persistTestSessionQuestionPoolLinks(
   questionIds: string[],
 ): Promise<void> {
   if (!sessionId) {
-    return;
-  }
-
-  if (!(await isTestSessionActive(sessionId))) {
     return;
   }
 
@@ -110,10 +103,6 @@ function replenishSessionPoolInBackground(
   sessionId: string,
 ): void {
   void (async () => {
-    if (!(await isTestSessionActive(sessionId))) {
-      return;
-    }
-
     await generateAndPersistQuestionPair(input, sessionId);
   })().catch((reason) => {
     console.error(

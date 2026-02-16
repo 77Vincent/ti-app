@@ -9,9 +9,7 @@ export type AnonymousTestSessionWhere = {
   anonymousSessionId: string;
 };
 
-export type TestSessionWhere =
-  | AuthTestSessionWhere
-  | AnonymousTestSessionWhere;
+export type TestSessionWhere = AuthTestSessionWhere | AnonymousTestSessionWhere;
 
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
@@ -37,18 +35,11 @@ function isAuthTestSessionWhere(
 async function readPersistedSessionId(
   where: TestSessionWhere,
 ): Promise<string | null> {
-  if (isAuthTestSessionWhere(where)) {
-    const session = await prisma.testSession.findUnique({
-      where,
-      select: TEST_SESSION_ID_SELECT,
-    });
-    return session?.id ?? null;
-  }
-
-  const session = await prisma.anonymousTestSession.findUnique({
+  const session = await prisma.testSession.findUnique({
     where,
     select: TEST_SESSION_ID_SELECT,
   });
+
   return session?.id ?? null;
 }
 
@@ -63,32 +54,10 @@ async function clearTestSessionQuestionPool(sessionId: string): Promise<void> {
 export async function readTestSession(
   where: TestSessionWhere,
 ) {
-  if (isAuthTestSessionWhere(where)) {
-    return prisma.testSession.findUnique({
-      where,
-      select: TEST_RUN_PARAMS_SELECT,
-    });
-  }
-
-  return prisma.anonymousTestSession.findUnique({
+  return prisma.testSession.findUnique({
     where,
     select: TEST_RUN_PARAMS_SELECT,
   });
-}
-
-export async function isTestSessionActive(sessionId: string): Promise<boolean> {
-  const [authSession, anonymousSession] = await Promise.all([
-    prisma.testSession.findUnique({
-      where: { id: sessionId },
-      select: TEST_SESSION_ID_SELECT,
-    }),
-    prisma.anonymousTestSession.findUnique({
-      where: { id: sessionId },
-      select: TEST_SESSION_ID_SELECT,
-    }),
-  ]);
-
-  return Boolean(authSession || anonymousSession);
 }
 
 export async function upsertTestSession(
@@ -102,39 +71,10 @@ export async function upsertTestSession(
     await clearTestSessionQuestionPool(persistedSessionId);
   }
 
-  if (isAuthTestSessionWhere(where)) {
-    await prisma.testSession.upsert({
-      where,
-      create: {
-        id: id,
-        correctCount: 0,
-        difficulty: params.difficulty,
-        goal: params.goal,
-        startedAt,
-        submittedCount: 0,
-        subjectId: params.subjectId,
-        subcategoryId: params.subcategoryId,
-        userId: where.userId,
-      },
-      update: {
-        correctCount: 0,
-        id: id,
-        difficulty: params.difficulty,
-        goal: params.goal,
-        startedAt,
-        submittedCount: 0,
-        subjectId: params.subjectId,
-        subcategoryId: params.subcategoryId,
-      },
-    });
-    return;
-  }
-
-  await prisma.anonymousTestSession.upsert({
+  await prisma.testSession.upsert({
     where,
     create: {
       id: id,
-      anonymousSessionId: where.anonymousSessionId,
       correctCount: 0,
       difficulty: params.difficulty,
       goal: params.goal,
@@ -142,12 +82,17 @@ export async function upsertTestSession(
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
+      ...(isAuthTestSessionWhere(where)
+        ? { userId: where.userId }
+        : { anonymousSessionId: where.anonymousSessionId }),
     },
     update: {
+      correctCount: 0,
       id: id,
       difficulty: params.difficulty,
       goal: params.goal,
       startedAt,
+      submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
     },
@@ -171,15 +116,7 @@ export async function incrementTestSessionProgress(
       : {}),
   };
 
-  if (isAuthTestSessionWhere(where)) {
-    await prisma.testSession.updateMany({
-      where,
-      data,
-    });
-    return;
-  }
-
-  await prisma.anonymousTestSession.updateMany({
+  await prisma.testSession.updateMany({
     where,
     data,
   });
@@ -193,14 +130,7 @@ export async function deleteTestSession(
     await clearTestSessionQuestionPool(persistedSessionId);
   }
 
-  if (isAuthTestSessionWhere(where)) {
-    await prisma.testSession.deleteMany({
-      where,
-    });
-    return;
-  }
-
-  await prisma.anonymousTestSession.deleteMany({
+  await prisma.testSession.deleteMany({
     where,
   });
 }

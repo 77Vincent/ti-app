@@ -43,7 +43,8 @@ CREATE TABLE "Session" (
 -- CreateTable
 CREATE TABLE "TestSession" (
     "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
+    "anonymousSessionId" TEXT,
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
@@ -55,23 +56,6 @@ CREATE TABLE "TestSession" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "TestSession_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "AnonymousTestSession" (
-    "id" TEXT NOT NULL,
-    "anonymousSessionId" TEXT NOT NULL,
-    "subjectId" TEXT NOT NULL,
-    "subcategoryId" TEXT NOT NULL,
-    "difficulty" TEXT NOT NULL,
-    "goal" TEXT NOT NULL DEFAULT 'study',
-    "correctCount" INTEGER NOT NULL DEFAULT 0,
-    "submittedCount" INTEGER NOT NULL DEFAULT 0,
-    "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "AnonymousTestSession_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -89,6 +73,17 @@ CREATE TABLE "QuestionPool" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "QuestionPool_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TestSessionQuestionPool" (
+    "id" TEXT NOT NULL,
+    "sessionId" TEXT NOT NULL,
+    "questionId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "TestSessionQuestionPool_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -122,10 +117,19 @@ CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 CREATE UNIQUE INDEX "TestSession_userId_key" ON "TestSession"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AnonymousTestSession_anonymousSessionId_key" ON "AnonymousTestSession"("anonymousSessionId");
+CREATE UNIQUE INDEX "TestSession_anonymousSessionId_key" ON "TestSession"("anonymousSessionId");
 
 -- CreateIndex
 CREATE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_randomKey_idx" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "randomKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TestSessionQuestionPool_sessionId_questionId_key" ON "TestSessionQuestionPool"("sessionId", "questionId");
+
+-- CreateIndex
+CREATE INDEX "TestSessionQuestionPool_sessionId_createdAt_idx" ON "TestSessionQuestionPool"("sessionId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "TestSessionQuestionPool_questionId_idx" ON "TestSessionQuestionPool"("questionId");
 
 -- CreateIndex
 CREATE INDEX "FavoriteQuestion_userId_idx" ON "FavoriteQuestion"("userId");
@@ -142,6 +146,12 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
+-- AddCheckConstraint
+ALTER TABLE "TestSession" ADD CONSTRAINT "TestSession_identity_check" CHECK (
+    ("userId" IS NOT NULL AND "anonymousSessionId" IS NULL) OR
+    ("userId" IS NULL AND "anonymousSessionId" IS NOT NULL)
+);
+
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -150,6 +160,12 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "TestSession" ADD CONSTRAINT "TestSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TestSessionQuestionPool" ADD CONSTRAINT "TestSessionQuestionPool_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "TestSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TestSessionQuestionPool" ADD CONSTRAINT "TestSessionQuestionPool_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "QuestionPool"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FavoriteQuestion" ADD CONSTRAINT "FavoriteQuestion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -48,33 +48,21 @@ model Session {
 }
 
 model TestSession {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  subjectId      String
-  subcategoryId  String
-  difficulty     String
-  goal           String
-  correctCount   Int      @default(0)
-  submittedCount Int      @default(0)
-  startedAt      DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model AnonymousTestSession {
-  id                 String   @id @default(cuid())
-  anonymousSessionId String   @unique
+  id                 String                    @id @default(cuid())
+  userId             String?                   @unique
+  anonymousSessionId String?                   @unique
   subjectId          String
   subcategoryId      String
   difficulty         String
-  goal               String   @default("study")
-  correctCount       Int      @default(0)
-  submittedCount     Int      @default(0)
-  startedAt          DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  goal               String                    @default("study")
+  correctCount       Int                       @default(0)
+  submittedCount     Int                       @default(0)
+  startedAt          DateTime                  @default(now())
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  testSessionLinks   TestSessionQuestionPool[]
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model QuestionPool {
@@ -96,13 +84,14 @@ model QuestionPool {
 }
 
 model TestSessionQuestionPool {
-  id        String   @id @default(cuid())
-  sessionId String
+  id         String      @id @default(cuid())
+  sessionId  String
   questionId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  question  QuestionPool @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  session  TestSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question QuestionPool @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, questionId])
   @@index([sessionId, createdAt])
