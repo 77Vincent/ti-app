@@ -104,7 +104,7 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1" },
       false,
-      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+      MAX_ANONYMOUS_QUESTION_COUNT,
     );
     expect(readTestSession).not.toHaveBeenCalled();
   });
@@ -145,7 +145,7 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1" },
       true,
-      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+      MAX_ANONYMOUS_QUESTION_COUNT,
     );
     expect(readTestSession).toHaveBeenCalledWith({
       anonymousSessionId: "anon-1",
@@ -179,7 +179,7 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1" },
       true,
-      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+      MAX_ANONYMOUS_QUESTION_COUNT,
     );
     expect(readTestSession).toHaveBeenCalledWith({
       anonymousSessionId: "anon-1",

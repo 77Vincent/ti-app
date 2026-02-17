@@ -163,7 +163,7 @@ export async function PATCH(request: Request) {
   const updatedCount = await incrementTestSessionProgress(
     { anonymousSessionId },
     isCorrect,
-    { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+    MAX_ANONYMOUS_QUESTION_COUNT,
   );
   if (updatedCount > 0) {
     return response;

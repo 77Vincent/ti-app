@@ -76,7 +76,7 @@ export async function readRandomQuestionFromPool(
       select: QUESTION_POOL_READ_SELECT,
     }));
 
-  return row ? toQuestion(row as QuestionPoolReadRow) : null;
+  return row ? toQuestion(row) : null;
 }
 
 function toQuestion(row: QuestionPoolReadRow): Question {

@@ -10,9 +10,6 @@ export type AnonymousTestSessionWhere = {
 };
 
 export type TestSessionWhere = AuthTestSessionWhere | AnonymousTestSessionWhere;
-export type IncrementProgressOptions = {
-  maxSubmittedCountExclusive?: number;
-};
 
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
@@ -49,7 +46,7 @@ export async function upsertTestSession(
   await prisma.testSession.upsert({
     where,
     create: {
-      id: id,
+      id,
       correctCount: 0,
       difficulty: params.difficulty,
       goal: params.goal,
@@ -63,7 +60,7 @@ export async function upsertTestSession(
     },
     update: {
       correctCount: 0,
-      id: id,
+      id,
       difficulty: params.difficulty,
       goal: params.goal,
       startedAt,
@@ -77,7 +74,7 @@ export async function upsertTestSession(
 export async function incrementTestSessionProgress(
   where: TestSessionWhere,
   isCorrect: boolean,
-  options?: IncrementProgressOptions,
+  maxSubmittedCountExclusive?: number,
 ): Promise<number> {
   const data = {
     submittedCount: {
@@ -95,10 +92,10 @@ export async function incrementTestSessionProgress(
   const result = await prisma.testSession.updateMany({
     where: {
       ...where,
-      ...(typeof options?.maxSubmittedCountExclusive === "number"
+      ...(typeof maxSubmittedCountExclusive === "number"
         ? {
             submittedCount: {
-              lt: options.maxSubmittedCountExclusive,
+              lt: maxSubmittedCountExclusive,
             },
           }
         : {}),

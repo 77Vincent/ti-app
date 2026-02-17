@@ -237,7 +237,7 @@ describe("test session repo", () => {
       incrementTestSessionProgress(
         { anonymousSessionId: "anon-1" },
         true,
-        { maxSubmittedCountExclusive: 10 },
+        10,
       ),
     ).resolves.toBe(1);
 
