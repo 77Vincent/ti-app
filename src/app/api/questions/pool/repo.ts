@@ -23,7 +23,6 @@ type QuestionPoolReadRow = {
   prompt: string;
   options: unknown;
   correctOptionIds: unknown;
-  randomKey?: number;
 };
 
 const QUESTION_POOL_READ_SELECT = {
