@@ -125,11 +125,6 @@ export async function incrementTestSessionProgress(
 export async function deleteTestSession(
   where: TestSessionWhere,
 ): Promise<void> {
-  const persistedSessionId = await readPersistedSessionId(where);
-  if (persistedSessionId) {
-    await clearTestSessionQuestionPool(persistedSessionId);
-  }
-
   await prisma.testSession.deleteMany({
     where,
   });

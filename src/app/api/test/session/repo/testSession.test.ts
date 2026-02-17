@@ -255,19 +255,9 @@ describe("test session repo", () => {
   });
 
   it("deletes user session by identity selector", async () => {
-    testSessionFindUnique.mockResolvedValueOnce({
-      id: "session-1",
-    });
-    testSessionQuestionPoolDeleteMany.mockResolvedValueOnce({ count: 2 });
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ userId: "user-1" });
-
-    expect(testSessionQuestionPoolDeleteMany).toHaveBeenCalledWith({
-      where: {
-        sessionId: "session-1",
-      },
-    });
 
     expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
@@ -277,19 +267,9 @@ describe("test session repo", () => {
   });
 
   it("deletes anonymous session by identity selector", async () => {
-    testSessionFindUnique.mockResolvedValueOnce({
-      id: "anon-session-1",
-    });
-    testSessionQuestionPoolDeleteMany.mockResolvedValueOnce({ count: 2 });
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ anonymousSessionId: "anon-1" });
-
-    expect(testSessionQuestionPoolDeleteMany).toHaveBeenCalledWith({
-      where: {
-        sessionId: "anon-session-1",
-      },
-    });
 
     expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
