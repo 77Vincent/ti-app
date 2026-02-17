@@ -1,7 +1,5 @@
 "use client";
 
-import { Target } from "lucide-react";
-
 type SessionAccuracyProps = {
   correctCount: number;
   submittedCount: number;
@@ -41,14 +39,11 @@ export default function SessionAccuracy({
 }: SessionAccuracyProps) {
 
   return (
-    <p className="inline-flex items-center gap-1.5 font-medium tabular-nums">
-      <Target aria-hidden size={19} />
-      <span>
+    <p className="font-semibold tabular-nums">
         {formatSessionAccuracyLabel({
           correctCount,
           submittedCount,
         })}
-      </span>
     </p>
   );
 }

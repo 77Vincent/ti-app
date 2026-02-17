@@ -7,7 +7,7 @@ export const PAGE_PATHS = {
 
 export const API_PATHS = {
   QUESTIONS_FAVORITE: "/api/questions/favorite",
-  QUESTIONS_GENERATE: "/api/questions/generate",
+  QUESTIONS_FETCH: "/api/questions/fetch",
   TEST_SESSION: "/api/test/session",
 } as const;
 

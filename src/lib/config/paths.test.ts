@@ -16,7 +16,7 @@ describe("API_PATHS", () => {
   it("exports stable API routes", () => {
     expect(API_PATHS).toEqual({
       QUESTIONS_FAVORITE: "/api/questions/favorite",
-      QUESTIONS_GENERATE: "/api/questions/generate",
+      QUESTIONS_FETCH: "/api/questions/fetch",
       TEST_SESSION: "/api/test/session",
     });
   });

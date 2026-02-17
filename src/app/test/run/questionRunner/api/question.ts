@@ -22,7 +22,7 @@ type FetchQuestionResponse = {
 export async function fetchQuestion(
   input: FetchQuestionInput,
 ): Promise<Question> {
-  const response = await fetch(API_PATHS.QUESTIONS_GENERATE, {
+  const response = await fetch(API_PATHS.QUESTIONS_FETCH, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),

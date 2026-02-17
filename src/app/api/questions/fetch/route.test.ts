@@ -35,7 +35,7 @@ const VALID_QUESTION = {
   correctOptionIds: ["A"],
 } as const;
 
-describe("generate question route", () => {
+describe("fetch question route", () => {
   beforeEach(() => {
     vi.resetModules();
     parseQuestionParam.mockReset();
@@ -49,7 +49,7 @@ describe("generate question route", () => {
     const route = await import("./route");
 
     const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
+      new Request("http://localhost/api/questions/fetch", {
         body: JSON.stringify(VALID_INPUT),
         method: "POST",
       }),
@@ -67,7 +67,7 @@ describe("generate question route", () => {
     const route = await import("./route");
 
     const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
+      new Request("http://localhost/api/questions/fetch", {
         body: JSON.stringify(VALID_INPUT),
         method: "POST",
       }),
@@ -84,7 +84,7 @@ describe("generate question route", () => {
     const route = await import("./route");
 
     const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
+      new Request("http://localhost/api/questions/fetch", {
         body: JSON.stringify(VALID_INPUT),
         method: "POST",
       }),
@@ -102,7 +102,7 @@ describe("generate question route", () => {
     const route = await import("./route");
 
     const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
+      new Request("http://localhost/api/questions/fetch", {
         body: JSON.stringify(VALID_INPUT),
         method: "POST",
       }),
@@ -118,7 +118,7 @@ describe("generate question route", () => {
     const route = await import("./route");
 
     const response = await route.POST(
-      new Request("http://localhost/api/questions/generate", {
+      new Request("http://localhost/api/questions/fetch", {
         body: "not-json",
         method: "POST",
       }),

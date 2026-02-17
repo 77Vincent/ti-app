@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps, SignInDemand } from "../types";
-import { Button, Card, CardBody, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -103,12 +103,7 @@ export default function QuestionWrapper({
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {currentQuestionIndex !== null ? (
-            <span className="font-bold text-lg tabular-nums">
-              Q{currentQuestionIndex + 1}
-            </span>
-          ) : null}
+        <div className="flex items-center gap-1">
           <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
             <Button
               aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
@@ -128,9 +123,15 @@ export default function QuestionWrapper({
               />
             </Button>
           </Tooltip>
+
+          {currentQuestionIndex !== null ? (
+            <span className="font-bold text-lg tabular-nums">
+              Q{currentQuestionIndex + 1}
+            </span>
+          ) : null}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Tooltip content="Accuracy">
             <span>
               <SessionAccuracy
@@ -139,6 +140,7 @@ export default function QuestionWrapper({
               />
             </span>
           </Tooltip>
+          <Divider orientation="vertical" className="h-4"/>
           <Tooltip content="Elapsed time">
             <span>
               <ElapsedSessionTimer startedAtMs={startedAtMs} />
