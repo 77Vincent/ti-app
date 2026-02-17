@@ -5,12 +5,10 @@ const {
   favoriteQuestionDeleteMany,
   favoriteQuestionFindUnique,
   favoriteQuestionUpsert,
-  upsertQuestionPool,
 } = vi.hoisted(() => ({
   favoriteQuestionDeleteMany: vi.fn(),
   favoriteQuestionFindUnique: vi.fn(),
   favoriteQuestionUpsert: vi.fn(),
-  upsertQuestionPool: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -21,10 +19,6 @@ vi.mock("@/lib/prisma", () => ({
       upsert: favoriteQuestionUpsert,
     },
   },
-}));
-
-vi.mock("../pool/repo", () => ({
-  upsertQuestionPool,
 }));
 
 import {
@@ -53,25 +47,13 @@ describe("favorite question repo", () => {
     favoriteQuestionDeleteMany.mockReset();
     favoriteQuestionFindUnique.mockReset();
     favoriteQuestionUpsert.mockReset();
-    upsertQuestionPool.mockReset();
   });
 
-  it("upserts question pool first, then favorite mapping", async () => {
-    upsertQuestionPool.mockResolvedValueOnce(undefined);
+  it("upserts favorite mapping", async () => {
     favoriteQuestionUpsert.mockResolvedValueOnce(undefined);
 
     await upsertFavoriteQuestion("user-1", VALID_INPUT);
 
-    expect(upsertQuestionPool).toHaveBeenCalledWith({
-      id: "question-1",
-      subjectId: "language",
-      subcategoryId: "english",
-      difficulty: "beginner",
-      questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-      prompt: "What is the capital of France?",
-      options: VALID_INPUT.options,
-      correctOptionIds: ["B"],
-    });
     expect(favoriteQuestionUpsert).toHaveBeenCalledWith({
       where: {
         userId_questionId: {
@@ -85,9 +67,6 @@ describe("favorite question repo", () => {
       },
       update: {},
     });
-    expect(upsertQuestionPool.mock.invocationCallOrder[0]).toBeLessThan(
-      favoriteQuestionUpsert.mock.invocationCallOrder[0],
-    );
   });
 
   it("deletes favorite question by user and question id", async () => {

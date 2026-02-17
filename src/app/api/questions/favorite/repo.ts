@@ -6,7 +6,6 @@ import type {
   SubcategoryEnum,
 } from "@/lib/meta";
 import type { QuestionOptionId } from "@/lib/question/model";
-import { upsertQuestionPool } from "../pool/repo";
 
 type FavoriteOption = {
   id: QuestionOptionId;
@@ -29,17 +28,6 @@ export async function upsertFavoriteQuestion(
   userId: string,
   input: FavoriteQuestionInput,
 ): Promise<void> {
-  await upsertQuestionPool({
-    id: input.questionId,
-    subjectId: input.subjectId,
-    subcategoryId: input.subcategoryId,
-    difficulty: input.difficulty,
-    questionType: input.questionType,
-    prompt: input.prompt,
-    options: input.options,
-    correctOptionIds: input.correctOptionIds,
-  });
-
   await prisma.favoriteQuestion.upsert({
     where: {
       userId_questionId: {
