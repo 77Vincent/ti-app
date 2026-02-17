@@ -1,26 +1,8 @@
-import type { Question } from "@/lib/question/model";
-import type { QuestionParam } from "@/lib/testSession/validation";
 import type { QuestionPoolUpsertInput } from "./repo";
 
 type QuestionPoolFavoriteSource = Omit<QuestionPoolUpsertInput, "id"> & {
   questionId: string;
 };
-
-export function mapGeneratedQuestionToQuestionPoolInput(
-  params: QuestionParam,
-  question: Question,
-): QuestionPoolUpsertInput {
-  return {
-    id: question.id,
-    subjectId: params.subjectId,
-    subcategoryId: params.subcategoryId,
-    difficulty: params.difficulty,
-    questionType: question.questionType,
-    prompt: question.prompt,
-    options: question.options,
-    correctOptionIds: question.correctOptionIds,
-  };
-}
 
 export function mapFavoriteQuestionToQuestionPoolInput(
   input: QuestionPoolFavoriteSource,

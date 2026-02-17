@@ -3,23 +3,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const {
   testSessionDeleteMany,
   testSessionFindUnique,
-  testSessionQuestionPoolDeleteMany,
   testSessionUpdateMany,
   testSessionUpsert,
 } =
   vi.hoisted(() => ({
     testSessionDeleteMany: vi.fn(),
     testSessionFindUnique: vi.fn(),
-    testSessionQuestionPoolDeleteMany: vi.fn(),
     testSessionUpdateMany: vi.fn(),
     testSessionUpsert: vi.fn(),
   }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    testSessionQuestionPool: {
-      deleteMany: testSessionQuestionPoolDeleteMany,
-    },
     testSession: {
       deleteMany: testSessionDeleteMany,
       findUnique: testSessionFindUnique,
@@ -40,7 +35,6 @@ describe("test session repo", () => {
   beforeEach(() => {
     testSessionDeleteMany.mockReset();
     testSessionFindUnique.mockReset();
-    testSessionQuestionPoolDeleteMany.mockReset();
     testSessionUpdateMany.mockReset();
     testSessionUpsert.mockReset();
   });
@@ -220,7 +214,9 @@ describe("test session repo", () => {
   it("increments submission count for incorrect answer", async () => {
     testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
-    await incrementTestSessionProgress({ userId: "user-1" }, false);
+    await expect(
+      incrementTestSessionProgress({ userId: "user-1" }, false),
+    ).resolves.toBe(1);
 
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
@@ -234,10 +230,41 @@ describe("test session repo", () => {
     });
   });
 
+  it("increments with limit guard for anonymous session", async () => {
+    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+
+    await expect(
+      incrementTestSessionProgress(
+        { anonymousSessionId: "anon-1" },
+        true,
+        { maxSubmittedCountExclusive: 10 },
+      ),
+    ).resolves.toBe(1);
+
+    expect(testSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        anonymousSessionId: "anon-1",
+        submittedCount: {
+          lt: 10,
+        },
+      },
+      data: {
+        submittedCount: {
+          increment: 1,
+        },
+        correctCount: {
+          increment: 1,
+        },
+      },
+    });
+  });
+
   it("increments anonymous submission and correct counts for correct answer", async () => {
     testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
-    await incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, true);
+    await expect(
+      incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, true),
+    ).resolves.toBe(1);
 
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {

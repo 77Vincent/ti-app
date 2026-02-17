@@ -39,6 +39,7 @@ describe("test session route PATCH", () => {
     readAuthenticatedUserId.mockReset();
     readTestSession.mockReset();
 
+    incrementTestSessionProgress.mockResolvedValue(1);
     readAuthenticatedUserId.mockResolvedValue(null);
     readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
     readTestSession.mockResolvedValue({
@@ -103,10 +104,9 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1" },
       false,
+      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
     );
-    expect(readTestSession).toHaveBeenCalledWith({
-      anonymousSessionId: "anon-1",
-    });
+    expect(readTestSession).not.toHaveBeenCalled();
   });
 
   it("returns 404 when anonymous session is missing", async () => {
@@ -128,6 +128,7 @@ describe("test session route PATCH", () => {
   });
 
   it("returns 404 when anonymous session row is missing", async () => {
+    incrementTestSessionProgress.mockResolvedValueOnce(0);
     readTestSession.mockResolvedValueOnce(null);
 
     const response = await PATCH(
@@ -141,10 +142,18 @@ describe("test session route PATCH", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Anonymous test session not found.",
     });
-    expect(incrementTestSessionProgress).not.toHaveBeenCalled();
+    expect(incrementTestSessionProgress).toHaveBeenCalledWith(
+      { anonymousSessionId: "anon-1" },
+      true,
+      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+    );
+    expect(readTestSession).toHaveBeenCalledWith({
+      anonymousSessionId: "anon-1",
+    });
   });
 
   it("returns 403 when anonymous submission reaches limit", async () => {
+    incrementTestSessionProgress.mockResolvedValueOnce(0);
     readTestSession.mockResolvedValueOnce({
       id: "session-1",
       correctCount: 2,
@@ -167,7 +176,14 @@ describe("test session route PATCH", () => {
     await expect(response.json()).resolves.toEqual({
       error: `You have reached the anonymous limit of ${MAX_ANONYMOUS_QUESTION_COUNT} questions. Please log in to continue.`,
     });
-    expect(incrementTestSessionProgress).not.toHaveBeenCalled();
+    expect(incrementTestSessionProgress).toHaveBeenCalledWith(
+      { anonymousSessionId: "anon-1" },
+      true,
+      { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+    );
+    expect(readTestSession).toHaveBeenCalledWith({
+      anonymousSessionId: "anon-1",
+    });
   });
 
   it("returns 400 when request body is not valid JSON", async () => {

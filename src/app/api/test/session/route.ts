@@ -160,6 +160,15 @@ export async function PATCH(request: Request) {
     );
   }
 
+  const updatedCount = await incrementTestSessionProgress(
+    { anonymousSessionId },
+    isCorrect,
+    { maxSubmittedCountExclusive: MAX_ANONYMOUS_QUESTION_COUNT },
+  );
+  if (updatedCount > 0) {
+    return response;
+  }
+
   const session = await readTestSession({ anonymousSessionId });
   if (!session) {
     return NextResponse.json(
@@ -170,15 +179,10 @@ export async function PATCH(request: Request) {
     );
   }
 
-  if (session.submittedCount >= MAX_ANONYMOUS_QUESTION_COUNT) {
-    return NextResponse.json(
-      {
-        error: `You have reached the anonymous limit of ${MAX_ANONYMOUS_QUESTION_COUNT} questions. Please log in to continue.`,
-      },
-      { status: 403 },
-    );
-  }
-
-  await incrementTestSessionProgress({ anonymousSessionId }, isCorrect);
-  return response;
+  return NextResponse.json(
+    {
+      error: `You have reached the anonymous limit of ${MAX_ANONYMOUS_QUESTION_COUNT} questions. Please log in to continue.`,
+    },
+    { status: 403 },
+  );
 }

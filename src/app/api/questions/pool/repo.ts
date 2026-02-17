@@ -23,11 +23,7 @@ type QuestionPoolReadRow = {
   prompt: string;
   options: unknown;
   correctOptionIds: unknown;
-};
-
-type TestSessionQuestionPoolReadRow = {
-  id: string;
-  question: QuestionPoolReadRow;
+  randomKey?: number;
 };
 
 const QUESTION_POOL_READ_SELECT = {
@@ -49,43 +45,39 @@ export type QuestionPoolUpsertInput = {
   correctOptionIds: readonly QuestionOptionId[];
 };
 
-export async function consumeQuestionFromTestSessionPool(
-  sessionId: string,
+export async function readRandomQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
-  return prisma.$transaction(async (tx) => {
-    const row = await tx.testSessionQuestionPool.findFirst({
+  const pivot = Math.random();
+
+  const row =
+    (await prisma.questionPool.findFirst({
       where: {
-        sessionId,
-        question: {
-          subjectId: input.subjectId,
-          subcategoryId: input.subcategoryId,
-          difficulty: input.difficulty,
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
+        randomKey: {
+          gte: pivot,
         },
       },
       orderBy: {
-        createdAt: "asc",
+        randomKey: "asc",
       },
-      select: {
-        id: true,
-        question: {
-          select: QUESTION_POOL_READ_SELECT,
-        },
-      },
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    await tx.testSessionQuestionPool.delete({
+      select: QUESTION_POOL_READ_SELECT,
+    })) ??
+    (await prisma.questionPool.findFirst({
       where: {
-        id: row.id,
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
       },
-    });
+      orderBy: {
+        randomKey: "asc",
+      },
+      select: QUESTION_POOL_READ_SELECT,
+    }));
 
-    return toQuestion((row as TestSessionQuestionPoolReadRow).question);
-  });
+  return row ? toQuestion(row as QuestionPoolReadRow) : null;
 }
 
 function toQuestion(row: QuestionPoolReadRow): Question {
@@ -124,24 +116,5 @@ export async function upsertQuestionPool(
       options: input.options,
       correctOptionIds: input.correctOptionIds,
     },
-  });
-}
-
-export async function upsertTestSessionQuestionPoolLink(
-  sessionId: string,
-  questionId: string,
-): Promise<void> {
-  await prisma.testSessionQuestionPool.upsert({
-    where: {
-      sessionId_questionId: {
-        sessionId,
-        questionId,
-      },
-    },
-    create: {
-      sessionId,
-      questionId,
-    },
-    update: {},
   });
 }

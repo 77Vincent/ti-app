@@ -76,17 +76,6 @@ CREATE TABLE "QuestionPool" (
 );
 
 -- CreateTable
-CREATE TABLE "TestSessionQuestionPool" (
-    "id" TEXT NOT NULL,
-    "sessionId" TEXT NOT NULL,
-    "questionId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "TestSessionQuestionPool_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "FavoriteQuestion" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -123,15 +112,6 @@ CREATE UNIQUE INDEX "TestSession_anonymousSessionId_key" ON "TestSession"("anony
 CREATE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_randomKey_idx" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "randomKey");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "TestSessionQuestionPool_sessionId_questionId_key" ON "TestSessionQuestionPool"("sessionId", "questionId");
-
--- CreateIndex
-CREATE INDEX "TestSessionQuestionPool_sessionId_createdAt_idx" ON "TestSessionQuestionPool"("sessionId", "createdAt");
-
--- CreateIndex
-CREATE INDEX "TestSessionQuestionPool_questionId_idx" ON "TestSessionQuestionPool"("questionId");
-
--- CreateIndex
 CREATE INDEX "FavoriteQuestion_userId_idx" ON "FavoriteQuestion"("userId");
 
 -- CreateIndex
@@ -160,12 +140,6 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "TestSession" ADD CONSTRAINT "TestSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TestSessionQuestionPool" ADD CONSTRAINT "TestSessionQuestionPool_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "TestSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TestSessionQuestionPool" ADD CONSTRAINT "TestSessionQuestionPool_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "QuestionPool"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FavoriteQuestion" ADD CONSTRAINT "FavoriteQuestion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

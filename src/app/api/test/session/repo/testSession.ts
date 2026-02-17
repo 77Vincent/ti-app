@@ -10,6 +10,9 @@ export type AnonymousTestSessionWhere = {
 };
 
 export type TestSessionWhere = AuthTestSessionWhere | AnonymousTestSessionWhere;
+export type IncrementProgressOptions = {
+  maxSubmittedCountExclusive?: number;
+};
 
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
@@ -22,33 +25,10 @@ const TEST_RUN_PARAMS_SELECT = {
   subcategoryId: true,
 } as const;
 
-const TEST_SESSION_ID_SELECT = {
-  id: true,
-} as const;
-
 function isAuthTestSessionWhere(
   where: TestSessionWhere,
 ): where is AuthTestSessionWhere {
   return "userId" in where;
-}
-
-async function readPersistedSessionId(
-  where: TestSessionWhere,
-): Promise<string | null> {
-  const session = await prisma.testSession.findUnique({
-    where,
-    select: TEST_SESSION_ID_SELECT,
-  });
-
-  return session?.id ?? null;
-}
-
-async function clearTestSessionQuestionPool(sessionId: string): Promise<void> {
-  await prisma.testSessionQuestionPool.deleteMany({
-    where: {
-      sessionId,
-    },
-  });
 }
 
 export async function readTestSession(
@@ -66,11 +46,6 @@ export async function upsertTestSession(
   params: TestParam,
   startedAt: Date,
 ): Promise<void> {
-  const persistedSessionId = await readPersistedSessionId(where);
-  if (persistedSessionId && persistedSessionId !== id) {
-    await clearTestSessionQuestionPool(persistedSessionId);
-  }
-
   await prisma.testSession.upsert({
     where,
     create: {
@@ -102,7 +77,8 @@ export async function upsertTestSession(
 export async function incrementTestSessionProgress(
   where: TestSessionWhere,
   isCorrect: boolean,
-): Promise<void> {
+  options?: IncrementProgressOptions,
+): Promise<number> {
   const data = {
     submittedCount: {
       increment: 1,
@@ -116,10 +92,21 @@ export async function incrementTestSessionProgress(
       : {}),
   };
 
-  await prisma.testSession.updateMany({
-    where,
+  const result = await prisma.testSession.updateMany({
+    where: {
+      ...where,
+      ...(typeof options?.maxSubmittedCountExclusive === "number"
+        ? {
+            submittedCount: {
+              lt: options.maxSubmittedCountExclusive,
+            },
+          }
+        : {}),
+    },
     data,
   });
+
+  return result.count;
 }
 
 export async function deleteTestSession(
