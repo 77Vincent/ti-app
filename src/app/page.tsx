@@ -6,7 +6,6 @@ import Link from "next/link";
 import { HeroBanner } from "./components";
 import { PlayIcon } from "lucide-react";
 import GlobalStatistics from "./components/statistics/GlobalStatistics";
-import BestTestTakers from "./components/statistics/BestTestTakers";
 
 
 export default function Home() {
@@ -33,8 +32,6 @@ export default function Home() {
       </section>
 
       <GlobalStatistics />
-
-      <BestTestTakers />
     </div>
   );
 }
