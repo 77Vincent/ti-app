@@ -5,14 +5,12 @@ describe("parseTestParam", () => {
   it("parses a valid test session payload", () => {
     const parsed = parseTestParam({
       difficulty: "beginner",
-      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
 
     expect(parsed).toEqual({
       difficulty: "beginner",
-      goal: "study",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -21,8 +19,7 @@ describe("parseTestParam", () => {
   it("returns null for invalid payload", () => {
     expect(
       parseTestParam({
-        difficulty: "beginner",
-        goal: "unknown",
+        difficulty: "unknown",
         subjectId: "language",
         subcategoryId: "english",
       }),
@@ -36,7 +33,6 @@ describe("parseTestSession", () => {
       parseTestSession({
         correctCount: 2,
         difficulty: "beginner",
-        goal: "study",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
@@ -46,7 +42,6 @@ describe("parseTestSession", () => {
     ).toEqual({
       correctCount: 2,
       difficulty: "beginner",
-      goal: "study",
       id: "session-1",
       startedAtMs: 1_738_000_000_000,
       submittedCount: 3,
@@ -59,7 +54,6 @@ describe("parseTestSession", () => {
     expect(
       parseTestSession({
         difficulty: "beginner",
-        goal: "study",
         subjectId: "language",
         subcategoryId: "english",
       }),
@@ -70,7 +64,6 @@ describe("parseTestSession", () => {
     expect(
       parseTestSession({
         difficulty: "beginner",
-        goal: "study",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
@@ -82,7 +75,6 @@ describe("parseTestSession", () => {
     expect(
       parseTestSession({
         difficulty: "beginner",
-        goal: "study",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
@@ -97,7 +89,6 @@ describe("parseTestSession", () => {
       parseTestSession({
         correctCount: 2,
         difficulty: "beginner",
-        goal: "study",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",

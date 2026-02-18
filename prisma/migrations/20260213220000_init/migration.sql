@@ -48,7 +48,6 @@ CREATE TABLE "TestSession" (
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
-    "goal" TEXT NOT NULL DEFAULT 'study',
     "correctCount" INTEGER NOT NULL DEFAULT 0,
     "submittedCount" INTEGER NOT NULL DEFAULT 0,
     "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

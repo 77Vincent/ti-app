@@ -5,8 +5,6 @@ import { Button, Card, CardBody, Chip, Divider, Dropdown, DropdownItem, Dropdown
 import {
   getDifficultyIcon,
   getDifficultyLabel,
-  getGoalIcon,
-  getGoalLabel,
   getSubcategoryLabel,
   getSubjectIcon,
   getSubjectLabel,
@@ -24,7 +22,6 @@ export default function QuestionWrapper({
   subjectId,
   subcategoryId,
   difficulty,
-  goal,
   startedAtMs,
   onEndTest,
 }: QuestionRunnerProps) {
@@ -91,11 +88,9 @@ export default function QuestionWrapper({
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const DifficultyIcon = getDifficultyIcon(difficulty);
-  const GoalIcon = getGoalIcon(goal);
   const subjectLabel = getSubjectLabel(subjectId);
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
   const difficultyLabel = getDifficultyLabel(difficulty);
-  const goalLabel = getGoalLabel(goal);
 
   const END_TEST_LABEL = "End test"
   const isEndTestDisabled = isSubmitting;
@@ -209,12 +204,6 @@ export default function QuestionWrapper({
           <span className="inline-flex items-center gap-1.5">
             {createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })}
             {difficultyLabel}
-          </span>
-        </Chip>
-        <Chip variant="bordered">
-          <span className="inline-flex items-center gap-1.5">
-            {createElement(GoalIcon, { "aria-hidden": true, size: 14 })}
-            {goalLabel}
           </span>
         </Chip>
       </div>

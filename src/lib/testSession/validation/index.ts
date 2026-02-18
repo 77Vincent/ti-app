@@ -1,12 +1,6 @@
-import {
-  DIFFICULTIES,
-  GOALS,
-  SUBJECTS,
-  SUBCATEGORIES,
-} from "@/lib/meta";
+import { DIFFICULTIES, SUBJECTS, SUBCATEGORIES } from "@/lib/meta";
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -18,9 +12,7 @@ export type QuestionParam = {
   difficulty: DifficultyEnum;
 };
 
-export type TestParam = QuestionParam & {
-  goal: GoalEnum;
-};
+export type TestParam = QuestionParam;
 
 export type TestSession = TestParam & {
   id: string;
@@ -65,26 +57,7 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
 }
 
 export function parseTestParam(value: unknown): TestParam | null {
-  const params = parseQuestionParam(value);
-  if (!params) {
-    return null;
-  }
-
-  const goal = (value as Partial<TestParam>).goal;
-
-  if (!isNonEmptyString(goal)) {
-    return null;
-  }
-
-  const isValidGoal = GOALS.some((item) => item.id === goal);
-  if (!isValidGoal) {
-    return null;
-  }
-
-  return {
-    ...params,
-    goal: goal as GoalEnum,
-  };
+  return parseQuestionParam(value);
 }
 
 export function parseTestSession(value: unknown): TestSession | null {

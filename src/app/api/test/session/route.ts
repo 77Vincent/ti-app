@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   if (!params) {
     return NextResponse.json(
       {
-        error: "subjectId, subcategoryId, difficulty, and goal are required.",
+        error: "subjectId, subcategoryId, and difficulty are required.",
       },
       { status: 400 },
     );

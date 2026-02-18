@@ -2,7 +2,6 @@
 
 import {
   getDifficultyIcon,
-  getGoalIcon,
   getSubjectIcon,
   sortByOrder,
   SUBJECTS,
@@ -11,7 +10,6 @@ import {
 import { toast } from "@/lib/toast";
 import type {
   DifficultyEnum,
-  GoalEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -27,7 +25,6 @@ import {
 import {
   INITIAL_START_FORM_STATE,
   selectDifficulty,
-  selectGoal,
   selectSubcategory,
   selectSubject,
 } from "./state";
@@ -43,7 +40,6 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
-    selectedGoal,
   } = state;
   const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
@@ -69,20 +65,15 @@ export default function StartForm() {
 
   const handleSelectDifficulty = (difficulty: DifficultyEnum) => {
     setState((prevState) => selectDifficulty(prevState, difficulty));
-  };
 
-  const handleSelectGoal = (goal: GoalEnum) => {
-    setState((prevState) => selectGoal(prevState, goal));
-
-    if (!selectedSubjectId || !selectedSubcategoryId || !selectedDifficulty) {
+    if (!selectedSubjectId || !selectedSubcategoryId) {
       return;
     }
 
     const testSession = {
       subjectId: selectedSubjectId,
       subcategoryId: selectedSubcategoryId,
-      difficulty: selectedDifficulty,
-      goal,
+      difficulty,
     };
 
     void writeTestSession(testSession)
@@ -104,7 +95,6 @@ export default function StartForm() {
     selectedSubjectId,
     selectedSubcategoryId,
     selectedDifficulty,
-    selectedGoal,
   });
 
   function renderStepOptions() {
@@ -149,23 +139,6 @@ export default function StartForm() {
               variant="bordered"
               key={option.value}
               onPress={() => handleSelectDifficulty(option.value)}
-              startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
-            >
-              {option.label}
-            </Button>
-          );
-        });
-      case "goal":
-        return currentStepViewConfig.options.map((option) => {
-          const Icon = getGoalIcon(option.value);
-
-          return (
-            <Button
-              color="primary"
-              key={option.value}
-              size="lg"
-              variant="bordered"
-              onPress={() => handleSelectGoal(option.value)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
             >
               {option.label}

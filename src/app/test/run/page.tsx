@@ -60,7 +60,6 @@ export default function TestRunPage() {
 
       <QuestionRunner
         difficulty={params.difficulty}
-        goal={params.goal}
         onEndTest={handleEndTest}
         id={params.id}
         startedAtMs={params.startedAtMs}

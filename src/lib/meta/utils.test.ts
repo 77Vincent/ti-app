@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   getDifficultyLabel,
-  getGoalLabel,
   getSubcategoryLabel,
   getSubjectLabel,
   sortByOrder,
@@ -25,7 +24,6 @@ describe("meta utils", () => {
     expect(getSubjectLabel("language")).toBe("Language");
     expect(getSubcategoryLabel("english")).toBe("English");
     expect(getDifficultyLabel("beginner")).toBe("Beginner");
-    expect(getGoalLabel("study")).toBe("Study");
   });
 
   it("falls back to subcategory id when label is unknown", () => {

@@ -6,7 +6,6 @@ export const INITIAL_START_FORM_STATE: StartFormState = {
   selectedSubjectId: null,
   selectedSubcategoryId: null,
   selectedDifficulty: null,
-  selectedGoal: null,
 };
 
 export function selectSubject(
@@ -26,7 +25,6 @@ export function selectSubcategory(
     ...state,
     selectedSubcategoryId: subcategoryId,
     selectedDifficulty: null,
-    selectedGoal: null,
   };
 }
 
@@ -37,16 +35,5 @@ export function selectDifficulty(
   return {
     ...state,
     selectedDifficulty: difficulty,
-    selectedGoal: null,
-  };
-}
-
-export function selectGoal(
-  state: StartFormState,
-  goal: StartFormSelectionState["selectedGoal"],
-): StartFormState {
-  return {
-    ...state,
-    selectedGoal: goal,
   };
 }

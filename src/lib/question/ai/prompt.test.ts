@@ -32,7 +32,6 @@ describe("aiPrompt", () => {
     expect(prompt).toContain("subcategory: english");
     expect(prompt).toContain("difficulty: CEFR A1-A2");
     expect(prompt).toContain("style:");
-    expect(prompt).not.toContain("goal:");
     expect(prompt).not.toContain("objectively gradable");
   });
 

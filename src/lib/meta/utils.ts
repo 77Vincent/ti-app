@@ -1,9 +1,7 @@
 import { DIFFICULTIES } from "./difficulties";
-import { GOALS } from "./goals";
 import { SUBJECTS } from "./subjects";
 import { SUBCATEGORIES } from "./subcategories";
 import type { DifficultyEnum } from "./difficulties";
-import type { GoalEnum } from "./goals";
 import type { SubjectEnum } from "./subjects";
 
 export function sortByOrder<T extends { order: number }>(entries: T[]): T[] {
@@ -18,10 +16,6 @@ const DIFFICULTY_LABEL_BY_ID: Record<DifficultyEnum, string> = Object.fromEntrie
   DIFFICULTIES.map((difficulty) => [difficulty.id, difficulty.label]),
 ) as Record<DifficultyEnum, string>;
 
-const GOAL_LABEL_BY_ID: Record<GoalEnum, string> = Object.fromEntries(
-  GOALS.map((goal) => [goal.id, goal.label]),
-) as Record<GoalEnum, string>;
-
 const SUBCATEGORY_LABEL_BY_ID: Record<string, string> = Object.fromEntries(
   SUBCATEGORIES.map((subcategory) => [subcategory.id, subcategory.label]),
 ) as Record<string, string>;
@@ -32,10 +26,6 @@ export function getSubjectLabel(id: SubjectEnum): string {
 
 export function getDifficultyLabel(id: DifficultyEnum): string {
   return DIFFICULTY_LABEL_BY_ID[id];
-}
-
-export function getGoalLabel(id: GoalEnum): string {
-  return GOAL_LABEL_BY_ID[id];
 }
 
 export function getSubcategoryLabel(id: string): string {

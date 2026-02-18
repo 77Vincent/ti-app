@@ -28,7 +28,6 @@ const REMOTE_SESSION_PAYLOAD = {
     subjectId: "language",
     subcategoryId: "english",
     difficulty: "beginner",
-    goal: "study",
     startedAtMs: 1739395200000,
     submittedCount: 0,
   },

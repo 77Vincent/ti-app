@@ -54,7 +54,6 @@ model TestSession {
   subjectId          String
   subcategoryId      String
   difficulty         String
-  goal               String   @default("study")
   correctCount       Int      @default(0)
   submittedCount     Int      @default(0)
   startedAt          DateTime @default(now())
