@@ -23,6 +23,8 @@ Rules:
 - each question must be objectively gradable.
 - prioritize clarity, realism and factual correctness.
 - use markdown/LaTeX only when needed.
+- if using inline math, use $...$ delimiters (do not use \\(...\\)).
+- write valid LaTeX commands with a leading backslash (example: \\mathbb{R}^n).
 - t: "mc" means multiple_choice, "ma" means multiple_answer.
 - p is the question prompt.
 - o is options as [text, explanation] tuples.

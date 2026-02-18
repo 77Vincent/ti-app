@@ -17,6 +17,13 @@ describe("getDifficulty", () => {
     });
   });
 
+  it("returns mapped AP level for mathematics", () => {
+    expect(getDifficulty("mathematics", "linear-algebra", "expert")).toEqual({
+      framework: "AP Math",
+      level: "AP Calculus BC",
+    });
+  });
+
   it("returns null when no mapping exists", () => {
     expect(
       getDifficulty("language", "unknown" as SubcategoryEnum, "beginner"),

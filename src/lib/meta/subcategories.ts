@@ -4,7 +4,7 @@ import {
 import type { QuestionType } from "./questionTypes";
 import type { SubjectEnum } from "./subjects";
 
-export type SubcategoryEnum = "english" | "japanese";
+export type SubcategoryEnum = "english" | "japanese" | "linear-algebra";
 
 export type SubcategoryOption = {
   id: SubcategoryEnum;
@@ -35,4 +35,13 @@ export const SUBCATEGORIES: SubcategoryOption[] = [
       QUESTION_TYPES.MULTIPLE_ANSWER,
     ],
   },
+  {
+    id: "linear-algebra",
+    label: "Linear Algebra",
+    subjectId: "mathematics",
+    order: 3,
+    questionTypesAllowed: [
+      QUESTION_TYPES.MULTIPLE_CHOICE,
+    ],
+  }
 ];

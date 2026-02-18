@@ -4,6 +4,7 @@ import { Card, CardBody } from "@heroui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import { normalizeMathMarkdown } from "@/lib/question/markdown";
 import type { QuestionOption } from "../types";
 
 type QuestionChoiceProps = {
@@ -18,6 +19,8 @@ type QuestionChoiceProps = {
 };
 
 function renderInlineMarkdown(markdown: string) {
+  const normalizedMarkdown = normalizeMathMarkdown(markdown);
+
   return (
     <ReactMarkdown
       components={{
@@ -26,7 +29,7 @@ function renderInlineMarkdown(markdown: string) {
       rehypePlugins={[rehypeKatex]}
       remarkPlugins={[remarkMath]}
     >
-      {markdown}
+      {normalizedMarkdown}
     </ReactMarkdown>
   );
 }
@@ -77,7 +80,7 @@ export default function QuestionChoice({
         <Card shadow="none">
           <CardBody className="px-4 py-1">
             <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
-              {option.explanation}
+              {normalizeMathMarkdown(option.explanation)}
             </ReactMarkdown>
           </CardBody>
         </Card>

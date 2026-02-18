@@ -29,4 +29,12 @@ export const DIFFICULTY_MAP: Partial<
       expert: { framework: "JLPT", level: "N1" },
     },
   },
+  mathematics: {
+    "linear-algebra": {
+      beginner: { framework: "AP Math", level: "Precalculus Foundations" },
+      intermediate: { framework: "AP Math", level: "AP Precalculus" },
+      advanced: { framework: "AP Math", level: "AP Calculus AB" },
+      expert: { framework: "AP Math", level: "AP Calculus BC" },
+    },
+  },
 };
