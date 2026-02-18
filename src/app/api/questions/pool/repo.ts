@@ -47,36 +47,44 @@ export type QuestionPoolUpsertInput = {
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
-  const pivot = Math.random();
-
-  const row =
-    (await prisma.questionPool.findFirst({
-      where: {
-        subjectId: input.subjectId,
-        subcategoryId: input.subcategoryId,
-        difficulty: input.difficulty,
-        randomKey: {
-          gte: pivot,
-        },
-      },
-      orderBy: {
-        randomKey: "asc",
-      },
-      select: QUESTION_POOL_READ_SELECT,
-    })) ??
-    (await prisma.questionPool.findFirst({
-      where: {
+  const context = await prisma.questionPoolContext.findUnique({
+    where: {
+      subjectId_subcategoryId_difficulty: {
         subjectId: input.subjectId,
         subcategoryId: input.subcategoryId,
         difficulty: input.difficulty,
       },
-      orderBy: {
-        randomKey: "asc",
-      },
-      select: QUESTION_POOL_READ_SELECT,
-    }));
+    },
+    select: {
+      questionCount: true,
+    },
+  });
 
-  return row ? toQuestion(row) : null;
+  if (!context || context.questionCount < 1) {
+    return null;
+  }
+
+  const randomSlot = Math.floor(Math.random() * context.questionCount) + 1;
+
+  const row = await prisma.questionPool.findUnique({
+    where: {
+      subjectId_subcategoryId_difficulty_slot: {
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
+        slot: randomSlot,
+      },
+    },
+    select: QUESTION_POOL_READ_SELECT,
+  });
+
+  if (!row) {
+    throw new Error(
+      "Question pool context is inconsistent with slot records.",
+    );
+  }
+
+  return toQuestion(row);
 }
 
 function toQuestion(row: QuestionPoolReadRow): Question {
@@ -92,28 +100,56 @@ function toQuestion(row: QuestionPoolReadRow): Question {
 export async function upsertQuestionPool(
   input: QuestionPoolUpsertInput,
 ): Promise<void> {
-  await prisma.questionPool.upsert({
-    where: {
-      id: input.id,
-    },
-    create: {
-      id: input.id,
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
-      questionType: input.questionType,
-      prompt: input.prompt,
-      options: input.options,
-      correctOptionIds: input.correctOptionIds,
-    },
-    update: {
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
-      questionType: input.questionType,
-      prompt: input.prompt,
-      options: input.options,
-      correctOptionIds: input.correctOptionIds,
-    },
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.questionPool.findUnique({
+      where: {
+        id: input.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existing) {
+      return;
+    }
+
+    const context = await tx.questionPoolContext.upsert({
+      where: {
+        subjectId_subcategoryId_difficulty: {
+          subjectId: input.subjectId,
+          subcategoryId: input.subcategoryId,
+          difficulty: input.difficulty,
+        },
+      },
+      create: {
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
+        questionCount: 1,
+      },
+      update: {
+        questionCount: {
+          increment: 1,
+        },
+      },
+      select: {
+        questionCount: true,
+      },
+    });
+
+    await tx.questionPool.create({
+      data: {
+        id: input.id,
+        subjectId: input.subjectId,
+        subcategoryId: input.subcategoryId,
+        difficulty: input.difficulty,
+        slot: context.questionCount,
+        questionType: input.questionType,
+        prompt: input.prompt,
+        options: input.options,
+        correctOptionIds: input.correctOptionIds,
+      },
+    });
   });
 }

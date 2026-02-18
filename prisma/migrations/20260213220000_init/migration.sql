@@ -64,7 +64,7 @@ CREATE TABLE "QuestionPool" (
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
-    "randomKey" DOUBLE PRECISION NOT NULL DEFAULT random(),
+    "slot" INTEGER NOT NULL,
     "questionType" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
     "options" JSONB NOT NULL,
@@ -73,6 +73,16 @@ CREATE TABLE "QuestionPool" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "QuestionPool_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "QuestionPoolContext" (
+    "subjectId" TEXT NOT NULL,
+    "subcategoryId" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
+    "questionCount" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "QuestionPoolContext_pkey" PRIMARY KEY ("subjectId","subcategoryId","difficulty")
 );
 
 -- CreateTable
@@ -109,7 +119,7 @@ CREATE UNIQUE INDEX "TestSession_userId_key" ON "TestSession"("userId");
 CREATE UNIQUE INDEX "TestSession_anonymousSessionId_key" ON "TestSession"("anonymousSessionId");
 
 -- CreateIndex
-CREATE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_randomKey_idx" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "randomKey");
+CREATE UNIQUE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_slot_key" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "slot");
 
 -- CreateIndex
 CREATE INDEX "FavoriteQuestion_userId_idx" ON "FavoriteQuestion"("userId");

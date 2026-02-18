@@ -69,7 +69,7 @@ model QuestionPool {
   subjectId        String
   subcategoryId    String
   difficulty       String
-  randomKey        Float    @default(dbgenerated("random()"))
+  slot             Int
   questionType     String
   prompt           String   @db.Text
   options          Json
@@ -78,7 +78,16 @@ model QuestionPool {
   updatedAt        DateTime @updatedAt
   favorites        FavoriteQuestion[]
 
-  @@index([subjectId, subcategoryId, difficulty, randomKey])
+  @@unique([subjectId, subcategoryId, difficulty, slot])
+}
+
+model QuestionPoolContext {
+  subjectId     String
+  subcategoryId String
+  difficulty    String
+  questionCount Int    @default(0)
+
+  @@id([subjectId, subcategoryId, difficulty])
 }
 
 model FavoriteQuestion {
