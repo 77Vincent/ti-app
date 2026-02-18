@@ -7,21 +7,19 @@ export const OPENAI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
 
 Return only valid JSON with this exact shape:
-{
-  "q": [
-    {
-      "t": "mc" | "ma",
-      "p": string,
-      "o": [[string, string]],
-      "a": [number]
-    }
-  ]
-}
+[
+  {
+    "t": "mc" | "ma",
+    "p": string,
+    "o": [[string, string]],
+    "a": [number]
+  }
+]
 
 Rules:
-- output only one JSON object, no markdown, no code fence, no extra prose.
+- output only one JSON array, no markdown, no code fence, no extra prose.
 - keep JSON compact and minified (no unnecessary whitespace).
-- q length must be exactly 2.
+- array length must be exactly 2.
 - each question must be objectively gradable.
 - prioritize clarity, realism and factual correctness.
 - use markdown/LaTeX only when needed.
@@ -33,7 +31,7 @@ Rules:
 - for t="mc", a length must be exactly 1.
 - for t="ma", a length must be at least 2.
 - explanations in o must be concise and explain why each option is correct or incorrect.
-- use only keys q, t, p, o, a (no extra keys).
+- each question item must use only keys t, p, o, a (no extra keys).
 `.trim();
 
 export function buildQuestionUserPrompt(input: QuestionParam): string {

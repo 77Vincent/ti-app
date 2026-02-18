@@ -29,16 +29,16 @@ const VALID_PARSED_QUESTION = {
 describe("parseAIQuestionPayload", () => {
   it("parses valid JSON payload with exactly two questions", () => {
     const parsed = parseAIQuestionPayload(
-      JSON.stringify({ q: [VALID_COMPACT_QUESTION, VALID_COMPACT_QUESTION] }),
+      JSON.stringify([VALID_COMPACT_QUESTION, VALID_COMPACT_QUESTION]),
     );
 
     expect(parsed).toEqual([VALID_PARSED_QUESTION, VALID_PARSED_QUESTION]);
   });
 
-  it("throws when q length is not 2", () => {
+  it("throws when array length is not 2", () => {
     expect(() =>
       parseAIQuestionPayload(
-        JSON.stringify({ q: [VALID_COMPACT_QUESTION] }),
+        JSON.stringify([VALID_COMPACT_QUESTION]),
       ),
     ).toThrow("AI response shape is invalid.");
   });
@@ -51,7 +51,7 @@ describe("parseAIQuestionPayload", () => {
 
     expect(() =>
       parseAIQuestionPayload(
-        JSON.stringify({ q: [VALID_COMPACT_QUESTION, invalidCompactQuestion] }),
+        JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
       ),
     ).toThrow("AI multiple_choice must have exactly one correct option.");
   });
@@ -64,7 +64,7 @@ describe("parseAIQuestionPayload", () => {
 
     expect(() =>
       parseAIQuestionPayload(
-        JSON.stringify({ q: [VALID_COMPACT_QUESTION, invalidCompactQuestion] }),
+        JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
       ),
     ).toThrow("AI correct options are invalid.");
   });

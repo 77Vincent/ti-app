@@ -63,8 +63,8 @@ describe("requestOpenAIQuestionContent", () => {
         method: "POST",
       }),
     );
-    expect(body).toContain("q length must be exactly 2");
-    expect(body).toContain("use only keys q, t, p, o, a");
+    expect(body).toContain("array length must be exactly 2");
+    expect(body).toContain("each question item must use only keys t, p, o, a");
   });
 
   it("throws provider error for non-ok response", async () => {

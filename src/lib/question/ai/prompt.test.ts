@@ -12,12 +12,11 @@ function extractStyle(prompt: string): string | null {
 describe("aiPrompt", () => {
   it("defines a stable prompt with strict question length", () => {
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"q"');
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"t"');
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"o"');
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"a"');
     expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain(
-      "q length must be exactly 2",
+      "array length must be exactly 2",
     );
   });
 

@@ -21,19 +21,23 @@ export type ParsedAIQuestionPayload = {
   correctOptionIds: QuestionOptionId[];
 };
 
-function parseJsonObject(content: string): unknown {
+function parseJsonValue(content: string): unknown {
   try {
     return JSON.parse(content);
   } catch {
-    const firstBrace = content.indexOf("{");
-    const lastBrace = content.lastIndexOf("}");
+    const firstBracket = content.indexOf("[");
+    const lastBracket = content.lastIndexOf("]");
 
-    if (firstBrace === -1 || lastBrace === -1 || firstBrace >= lastBrace) {
+    if (
+      firstBracket === -1 ||
+      lastBracket === -1 ||
+      firstBracket >= lastBracket
+    ) {
       throw new Error("AI response was not valid JSON.");
     }
 
     try {
-      return JSON.parse(content.slice(firstBrace, lastBrace + 1));
+      return JSON.parse(content.slice(firstBracket, lastBracket + 1));
     } catch {
       throw new Error("AI response was not valid JSON.");
     }
@@ -165,13 +169,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
 export function parseAIQuestionPayload(
   content: string,
 ): [ParsedAIQuestionPayload, ParsedAIQuestionPayload] {
-  const payload = parseJsonObject(content);
-
-  if (!payload || typeof payload !== "object") {
-    throw new Error("AI response shape is invalid.");
-  }
-
-  const questions = (payload as { q?: unknown }).q;
+  const questions = parseJsonValue(content);
 
   if (!Array.isArray(questions) || questions.length !== 2) {
     throw new Error("AI response shape is invalid.");
