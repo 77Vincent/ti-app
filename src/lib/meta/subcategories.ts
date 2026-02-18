@@ -1,7 +1,3 @@
-import {
-  QUESTION_TYPES,
-} from "./questionTypes";
-import type { QuestionType } from "./questionTypes";
 import type { SubjectEnum } from "./subjects";
 
 export type SubcategoryEnum = "english" | "japanese" | "linear-algebra";
@@ -11,7 +7,6 @@ export type SubcategoryOption = {
   label: string;
   subjectId: SubjectEnum;
   order: number;
-  questionTypesAllowed: QuestionType[];
 };
 
 export const SUBCATEGORIES: SubcategoryOption[] = [
@@ -20,28 +15,17 @@ export const SUBCATEGORIES: SubcategoryOption[] = [
     label: "English",
     subjectId: "language",
     order: 1,
-    questionTypesAllowed: [
-      QUESTION_TYPES.MULTIPLE_CHOICE,
-      QUESTION_TYPES.MULTIPLE_ANSWER,
-    ],
   },
   {
     id: "japanese",
     label: "Japanese",
     subjectId: "language",
     order: 2,
-    questionTypesAllowed: [
-      QUESTION_TYPES.MULTIPLE_CHOICE,
-      QUESTION_TYPES.MULTIPLE_ANSWER,
-    ],
   },
   {
     id: "linear-algebra",
     label: "Linear Algebra",
     subjectId: "mathematics",
     order: 3,
-    questionTypesAllowed: [
-      QUESTION_TYPES.MULTIPLE_CHOICE,
-    ],
   }
 ];

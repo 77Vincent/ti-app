@@ -16,10 +16,7 @@ type ParseQuestionOptionsConfig = {
 export type ParsedQuestionOption = QuestionOption;
 
 export function isQuestionType(value: unknown): value is QuestionType {
-  return (
-    value === QUESTION_TYPES.MULTIPLE_CHOICE ||
-    value === QUESTION_TYPES.MULTIPLE_ANSWER
-  );
+  return value === QUESTION_TYPES.MULTIPLE_CHOICE;
 }
 
 export function isQuestionOptionId(value: string): value is QuestionOptionId {
@@ -110,17 +107,8 @@ export function parseCorrectOptionIds(
   return ids;
 }
 
-export function hasValidCorrectOptionCount(
-  questionType: QuestionType,
+export function hasSingleCorrectOption(
   correctOptionIds: QuestionOptionId[],
 ): boolean {
-  if (questionType === QUESTION_TYPES.MULTIPLE_CHOICE) {
-    return correctOptionIds.length === 1;
-  }
-
-  if (questionType === QUESTION_TYPES.MULTIPLE_ANSWER) {
-    return correctOptionIds.length >= 2;
-  }
-
-  return false;
+  return correctOptionIds.length === 1;
 }

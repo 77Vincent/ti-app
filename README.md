@@ -29,7 +29,7 @@ Check: During an active session, next-question generation runs before current qu
 
 4. Question type constraints
 Flow: Learner receives generated questions and submits answers.
-Rule: Question types are only `multiple choice` and `multiple answer`.
+Rule: Question type is only `multiple choice` (single selection).
 Check: Any unsupported question type is rejected and not shown.
 
 5. Session ending logic

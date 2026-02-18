@@ -1,7 +1,6 @@
 "use client";
 
 import QuestionSkeleton from "./QuestionSkeleton";
-import { QUESTION_TYPES } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button, Tooltip } from "@heroui/react";
 import { ChevronLeft } from "lucide-react";
@@ -75,7 +74,6 @@ export default function QuestionRunner({
                 <QuestionChoice
                   hasSubmitted={hasSubmitted}
                   isCorrect={isOptionCorrect(question, option.id)}
-                  isMultipleAnswer={question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER}
                   isSelected={selectedOptionIds.includes(option.id)}
                   isSubmitting={isSubmitting}
                   isWrongSelection={isOptionWrongSelection(
@@ -90,12 +88,7 @@ export default function QuestionRunner({
               ))}
             </div>
 
-            <div className="flex gap-4 justify-between items-center">
-              <p className="font-light text-sm text-default-500">
-                Select {question.correctOptionIds.length}{" "}
-                {question.correctOptionIds.length === 1 ? "answer" : "answers"}.
-              </p>
-
+            <div className="flex items-center justify-end">
               <div className="flex items-center justify-end gap-4">
                 {
                   canGoToPreviousQuestion ? (

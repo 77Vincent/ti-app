@@ -4,8 +4,7 @@ import { parseQuestionParam } from "@/lib/testSession/validation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
 import {
-  hasValidCorrectOptionCount,
-  isQuestionType,
+  hasSingleCorrectOption,
   parseCorrectOptionIds,
   parseQuestionOptions,
 } from "@/lib/question/validation";
@@ -34,7 +33,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   if (
     !params ||
     !isNonEmptyString(questionId) ||
-    !isQuestionType(questionType) ||
+    questionType !== QUESTION_TYPES.MULTIPLE_CHOICE ||
     !isNonEmptyString(prompt) ||
     !options
   ) {
@@ -47,17 +46,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
     return null;
   }
 
-  if (
-    questionType === QUESTION_TYPES.MULTIPLE_CHOICE &&
-    !hasValidCorrectOptionCount(questionType, correctOptionIds)
-  ) {
-    return null;
-  }
-
-  if (
-    questionType === QUESTION_TYPES.MULTIPLE_ANSWER &&
-    !hasValidCorrectOptionCount(questionType, correctOptionIds)
-  ) {
+  if (!hasSingleCorrectOption(correctOptionIds)) {
     return null;
   }
 

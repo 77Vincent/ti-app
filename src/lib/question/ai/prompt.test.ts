@@ -12,7 +12,7 @@ function extractStyle(prompt: string): string | null {
 describe("aiPrompt", () => {
   it("defines a stable prompt with strict question length", () => {
     expect(AI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
-    expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"t"');
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"p"');
     expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"o"');
     expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"a"');
     expect(AI_QUESTION_SYSTEM_PROMPT).toContain(

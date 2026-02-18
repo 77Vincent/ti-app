@@ -1,7 +1,6 @@
 import { QUESTION_TYPES } from "@/lib/meta";
-import type { QuestionType } from "@/lib/meta";
 import {
-  hasValidCorrectOptionCount,
+  hasSingleCorrectOption,
   type ParsedQuestionOption,
   parseCorrectOptionIds,
   parseQuestionOptions,
@@ -15,7 +14,7 @@ import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 
 export type ParsedAIQuestionPayload = {
-  questionType: QuestionType;
+  questionType: typeof QUESTION_TYPES.MULTIPLE_CHOICE;
   prompt: string;
   options: QuestionOption[];
   correctOptionIds: QuestionOptionId[];
@@ -42,18 +41,6 @@ function parseJsonValue(content: string): unknown {
       throw new Error("AI response was not valid JSON.");
     }
   }
-}
-
-function parseCompactQuestionType(value: unknown): QuestionType | null {
-  if (value === "mc") {
-    return QUESTION_TYPES.MULTIPLE_CHOICE;
-  }
-
-  if (value === "ma") {
-    return QUESTION_TYPES.MULTIPLE_ANSWER;
-  }
-
-  return null;
 }
 
 function parseCompactOptions(value: unknown): ParsedQuestionOption[] | null {
@@ -124,10 +111,8 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     throw new Error("AI response shape is invalid.");
   }
 
-  const { t, p, o, a } = value as Record<string, unknown>;
-  const questionType = parseCompactQuestionType(t);
-
-  if (questionType === null || !isNonEmptyString(p)) {
+  const { p, o, a } = value as Record<string, unknown>;
+  if (!isNonEmptyString(p)) {
     throw new Error("AI response shape is invalid.");
   }
 
@@ -144,22 +129,12 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     throw new Error("AI correct options are invalid.");
   }
 
-  if (
-    questionType === QUESTION_TYPES.MULTIPLE_CHOICE &&
-    !hasValidCorrectOptionCount(questionType, parsedCorrectOptionIds)
-  ) {
+  if (!hasSingleCorrectOption(parsedCorrectOptionIds)) {
     throw new Error("AI multiple_choice must have exactly one correct option.");
   }
 
-  if (
-    questionType === QUESTION_TYPES.MULTIPLE_ANSWER &&
-    !hasValidCorrectOptionCount(questionType, parsedCorrectOptionIds)
-  ) {
-    throw new Error("AI multiple_answer must have at least two correct options.");
-  }
-
   return {
-    questionType,
+    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: p.trim(),
     options: parsedOptions,
     correctOptionIds: parsedCorrectOptionIds,

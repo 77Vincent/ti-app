@@ -1,6 +1,5 @@
 "use client";
 
-import { QUESTION_TYPES } from "@/lib/meta";
 import { useCallback, useState } from "react";
 import type { Question as QuestionType, QuestionOptionId } from "../types";
 
@@ -30,18 +29,10 @@ export function useQuestionSelection(): UseQuestionSelectionResult {
       return null;
     }
 
-    let nextSelection: QuestionOptionId[];
-    if (question.questionType === QUESTION_TYPES.MULTIPLE_ANSWER) {
-      nextSelection = selectedOptionIds.includes(optionId)
-        ? selectedOptionIds.filter((id) => id !== optionId)
-        : [...selectedOptionIds, optionId];
-    } else {
-      nextSelection = [optionId];
-    }
-
+    const nextSelection: QuestionOptionId[] = [optionId];
     setSelectedOptionIds(nextSelection);
     return nextSelection;
-  }, [selectedOptionIds]);
+  }, []);
 
   return {
     selectedOptionIds,

@@ -3,7 +3,6 @@ import { QUESTION_TYPES } from "@/lib/meta";
 import { parseAIQuestionPayload } from "./payload";
 
 const VALID_COMPACT_QUESTION = {
-  t: "mc",
   p: "What is the capital of France?",
   o: [
     ["Berlin", "Wrong."],
@@ -67,5 +66,18 @@ describe("parseAIQuestionPayload", () => {
         JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
       ),
     ).toThrow("AI correct options are invalid.");
+  });
+
+  it("throws when question payload misses prompt", () => {
+    const invalidCompactQuestion = {
+      ...VALID_COMPACT_QUESTION,
+      p: "",
+    };
+
+    expect(() =>
+      parseAIQuestionPayload(
+        JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
+      ),
+    ).toThrow("AI response shape is invalid.");
   });
 });

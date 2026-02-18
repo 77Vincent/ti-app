@@ -9,15 +9,15 @@ import {
 
 const mockQuestion: Question = {
   id: "q-1",
-  questionType: QUESTION_TYPES.MULTIPLE_ANSWER,
-  prompt: "Pick all prime numbers below.",
+  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+  prompt: "Pick the prime number below.",
   options: [
     { id: "A", text: "2", explanation: "2 is prime." },
-    { id: "B", text: "3", explanation: "3 is prime." },
-    { id: "C", text: "4", explanation: "4 is composite." },
-    { id: "D", text: "6", explanation: "6 is composite." },
+    { id: "B", text: "4", explanation: "4 is composite." },
+    { id: "C", text: "6", explanation: "6 is composite." },
+    { id: "D", text: "8", explanation: "8 is composite." },
   ],
-  correctOptionIds: ["A", "B"],
+  correctOptionIds: ["A"],
 };
 
 describe("question evaluation utils", () => {
@@ -44,8 +44,8 @@ describe("question evaluation utils", () => {
   });
 
   it("returns true only when selected answers exactly match correct answers", () => {
-    expect(isAnswerCorrect(mockQuestion, ["A", "B"])).toBe(true);
-    expect(isAnswerCorrect(mockQuestion, ["A"])).toBe(false);
+    expect(isAnswerCorrect(mockQuestion, ["A"])).toBe(true);
+    expect(isAnswerCorrect(mockQuestion, ["B"])).toBe(false);
     expect(isAnswerCorrect(mockQuestion, ["A", "C"])).toBe(false);
   });
 

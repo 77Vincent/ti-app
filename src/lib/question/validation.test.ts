@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { QUESTION_TYPES } from "@/lib/meta";
 import {
-  hasValidCorrectOptionCount,
+  hasSingleCorrectOption,
   isQuestionType,
   parseCorrectOptionIds,
   parseQuestionOptions,
@@ -10,7 +10,6 @@ import {
 describe("question validation helpers", () => {
   it("recognizes supported question types", () => {
     expect(isQuestionType(QUESTION_TYPES.MULTIPLE_CHOICE)).toBe(true);
-    expect(isQuestionType(QUESTION_TYPES.MULTIPLE_ANSWER)).toBe(true);
     expect(isQuestionType("invalid")).toBe(false);
   });
 
@@ -58,18 +57,8 @@ describe("question validation helpers", () => {
     expect(parseCorrectOptionIds(["C"], options)).toBeNull();
   });
 
-  it("validates correct answer count by question type", () => {
-    expect(
-      hasValidCorrectOptionCount(QUESTION_TYPES.MULTIPLE_CHOICE, ["A"]),
-    ).toBe(true);
-    expect(
-      hasValidCorrectOptionCount(QUESTION_TYPES.MULTIPLE_CHOICE, ["A", "B"]),
-    ).toBe(false);
-    expect(
-      hasValidCorrectOptionCount(QUESTION_TYPES.MULTIPLE_ANSWER, ["A", "B"]),
-    ).toBe(true);
-    expect(
-      hasValidCorrectOptionCount(QUESTION_TYPES.MULTIPLE_ANSWER, ["A"]),
-    ).toBe(false);
+  it("accepts exactly one correct option", () => {
+    expect(hasSingleCorrectOption(["A"])).toBe(true);
+    expect(hasSingleCorrectOption(["A", "B"])).toBe(false);
   });
 });

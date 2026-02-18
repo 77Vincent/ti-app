@@ -1,7 +1,5 @@
 import type { TestParam } from "@/lib/testSession/validation";
 import type {
-  MultipleAnswerQuestion,
-  MultipleChoiceQuestion,
   Question,
   QuestionOption,
   QuestionOptionId,
@@ -12,8 +10,6 @@ export type TestRunnerActions = {
 };
 
 export type {
-  MultipleAnswerQuestion,
-  MultipleChoiceQuestion,
   Question,
   QuestionOption,
   QuestionOptionId,
