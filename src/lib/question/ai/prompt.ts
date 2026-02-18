@@ -1,6 +1,7 @@
 import { getDifficulty } from "@/lib/difficulty/utils";
-import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
+import type { QuestionParam } from "@/lib/testSession/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
+import { getQuestionStyle } from "@/lib/questionStyle/utils";
 
 export const OPENAI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
@@ -35,7 +36,7 @@ Rules:
 - use only keys q, t, p, o, a (no extra keys).
 `.trim();
 
-export function buildQuestionUserPrompt(input: GenerateQuestionRequest): string {
+export function buildQuestionUserPrompt(input: QuestionParam): string {
   const mappedDifficulty = getDifficulty(
     input.subjectId,
     input.subcategoryId,
@@ -44,11 +45,13 @@ export function buildQuestionUserPrompt(input: GenerateQuestionRequest): string 
   const difficulty = mappedDifficulty
     ? `${mappedDifficulty.framework} ${mappedDifficulty.level}`
     : input.difficulty;
+  const style = getQuestionStyle(input);
 
   return `
 Context:
 - subject: ${input.subjectId}
 - subcategory: ${input.subcategoryId}
 - difficulty: ${difficulty}
+- style: ${style}
 `.trim();
 }
