@@ -2,15 +2,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
-  requestOpenAIQuestionContent,
+  requestDeepSeekQuestionContent,
   parseAIQuestionPayload,
 } = vi.hoisted(() => ({
-  requestOpenAIQuestionContent: vi.fn(),
+  requestDeepSeekQuestionContent: vi.fn(),
   parseAIQuestionPayload: vi.fn(),
 }));
 
 vi.mock("./client", () => ({
-  requestOpenAIQuestionContent,
+  requestDeepSeekQuestionContent,
 }));
 
 vi.mock("./payload", () => ({
@@ -27,12 +27,12 @@ const VALID_INPUT = {
 
 describe("generateQuestionWithAI", () => {
   beforeEach(() => {
-    requestOpenAIQuestionContent.mockReset();
+    requestDeepSeekQuestionContent.mockReset();
     parseAIQuestionPayload.mockReset();
   });
 
   it("orchestrates client and payload parser", async () => {
-    requestOpenAIQuestionContent.mockResolvedValueOnce("{\"ok\":true}");
+    requestDeepSeekQuestionContent.mockResolvedValueOnce("{\"ok\":true}");
     parseAIQuestionPayload.mockReturnValueOnce([
       {
         questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
@@ -58,7 +58,7 @@ describe("generateQuestionWithAI", () => {
 
     const [question, nextQuestion] = await generateQuestionWithAI(VALID_INPUT);
 
-    expect(requestOpenAIQuestionContent).toHaveBeenCalledWith(VALID_INPUT);
+    expect(requestDeepSeekQuestionContent).toHaveBeenCalledWith(VALID_INPUT);
     expect(parseAIQuestionPayload).toHaveBeenCalledWith("{\"ok\":true}");
     expect(question).toMatchObject({
       questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
@@ -75,7 +75,7 @@ describe("generateQuestionWithAI", () => {
   });
 
   it("propagates client errors", async () => {
-    requestOpenAIQuestionContent.mockRejectedValueOnce(
+    requestDeepSeekQuestionContent.mockRejectedValueOnce(
       new Error("provider down"),
     );
 

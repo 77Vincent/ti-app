@@ -3,7 +3,7 @@ import type { QuestionParam } from "@/lib/testSession/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { getQuestionStyle } from "@/lib/questionStyle/utils";
 
-export const OPENAI_QUESTION_SYSTEM_PROMPT = `
+export const AI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
 
 Return only valid JSON with this exact shape:

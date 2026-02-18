@@ -1,30 +1,30 @@
 import { isNonEmptyString } from "@/lib/string";
 import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
 import {
-  OPENAI_QUESTION_SYSTEM_PROMPT,
+  AI_QUESTION_SYSTEM_PROMPT,
   buildQuestionUserPrompt,
 } from "./prompt";
 
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const DEFAULT_OPENAI_MODEL = "gpt-5-nano";
+const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
+const DEFAULT_AI_MODEL = "deepseek-chat";
 
-function getOpenAIConfig() {
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL ?? DEFAULT_OPENAI_MODEL;
+function getDeepSeekConfig() {
+  const apiKey = process.env.AI_API_KEY;
+  const model = process.env.AI_MODEL ?? DEFAULT_AI_MODEL;
 
   if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured.");
+    throw new Error("AI_API_KEY is not configured.");
   }
 
   return { apiKey, model };
 }
 
-export async function requestOpenAIQuestionContent(
+export async function requestDeepSeekQuestionContent(
   input: GenerateQuestionRequest,
 ): Promise<string> {
-  const { apiKey, model } = getOpenAIConfig();
+  const { apiKey, model } = getDeepSeekConfig();
 
-  const response = await fetch(OPENAI_API_URL, {
+  const response = await fetch(DEEPSEEK_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,9 +32,8 @@ export async function requestOpenAIQuestionContent(
     },
     body: JSON.stringify({
       model,
-      response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: OPENAI_QUESTION_SYSTEM_PROMPT },
+        { role: "system", content: AI_QUESTION_SYSTEM_PROMPT },
         { role: "user", content: buildQuestionUserPrompt(input) },
       ],
     }),

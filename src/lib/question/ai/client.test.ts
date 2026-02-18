@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { requestOpenAIQuestionContent } from "./client";
+import { requestDeepSeekQuestionContent } from "./client";
 
 const VALID_INPUT = {
   difficulty: "beginner",
@@ -7,26 +7,26 @@ const VALID_INPUT = {
   subcategoryId: "english",
 } as const;
 
-const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
 
-describe("requestOpenAIQuestionContent", () => {
+describe("requestDeepSeekQuestionContent", () => {
   afterEach(() => {
     vi.restoreAllMocks();
-    delete process.env.OPENAI_API_KEY;
-    delete process.env.OPENAI_MODEL;
+    delete process.env.AI_API_KEY;
+    delete process.env.AI_MODEL;
   });
 
-  it("throws when OPENAI_API_KEY is missing", async () => {
+  it("throws when AI_API_KEY is missing", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
 
-    await expect(requestOpenAIQuestionContent(VALID_INPUT)).rejects.toThrow(
-      "OPENAI_API_KEY is not configured.",
+    await expect(requestDeepSeekQuestionContent(VALID_INPUT)).rejects.toThrow(
+      "AI_API_KEY is not configured.",
     );
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("calls OpenAI and returns message content", async () => {
-    process.env.OPENAI_API_KEY = "test-key";
+  it("calls DeepSeek and returns message content", async () => {
+    process.env.AI_API_KEY = "test-key";
 
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
@@ -43,7 +43,7 @@ describe("requestOpenAIQuestionContent", () => {
       ),
     );
 
-    await expect(requestOpenAIQuestionContent(VALID_INPUT)).resolves.toBe(
+    await expect(requestDeepSeekQuestionContent(VALID_INPUT)).resolves.toBe(
       '{"ok":true}',
     );
 
@@ -54,7 +54,7 @@ describe("requestOpenAIQuestionContent", () => {
         : undefined;
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      OPENAI_URL,
+      DEEPSEEK_URL,
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: "Bearer test-key",
@@ -68,7 +68,7 @@ describe("requestOpenAIQuestionContent", () => {
   });
 
   it("throws provider error for non-ok response", async () => {
-    process.env.OPENAI_API_KEY = "test-key";
+    process.env.AI_API_KEY = "test-key";
 
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
@@ -79,13 +79,13 @@ describe("requestOpenAIQuestionContent", () => {
       ),
     );
 
-    await expect(requestOpenAIQuestionContent(VALID_INPUT)).rejects.toThrow(
+    await expect(requestDeepSeekQuestionContent(VALID_INPUT)).rejects.toThrow(
       "provider down",
     );
   });
 
   it("throws when provider content is empty", async () => {
-    process.env.OPENAI_API_KEY = "test-key";
+    process.env.AI_API_KEY = "test-key";
 
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
@@ -102,7 +102,7 @@ describe("requestOpenAIQuestionContent", () => {
       ),
     );
 
-    await expect(requestOpenAIQuestionContent(VALID_INPUT)).rejects.toThrow(
+    await expect(requestDeepSeekQuestionContent(VALID_INPUT)).rejects.toThrow(
       "AI provider returned empty content.",
     );
   });

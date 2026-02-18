@@ -1,6 +1,6 @@
 import type { Question } from "@/lib/question/model";
 import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
-import { requestOpenAIQuestionContent } from "./client";
+import { requestDeepSeekQuestionContent } from "./client";
 import { parseAIQuestionPayload } from "./payload";
 
 function createQuestionId(): string {
@@ -14,10 +14,10 @@ function createQuestionId(): string {
 export async function generateQuestionWithAI(
   input: GenerateQuestionRequest,
 ): Promise<[Question, Question]> {
-  const content = await requestOpenAIQuestionContent(input);
+  const content = await requestDeepSeekQuestionContent(input);
   const [firstQuestion, secondQuestion] = parseAIQuestionPayload(content);
 
-  return [
+  const questions: [Question, Question] = [
     {
       id: createQuestionId(),
       ...firstQuestion,
@@ -27,4 +27,13 @@ export async function generateQuestionWithAI(
       ...secondQuestion,
     },
   ];
+
+  console.info("AI question generation completed.", {
+    count: questions.length,
+    difficulty: input.difficulty,
+    subcategoryId: input.subcategoryId,
+    subjectId: input.subjectId,
+  });
+
+  return questions;
 }

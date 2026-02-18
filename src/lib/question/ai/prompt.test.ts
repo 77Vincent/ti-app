@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  AI_QUESTION_SYSTEM_PROMPT,
   buildQuestionUserPrompt,
-  OPENAI_QUESTION_SYSTEM_PROMPT,
 } from "./prompt";
 
 function extractStyle(prompt: string): string | null {
@@ -11,11 +11,11 @@ function extractStyle(prompt: string): string | null {
 
 describe("aiPrompt", () => {
   it("defines a stable prompt with strict question length", () => {
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"t"');
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"o"');
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain('"a"');
-    expect(OPENAI_QUESTION_SYSTEM_PROMPT).toContain(
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain("Return only valid JSON");
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"t"');
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"o"');
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain('"a"');
+    expect(AI_QUESTION_SYSTEM_PROMPT).toContain(
       "array length must be exactly 2",
     );
   });
