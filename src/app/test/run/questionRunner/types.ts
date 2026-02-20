@@ -5,10 +5,6 @@ import type {
   QuestionOptionId,
 } from "@/lib/question/model";
 
-export type TestRunnerActions = {
-  onEndTest: () => void;
-};
-
 export type {
   Question,
   QuestionOption,
@@ -18,8 +14,7 @@ export type {
 export type SignInDemand = "favorite" | "more_questions";
 export type QuestionSignInDemand = Extract<SignInDemand, "more_questions">;
 
-export type QuestionRunnerProps = TestParam &
-  TestRunnerActions & {
-    id: string;
-    startedAtMs: number;
-  };
+export type QuestionRunnerProps = TestParam & {
+  id: string;
+  startedAtMs: number;
+};

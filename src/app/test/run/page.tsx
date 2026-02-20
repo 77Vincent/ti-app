@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  clearTestSession,
   readTestSession,
 } from "@/app/test/run/questionRunner/session/storage";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import type { TestSession } from "@/lib/testSession/validation";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroBanner } from "@/app/components";
 
 export default function TestRunPage() {
@@ -16,11 +15,6 @@ export default function TestRunPage() {
   const [params, setParams] = useState<TestSession | null | undefined>(
     undefined,
   );
-
-  const handleEndTest = useCallback(() => {
-    void clearTestSession().catch(() => undefined);
-    router.push(PAGE_PATHS.TEST);
-  }, [router]);
 
   useEffect(() => {
     let active = true;
@@ -60,7 +54,6 @@ export default function TestRunPage() {
 
       <QuestionRunner
         difficulty={params.difficulty}
-        onEndTest={handleEndTest}
         id={params.id}
         startedAtMs={params.startedAtMs}
         subcategoryId={params.subcategoryId}

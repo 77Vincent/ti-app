@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps, SignInDemand } from "../types";
-import { Button, Card, CardBody, Chip, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Divider, Tooltip } from "@heroui/react";
 import {
   getDifficultyIcon,
   getDifficultyLabel,
@@ -9,7 +9,7 @@ import {
   getSubjectIcon,
   getSubjectLabel,
 } from "@/lib/meta";
-import { LogOut, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
 import QuestionRunner from "./QuestionRunner";
 import { useQuestion } from "../hooks/useQuestion";
@@ -23,7 +23,6 @@ export default function QuestionWrapper({
   subcategoryId,
   difficulty,
   startedAtMs,
-  onEndTest,
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
@@ -92,9 +91,6 @@ export default function QuestionWrapper({
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
   const difficultyLabel = getDifficultyLabel(difficulty);
 
-  const END_TEST_LABEL = "End test"
-  const isEndTestDisabled = isSubmitting;
-
   return (
     <div className="w-full max-w-2xl space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -141,33 +137,6 @@ export default function QuestionWrapper({
               <ElapsedSessionTimer startedAtMs={startedAtMs} />
             </span>
           </Tooltip>
-
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Button
-                aria-label={END_TEST_LABEL}
-                isIconOnly
-                isDisabled={isEndTestDisabled}
-                radius="full"
-                size="sm"
-                title={END_TEST_LABEL}
-                variant="light"
-              >
-                <LogOut aria-hidden size={20} />
-              </Button>
-            </DropdownTrigger>
-
-            <DropdownMenu>
-              <DropdownItem
-                key={END_TEST_LABEL}
-                textValue={END_TEST_LABEL}
-                onPress={onEndTest}
-                startContent={<LogOut aria-hidden size={20} />}
-              >
-                End test
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
         </div>
       </div>
 
