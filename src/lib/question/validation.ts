@@ -79,7 +79,7 @@ export function parseQuestionOptions(
 
 export function parseCorrectOptionIds(
   value: unknown,
-  options: ParsedQuestionOption[],
+  options: readonly ParsedQuestionOption[],
 ): QuestionOptionId[] | null {
   if (!Array.isArray(value) || value.length === 0) {
     return null;

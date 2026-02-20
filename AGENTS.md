@@ -6,7 +6,7 @@ Repository-level instructions for human and AI contributors.
 
 - Name: `ti-app`
 - Stage: early scaffold
-- Goal: Build a reliable online AI-backed testing platform and release it as early as possible.
+- Product focus: Build a reliable online AI-backed testing platform and release it as early as possible.
 - Business context and workflow live in `README.md`.
 - Domain terminology uses `test` for the user-facing concept.
 

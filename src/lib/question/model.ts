@@ -1,6 +1,6 @@
 import type { QuestionType } from "@/lib/meta";
 
-export type QuestionOptionId = "A" | "B" | "C" | "D" | "E" | "F";
+export type QuestionOptionId = "A" | "B" | "C" | "D";
 
 export type QuestionOption = {
   id: QuestionOptionId;
@@ -21,6 +21,4 @@ export const QUESTION_OPTION_IDS: QuestionOptionId[] = [
   "B",
   "C",
   "D",
-  "E",
-  "F",
 ];

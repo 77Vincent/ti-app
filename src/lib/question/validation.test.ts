@@ -34,6 +34,18 @@ describe("question validation helpers", () => {
     ).toBeNull();
   });
 
+  it("rejects option lists larger than the max allowed count", () => {
+    expect(
+      parseQuestionOptions([
+        { id: "A", text: "A", explanation: "A" },
+        { id: "B", text: "B", explanation: "B" },
+        { id: "C", text: "C", explanation: "C" },
+        { id: "D", text: "D", explanation: "D" },
+        { id: "E", text: "E", explanation: "E" },
+      ]),
+    ).toBeNull();
+  });
+
   it("enforces sequential option ids when requested", () => {
     expect(
       parseQuestionOptions(
