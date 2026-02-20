@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  getDifficultyIcon,
   getSubjectIcon,
   sortByOrder,
   SUBJECTS,
@@ -9,7 +8,6 @@ import {
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import type {
-  DifficultyEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -19,12 +17,12 @@ import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";
 import { START_FORM_STEP_TITLES } from "./constants";
+import { DEFAULT_TEST_DIFFICULTY } from "./constants";
 import {
   getCurrentStartFormStep,
 } from "./utils";
 import {
   INITIAL_START_FORM_STATE,
-  selectDifficulty,
   selectSubcategory,
   selectSubject,
 } from "./state";
@@ -39,7 +37,6 @@ export default function StartForm() {
   const {
     selectedSubjectId,
     selectedSubcategoryId,
-    selectedDifficulty,
   } = state;
   const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
@@ -60,20 +57,16 @@ export default function StartForm() {
   const handleSelectSubject = (subjectId: SubjectEnum) =>
     setState(selectSubject(subjectId));
 
-  const handleSelectSubcategory = (subcategoryId: SubcategoryEnum) =>
+  const handleSelectSubcategory = (subcategoryId: SubcategoryEnum) => {
     setState((prevState) => selectSubcategory(prevState, subcategoryId));
-
-  const handleSelectDifficulty = (difficulty: DifficultyEnum) => {
-    setState((prevState) => selectDifficulty(prevState, difficulty));
-
-    if (!selectedSubjectId || !selectedSubcategoryId) {
+    if (!selectedSubjectId) {
       return;
     }
 
     const testSession = {
       subjectId: selectedSubjectId,
-      subcategoryId: selectedSubcategoryId,
-      difficulty,
+      subcategoryId,
+      difficulty: DEFAULT_TEST_DIFFICULTY,
     };
 
     void writeTestSession(testSession)
@@ -94,7 +87,6 @@ export default function StartForm() {
     subcategories,
     selectedSubjectId,
     selectedSubcategoryId,
-    selectedDifficulty,
   });
 
   function renderStepOptions() {
@@ -128,23 +120,6 @@ export default function StartForm() {
             {option.label}
           </Button>
         ));
-      case "difficulty":
-        return currentStepViewConfig.options.map((option) => {
-          const Icon = getDifficultyIcon(option.value);
-
-          return (
-            <Button
-              color="primary"
-              size="lg"
-              variant="bordered"
-              key={option.value}
-              onPress={() => handleSelectDifficulty(option.value)}
-              startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
-            >
-              {option.label}
-            </Button>
-          );
-        });
     }
   }
 

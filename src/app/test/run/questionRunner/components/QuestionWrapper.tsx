@@ -3,8 +3,6 @@
 import type { QuestionRunnerProps, SignInDemand } from "../types";
 import { Button, Card, CardBody, Chip, Divider, Tooltip } from "@heroui/react";
 import {
-  getDifficultyIcon,
-  getDifficultyLabel,
   getSubcategoryLabel,
   getSubjectIcon,
   getSubjectLabel,
@@ -86,10 +84,8 @@ export default function QuestionWrapper({
   const isSignInRequired = signInDemand !== null;
 
   const SubjectIcon = getSubjectIcon(subjectId);
-  const DifficultyIcon = getDifficultyIcon(difficulty);
   const subjectLabel = getSubjectLabel(subjectId);
   const subcategoryLabel = getSubcategoryLabel(subcategoryId);
-  const difficultyLabel = getDifficultyLabel(difficulty);
 
   return (
     <div className="w-full max-w-2xl space-y-3">
@@ -168,12 +164,6 @@ export default function QuestionWrapper({
         </Chip>
         <Chip variant="bordered">
           {subcategoryLabel}
-        </Chip>
-        <Chip variant="bordered">
-          <span className="inline-flex items-center gap-1.5">
-            {createElement(DifficultyIcon, { "aria-hidden": true, size: 14 })}
-            {difficultyLabel}
-          </span>
         </Chip>
       </div>
     </div>

@@ -3,12 +3,5 @@ import type { StartFormSelectionState, StartFormStep } from "./constants";
 export function getCurrentStartFormStep(
   state: StartFormSelectionState,
 ): StartFormStep {
-  switch (true) {
-    case !state.selectedSubjectId:
-      return "subject";
-    case !state.selectedSubcategoryId:
-      return "subcategory";
-    default:
-      return "difficulty";
-  }
+  return state.selectedSubjectId ? "subcategory" : "subject";
 }

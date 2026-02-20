@@ -1,6 +1,4 @@
-import { DIFFICULTIES } from "@/lib/meta";
 import type {
-  DifficultyEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -23,16 +21,9 @@ type SubcategoryStepViewConfig = {
   options: StepOption<SubcategoryEnum>[];
 };
 
-type DifficultyStepViewConfig = {
-  step: "difficulty";
-  selectedValue: DifficultyEnum | null;
-  options: StepOption<DifficultyEnum>[];
-};
-
 export type StartFormStepViewConfig =
   | SubjectStepViewConfig
-  | SubcategoryStepViewConfig
-  | DifficultyStepViewConfig;
+  | SubcategoryStepViewConfig;
 
 type BuildCurrentStepViewConfigInput = {
   currentStep: StartFormStep;
@@ -40,7 +31,6 @@ type BuildCurrentStepViewConfigInput = {
   subcategories: Array<{ id: SubcategoryEnum; label: string }>;
   selectedSubjectId: SubjectEnum | null;
   selectedSubcategoryId: SubcategoryEnum | null;
-  selectedDifficulty: DifficultyEnum | null;
 };
 
 export function buildCurrentStepViewConfig(
@@ -63,15 +53,6 @@ export function buildCurrentStepViewConfig(
         options: input.subcategories.map((subcategory) => ({
           value: subcategory.id,
           label: subcategory.label,
-        })),
-      };
-    case "difficulty":
-      return {
-        step: "difficulty",
-        selectedValue: input.selectedDifficulty,
-        options: DIFFICULTIES.map((difficulty) => ({
-          value: difficulty.id,
-          label: difficulty.label,
         })),
       };
   }

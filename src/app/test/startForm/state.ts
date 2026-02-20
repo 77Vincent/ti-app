@@ -5,7 +5,6 @@ export type StartFormState = StartFormSelectionState;
 export const INITIAL_START_FORM_STATE: StartFormState = {
   selectedSubjectId: null,
   selectedSubcategoryId: null,
-  selectedDifficulty: null,
 };
 
 export function selectSubject(
@@ -24,16 +23,5 @@ export function selectSubcategory(
   return {
     ...state,
     selectedSubcategoryId: subcategoryId,
-    selectedDifficulty: null,
-  };
-}
-
-export function selectDifficulty(
-  state: StartFormState,
-  difficulty: StartFormSelectionState["selectedDifficulty"],
-): StartFormState {
-  return {
-    ...state,
-    selectedDifficulty: difficulty,
   };
 }
