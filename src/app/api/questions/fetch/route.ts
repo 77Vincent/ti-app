@@ -1,39 +1,6 @@
 import { NextResponse } from "next/server";
-import { generateQuestionWithAI } from "@/lib/question/ai";
 import { parseQuestionParam } from "@/lib/testSession/validation";
-import { readRandomQuestionFromPool, upsertQuestionPool } from "../pool/repo";
-import type { QuestionParam } from "@/lib/testSession/validation";
-
-function replenishQuestionPoolInBackground(input: QuestionParam): void {
-  void (async () => {
-    const generatedQuestions = await generateQuestionWithAI(input);
-    const results = await Promise.allSettled(
-      generatedQuestions.map((question) =>
-        upsertQuestionPool({
-          id: question.id,
-          subjectId: input.subjectId,
-          subcategoryId: input.subcategoryId,
-          difficulty: input.difficulty,
-          questionType: question.questionType,
-          prompt: question.prompt,
-          options: question.options,
-          correctOptionIds: question.correctOptionIds,
-        }),
-      ),
-    );
-
-    for (const result of results) {
-      if (result.status === "rejected") {
-        console.error(
-          "Failed to persist generated question in background.",
-          result.reason,
-        );
-      }
-    }
-  })().catch((reason) => {
-    console.error("Failed to generate questions in background.", reason);
-  });
-}
+import { readRandomQuestionFromPool } from "../pool/repo";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -52,8 +19,6 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-
-  replenishQuestionPoolInBackground(input);
 
   try {
     const question = await readRandomQuestionFromPool(input);
