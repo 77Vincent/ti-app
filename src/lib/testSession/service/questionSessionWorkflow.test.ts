@@ -95,27 +95,11 @@ describe("questionSessionWorkflow", () => {
   });
 
   describe("advanceQuestionSession", () => {
-    it("consumes from existing history without loading", async () => {
+    it("loads and applies next question", async () => {
       const loadNextQuestion = vi.fn(async () => "Q2");
       const pushLoadedQuestion = vi.fn(() => true);
 
       await advanceQuestionSession({
-        consumeNextQuestion: () => true,
-        loadNextQuestion,
-        pushLoadedQuestion,
-        onError: vi.fn(),
-      });
-
-      expect(loadNextQuestion).not.toHaveBeenCalled();
-      expect(pushLoadedQuestion).not.toHaveBeenCalled();
-    });
-
-    it("loads and applies next question when history has no next", async () => {
-      const loadNextQuestion = vi.fn(async () => "Q2");
-      const pushLoadedQuestion = vi.fn(() => true);
-
-      await advanceQuestionSession({
-        consumeNextQuestion: () => false,
         loadNextQuestion,
         pushLoadedQuestion,
         onError: vi.fn(),
@@ -128,17 +112,14 @@ describe("questionSessionWorkflow", () => {
     it("does nothing when shouldIgnoreResult is true", async () => {
       const loadNextQuestion = vi.fn(async () => "Q2");
       const pushLoadedQuestion = vi.fn(() => true);
-      const consumeNextQuestion = vi.fn(() => true);
 
       await advanceQuestionSession({
-        consumeNextQuestion,
         loadNextQuestion,
         pushLoadedQuestion,
         onError: vi.fn(),
         shouldIgnoreResult: () => true,
       });
 
-      expect(consumeNextQuestion).not.toHaveBeenCalled();
       expect(loadNextQuestion).not.toHaveBeenCalled();
       expect(pushLoadedQuestion).not.toHaveBeenCalled();
     });
@@ -148,7 +129,6 @@ describe("questionSessionWorkflow", () => {
       const onError = vi.fn();
 
       await advanceQuestionSession({
-        consumeNextQuestion: () => false,
         loadNextQuestion: vi.fn<() => Promise<string>>().mockRejectedValue(error),
         pushLoadedQuestion: vi.fn(() => true),
         onError,
@@ -161,7 +141,6 @@ describe("questionSessionWorkflow", () => {
       const onError = vi.fn();
 
       await advanceQuestionSession({
-        consumeNextQuestion: () => false,
         loadNextQuestion: async () => "Q2",
         pushLoadedQuestion: vi.fn(() => false),
         onError,

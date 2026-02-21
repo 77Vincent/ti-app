@@ -10,7 +10,6 @@ export {
   toLocalTestSessionQuestionState,
 } from "./snapshot";
 export {
-  shiftLocalTestSessionSnapshotQuestion,
   updateCurrentLocalTestSessionSnapshotQuestion,
   upsertLocalTestSessionSnapshotQuestion,
 } from "./history";

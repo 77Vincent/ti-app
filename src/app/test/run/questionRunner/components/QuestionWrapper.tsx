@@ -29,7 +29,6 @@ export default function QuestionWrapper({
     question,
     isLoadingQuestion,
     isSubmitting,
-    canGoToPreviousQuestion,
     currentQuestionIndex,
     submittedCount,
     correctCount,
@@ -37,7 +36,6 @@ export default function QuestionWrapper({
     signInDemand: questionSignInDemand,
     hasSubmitted,
     selectedOptionIds,
-    goToPreviousQuestion,
     selectOption,
     submit,
   } = useQuestion({
@@ -139,8 +137,6 @@ export default function QuestionWrapper({
       <Card shadow="sm">
         <CardBody className="p-6">
           <QuestionRunner
-            canGoToPreviousQuestion={canGoToPreviousQuestion}
-            goToPreviousQuestion={goToPreviousQuestion}
             hasSubmitted={hasSubmitted}
             isFavoriteSubmitting={isFavoriteSubmitting}
             isLoadingQuestion={isLoadingQuestion}

@@ -4,21 +4,6 @@ import type {
   LocalTestSessionSnapshot,
 } from "./model";
 
-export function shiftLocalTestSessionSnapshotQuestion(
-  snapshot: LocalTestSessionSnapshot,
-  step: -1 | 1,
-): LocalTestSessionSnapshot | null {
-  const nextIndex = snapshot.currentQuestionIndex + step;
-  if (nextIndex < 0 || nextIndex >= snapshot.questions.length) {
-    return null;
-  }
-
-  return {
-    ...snapshot,
-    currentQuestionIndex: nextIndex,
-  };
-}
-
 export function updateCurrentLocalTestSessionSnapshotQuestion(
   snapshot: LocalTestSessionSnapshot,
   update: (

@@ -2,8 +2,7 @@
 
 import QuestionSkeleton from "./QuestionSkeleton";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { Button, Tooltip } from "@heroui/react";
-import { ChevronLeft } from "lucide-react";
+import { Button } from "@heroui/react";
 import Link from "next/link";
 import { canSubmitQuestion } from "../utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
@@ -20,11 +19,9 @@ type QuestionProps = {
   isSubmitting: boolean;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
-  canGoToPreviousQuestion: boolean;
   isFavoriteSubmitting: boolean;
   isSignInRequired: boolean;
   signInDemand: SignInDemand | null;
-  goToPreviousQuestion: () => void;
   selectOption: (optionId: QuestionOptionId) => void;
   submit: () => Promise<void>;
 };
@@ -40,11 +37,9 @@ export default function QuestionRunner({
   isSubmitting,
   hasSubmitted,
   selectedOptionIds,
-  canGoToPreviousQuestion,
   isFavoriteSubmitting,
   isSignInRequired,
   signInDemand,
-  goToPreviousQuestion,
   selectOption,
   submit,
 }: QuestionProps) {
@@ -90,28 +85,6 @@ export default function QuestionRunner({
 
             <div className="flex items-center justify-end">
               <div className="flex items-center justify-end gap-4">
-                {
-                  canGoToPreviousQuestion ? (
-                    <Tooltip content="Previous question" placement="left">
-                      <span>
-                        <Button
-                          aria-label="Previous question"
-                          isDisabled={
-                            !canGoToPreviousQuestion ||
-                            isSubmitting ||
-                            isFavoriteSubmitting
-                          }
-                          onPress={goToPreviousQuestion}
-                          isIconOnly
-                          radius="full"
-                          startContent={<ChevronLeft aria-hidden size={20} />}
-                          variant="light"
-                        />
-                      </span>
-                    </Tooltip>
-                  ) : null
-                }
-
                 <Button
                   color="primary"
                   isDisabled={

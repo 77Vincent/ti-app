@@ -73,7 +73,7 @@ export function useQuestionFavorite({
         return;
       }
 
-      // Intentionally silent: this runs during question navigation and should not spam
+      // Intentionally silent: this runs during question transitions and should not spam
       // users with toasts when favorite-state sync fails transiently.
     } finally {
       if (!isActiveFavoriteMutation(activeQuestionIdRef.current, targetQuestionId)) {

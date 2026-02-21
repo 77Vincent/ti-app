@@ -44,22 +44,20 @@ function hasTooltipContent(node: ReactNode, content: string): boolean {
 }
 
 describe("QuestionRunner", () => {
-  it("shows tooltip for previous button when previous question is available", () => {
+  it("does not render previous question controls", () => {
     const tree = QuestionRunner({
       question: MOCK_QUESTION,
       isLoadingQuestion: false,
       isSubmitting: false,
       hasSubmitted: false,
       selectedOptionIds: [],
-      canGoToPreviousQuestion: true,
       isFavoriteSubmitting: false,
       isSignInRequired: false,
       signInDemand: null,
-      goToPreviousQuestion: () => {},
       selectOption: () => {},
       submit: async () => {},
     });
 
-    expect(hasTooltipContent(tree, "Previous question")).toBe(true);
+    expect(hasTooltipContent(tree, "Previous question")).toBe(false);
   });
 });

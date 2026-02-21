@@ -58,21 +58,12 @@ describe("local test session", () => {
     });
   });
 
-  it("moves cursor backward and forward within bounds", () => {
+  it("keeps latest appended question as current", () => {
     localTestSessionService.writeLocalTestSession("session-1");
     localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
     localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    const previous = localTestSessionService.shiftLocalTestSessionQuestion("session-1", -1);
-    expect(previous).toEqual({
-      question: expect.objectContaining({ id: "q1" }),
-      selectedOptionIds: [],
-      hasSubmitted: false,
-      currentQuestionIndex: 0,
-    });
-
-    const next = localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1);
-    expect(next).toEqual({
+    expect(localTestSessionService.readLocalTestSessionQuestionState("session-1")).toEqual({
       question: expect.objectContaining({ id: "q2" }),
       selectedOptionIds: [],
       hasSubmitted: false,
@@ -87,21 +78,19 @@ describe("local test session", () => {
     localTestSessionService.markLocalTestSessionQuestionSubmitted("session-1");
     localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    const q1 = localTestSessionService.shiftLocalTestSessionQuestion("session-1", -1);
-    expect(q1).toEqual({
+    const snapshot = localTestSessionService.readLocalTestSessionSnapshot();
+    expect(snapshot).not.toBeNull();
+    expect(snapshot?.questions[0]).toEqual({
       question: expect.objectContaining({ id: "q1" }),
       selectedOptionIds: ["A", "C"],
       hasSubmitted: true,
-      currentQuestionIndex: 0,
     });
-
-    const q2 = localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1);
-    expect(q2).toEqual({
+    expect(snapshot?.questions[1]).toEqual({
       question: expect.objectContaining({ id: "q2" }),
       selectedOptionIds: [],
       hasSubmitted: false,
-      currentQuestionIndex: 1,
     });
+    expect(snapshot?.currentQuestionIndex).toBe(1);
   });
 
   it("reads real-time accuracy for current session", () => {
@@ -127,14 +116,13 @@ describe("local test session", () => {
     expect(localTestSessionService.readLocalTestSessionProgress("session-2")).toBeNull();
   });
 
-  it("does not move cursor out of bounds or across mismatched sessions", () => {
+  it("returns null for mismatched session lookups", () => {
     localTestSessionService.writeLocalTestSession("session-1");
     localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q1"));
     localTestSessionService.writeLocalTestSessionQuestion(createQuestion("q2"));
 
-    expect(localTestSessionService.shiftLocalTestSessionQuestion("session-1", 1)).toBeNull();
-    expect(localTestSessionService.shiftLocalTestSessionQuestion("session-2", -1)).toBeNull();
     expect(localTestSessionService.readLocalTestSessionQuestionState("session-2")).toBeNull();
+    expect(localTestSessionService.readLocalTestSessionProgress("session-2")).toBeNull();
   });
 
   it("clears local session state", () => {

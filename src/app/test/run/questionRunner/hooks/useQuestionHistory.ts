@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
 import type { LocalTestSessionQuestionState } from "@/lib/testSession/core";
 import type { Question, QuestionOptionId } from "../types";
@@ -12,11 +12,8 @@ type UseQuestionHistoryInput = {
 };
 
 type UseQuestionHistoryResult = {
-  canGoToPreviousQuestion: boolean;
   restoreCurrentQuestion: () => boolean;
   pushLoadedQuestion: (question: Question) => boolean;
-  goToPreviousQuestion: () => boolean;
-  goToNextQuestion: () => boolean;
   persistSelection: (selectedOptionIds: QuestionOptionId[]) => void;
   persistSubmission: () => void;
 };
@@ -26,10 +23,7 @@ export function useQuestionHistory({
   onQuestionStateApplied,
   onQuestionApplied,
 }: UseQuestionHistoryInput): UseQuestionHistoryResult {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-
   const applyQuestionState = useCallback((questionState: LocalTestSessionQuestionState): boolean => {
-    setCurrentQuestionIndex(questionState.currentQuestionIndex);
     onQuestionStateApplied(questionState);
     onQuestionApplied?.();
     return true;
@@ -53,24 +47,6 @@ export function useQuestionHistory({
     return applyQuestionState(questionState);
   }, [applyQuestionState]);
 
-  const goToPreviousQuestion = useCallback((): boolean => {
-    const questionState = localTestSessionService.shiftLocalTestSessionQuestion(sessionId, -1);
-    if (!questionState) {
-      return false;
-    }
-
-    return applyQuestionState(questionState);
-  }, [applyQuestionState, sessionId]);
-
-  const goToNextQuestion = useCallback((): boolean => {
-    const questionState = localTestSessionService.shiftLocalTestSessionQuestion(sessionId, 1);
-    if (!questionState) {
-      return false;
-    }
-
-    return applyQuestionState(questionState);
-  }, [applyQuestionState, sessionId]);
-
   const persistSelection = useCallback((selectedOptionIds: QuestionOptionId[]) => {
     localTestSessionService.writeLocalTestSessionQuestionSelection(sessionId, selectedOptionIds);
   }, [sessionId]);
@@ -80,11 +56,8 @@ export function useQuestionHistory({
   }, [sessionId]);
 
   return {
-    canGoToPreviousQuestion: currentQuestionIndex > 0,
     restoreCurrentQuestion,
     pushLoadedQuestion,
-    goToPreviousQuestion,
-    goToNextQuestion,
     persistSelection,
     persistSubmission,
   };

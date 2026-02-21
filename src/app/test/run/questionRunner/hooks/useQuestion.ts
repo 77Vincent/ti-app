@@ -46,7 +46,6 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
-  canGoToPreviousQuestion: boolean;
   currentQuestionIndex: number | null;
   submittedCount: number;
   correctCount: number;
@@ -54,7 +53,6 @@ export type UseQuestionResult = {
   signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
   selectedOptionIds: QuestionOptionId[];
-  goToPreviousQuestion: () => void;
   selectOption: (optionId: QuestionOptionId) => void;
   submit: () => Promise<void>;
 };
@@ -140,11 +138,8 @@ export function useQuestion({
   }, [onQuestionApplied, syncSessionProgress]);
 
   const {
-    canGoToPreviousQuestion,
     restoreCurrentQuestion,
     pushLoadedQuestion,
-    goToPreviousQuestion,
-    goToNextQuestion,
     persistSelection,
     persistSubmission,
   } = useQuestionHistory({
@@ -238,7 +233,6 @@ export function useQuestion({
       },
       advanceToNextQuestion: () =>
         advanceQuestionSession({
-          consumeNextQuestion: goToNextQuestion,
           loadNextQuestion: loadOneQuestion,
           pushLoadedQuestion,
           onError: showLoadError,
@@ -257,7 +251,6 @@ export function useQuestion({
     question,
     isLoadingQuestion,
     isSubmitting,
-    canGoToPreviousQuestion,
     currentQuestionIndex: sessionProgress.currentQuestionIndex,
     submittedCount: sessionProgress.submittedCount,
     correctCount: sessionProgress.correctCount,
@@ -265,7 +258,6 @@ export function useQuestion({
     signInDemand,
     hasSubmitted,
     selectedOptionIds,
-    goToPreviousQuestion,
     selectOption,
     submit,
   };

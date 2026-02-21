@@ -39,7 +39,6 @@ export async function initializeQuestionSessionState<T>({
 }
 
 export type AdvanceQuestionSessionInput<T> = {
-  consumeNextQuestion: () => boolean;
   loadNextQuestion: () => Promise<T>;
   pushLoadedQuestion: (question: T) => boolean;
   onError: (error: unknown) => void;
@@ -47,18 +46,12 @@ export type AdvanceQuestionSessionInput<T> = {
 };
 
 export async function advanceQuestionSession<T>({
-  consumeNextQuestion,
   loadNextQuestion,
   pushLoadedQuestion,
   onError,
   shouldIgnoreResult,
 }: AdvanceQuestionSessionInput<T>): Promise<void> {
   if (shouldIgnoreResult?.()) {
-    return;
-  }
-
-  const consumed = consumeNextQuestion();
-  if (consumed || shouldIgnoreResult?.()) {
     return;
   }
 

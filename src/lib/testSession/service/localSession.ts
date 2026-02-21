@@ -1,6 +1,5 @@
 import { parseLocalTestSessionSnapshotJson } from "@/lib/testSession/codec/snapshot";
 import {
-  shiftLocalTestSessionSnapshotQuestion,
   updateCurrentLocalTestSessionSnapshotQuestion,
   upsertLocalTestSessionSnapshotQuestion,
   calculateLocalTestSessionAccuracy,
@@ -117,15 +116,6 @@ export function createLocalTestSessionService(
     };
   }
 
-  function shiftLocalTestSessionQuestion(
-    sessionId: string,
-    step: -1 | 1,
-  ): LocalTestSessionQuestionState | null {
-    return mutateSnapshotForSession(sessionId, (snapshot) =>
-      shiftLocalTestSessionSnapshotQuestion(snapshot, step),
-    );
-  }
-
   function writeLocalTestSession(sessionId: string): void {
     const existing = readLocalTestSessionSnapshot();
     const nextSnapshot = initializeLocalTestSessionSnapshot(existing, sessionId);
@@ -175,7 +165,6 @@ export function createLocalTestSessionService(
     readLocalTestSessionProgress,
     readLocalTestSessionQuestionState,
     readLocalTestSessionSnapshot,
-    shiftLocalTestSessionQuestion,
     writeLocalTestSession,
     writeLocalTestSessionQuestion,
     writeLocalTestSessionQuestionSelection,
