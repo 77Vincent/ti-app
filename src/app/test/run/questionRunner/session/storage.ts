@@ -17,6 +17,7 @@ type SessionRequestOptions = {
   body?: string;
   cache?: RequestCache;
   method: "GET" | "POST" | "DELETE" | "PATCH";
+  sessionId?: string;
 };
 
 function parseSessionFromResponse(payload: unknown): TestSession | null {
@@ -30,7 +31,10 @@ function parseSessionFromResponse(payload: unknown): TestSession | null {
 async function requestSession(
   options: SessionRequestOptions,
 ): Promise<TestSessionResponse | null> {
-  const response = await fetch(API_PATHS.TEST_SESSION, {
+  const path = options.sessionId
+    ? `${API_PATHS.TEST_SESSION}?sessionId=${encodeURIComponent(options.sessionId)}`
+    : API_PATHS.TEST_SESSION;
+  const response = await fetch(path, {
     body: options.body,
     cache: options.cache,
     headers: options.body
@@ -60,9 +64,16 @@ async function requestSession(
 }
 
 export async function readTestSession(): Promise<TestSession | null> {
+  const localSession = localTestSessionService.readLocalTestSessionSnapshot();
+  if (!localSession) {
+    localTestSessionService.clearLocalTestSession();
+    return null;
+  }
+
   const payload = await requestSession({
     cache: "no-store",
     method: "GET",
+    sessionId: localSession.sessionId,
   });
   const session = parseSessionFromResponse(payload);
 
@@ -71,12 +82,8 @@ export async function readTestSession(): Promise<TestSession | null> {
     return null;
   }
 
-  const localSession = localTestSessionService.readLocalTestSessionSnapshot();
-  const isLocalSessionConsistent =
-    localSession !== null && localSession.sessionId === session.id;
-
-  if (!isLocalSessionConsistent) {
-    await clearTestSession();
+  if (session.id !== localSession.sessionId) {
+    localTestSessionService.clearLocalTestSession();
     return null;
   }
 
@@ -106,9 +113,12 @@ export async function clearTestSession(): Promise<void> {
   });
 }
 
-export async function recordQuestionResult(isCorrect: boolean): Promise<void> {
+export async function recordQuestionResult(
+  sessionId: string,
+  isCorrect: boolean,
+): Promise<void> {
   await requestSession({
-    body: JSON.stringify({ isCorrect }),
+    body: JSON.stringify({ isCorrect, sessionId }),
     method: "PATCH",
   });
 }

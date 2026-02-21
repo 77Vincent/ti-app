@@ -112,7 +112,7 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "TestSession_userId_key" ON "TestSession"("userId");
+CREATE UNIQUE INDEX "TestSession_userId_subjectId_subcategoryId_key" ON "TestSession"("userId", "subjectId", "subcategoryId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TestSession_anonymousSessionId_key" ON "TestSession"("anonymousSessionId");

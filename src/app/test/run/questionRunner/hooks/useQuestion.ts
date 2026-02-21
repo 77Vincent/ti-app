@@ -211,7 +211,8 @@ export function useQuestion({
     await submitQuestion({
       hasSubmitted,
       isCurrentAnswerCorrect: isAnswerCorrect(question, selectedOptionIds),
-      recordQuestionResult,
+      recordQuestionResult: (isCorrect) =>
+        recordQuestionResult(sessionId, isCorrect),
       onSubmitRequestStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },

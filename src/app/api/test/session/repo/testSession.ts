@@ -9,7 +9,22 @@ export type AnonymousTestSessionWhere = {
   anonymousSessionId: string;
 };
 
-export type TestSessionWhere = AuthTestSessionWhere | AnonymousTestSessionWhere;
+export type TestSessionIdentityWhere =
+  | AuthTestSessionWhere
+  | AnonymousTestSessionWhere;
+
+export type AuthTestSessionContextWhere = AuthTestSessionWhere & {
+  subjectId: string;
+  subcategoryId: string;
+};
+
+export type TestSessionUpsertWhere =
+  | AuthTestSessionContextWhere
+  | AnonymousTestSessionWhere;
+
+export type TestSessionReadWhere = TestSessionIdentityWhere & {
+  id: string;
+};
 
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
@@ -22,54 +37,109 @@ const TEST_RUN_PARAMS_SELECT = {
 } as const;
 
 function isAuthTestSessionWhere(
-  where: TestSessionWhere,
+  where:
+    | TestSessionIdentityWhere
+    | TestSessionUpsertWhere
+    | TestSessionReadWhere,
 ): where is AuthTestSessionWhere {
   return "userId" in where;
 }
 
+function toIdentityWhere(
+  where:
+    | TestSessionIdentityWhere
+    | TestSessionUpsertWhere
+    | TestSessionReadWhere,
+): TestSessionIdentityWhere {
+  return isAuthTestSessionWhere(where)
+    ? { userId: where.userId }
+    : { anonymousSessionId: where.anonymousSessionId };
+}
+
 export async function readTestSession(
-  where: TestSessionWhere,
+  where: TestSessionReadWhere,
 ) {
-  return prisma.testSession.findUnique({
-    where,
+  return prisma.testSession.findFirst({
+    where: {
+      id: where.id,
+      ...toIdentityWhere(where),
+    },
     select: TEST_RUN_PARAMS_SELECT,
   });
 }
 
 export async function upsertTestSession(
-  where: TestSessionWhere,
+  where: TestSessionUpsertWhere,
   id: string,
   params: TestParam,
   startedAt: Date,
-): Promise<void> {
-  await prisma.testSession.upsert({
-    where,
+) {
+  if (isAuthTestSessionWhere(where)) {
+    try {
+      return await prisma.testSession.create({
+        data: {
+          id,
+          correctCount: 0,
+          difficulty: params.difficulty,
+          startedAt,
+          submittedCount: 0,
+          subjectId: params.subjectId,
+          subcategoryId: params.subcategoryId,
+          userId: where.userId,
+        },
+        select: TEST_RUN_PARAMS_SELECT,
+      });
+    } catch (error) {
+      const code = (error as { code?: unknown } | null)?.code;
+      if (code !== "P2002") {
+        throw error;
+      }
+
+      const existing = await prisma.testSession.findFirst({
+        where: {
+          userId: where.userId,
+          subjectId: where.subjectId,
+          subcategoryId: where.subcategoryId,
+        },
+        select: TEST_RUN_PARAMS_SELECT,
+      });
+      if (existing) {
+        return existing;
+      }
+
+      throw error;
+    }
+  }
+
+  return prisma.testSession.upsert({
+    where: {
+      anonymousSessionId: where.anonymousSessionId,
+    },
     create: {
       id,
+      anonymousSessionId: where.anonymousSessionId,
       correctCount: 0,
       difficulty: params.difficulty,
       startedAt,
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
-      ...(isAuthTestSessionWhere(where)
-        ? { userId: where.userId }
-        : { anonymousSessionId: where.anonymousSessionId }),
     },
     update: {
-      correctCount: 0,
       id,
+      correctCount: 0,
       difficulty: params.difficulty,
       startedAt,
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
     },
+    select: TEST_RUN_PARAMS_SELECT,
   });
 }
 
 export async function incrementTestSessionProgress(
-  where: TestSessionWhere,
+  where: TestSessionReadWhere,
   isCorrect: boolean,
   maxSubmittedCountExclusive?: number,
 ): Promise<number> {
@@ -88,7 +158,8 @@ export async function incrementTestSessionProgress(
 
   const result = await prisma.testSession.updateMany({
     where: {
-      ...where,
+      id: where.id,
+      ...toIdentityWhere(where),
       ...(typeof maxSubmittedCountExclusive === "number"
         ? {
             submittedCount: {
@@ -104,9 +175,9 @@ export async function incrementTestSessionProgress(
 }
 
 export async function deleteTestSession(
-  where: TestSessionWhere,
+  where: TestSessionIdentityWhere,
 ): Promise<void> {
   await prisma.testSession.deleteMany({
-    where,
+    where: toIdentityWhere(where),
   });
 }

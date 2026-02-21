@@ -4,6 +4,7 @@ import {
   type TestSession,
 } from "@/lib/testSession/validation";
 import { MAX_ANONYMOUS_QUESTION_COUNT } from "@/lib/config/testPolicy";
+import { isNonEmptyString } from "@/lib/string";
 import {
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,
@@ -19,20 +20,10 @@ import {
 
 export const runtime = "nodejs";
 
-async function readActiveSession(
-  userId: string | null,
-): Promise<TestSession | null> {
-  const session = userId
-    ? await readTestSession({ userId })
-    : await (async () => {
-        const anonymousSessionId = await readAnonymousTestSessionCookie();
-        if (!anonymousSessionId) {
-          return null;
-        }
-
-        return readTestSession({ anonymousSessionId });
-      })();
-
+function toTestSessionPayload(
+  session: Awaited<ReturnType<typeof readTestSession>>
+    | Awaited<ReturnType<typeof upsertTestSession>>,
+): TestSession | null {
   if (!session) {
     return null;
   }
@@ -51,9 +42,34 @@ async function readActiveSession(
   };
 }
 
-export async function GET() {
+async function readActiveSession(
+  request: Request,
+  userId: string | null,
+): Promise<TestSession | null> {
+  const sessionId = new URL(request.url).searchParams.get("sessionId");
+  if (!isNonEmptyString(sessionId)) {
+    return null;
+  }
+
+  if (userId) {
+    return toTestSessionPayload(
+      await readTestSession({ id: sessionId, userId }),
+    );
+  }
+
+  const anonymousSessionId = await readAnonymousTestSessionCookie();
+  if (!anonymousSessionId) {
+    return null;
+  }
+
+  return toTestSessionPayload(
+    await readTestSession({ id: sessionId, anonymousSessionId }),
+  );
+}
+
+export async function GET(request: Request) {
   const userId = await readAuthenticatedUserId();
-  const session = await readActiveSession(userId);
+  const session = await readActiveSession(request, userId);
 
   return NextResponse.json({ session });
 }
@@ -81,24 +97,46 @@ export async function POST(request: Request) {
   const userId = await readAuthenticatedUserId();
   const id = crypto.randomUUID();
   const startedAt = new Date();
-  const startedAtMs = startedAt.getTime();
-  const session: TestSession = {
-    correctCount: 0,
-    ...params,
-    id,
-    startedAtMs,
-    submittedCount: 0,
-  };
-  const response = NextResponse.json({ session });
 
   if (userId) {
-    await upsertTestSession({ userId }, id, params, startedAt);
-    return response;
+    const session = toTestSessionPayload(
+      await upsertTestSession(
+        {
+          userId,
+          subjectId: params.subjectId,
+          subcategoryId: params.subcategoryId,
+        },
+        id,
+        params,
+        startedAt,
+      ),
+    );
+
+    if (!session) {
+      return NextResponse.json({ error: "Failed to start test session." }, { status: 500 });
+    }
+
+    return NextResponse.json({ session });
   }
 
   const anonymousSessionId =
     (await readAnonymousTestSessionCookie()) ?? crypto.randomUUID();
-  await upsertTestSession({ anonymousSessionId }, id, params, startedAt);
+  const session = toTestSessionPayload(
+    await upsertTestSession(
+      {
+        anonymousSessionId,
+      },
+      id,
+      params,
+      startedAt,
+    ),
+  );
+
+  if (!session) {
+    return NextResponse.json({ error: "Failed to start test session." }, { status: 500 });
+  }
+
+  const response = NextResponse.json({ session });
   persistAnonymousTestSessionCookie(response, anonymousSessionId);
 
   return response;
@@ -133,8 +171,16 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const userId = await readAuthenticatedUserId();
-  const response = NextResponse.json({ ok: true });
+  const sessionId = (body as { sessionId?: unknown } | null)?.sessionId;
+  if (!isNonEmptyString(sessionId)) {
+    return NextResponse.json(
+      {
+        error: "sessionId must be a non-empty string.",
+      },
+      { status: 400 },
+    );
+  }
+
   const isCorrect = (body as { isCorrect?: unknown } | null)?.isCorrect;
   if (typeof isCorrect !== "boolean") {
     return NextResponse.json(
@@ -145,9 +191,24 @@ export async function PATCH(request: Request) {
     );
   }
 
+  const userId = await readAuthenticatedUserId();
+  const response = NextResponse.json({ ok: true });
+
   if (userId) {
-    await incrementTestSessionProgress({ userId }, isCorrect);
-    return response;
+    const updatedCount = await incrementTestSessionProgress(
+      { id: sessionId, userId },
+      isCorrect,
+    );
+    if (updatedCount > 0) {
+      return response;
+    }
+
+    return NextResponse.json(
+      {
+        error: "Test session not found.",
+      },
+      { status: 404 },
+    );
   }
 
   const anonymousSessionId = await readAnonymousTestSessionCookie();
@@ -161,7 +222,7 @@ export async function PATCH(request: Request) {
   }
 
   const updatedCount = await incrementTestSessionProgress(
-    { anonymousSessionId },
+    { id: sessionId, anonymousSessionId },
     isCorrect,
     MAX_ANONYMOUS_QUESTION_COUNT,
   );
@@ -169,7 +230,7 @@ export async function PATCH(request: Request) {
     return response;
   }
 
-  const session = await readTestSession({ anonymousSessionId });
+  const session = await readTestSession({ id: sessionId, anonymousSessionId });
   if (!session) {
     return NextResponse.json(
       {

@@ -1,25 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  testSessionCreate,
   testSessionDeleteMany,
-  testSessionFindUnique,
-  testSessionUpdateMany,
+  testSessionFindFirst,
   testSessionUpsert,
-} =
-  vi.hoisted(() => ({
-    testSessionDeleteMany: vi.fn(),
-    testSessionFindUnique: vi.fn(),
-    testSessionUpdateMany: vi.fn(),
-    testSessionUpsert: vi.fn(),
-  }));
+  testSessionUpdateMany,
+} = vi.hoisted(() => ({
+  testSessionCreate: vi.fn(),
+  testSessionDeleteMany: vi.fn(),
+  testSessionFindFirst: vi.fn(),
+  testSessionUpsert: vi.fn(),
+  testSessionUpdateMany: vi.fn(),
+}));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     testSession: {
+      create: testSessionCreate,
       deleteMany: testSessionDeleteMany,
-      findUnique: testSessionFindUnique,
-      updateMany: testSessionUpdateMany,
+      findFirst: testSessionFindFirst,
       upsert: testSessionUpsert,
+      updateMany: testSessionUpdateMany,
     },
   },
 }));
@@ -33,14 +35,15 @@ import {
 
 describe("test session repo", () => {
   beforeEach(() => {
+    testSessionCreate.mockReset();
     testSessionDeleteMany.mockReset();
-    testSessionFindUnique.mockReset();
-    testSessionUpdateMany.mockReset();
+    testSessionFindFirst.mockReset();
     testSessionUpsert.mockReset();
+    testSessionUpdateMany.mockReset();
   });
 
-  it("reads a stored user test session payload", async () => {
-    testSessionFindUnique.mockResolvedValueOnce({
+  it("reads a stored user test session payload by id", async () => {
+    testSessionFindFirst.mockResolvedValueOnce({
       id: "session-1",
       correctCount: 3,
       difficulty: "beginner",
@@ -50,7 +53,9 @@ describe("test session repo", () => {
       subcategoryId: "english",
     });
 
-    await expect(readTestSession({ userId: "user-1" })).resolves.toEqual({
+    await expect(
+      readTestSession({ id: "session-1", userId: "user-1" }),
+    ).resolves.toEqual({
       id: "session-1",
       correctCount: 3,
       difficulty: "beginner",
@@ -60,7 +65,7 @@ describe("test session repo", () => {
       subcategoryId: "english",
     });
 
-    expect(testSessionFindUnique).toHaveBeenCalledWith({
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
       select: {
         id: true,
         correctCount: true,
@@ -71,13 +76,14 @@ describe("test session repo", () => {
         subcategoryId: true,
       },
       where: {
+        id: "session-1",
         userId: "user-1",
       },
     });
   });
 
-  it("reads a stored anonymous test session payload", async () => {
-    testSessionFindUnique.mockResolvedValueOnce({
+  it("reads a stored anonymous test session payload by id", async () => {
+    testSessionFindFirst.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 2,
       difficulty: "advanced",
@@ -88,7 +94,7 @@ describe("test session repo", () => {
     });
 
     await expect(
-      readTestSession({ anonymousSessionId: "anon-1" }),
+      readTestSession({ id: "anon-session-1", anonymousSessionId: "anon-1" }),
     ).resolves.toEqual({
       id: "anon-session-1",
       correctCount: 2,
@@ -99,7 +105,7 @@ describe("test session repo", () => {
       subcategoryId: "japanese",
     });
 
-    expect(testSessionFindUnique).toHaveBeenCalledWith({
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
       select: {
         id: true,
         correctCount: true,
@@ -110,60 +116,133 @@ describe("test session repo", () => {
         subcategoryId: true,
       },
       where: {
+        id: "anon-session-1",
         anonymousSessionId: "anon-1",
       },
     });
   });
 
-  it("upserts user-owned test session", async () => {
-    testSessionFindUnique.mockResolvedValueOnce(null);
-    testSessionUpsert.mockResolvedValueOnce(undefined);
-    const startedAt = new Date("2025-02-12T08:00:00.000Z");
-
-    await upsertTestSession(
-      { userId: "user-1" },
-      "session-1",
-      {
-        difficulty: "beginner",
-        subjectId: "language",
-        subcategoryId: "english",
-      },
-      startedAt,
-    );
-
-    expect(testSessionUpsert).toHaveBeenCalledWith({
-      create: {
-        id: "session-1",
-        correctCount: 0,
-        difficulty: "beginner",
-        startedAt,
-        submittedCount: 0,
-        subjectId: "language",
-        subcategoryId: "english",
-        userId: "user-1",
-      },
-      update: {
-        correctCount: 0,
-        id: "session-1",
-        difficulty: "beginner",
-        startedAt,
-        submittedCount: 0,
-        subjectId: "language",
-        subcategoryId: "english",
-      },
-      where: {
-        userId: "user-1",
-      },
-    });
-  });
-
-  it("upserts anonymous test session", async () => {
-    testSessionFindUnique.mockResolvedValueOnce(null);
-    testSessionUpsert.mockResolvedValueOnce(undefined);
+  it("resumes existing authenticated session on unique conflict", async () => {
+    const existingSession = {
+      id: "session-existing",
+      correctCount: 4,
+      difficulty: "beginner",
+      startedAt: new Date("2026-02-10T08:00:00.000Z"),
+      submittedCount: 6,
+      subjectId: "language",
+      subcategoryId: "english",
+    };
+    testSessionCreate.mockRejectedValueOnce({ code: "P2002" });
+    testSessionFindFirst.mockResolvedValueOnce(existingSession);
     const startedAt = new Date("2026-02-12T08:00:00.000Z");
 
+    await expect(
+      upsertTestSession(
+        {
+          userId: "user-1",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        "session-new",
+        {
+          difficulty: "beginner",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        startedAt,
+      ),
+    ).resolves.toEqual(existingSession);
+
+    expect(testSessionCreate).toHaveBeenCalledWith({
+      data: {
+        id: "session-new",
+        correctCount: 0,
+        difficulty: "beginner",
+        startedAt,
+        submittedCount: 0,
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      select: {
+        id: true,
+        correctCount: true,
+        difficulty: true,
+        startedAt: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+      },
+    });
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      select: {
+        id: true,
+        correctCount: true,
+        difficulty: true,
+        startedAt: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+      },
+    });
+    expect(testSessionUpsert).not.toHaveBeenCalled();
+  });
+
+  it("creates authenticated session when context does not exist", async () => {
+    const startedAt = new Date("2026-02-12T08:00:00.000Z");
+    const createdSession = {
+      id: "session-new",
+      correctCount: 0,
+      difficulty: "beginner",
+      startedAt,
+      submittedCount: 0,
+      subjectId: "language",
+      subcategoryId: "english",
+    };
+    testSessionCreate.mockResolvedValueOnce(createdSession);
+
+    await expect(
+      upsertTestSession(
+        {
+          userId: "user-1",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        "session-new",
+        {
+          difficulty: "beginner",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        startedAt,
+      ),
+    ).resolves.toEqual(createdSession);
+
+    expect(testSessionFindFirst).not.toHaveBeenCalled();
+    expect(testSessionUpsert).not.toHaveBeenCalled();
+  });
+
+  it("upserts a single anonymous session regardless of context", async () => {
+    const startedAt = new Date("2026-02-12T08:00:00.000Z");
+    testSessionUpsert.mockResolvedValueOnce({
+      id: "anon-session-1",
+      correctCount: 0,
+      difficulty: "beginner",
+      startedAt,
+      submittedCount: 0,
+      subjectId: "language",
+      subcategoryId: "english",
+    });
+
     await upsertTestSession(
-      { anonymousSessionId: "anon-1" },
+      {
+        anonymousSessionId: "anon-1",
+      },
       "anon-session-1",
       {
         difficulty: "beginner",
@@ -174,6 +253,9 @@ describe("test session repo", () => {
     );
 
     expect(testSessionUpsert).toHaveBeenCalledWith({
+      where: {
+        anonymousSessionId: "anon-1",
+      },
       create: {
         id: "anon-session-1",
         anonymousSessionId: "anon-1",
@@ -185,29 +267,37 @@ describe("test session repo", () => {
         subcategoryId: "english",
       },
       update: {
-        correctCount: 0,
         id: "anon-session-1",
+        correctCount: 0,
         difficulty: "beginner",
         startedAt,
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
       },
-      where: {
-        anonymousSessionId: "anon-1",
+      select: {
+        id: true,
+        correctCount: true,
+        difficulty: true,
+        startedAt: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
       },
     });
+    expect(testSessionFindFirst).not.toHaveBeenCalled();
   });
 
   it("increments submission count for incorrect answer", async () => {
     testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
     await expect(
-      incrementTestSessionProgress({ userId: "user-1" }, false),
+      incrementTestSessionProgress({ id: "session-1", userId: "user-1" }, false),
     ).resolves.toBe(1);
 
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
+        id: "session-1",
         userId: "user-1",
       },
       data: {
@@ -223,7 +313,7 @@ describe("test session repo", () => {
 
     await expect(
       incrementTestSessionProgress(
-        { anonymousSessionId: "anon-1" },
+        { id: "session-1", anonymousSessionId: "anon-1" },
         true,
         10,
       ),
@@ -231,6 +321,7 @@ describe("test session repo", () => {
 
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
+        id: "session-1",
         anonymousSessionId: "anon-1",
         submittedCount: {
           lt: 10,
@@ -251,11 +342,15 @@ describe("test session repo", () => {
     testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
 
     await expect(
-      incrementTestSessionProgress({ anonymousSessionId: "anon-1" }, true),
+      incrementTestSessionProgress(
+        { id: "session-1", anonymousSessionId: "anon-1" },
+        true,
+      ),
     ).resolves.toBe(1);
 
     expect(testSessionUpdateMany).toHaveBeenCalledWith({
       where: {
+        id: "session-1",
         anonymousSessionId: "anon-1",
       },
       data: {
@@ -269,7 +364,7 @@ describe("test session repo", () => {
     });
   });
 
-  it("deletes user session by identity selector", async () => {
+  it("deletes user sessions by identity selector", async () => {
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ userId: "user-1" });
@@ -281,7 +376,7 @@ describe("test session repo", () => {
     });
   });
 
-  it("deletes anonymous session by identity selector", async () => {
+  it("deletes anonymous sessions by identity selector", async () => {
     testSessionDeleteMany.mockResolvedValueOnce({ count: 1 });
 
     await deleteTestSession({ anonymousSessionId: "anon-1" });

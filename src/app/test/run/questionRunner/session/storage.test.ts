@@ -59,60 +59,60 @@ describe("session storage", () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(clearLocalTestSession).not.toHaveBeenCalled();
     expect(writeLocalTestSession).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_PATHS.TEST_SESSION}?sessionId=session-1`,
+      expect.objectContaining({ cache: "no-store", method: "GET" }),
+    );
   });
 
-  it("wipes local and remote session when local snapshot is missing", async () => {
+  it("returns null without remote call when local snapshot is missing", async () => {
     readLocalTestSessionSnapshot.mockReturnValue(null);
 
-    const fetchSpy = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
-      )
-      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
 
     await expect(readTestSession()).resolves.toBeNull();
     expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
-    expect(fetchSpy).toHaveBeenCalledTimes(2);
-    expect(fetchSpy).toHaveBeenNthCalledWith(
-      1,
-      API_PATHS.TEST_SESSION,
-      expect.objectContaining({ cache: "no-store", method: "GET" }),
-    );
-    expect(fetchSpy).toHaveBeenNthCalledWith(
-      2,
-      API_PATHS.TEST_SESSION,
-      expect.objectContaining({ method: "DELETE" }),
-    );
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("wipes local and remote session when local snapshot id mismatches", async () => {
+  it("clears local session when remote id mismatches", async () => {
     readLocalTestSessionSnapshot.mockReturnValue({
       currentQuestionIndex: 0,
       questions: [],
-      sessionId: "session-other",
+      sessionId: "session-1",
     });
 
-    const fetchSpy = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
-      )
-      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          session: {
+            ...REMOTE_SESSION_PAYLOAD.session,
+            id: "session-other",
+          },
+        }),
+        { status: 200 },
+      ),
+    );
 
     await expect(readTestSession()).resolves.toBeNull();
     expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
-    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
   it("clears local session when remote session is absent", async () => {
+    readLocalTestSessionSnapshot.mockReturnValue({
+      currentQuestionIndex: 0,
+      questions: [],
+      sessionId: "session-1",
+    });
+
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(null, { status: 204 }),
     );
 
     await expect(readTestSession()).resolves.toBeNull();
     expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
-    expect(readLocalTestSessionSnapshot).not.toHaveBeenCalled();
+    expect(readLocalTestSessionSnapshot).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -130,18 +130,18 @@ describe("session storage", () => {
     );
   });
 
-  it("recordQuestionResult sends isCorrect payload to session PATCH", async () => {
+  it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify({ ok: true }), { status: 200 }),
     );
 
-    await expect(recordQuestionResult(true)).resolves.toBeUndefined();
+    await expect(recordQuestionResult("session-1", true)).resolves.toBeUndefined();
 
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,
       expect.objectContaining({
         method: "PATCH",
-        body: JSON.stringify({ isCorrect: true }),
+        body: JSON.stringify({ isCorrect: true, sessionId: "session-1" }),
         headers: { "content-type": "application/json" },
       }),
     );
