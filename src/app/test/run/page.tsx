@@ -53,10 +53,12 @@ export default function TestRunPage() {
       </div>
 
       <QuestionRunner
+        correctCount={params.correctCount}
         difficulty={params.difficulty}
         id={params.id}
         startedAtMs={params.startedAtMs}
         subcategoryId={params.subcategoryId}
+        submittedCount={params.submittedCount}
         subjectId={params.subjectId}
       />
     </section>

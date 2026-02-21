@@ -17,7 +17,6 @@ import type {
   QuestionOptionId,
   QuestionSignInDemand,
 } from "../types";
-import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
   advanceQuestionSession,
@@ -31,7 +30,6 @@ import {
   canSubmitQuestion,
 } from "../utils/questionGuards";
 import { isAnswerCorrect } from "../utils/evaluation";
-import { useQuestionHistory } from "./useQuestionHistory";
 import { useQuestionSelection } from "./useQuestionSelection";
 
 export type UseQuestionInput = {
@@ -39,6 +37,8 @@ export type UseQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: DifficultyEnum;
+  initialCorrectCount: number;
+  initialSubmittedCount: number;
   onQuestionApplied?: () => void;
 };
 
@@ -46,7 +46,7 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
-  currentQuestionIndex: number | null;
+  currentQuestionIndex: number;
   submittedCount: number;
   correctCount: number;
   isSignInRequired: boolean;
@@ -57,32 +57,21 @@ export type UseQuestionResult = {
   submit: () => Promise<void>;
 };
 
-function buildSessionProgressState(sessionId: string): {
-  currentQuestionIndex: number | null;
-  submittedCount: number;
-  correctCount: number;
-} {
-  const progress = localTestSessionService.readLocalTestSessionProgress(sessionId);
-  if (!progress) {
-    return {
-      currentQuestionIndex: null,
-      submittedCount: 0,
-      correctCount: 0,
-    };
-  }
-
-  return progress;
-}
-
 export function useQuestion({
   sessionId,
   subjectId,
   subcategoryId,
   difficulty,
+  initialCorrectCount,
+  initialSubmittedCount,
   onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
   const [sessionProgress, setSessionProgress] = useState(
-    () => buildSessionProgressState(sessionId),
+    () => ({
+      currentQuestionIndex: initialSubmittedCount,
+      submittedCount: initialSubmittedCount,
+      correctCount: initialCorrectCount,
+    }),
   );
   const [signInDemand, setSignInDemand] =
     useState<QuestionSignInDemand | null>(null);
@@ -111,42 +100,31 @@ export function useQuestion({
     return loadQuestion();
   }, [loadQuestion]);
 
-  const applyQuestionStateToUi = useCallback(
-    (questionState: {
-      question: QuestionType;
-      selectedOptionIds: QuestionOptionId[];
-      hasSubmitted: boolean;
-    }) => {
+  const applyLoadedQuestion = useCallback(
+    (
+      nextQuestion: QuestionType,
+      options?: {
+        incrementQuestionIndex?: boolean;
+      },
+    ): boolean => {
       setSignInDemand(null);
-      setSelection(questionState.selectedOptionIds);
+      setSelection([]);
       dispatchUiState({
         type: "questionApplied",
-        question: questionState.question,
-        hasSubmitted: questionState.hasSubmitted,
+        question: nextQuestion,
+        hasSubmitted: false,
       });
+      if (options?.incrementQuestionIndex) {
+        setSessionProgress((prev) => ({
+          ...prev,
+          currentQuestionIndex: prev.currentQuestionIndex + 1,
+        }));
+      }
+      onQuestionApplied?.();
+      return true;
     },
-    [setSelection],
+    [onQuestionApplied, setSelection],
   );
-
-  const syncSessionProgress = useCallback(() => {
-    setSessionProgress(buildSessionProgressState(sessionId));
-  }, [sessionId]);
-
-  const handleQuestionApplied = useCallback(() => {
-    syncSessionProgress();
-    onQuestionApplied?.();
-  }, [onQuestionApplied, syncSessionProgress]);
-
-  const {
-    restoreCurrentQuestion,
-    pushLoadedQuestion,
-    persistSelection,
-    persistSubmission,
-  } = useQuestionHistory({
-    sessionId,
-    onQuestionApplied: handleQuestionApplied,
-    onQuestionStateApplied: applyQuestionStateToUi,
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -154,9 +132,9 @@ export function useQuestion({
     async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
       await initializeQuestionSessionState({
-        restoreCurrentQuestion,
+        restoreCurrentQuestion: () => false,
         loadInitialQuestion: loadOneQuestion,
-        pushLoadedQuestion,
+        pushLoadedQuestion: (loadedQuestion) => applyLoadedQuestion(loadedQuestion),
         onError: showLoadError,
         shouldIgnoreResult: () => cancelled,
       });
@@ -172,23 +150,17 @@ export function useQuestion({
       cancelled = true;
     };
   }, [
+    applyLoadedQuestion,
     loadOneQuestion,
-    pushLoadedQuestion,
-    restoreCurrentQuestion,
     showLoadError,
   ]);
 
   function selectOption(optionId: QuestionOptionId) {
-    const nextSelection = selectQuestionOption(
+    selectQuestionOption(
       question,
       optionId,
       isSubmitting || hasSubmitted,
     );
-    if (!nextSelection) {
-      return;
-    }
-
-    persistSelection(nextSelection);
   }
 
   async function submit() {
@@ -202,10 +174,11 @@ export function useQuestion({
     ) {
       return;
     }
+    const isCurrentAnswerCorrect = isAnswerCorrect(question, selectedOptionIds);
 
     await submitQuestion({
       hasSubmitted,
-      isCurrentAnswerCorrect: isAnswerCorrect(question, selectedOptionIds),
+      isCurrentAnswerCorrect,
       recordQuestionResult: (isCorrect) =>
         recordQuestionResult(sessionId, isCorrect),
       onSubmitRequestStarted: () => {
@@ -228,13 +201,18 @@ export function useQuestion({
         dispatchUiState({ type: "submissionMarked" });
       },
       persistSubmission: () => {
-        persistSubmission();
-        syncSessionProgress();
+        setSessionProgress((prev) => ({
+          ...prev,
+          submittedCount: prev.submittedCount + 1,
+          correctCount:
+            prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
+        }));
       },
       advanceToNextQuestion: () =>
         advanceQuestionSession({
           loadNextQuestion: loadOneQuestion,
-          pushLoadedQuestion,
+          pushLoadedQuestion: (loadedQuestion) =>
+            applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true }),
           onError: showLoadError,
         }),
       onNextQuestionLoadStarted: () => {

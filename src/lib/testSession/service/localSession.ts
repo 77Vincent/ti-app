@@ -1,20 +1,7 @@
-import { parseLocalTestSessionSnapshotJson } from "@/lib/testSession/codec/snapshot";
 import {
-  updateCurrentLocalTestSessionSnapshotQuestion,
-  upsertLocalTestSessionSnapshotQuestion,
-  calculateLocalTestSessionAccuracy,
-  initializeLocalTestSessionSnapshot,
-  toLocalTestSessionQuestionState,
-  type LocalTestSessionQuestionEntry,
-  type LocalTestSessionAccuracy,
-  type LocalTestSessionQuestionState,
+  parseLocalTestSessionSnapshotJson,
   type LocalTestSessionSnapshot,
-} from "@/lib/testSession/core";
-import type { Question, QuestionOptionId } from "@/lib/question/model";
-
-export type LocalTestSessionProgress = LocalTestSessionAccuracy & {
-  currentQuestionIndex: number;
-};
+} from "@/lib/testSession/codec/snapshot";
 
 type LocalTestSessionStorageAdapter = {
   clearRaw: () => void;
@@ -34,124 +21,8 @@ export function createLocalTestSessionService(
     return parseLocalTestSessionSnapshotJson(raw);
   }
 
-  function readSnapshotBySessionId(
-    sessionId: string,
-  ): LocalTestSessionSnapshot | null {
-    const snapshot = readLocalTestSessionSnapshot();
-    if (!snapshot || snapshot.sessionId !== sessionId) {
-      return null;
-    }
-
-    return snapshot;
-  }
-
-  function persistSnapshot(snapshot: LocalTestSessionSnapshot): void {
-    storage.writeRaw(JSON.stringify(snapshot));
-  }
-
-  function mutateSnapshotForSession(
-    sessionId: string,
-    mutate: (
-      snapshot: LocalTestSessionSnapshot,
-    ) => LocalTestSessionSnapshot | null,
-  ): LocalTestSessionQuestionState | null {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return null;
-    }
-
-    const nextSnapshot = mutate(snapshot);
-    if (!nextSnapshot) {
-      return null;
-    }
-
-    persistSnapshot(nextSnapshot);
-    return toLocalTestSessionQuestionState(nextSnapshot);
-  }
-
-  function updateCurrentLocalTestSessionQuestion(
-    sessionId: string,
-    update: (
-      questionEntry: LocalTestSessionQuestionEntry,
-    ) => LocalTestSessionQuestionEntry,
-  ): LocalTestSessionQuestionState | null {
-    return mutateSnapshotForSession(sessionId, (snapshot) =>
-      updateCurrentLocalTestSessionSnapshotQuestion(snapshot, update),
-    );
-  }
-
-  function readLocalTestSessionQuestionState(
-    sessionId: string,
-  ): LocalTestSessionQuestionState | null {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return null;
-    }
-
-    return toLocalTestSessionQuestionState(snapshot);
-  }
-
-  function readLocalTestSessionAccuracy(
-    sessionId: string,
-  ): LocalTestSessionAccuracy | null {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return null;
-    }
-
-    return calculateLocalTestSessionAccuracy(snapshot);
-  }
-
-  function readLocalTestSessionProgress(
-    sessionId: string,
-  ): LocalTestSessionProgress | null {
-    const snapshot = readSnapshotBySessionId(sessionId);
-    if (!snapshot) {
-      return null;
-    }
-
-    return {
-      currentQuestionIndex: snapshot.currentQuestionIndex,
-      ...calculateLocalTestSessionAccuracy(snapshot),
-    };
-  }
-
   function writeLocalTestSession(sessionId: string): void {
-    const existing = readLocalTestSessionSnapshot();
-    const nextSnapshot = initializeLocalTestSessionSnapshot(existing, sessionId);
-    persistSnapshot(nextSnapshot);
-  }
-
-  function writeLocalTestSessionQuestion(
-    question: Question,
-  ): LocalTestSessionQuestionState | null {
-    const snapshot = readLocalTestSessionSnapshot();
-    if (!snapshot) {
-      return null;
-    }
-
-    const nextSnapshot = upsertLocalTestSessionSnapshotQuestion(snapshot, question);
-    persistSnapshot(nextSnapshot);
-    return toLocalTestSessionQuestionState(nextSnapshot);
-  }
-
-  function writeLocalTestSessionQuestionSelection(
-    sessionId: string,
-    selectedOptionIds: QuestionOptionId[],
-  ): LocalTestSessionQuestionState | null {
-    return updateCurrentLocalTestSessionQuestion(sessionId, (questionEntry) => ({
-      ...questionEntry,
-      selectedOptionIds: [...selectedOptionIds],
-    }));
-  }
-
-  function markLocalTestSessionQuestionSubmitted(
-    sessionId: string,
-  ): LocalTestSessionQuestionState | null {
-    return updateCurrentLocalTestSessionQuestion(sessionId, (questionEntry) => ({
-      ...questionEntry,
-      hasSubmitted: true,
-    }));
+    storage.writeRaw(JSON.stringify({ sessionId }));
   }
 
   function clearLocalTestSession(): void {
@@ -160,13 +31,7 @@ export function createLocalTestSessionService(
 
   return {
     clearLocalTestSession,
-    markLocalTestSessionQuestionSubmitted,
-    readLocalTestSessionAccuracy,
-    readLocalTestSessionProgress,
-    readLocalTestSessionQuestionState,
     readLocalTestSessionSnapshot,
     writeLocalTestSession,
-    writeLocalTestSessionQuestion,
-    writeLocalTestSessionQuestionSelection,
   };
 }

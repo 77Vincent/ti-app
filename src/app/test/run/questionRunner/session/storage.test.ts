@@ -46,8 +46,6 @@ describe("session storage", () => {
 
   it("returns remote session when local snapshot matches id", async () => {
     readLocalTestSessionSnapshot.mockReturnValue({
-      currentQuestionIndex: 0,
-      questions: [],
       sessionId: "session-1",
     });
 
@@ -77,8 +75,6 @@ describe("session storage", () => {
 
   it("clears local session when remote id mismatches", async () => {
     readLocalTestSessionSnapshot.mockReturnValue({
-      currentQuestionIndex: 0,
-      questions: [],
       sessionId: "session-1",
     });
 
@@ -101,8 +97,6 @@ describe("session storage", () => {
 
   it("clears local session when remote session is absent", async () => {
     readLocalTestSessionSnapshot.mockReturnValue({
-      currentQuestionIndex: 0,
-      questions: [],
       sessionId: "session-1",
     });
 

@@ -21,6 +21,8 @@ export default function QuestionWrapper({
   subcategoryId,
   difficulty,
   startedAtMs,
+  correctCount: initialCorrectCount,
+  submittedCount: initialSubmittedCount,
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
@@ -43,6 +45,8 @@ export default function QuestionWrapper({
     subjectId,
     subcategoryId,
     difficulty,
+    initialCorrectCount,
+    initialSubmittedCount,
   });
   const handleFavoriteAuthRequired = useCallback(() => {
     if (!question) {
@@ -109,11 +113,9 @@ export default function QuestionWrapper({
             </Button>
           </Tooltip>
 
-          {currentQuestionIndex !== null ? (
-            <span className="font-bold text-lg tabular-nums">
-              Q{currentQuestionIndex + 1}
-            </span>
-          ) : null}
+          <span className="font-bold text-lg tabular-nums">
+            Q{currentQuestionIndex + 1}
+          </span>
         </div>
 
         <div className="flex items-center gap-3">

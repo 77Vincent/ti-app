@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { describe, expect, it } from "vitest";
 import {
   parseLocalTestSessionSnapshot,
@@ -7,20 +6,6 @@ import {
 
 const VALID_SNAPSHOT = {
   sessionId: "session-1",
-  questions: [
-    {
-      question: {
-        id: "q1",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
-        prompt: "Prompt q1",
-        options: [{ id: "A", text: "A" }],
-        correctOptionIds: ["A"],
-      },
-      selectedOptionIds: ["A"],
-      hasSubmitted: true,
-    },
-  ],
-  currentQuestionIndex: 0,
 } as const;
 
 describe("local test session codec", () => {
@@ -32,11 +17,11 @@ describe("local test session codec", () => {
     expect(parseLocalTestSessionSnapshotJson("not-json")).toBeNull();
   });
 
-  it("rejects snapshot with invalid current question index", () => {
+  it("rejects snapshot without sessionId", () => {
     expect(
       parseLocalTestSessionSnapshot({
         ...VALID_SNAPSHOT,
-        currentQuestionIndex: 999,
+        sessionId: "",
       }),
     ).toBeNull();
   });

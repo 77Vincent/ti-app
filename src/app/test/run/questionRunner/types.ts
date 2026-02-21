@@ -1,4 +1,4 @@
-import type { TestParam } from "@/lib/testSession/validation";
+import type { TestSession } from "@/lib/testSession/validation";
 import type {
   Question,
   QuestionOption,
@@ -14,7 +14,4 @@ export type {
 export type SignInDemand = "favorite" | "more_questions";
 export type QuestionSignInDemand = Extract<SignInDemand, "more_questions">;
 
-export type QuestionRunnerProps = TestParam & {
-  id: string;
-  startedAtMs: number;
-};
+export type QuestionRunnerProps = TestSession;
