@@ -90,7 +90,7 @@ describe("test session repo", () => {
       startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
-      subcategoryId: "japanese",
+      subcategoryId: "english",
     });
 
     await expect(
@@ -102,7 +102,7 @@ describe("test session repo", () => {
       startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
-      subcategoryId: "japanese",
+      subcategoryId: "english",
     });
 
     expect(testSessionFindFirst).toHaveBeenCalledWith({

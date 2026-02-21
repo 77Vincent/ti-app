@@ -35,17 +35,6 @@ describe("aiPrompt", () => {
     expect(prompt).not.toContain("objectively gradable");
   });
 
-  it("uses japanese mapped level as the difficulty line", () => {
-    const prompt = buildQuestionUserPrompt({
-      difficulty: "advanced",
-      subjectId: "language",
-      subcategoryId: "japanese",
-    });
-
-    expect(prompt).toContain("difficulty: JLPT N2");
-    expect(prompt).toContain("style:");
-  });
-
   it("cycles styles in round robin order", () => {
     const first = buildQuestionUserPrompt({
       difficulty: "beginner",

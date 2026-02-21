@@ -2,8 +2,6 @@ import {
   Crown,
   Flame,
   Languages as LanguagesIcon,
-  Calculator as MathematicsIcon,
-  Computer as ComputerScienceIcon,
   Leaf,
   TrendingUp,
   type LucideIcon,
@@ -20,8 +18,6 @@ const DIFFICULTY_ICON_BY_ID: Record<DifficultyEnum, LucideIcon> = {
 
 const SUBJECT_ICON_BY_ID: Record<SubjectEnum, LucideIcon> = {
   language: LanguagesIcon,
-  mathematics: MathematicsIcon,
-  "computer-science": ComputerScienceIcon,
 };
 
 export function getDifficultyIcon(id: DifficultyEnum): LucideIcon {
