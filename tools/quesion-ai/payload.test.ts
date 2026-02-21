@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { QUESTION_TYPES } from "@/lib/meta";
+import { QUESTION_TYPE_MULTIPLE_CHOICE } from "./types";
 import { parseAIQuestionPayload } from "./payload";
 
 const VALID_COMPACT_QUESTION = {
@@ -14,7 +14,7 @@ const VALID_COMPACT_QUESTION = {
 } as const;
 
 const VALID_PARSED_QUESTION = {
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+  questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   options: [
     { id: "A", text: "Berlin", explanation: "Wrong." },

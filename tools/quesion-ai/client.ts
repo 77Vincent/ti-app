@@ -1,5 +1,5 @@
-import { isNonEmptyString } from "@/lib/string";
-import type { QuestionParam as GenerateQuestionRequest } from "@/lib/testSession/validation";
+import { isNonEmptyString } from "./string";
+import type { GenerateQuestionRequest } from "./types";
 import {
   AI_QUESTION_SYSTEM_PROMPT,
   buildQuestionUserPrompt,

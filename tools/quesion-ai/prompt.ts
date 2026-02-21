@@ -1,5 +1,5 @@
-import type { QuestionParam } from "@/lib/testSession/validation";
-import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
+import type { GenerateQuestionRequest } from "./types";
+import { QUESTION_OPTION_LIMITS } from "./types";
 
 export const AI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
@@ -31,7 +31,7 @@ Rules:
 - each question item must use only keys p, o, a (no extra keys).
 `.trim();
 
-export function buildQuestionUserPrompt(input: QuestionParam): string {
+export function buildQuestionUserPrompt(input: GenerateQuestionRequest): string {
   return `
 Context:
 - subject: ${input.subjectId}

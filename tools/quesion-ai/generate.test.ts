@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { QUESTION_TYPES } from "@/lib/meta";
+import { QUESTION_TYPE_MULTIPLE_CHOICE } from "./types";
 
 const {
   requestDeepSeekQuestionContent,
@@ -34,7 +34,7 @@ describe("generateQuestionWithAI", () => {
     requestDeepSeekQuestionContent.mockResolvedValueOnce("{\"ok\":true}");
     parseAIQuestionPayload.mockReturnValueOnce([
       {
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+        questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q1",
         options: [
           { id: "A", text: "A1", explanation: "A1" },
@@ -44,7 +44,7 @@ describe("generateQuestionWithAI", () => {
         correctOptionIds: ["A"],
       },
       {
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+        questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q2",
         options: [
           { id: "A", text: "A2", explanation: "A2" },
@@ -60,12 +60,12 @@ describe("generateQuestionWithAI", () => {
     expect(requestDeepSeekQuestionContent).toHaveBeenCalledWith(VALID_INPUT);
     expect(parseAIQuestionPayload).toHaveBeenCalledWith("{\"ok\":true}");
     expect(question).toMatchObject({
-      questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+      questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q1",
       correctOptionIds: ["A"],
     });
     expect(nextQuestion).toMatchObject({
-      questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+      questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q2",
       correctOptionIds: ["B"],
     });

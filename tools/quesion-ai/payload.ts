@@ -1,20 +1,20 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import {
   hasSingleCorrectOption,
   type ParsedQuestionOption,
   parseCorrectOptionIds,
   parseQuestionOptions,
-} from "@/lib/question/validation";
+} from "./questionValidation";
 import {
+  QUESTION_OPTION_LIMITS,
   QUESTION_OPTION_IDS,
   type QuestionOption,
   type QuestionOptionId,
-} from "@/lib/question/model";
-import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
-import { isNonEmptyString } from "@/lib/string";
+  QUESTION_TYPE_MULTIPLE_CHOICE,
+} from "./types";
+import { isNonEmptyString } from "./string";
 
 export type ParsedAIQuestionPayload = {
-  questionType: typeof QUESTION_TYPES.MULTIPLE_CHOICE;
+  questionType: typeof QUESTION_TYPE_MULTIPLE_CHOICE;
   prompt: string;
   options: QuestionOption[];
   correctOptionIds: QuestionOptionId[];
@@ -134,7 +134,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   }
 
   return {
-    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
+    questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
     prompt: p.trim(),
     options: parsedOptions,
     correctOptionIds: parsedCorrectOptionIds,
