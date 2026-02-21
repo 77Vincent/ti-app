@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import type {
-  DifficultyEnum,
   QuestionType,
   SubjectEnum,
   SubcategoryEnum,
@@ -17,7 +16,6 @@ export type FavoriteQuestionInput = {
   questionId: string;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   questionType: QuestionType;
   prompt: string;
   options: readonly FavoriteOption[];

@@ -53,7 +53,6 @@ model TestSession {
   anonymousSessionId String?  @unique
   subjectId          String
   subcategoryId      String
-  difficulty         String
   correctCount       Int      @default(0)
   submittedCount     Int      @default(0)
   startedAt          DateTime @default(now())
@@ -69,7 +68,6 @@ model QuestionPool {
   id               String   @id
   subjectId        String
   subcategoryId    String
-  difficulty       String
   slot             Int
   questionType     String
   prompt           String   @db.Text
@@ -79,16 +77,15 @@ model QuestionPool {
   updatedAt        DateTime @updatedAt
   favorites        FavoriteQuestion[]
 
-  @@unique([subjectId, subcategoryId, difficulty, slot])
+  @@unique([subjectId, subcategoryId, slot])
 }
 
 model QuestionPoolContext {
   subjectId     String
   subcategoryId String
-  difficulty    String
   questionCount Int    @default(0)
 
-  @@id([subjectId, subcategoryId, difficulty])
+  @@id([subjectId, subcategoryId])
 }
 
 model FavoriteQuestion {

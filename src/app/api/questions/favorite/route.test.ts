@@ -28,7 +28,6 @@ const VALID_FAVORITE_PAYLOAD = {
   questionId: "question-1",
   subjectId: "language",
   subcategoryId: "english",
-  difficulty: "beginner",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "  What is the capital of France?  ",
   options: [

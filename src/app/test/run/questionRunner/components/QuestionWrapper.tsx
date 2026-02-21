@@ -19,7 +19,6 @@ export default function QuestionWrapper({
   id,
   subjectId,
   subcategoryId,
-  difficulty,
   startedAtMs,
   correctCount: initialCorrectCount,
   submittedCount: initialSubmittedCount,
@@ -44,7 +43,6 @@ export default function QuestionWrapper({
     sessionId: id,
     subjectId,
     subcategoryId,
-    difficulty,
     initialCorrectCount,
     initialSubmittedCount,
   });
@@ -64,7 +62,6 @@ export default function QuestionWrapper({
   } = useQuestionFavorite({
     subjectId,
     subcategoryId,
-    difficulty,
     onAuthRequired: handleFavoriteAuthRequired,
   });
 

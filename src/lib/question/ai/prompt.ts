@@ -1,7 +1,5 @@
-import { getDifficulty } from "@/lib/difficulty/utils";
 import type { QuestionParam } from "@/lib/testSession/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
-import { getQuestionStyle } from "@/lib/questionStyle/utils";
 
 export const AI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
@@ -34,21 +32,9 @@ Rules:
 `.trim();
 
 export function buildQuestionUserPrompt(input: QuestionParam): string {
-  const mappedDifficulty = getDifficulty(
-    input.subjectId,
-    input.subcategoryId,
-    input.difficulty,
-  );
-  const difficulty = mappedDifficulty
-    ? `${mappedDifficulty.framework} ${mappedDifficulty.level}`
-    : input.difficulty;
-  const style = getQuestionStyle(input);
-
   return `
 Context:
 - subject: ${input.subjectId}
 - subcategory: ${input.subcategoryId}
-- difficulty: ${difficulty}
-- style: ${style}
 `.trim();
 }

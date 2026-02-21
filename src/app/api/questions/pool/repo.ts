@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import type {
-  DifficultyEnum,
   QuestionType,
   SubjectEnum,
   SubcategoryEnum,
@@ -37,7 +36,6 @@ export type QuestionPoolUpsertInput = {
   id: string;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   questionType: QuestionType;
   prompt: string;
   options: readonly QuestionPoolOption[];
@@ -49,10 +47,9 @@ export async function readRandomQuestionFromPool(
 ): Promise<Question | null> {
   const context = await prisma.questionPoolContext.findUnique({
     where: {
-      subjectId_subcategoryId_difficulty: {
+      subjectId_subcategoryId: {
         subjectId: input.subjectId,
         subcategoryId: input.subcategoryId,
-        difficulty: input.difficulty,
       },
     },
     select: {
@@ -68,10 +65,9 @@ export async function readRandomQuestionFromPool(
 
   const row = await prisma.questionPool.findUnique({
     where: {
-      subjectId_subcategoryId_difficulty_slot: {
+      subjectId_subcategoryId_slot: {
         subjectId: input.subjectId,
         subcategoryId: input.subcategoryId,
-        difficulty: input.difficulty,
         slot: randomSlot,
       },
     },
@@ -116,16 +112,14 @@ export async function upsertQuestionPool(
 
     const context = await tx.questionPoolContext.upsert({
       where: {
-        subjectId_subcategoryId_difficulty: {
+        subjectId_subcategoryId: {
           subjectId: input.subjectId,
           subcategoryId: input.subcategoryId,
-          difficulty: input.difficulty,
         },
       },
       create: {
         subjectId: input.subjectId,
         subcategoryId: input.subcategoryId,
-        difficulty: input.difficulty,
         questionCount: 1,
       },
       update: {
@@ -143,7 +137,6 @@ export async function upsertQuestionPool(
         id: input.id,
         subjectId: input.subjectId,
         subcategoryId: input.subcategoryId,
-        difficulty: input.difficulty,
         slot: context.questionCount,
         questionType: input.questionType,
         prompt: input.prompt,

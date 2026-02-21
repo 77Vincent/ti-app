@@ -10,7 +10,6 @@ import { QuestionRunnerApiError } from "./error";
 import type { Question } from "../types";
 
 const VALID_INPUT = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
   question: {
@@ -45,7 +44,6 @@ describe("addFavoriteQuestion", () => {
       body: JSON.stringify({
         subjectId: "language",
         subcategoryId: "english",
-        difficulty: "beginner",
         questionId: "q-1",
         questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
         prompt: "Prompt",

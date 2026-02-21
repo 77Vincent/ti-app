@@ -4,7 +4,6 @@ import { fetchQuestion } from "./question";
 import type { Question } from "../types";
 
 const VALID_INPUT = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
 } as const;

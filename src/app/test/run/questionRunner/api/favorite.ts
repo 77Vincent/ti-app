@@ -1,8 +1,4 @@
-import type {
-  DifficultyEnum,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
+import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
@@ -11,7 +7,6 @@ import { QuestionRunnerApiError } from "./error";
 export type FavoriteQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   question: Question;
 };
 
@@ -27,7 +22,6 @@ export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise
     body: JSON.stringify({
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
       questionId: input.question.id,
       questionType: input.question.questionType,
       prompt: input.question.prompt,

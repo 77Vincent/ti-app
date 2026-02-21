@@ -1,10 +1,6 @@
 "use client";
 
-import type {
-  DifficultyEnum,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
+import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useRef, useState } from "react";
 import type { Question } from "../types";
@@ -15,7 +11,6 @@ import { isActiveFavoriteMutation } from "../utils/questionGuards";
 type UseQuestionFavoriteInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   onAuthRequired: () => void;
 };
 
@@ -30,7 +25,6 @@ type UseQuestionFavoriteResult = {
 export function useQuestionFavorite({
   subjectId,
   subcategoryId,
-  difficulty,
   onAuthRequired,
 }: UseQuestionFavoriteInput): UseQuestionFavoriteResult {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -97,7 +91,6 @@ export function useQuestionFavorite({
         isFavorite,
         subjectId,
         subcategoryId,
-        difficulty,
         question,
       });
 
@@ -135,7 +128,6 @@ export function useQuestionFavorite({
       setIsFavoriteSubmitting(false);
     }
   }, [
-    difficulty,
     isFavorite,
     isFavoriteSubmitting,
     isFavoriteSyncing,

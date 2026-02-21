@@ -101,7 +101,6 @@ const QUESTION: Question = {
 const FAVORITE_INPUT = {
   subjectId: "language",
   subcategoryId: "english",
-  difficulty: "beginner",
 } as const;
 
 function useQuestionFavoriteHarness(onAuthRequired = vi.fn()) {

@@ -29,7 +29,6 @@ export type TestSessionReadWhere = TestSessionIdentityWhere & {
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
   correctCount: true,
-  difficulty: true,
   startedAt: true,
   submittedCount: true,
   subjectId: true,
@@ -80,7 +79,6 @@ export async function upsertTestSession(
         data: {
           id,
           correctCount: 0,
-          difficulty: params.difficulty,
           startedAt,
           submittedCount: 0,
           subjectId: params.subjectId,
@@ -119,7 +117,6 @@ export async function upsertTestSession(
       id,
       anonymousSessionId: where.anonymousSessionId,
       correctCount: 0,
-      difficulty: params.difficulty,
       startedAt,
       submittedCount: 0,
       subjectId: params.subjectId,
@@ -128,7 +125,6 @@ export async function upsertTestSession(
     update: {
       id,
       correctCount: 0,
-      difficulty: params.difficulty,
       startedAt,
       submittedCount: 0,
       subjectId: params.subjectId,

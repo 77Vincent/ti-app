@@ -30,7 +30,6 @@ const REMOTE_SESSION_PAYLOAD = {
     id: "session-1",
     subjectId: "language",
     subcategoryId: "english",
-    difficulty: "beginner",
     startedAtMs: 1739395200000,
     submittedCount: 0,
   },
@@ -134,7 +133,6 @@ describe("session storage", () => {
 
     await expect(
       writeTestSession({
-        difficulty: "beginner",
         subjectId: "language",
         subcategoryId: "english",
       }),

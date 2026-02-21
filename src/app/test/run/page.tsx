@@ -54,7 +54,6 @@ export default function TestRunPage() {
 
       <QuestionRunner
         correctCount={params.correctCount}
-        difficulty={params.difficulty}
         id={params.id}
         startedAtMs={params.startedAtMs}
         subcategoryId={params.subcategoryId}

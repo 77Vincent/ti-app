@@ -30,7 +30,6 @@ export async function generateQuestionWithAI(
 
   console.info("AI question generation completed.", {
     count: questions.length,
-    difficulty: input.difficulty,
     subcategoryId: input.subcategoryId,
     subjectId: input.subjectId,
   });

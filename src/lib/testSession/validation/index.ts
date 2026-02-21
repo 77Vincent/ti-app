@@ -1,6 +1,5 @@
-import { DIFFICULTIES, SUBJECTS, SUBCATEGORIES } from "@/lib/meta";
+import { SUBJECTS, SUBCATEGORIES } from "@/lib/meta";
 import type {
-  DifficultyEnum,
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
@@ -9,7 +8,6 @@ import { isNonEmptyString } from "@/lib/string";
 export type QuestionParam = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
 };
 
 export type TestParam = QuestionParam;
@@ -29,30 +27,29 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
   const raw = value as Partial<QuestionParam>;
   const subjectId = raw.subjectId;
   const subcategoryId = raw.subcategoryId;
-  const difficulty = raw.difficulty;
 
   if (
     !isNonEmptyString(subjectId) ||
-    !isNonEmptyString(subcategoryId) ||
-    !isNonEmptyString(difficulty)
+    !isNonEmptyString(subcategoryId)
   ) {
     return null;
   }
 
-  const isValidDifficulty = DIFFICULTIES.some((item) => item.id === difficulty);
   const isValidSubject = SUBJECTS.some((item) => item.id === subjectId);
   const isValidSubcategory = SUBCATEGORIES.some(
     (item) => item.id === subcategoryId && item.subjectId === subjectId,
   );
 
-  if (!isValidDifficulty || !isValidSubject || !isValidSubcategory) {
+  if (!isValidSubject || !isValidSubcategory) {
     return null;
   }
 
+  const parsedSubjectId = subjectId as SubjectEnum;
+  const parsedSubcategoryId = subcategoryId as SubcategoryEnum;
+
   return {
-    subjectId: subjectId as SubjectEnum,
-    subcategoryId: subcategoryId as SubcategoryEnum,
-    difficulty: difficulty as DifficultyEnum,
+    subjectId: parsedSubjectId,
+    subcategoryId: parsedSubcategoryId,
   };
 }
 

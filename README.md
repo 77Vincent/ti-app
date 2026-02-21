@@ -13,9 +13,9 @@ The motivation is to that everybody can find testing materials easily and test i
 ## Workflow Spec v0: Take Test
 
 1. Session setup
-Flow: Learner selects subject, subcategory, and difficulty.
-Rule: Test starts immediately after difficulty is selected.
-Check: System can start a session with only these three selections.
+Flow: Learner selects subject and subcategory.
+Rule: Test starts immediately after subcategory is selected.
+Check: System can start a session with only these two selections.
 
 2. Question generation
 Flow: System starts the test session and generates the first question.

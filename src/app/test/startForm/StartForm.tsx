@@ -17,7 +17,6 @@ import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";
 import {
-  DEFAULT_TEST_DIFFICULTY,
   START_FORM_STEP_TITLES,
 } from "./constants";
 
@@ -51,7 +50,6 @@ export default function StartForm() {
     const testSession = {
       subjectId: selectedSubjectId,
       subcategoryId,
-      difficulty: DEFAULT_TEST_DIFFICULTY,
     };
 
     void writeTestSession(testSession)

@@ -18,7 +18,6 @@ vi.mock("../pool/repo", () => ({
 }));
 
 const VALID_INPUT = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
 };
@@ -92,7 +91,7 @@ describe("fetch question route", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "subjectId, subcategoryId, and difficulty are required.",
+      error: "subjectId and subcategoryId are required.",
     });
     expect(readRandomQuestionFromPool).not.toHaveBeenCalled();
   });

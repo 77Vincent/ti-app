@@ -43,7 +43,6 @@ import { GET, PATCH, POST } from "./route";
 const STORED_SESSION = {
   id: "session-1",
   correctCount: 0,
-  difficulty: "beginner",
   startedAt: new Date("2026-02-12T09:00:00.000Z"),
   submittedCount: 0,
   subjectId: "language",
@@ -51,7 +50,6 @@ const STORED_SESSION = {
 } as const;
 
 const VALID_PARAMS = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
 } as const;
@@ -187,14 +185,14 @@ describe("test session route POST", () => {
   it("returns 400 for invalid params payload", async () => {
     const response = await POST(
       new Request("http://localhost/api/test/session", {
-        body: JSON.stringify({ difficulty: "beginner" }),
+        body: JSON.stringify({ subjectId: "language" }),
         method: "POST",
       }),
     );
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "subjectId, subcategoryId, and difficulty are required.",
+      error: "subjectId and subcategoryId are required.",
     });
     expect(upsertTestSession).not.toHaveBeenCalled();
   });

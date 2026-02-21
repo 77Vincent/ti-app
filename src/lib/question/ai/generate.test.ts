@@ -20,7 +20,6 @@ vi.mock("./payload", () => ({
 import { generateQuestionWithAI } from "./generate";
 
 const VALID_INPUT = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
 } as const;

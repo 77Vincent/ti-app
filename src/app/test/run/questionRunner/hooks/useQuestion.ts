@@ -1,10 +1,6 @@
 "use client";
 
-import type {
-  DifficultyEnum,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
+import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import {
@@ -32,7 +28,6 @@ export type UseQuestionInput = {
   sessionId: string;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   initialCorrectCount: number;
   initialSubmittedCount: number;
   onQuestionApplied?: () => void;
@@ -57,7 +52,6 @@ export function useQuestion({
   sessionId,
   subjectId,
   subcategoryId,
-  difficulty,
   initialCorrectCount,
   initialSubmittedCount,
   onQuestionApplied,
@@ -88,9 +82,8 @@ export function useQuestion({
     return fetchQuestion({
       subjectId,
       subcategoryId,
-      difficulty,
     });
-  }, [difficulty, subcategoryId, subjectId]);
+  }, [subcategoryId, subjectId]);
 
   const loadOneQuestion = useCallback((): Promise<QuestionType> => {
     return loadQuestion();

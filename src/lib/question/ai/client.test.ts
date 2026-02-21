@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { requestDeepSeekQuestionContent } from "./client";
 
 const VALID_INPUT = {
-  difficulty: "beginner",
   subjectId: "language",
   subcategoryId: "english",
 } as const;

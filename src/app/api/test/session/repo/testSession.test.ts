@@ -46,7 +46,6 @@ describe("test session repo", () => {
     testSessionFindFirst.mockResolvedValueOnce({
       id: "session-1",
       correctCount: 3,
-      difficulty: "beginner",
       startedAt: new Date("2026-02-11T09:00:00.000Z"),
       submittedCount: 5,
       subjectId: "language",
@@ -58,7 +57,6 @@ describe("test session repo", () => {
     ).resolves.toEqual({
       id: "session-1",
       correctCount: 3,
-      difficulty: "beginner",
       startedAt: new Date("2026-02-11T09:00:00.000Z"),
       submittedCount: 5,
       subjectId: "language",
@@ -69,7 +67,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        difficulty: true,
         startedAt: true,
         submittedCount: true,
         subjectId: true,
@@ -86,7 +83,6 @@ describe("test session repo", () => {
     testSessionFindFirst.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 2,
-      difficulty: "advanced",
       startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
@@ -98,7 +94,6 @@ describe("test session repo", () => {
     ).resolves.toEqual({
       id: "anon-session-1",
       correctCount: 2,
-      difficulty: "advanced",
       startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
@@ -109,7 +104,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        difficulty: true,
         startedAt: true,
         submittedCount: true,
         subjectId: true,
@@ -126,7 +120,6 @@ describe("test session repo", () => {
     const existingSession = {
       id: "session-existing",
       correctCount: 4,
-      difficulty: "beginner",
       startedAt: new Date("2026-02-10T08:00:00.000Z"),
       submittedCount: 6,
       subjectId: "language",
@@ -145,7 +138,6 @@ describe("test session repo", () => {
         },
         "session-new",
         {
-          difficulty: "beginner",
           subjectId: "language",
           subcategoryId: "english",
         },
@@ -157,7 +149,6 @@ describe("test session repo", () => {
       data: {
         id: "session-new",
         correctCount: 0,
-        difficulty: "beginner",
         startedAt,
         submittedCount: 0,
         userId: "user-1",
@@ -167,7 +158,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        difficulty: true,
         startedAt: true,
         submittedCount: true,
         subjectId: true,
@@ -183,7 +173,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        difficulty: true,
         startedAt: true,
         submittedCount: true,
         subjectId: true,
@@ -198,7 +187,6 @@ describe("test session repo", () => {
     const createdSession = {
       id: "session-new",
       correctCount: 0,
-      difficulty: "beginner",
       startedAt,
       submittedCount: 0,
       subjectId: "language",
@@ -215,7 +203,6 @@ describe("test session repo", () => {
         },
         "session-new",
         {
-          difficulty: "beginner",
           subjectId: "language",
           subcategoryId: "english",
         },
@@ -232,7 +219,6 @@ describe("test session repo", () => {
     testSessionUpsert.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 0,
-      difficulty: "beginner",
       startedAt,
       submittedCount: 0,
       subjectId: "language",
@@ -245,7 +231,6 @@ describe("test session repo", () => {
       },
       "anon-session-1",
       {
-        difficulty: "beginner",
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -260,7 +245,6 @@ describe("test session repo", () => {
         id: "anon-session-1",
         anonymousSessionId: "anon-1",
         correctCount: 0,
-        difficulty: "beginner",
         startedAt,
         submittedCount: 0,
         subjectId: "language",
@@ -269,7 +253,6 @@ describe("test session repo", () => {
       update: {
         id: "anon-session-1",
         correctCount: 0,
-        difficulty: "beginner",
         startedAt,
         submittedCount: 0,
         subjectId: "language",
@@ -278,7 +261,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        difficulty: true,
         startedAt: true,
         submittedCount: true,
         subjectId: true,

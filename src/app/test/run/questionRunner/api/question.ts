@@ -1,8 +1,4 @@
-import type {
-  DifficultyEnum,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
+import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { API_PATHS } from "@/lib/config/paths";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import type { Question } from "../types";
@@ -11,7 +7,6 @@ import { QuestionRunnerApiError } from "./error";
 export type FetchQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
 };
 
 type FetchQuestionResponse = {

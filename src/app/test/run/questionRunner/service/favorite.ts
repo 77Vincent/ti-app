@@ -1,8 +1,4 @@
-import type {
-  DifficultyEnum,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
+import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import {
   addFavoriteQuestion,
   removeFavoriteQuestion,
@@ -14,7 +10,6 @@ export type ToggleQuestionFavoriteInput = {
   isFavorite: boolean;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-  difficulty: DifficultyEnum;
   question: Question;
 };
 
@@ -35,7 +30,6 @@ export async function toggleQuestionFavorite(
     await addFavoriteQuestion({
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
-      difficulty: input.difficulty,
       question: input.question,
     });
     return { type: "success", isFavorite: true };
