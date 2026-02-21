@@ -19,10 +19,6 @@ import type {
 } from "../types";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
-  advanceQuestionSession,
-  initializeQuestionSessionState,
-} from "@/lib/testSession/service/questionSessionWorkflow";
-import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
 } from "../session/reducer";
@@ -131,16 +127,21 @@ export function useQuestion({
 
     async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
-      await initializeQuestionSessionState({
-        restoreCurrentQuestion: () => false,
-        loadInitialQuestion: loadOneQuestion,
-        pushLoadedQuestion: (loadedQuestion) => applyLoadedQuestion(loadedQuestion),
-        onError: showLoadError,
-        shouldIgnoreResult: () => cancelled,
-      });
+      try {
+        const loadedQuestion = await loadOneQuestion();
+        if (cancelled) {
+          return;
+        }
 
-      if (!cancelled) {
-        dispatchUiState({ type: "initialLoadFinished" });
+        applyLoadedQuestion(loadedQuestion);
+      } catch (error) {
+        if (!cancelled) {
+          showLoadError(error);
+        }
+      } finally {
+        if (!cancelled) {
+          dispatchUiState({ type: "initialLoadFinished" });
+        }
       }
     }
 
@@ -208,13 +209,14 @@ export function useQuestion({
             prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
         }));
       },
-      advanceToNextQuestion: () =>
-        advanceQuestionSession({
-          loadNextQuestion: loadOneQuestion,
-          pushLoadedQuestion: (loadedQuestion) =>
-            applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true }),
-          onError: showLoadError,
-        }),
+      advanceToNextQuestion: async () => {
+        try {
+          const loadedQuestion = await loadOneQuestion();
+          applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true });
+        } catch (error) {
+          showLoadError(error);
+        }
+      },
       onNextQuestionLoadStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },

@@ -5,12 +5,21 @@ import {
 } from "@/lib/testSession/validation";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
-import { localTestSessionService } from "@/lib/testSession/service/browserLocalSession";
+import {
+  clearLocalTestSessionRaw,
+  readLocalTestSessionRaw,
+  writeLocalTestSessionRaw,
+} from "@/lib/testSession/adapters/browser/localStorage";
 import { QuestionRunnerApiError } from "../api/error";
+import { isNonEmptyString } from "@/lib/string";
 
 type TestSessionResponse = {
   session?: unknown;
   error?: unknown;
+};
+
+type LocalTestSessionSnapshot = {
+  sessionId: string;
 };
 
 type SessionRequestOptions = {
@@ -26,6 +35,25 @@ function parseSessionFromResponse(payload: unknown): TestSession | null {
   }
 
   return parseTestSession((payload as TestSessionResponse).session);
+}
+
+function readLocalSessionId(): string | null {
+  const raw = readLocalTestSessionRaw();
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(raw) as { sessionId?: unknown };
+    return isNonEmptyString(payload.sessionId) ? payload.sessionId : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalSessionId(sessionId: string): void {
+  const snapshot: LocalTestSessionSnapshot = { sessionId };
+  writeLocalTestSessionRaw(JSON.stringify(snapshot));
 }
 
 async function requestSession(
@@ -64,26 +92,26 @@ async function requestSession(
 }
 
 export async function readTestSession(): Promise<TestSession | null> {
-  const localSession = localTestSessionService.readLocalTestSessionSnapshot();
-  if (!localSession) {
-    localTestSessionService.clearLocalTestSession();
+  const localSessionId = readLocalSessionId();
+  if (!localSessionId) {
+    clearLocalTestSessionRaw();
     return null;
   }
 
   const payload = await requestSession({
     cache: "no-store",
     method: "GET",
-    sessionId: localSession.sessionId,
+    sessionId: localSessionId,
   });
   const session = parseSessionFromResponse(payload);
 
   if (!session) {
-    localTestSessionService.clearLocalTestSession();
+    clearLocalTestSessionRaw();
     return null;
   }
 
-  if (session.id !== localSession.sessionId) {
-    localTestSessionService.clearLocalTestSession();
+  if (session.id !== localSessionId) {
+    clearLocalTestSessionRaw();
     return null;
   }
 
@@ -102,11 +130,11 @@ export async function writeTestSession(
     throw new QuestionRunnerApiError("Failed to start test session.", 500);
   }
 
-  localTestSessionService.writeLocalTestSession(session.id);
+  writeLocalSessionId(session.id);
 }
 
 export async function clearTestSession(): Promise<void> {
-  localTestSessionService.clearLocalTestSession();
+  clearLocalTestSessionRaw();
 
   await requestSession({
     method: "DELETE",

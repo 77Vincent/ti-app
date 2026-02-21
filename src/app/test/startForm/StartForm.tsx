@@ -16,28 +16,14 @@ import { writeTestSession } from "@/app/test/run/questionRunner/session/storage"
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";
-import { START_FORM_STEP_TITLES } from "./constants";
-import { DEFAULT_TEST_DIFFICULTY } from "./constants";
 import {
-  getCurrentStartFormStep,
-} from "./utils";
-import {
-  INITIAL_START_FORM_STATE,
-  selectSubcategory,
-  selectSubject,
-} from "./state";
-import type { StartFormState } from "./state";
-import {
-  buildCurrentStepViewConfig,
-} from "./viewModel";
+  DEFAULT_TEST_DIFFICULTY,
+  START_FORM_STEP_TITLES,
+} from "./constants";
 
 export default function StartForm() {
   const router = useRouter();
-  const [state, setState] = useState<StartFormState>(INITIAL_START_FORM_STATE);
-  const {
-    selectedSubjectId,
-    selectedSubcategoryId,
-  } = state;
+  const [selectedSubjectId, setSelectedSubjectId] = useState<SubjectEnum | null>(null);
   const subjects = useMemo(() => sortByOrder(SUBJECTS), []);
 
   const subcategories = useMemo(() => {
@@ -52,13 +38,12 @@ export default function StartForm() {
     );
   }, [selectedSubjectId]);
 
-  const currentStep = getCurrentStartFormStep(state);
+  const currentStep = selectedSubjectId ? "subcategory" : "subject";
 
   const handleSelectSubject = (subjectId: SubjectEnum) =>
-    setState(selectSubject(subjectId));
+    setSelectedSubjectId(subjectId);
 
   const handleSelectSubcategory = (subcategoryId: SubcategoryEnum) => {
-    setState((prevState) => selectSubcategory(prevState, subcategoryId));
     if (!selectedSubjectId) {
       return;
     }
@@ -81,43 +66,35 @@ export default function StartForm() {
       });
   };
 
-  const currentStepViewConfig = buildCurrentStepViewConfig({
-    currentStep,
-    subjects,
-    subcategories,
-    selectedSubjectId,
-    selectedSubcategoryId,
-  });
-
   function renderStepOptions() {
-    switch (currentStepViewConfig.step) {
+    switch (currentStep) {
       case "subject":
-        return currentStepViewConfig.options.map((option) => {
-          const Icon = getSubjectIcon(option.value);
+        return subjects.map((subject) => {
+          const Icon = getSubjectIcon(subject.id);
 
           return (
             <Button
               color="primary"
               size="lg"
               variant="bordered"
-              key={option.value}
-              onPress={() => handleSelectSubject(option.value)}
+              key={subject.id}
+              onPress={() => handleSelectSubject(subject.id)}
               startContent={createElement(Icon, { "aria-hidden": true, size: 18 })}
             >
-              {option.label}
+              {subject.label}
             </Button>
           );
         });
       case "subcategory":
-        return currentStepViewConfig.options.map((option) => (
+        return subcategories.map((subcategory) => (
           <Button
             color="primary"
             size="lg"
             variant="bordered"
-            key={option.value}
-            onPress={() => handleSelectSubcategory(option.value)}
+            key={subcategory.id}
+            onPress={() => handleSelectSubcategory(subcategory.id)}
           >
-            {option.label}
+            {subcategory.label}
           </Button>
         ));
     }

@@ -2,24 +2,27 @@ import { API_PATHS } from "@/lib/config/paths";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
-  clearLocalTestSession,
-  readLocalTestSessionSnapshot,
-  writeLocalTestSession,
+  clearLocalTestSessionRaw,
+  readLocalTestSessionRaw,
+  writeLocalTestSessionRaw,
 } = vi.hoisted(() => ({
-  clearLocalTestSession: vi.fn(),
-  readLocalTestSessionSnapshot: vi.fn(),
-  writeLocalTestSession: vi.fn(),
+  clearLocalTestSessionRaw: vi.fn(),
+  readLocalTestSessionRaw: vi.fn(),
+  writeLocalTestSessionRaw: vi.fn(),
 }));
 
-vi.mock("@/lib/testSession/service/browserLocalSession", () => ({
-  localTestSessionService: {
-    clearLocalTestSession,
-    readLocalTestSessionSnapshot,
-    writeLocalTestSession,
-  },
+vi.mock("@/lib/testSession/adapters/browser/localStorage", () => ({
+  clearLocalTestSessionRaw,
+  readLocalTestSessionRaw,
+  writeLocalTestSessionRaw,
 }));
 
-import { clearTestSession, recordQuestionResult, readTestSession } from "./storage";
+import {
+  clearTestSession,
+  recordQuestionResult,
+  readTestSession,
+  writeTestSession,
+} from "./storage";
 
 const REMOTE_SESSION_PAYLOAD = {
   session: {
@@ -35,9 +38,9 @@ const REMOTE_SESSION_PAYLOAD = {
 
 describe("session storage", () => {
   beforeEach(() => {
-    clearLocalTestSession.mockReset();
-    readLocalTestSessionSnapshot.mockReset();
-    writeLocalTestSession.mockReset();
+    clearLocalTestSessionRaw.mockReset();
+    readLocalTestSessionRaw.mockReset();
+    writeLocalTestSessionRaw.mockReset();
   });
 
   afterEach(() => {
@@ -45,9 +48,9 @@ describe("session storage", () => {
   });
 
   it("returns remote session when local snapshot matches id", async () => {
-    readLocalTestSessionSnapshot.mockReturnValue({
-      sessionId: "session-1",
-    });
+    readLocalTestSessionRaw.mockReturnValue(
+      JSON.stringify({ sessionId: "session-1" }),
+    );
 
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
@@ -55,8 +58,8 @@ describe("session storage", () => {
 
     await expect(readTestSession()).resolves.toEqual(REMOTE_SESSION_PAYLOAD.session);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(clearLocalTestSession).not.toHaveBeenCalled();
-    expect(writeLocalTestSession).not.toHaveBeenCalled();
+    expect(clearLocalTestSessionRaw).not.toHaveBeenCalled();
+    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledWith(
       `${API_PATHS.TEST_SESSION}?sessionId=session-1`,
       expect.objectContaining({ cache: "no-store", method: "GET" }),
@@ -64,19 +67,19 @@ describe("session storage", () => {
   });
 
   it("returns null without remote call when local snapshot is missing", async () => {
-    readLocalTestSessionSnapshot.mockReturnValue(null);
+    readLocalTestSessionRaw.mockReturnValue(null);
 
     const fetchSpy = vi.spyOn(globalThis, "fetch");
 
     await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
+    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it("clears local session when remote id mismatches", async () => {
-    readLocalTestSessionSnapshot.mockReturnValue({
-      sessionId: "session-1",
-    });
+    readLocalTestSessionRaw.mockReturnValue(
+      JSON.stringify({ sessionId: "session-1" }),
+    );
 
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
@@ -91,22 +94,22 @@ describe("session storage", () => {
     );
 
     await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
+    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
   it("clears local session when remote session is absent", async () => {
-    readLocalTestSessionSnapshot.mockReturnValue({
-      sessionId: "session-1",
-    });
+    readLocalTestSessionRaw.mockReturnValue(
+      JSON.stringify({ sessionId: "session-1" }),
+    );
 
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(null, { status: 204 }),
     );
 
     await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
-    expect(readLocalTestSessionSnapshot).toHaveBeenCalledTimes(1);
+    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
+    expect(readLocalTestSessionRaw).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -116,11 +119,30 @@ describe("session storage", () => {
     );
 
     await expect(clearTestSession()).resolves.toBeUndefined();
-    expect(clearLocalTestSession).toHaveBeenCalledTimes(1);
+    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,
       expect.objectContaining({ method: "DELETE" }),
+    );
+  });
+
+  it("writeTestSession persists session id snapshot", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
+    );
+
+    await expect(
+      writeTestSession({
+        difficulty: "beginner",
+        subjectId: "language",
+        subcategoryId: "english",
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(writeLocalTestSessionRaw).toHaveBeenCalledWith(
+      JSON.stringify({ sessionId: "session-1" }),
     );
   });
 
