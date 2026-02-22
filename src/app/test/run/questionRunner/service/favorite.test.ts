@@ -26,6 +26,7 @@ const QUESTION: Question = {
   id: "q-1",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Prompt",
+  difficulty: "A1",
   options: [
     { text: "Option A", explanation: "A" },
     { text: "Option B", explanation: "B" },

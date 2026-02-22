@@ -11,6 +11,7 @@ function createMockQuestion(id: string): Question {
     id,
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: `Prompt ${id}`,
+    difficulty: "A1",
     options: [
       { text: "A", explanation: "A explanation" },
       { text: "B", explanation: "B explanation" },

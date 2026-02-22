@@ -33,6 +33,7 @@ const VALID_INPUT = {
   subcategoryId: "english",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
+  difficulty: "A1",
   options: [
     { text: "Berlin", explanation: "Wrong." },
     { text: "Paris", explanation: "Correct." },

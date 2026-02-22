@@ -14,6 +14,7 @@ export type Question = {
   id: string;
   questionType: typeof QUESTION_TYPE_MULTIPLE_CHOICE;
   prompt: string;
+  difficulty: string;
   options: QuestionOption[];
   correctOptionIndexes: number[];
 };

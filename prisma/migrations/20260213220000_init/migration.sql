@@ -64,6 +64,7 @@ CREATE TABLE "QuestionPool" (
     "slot" INTEGER NOT NULL,
     "questionType" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
     "options" JSONB NOT NULL,
     "correctOptionIds" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

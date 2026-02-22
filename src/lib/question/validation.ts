@@ -54,6 +54,14 @@ export function parseQuestionOptions(
   return options;
 }
 
+export function parseQuestionDifficulty(value: unknown): string | null {
+  if (!isNonEmptyString(value)) {
+    return null;
+  }
+
+  return value.trim();
+}
+
 export function parseCorrectOptionIndexes(
   value: unknown,
   options: readonly ParsedQuestionOption[],

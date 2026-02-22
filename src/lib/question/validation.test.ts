@@ -4,6 +4,7 @@ import {
   hasSingleCorrectOption,
   isQuestionType,
   parseCorrectOptionIndexes,
+  parseQuestionDifficulty,
   parseQuestionOptions,
 } from "./validation";
 
@@ -52,5 +53,11 @@ describe("question validation helpers", () => {
   it("accepts exactly one correct option", () => {
     expect(hasSingleCorrectOption([0])).toBe(true);
     expect(hasSingleCorrectOption([0, 1])).toBe(false);
+  });
+
+  it("parses non-empty difficulty values", () => {
+    expect(parseQuestionDifficulty(" A1 ")).toBe("A1");
+    expect(parseQuestionDifficulty("")).toBeNull();
+    expect(parseQuestionDifficulty(null)).toBeNull();
   });
 });

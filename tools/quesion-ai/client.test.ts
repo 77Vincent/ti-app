@@ -63,7 +63,7 @@ describe("requestDeepSeekQuestionContent", () => {
       }),
     );
     expect(body).toContain("array length must be exactly 2");
-    expect(body).toContain("each question item must use only keys p, o, a");
+    expect(body).toContain("each question item must use only keys p, d, o, a");
   });
 
   it("throws provider error for non-ok response", async () => {

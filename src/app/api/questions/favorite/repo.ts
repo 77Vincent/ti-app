@@ -17,6 +17,7 @@ export type FavoriteQuestionInput = {
   subcategoryId: SubcategoryEnum;
   questionType: QuestionType;
   prompt: string;
+  difficulty: string;
   options: readonly FavoriteOption[];
   correctOptionIndexes: readonly QuestionOptionIndex[];
 };

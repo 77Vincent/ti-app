@@ -36,6 +36,7 @@ describe("generateQuestionWithAI", () => {
       {
         questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q1",
+        difficulty: "A1",
         options: [
           { text: "A1", explanation: "A1" },
           { text: "B1", explanation: "B1" },
@@ -46,6 +47,7 @@ describe("generateQuestionWithAI", () => {
       {
         questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q2",
+        difficulty: "A2",
         options: [
           { text: "A2", explanation: "A2" },
           { text: "B2", explanation: "B2" },
@@ -62,11 +64,13 @@ describe("generateQuestionWithAI", () => {
     expect(question).toMatchObject({
       questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q1",
+      difficulty: "A1",
       correctOptionIndexes: [0],
     });
     expect(nextQuestion).toMatchObject({
       questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q2",
+      difficulty: "A2",
       correctOptionIndexes: [1],
     });
     expect(typeof question.id).toBe("string");

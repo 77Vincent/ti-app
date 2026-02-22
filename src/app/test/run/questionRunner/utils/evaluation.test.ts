@@ -11,6 +11,7 @@ const mockQuestion: Question = {
   id: "q-1",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Pick the prime number below.",
+  difficulty: "A1",
   options: [
     { text: "2", explanation: "2 is prime." },
     { text: "4", explanation: "4 is composite." },

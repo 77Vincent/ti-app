@@ -26,6 +26,7 @@ const VALID_QUESTION = {
   id: "question-1",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
+  difficulty: "A1",
   options: [
     { text: "Paris", explanation: "Correct." },
     { text: "Berlin", explanation: "Incorrect." },

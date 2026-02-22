@@ -6,6 +6,7 @@ import { isNonEmptyString } from "@/lib/string";
 import {
   hasSingleCorrectOption,
   parseCorrectOptionIndexes,
+  parseQuestionDifficulty,
   parseQuestionOptions,
 } from "@/lib/question/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
@@ -28,6 +29,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   const questionId = raw.questionId;
   const questionType = raw.questionType;
   const prompt = raw.prompt;
+  const difficulty = parseQuestionDifficulty(raw.difficulty);
   const options = parseQuestionOptions(raw.options, QUESTION_OPTION_LIMITS);
 
   if (
@@ -35,6 +37,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
     !isNonEmptyString(questionId) ||
     questionType !== QUESTION_TYPES.MULTIPLE_CHOICE ||
     !isNonEmptyString(prompt) ||
+    !difficulty ||
     !options
   ) {
     return null;
@@ -58,6 +61,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
     questionId,
     questionType,
     prompt: prompt.trim(),
+    difficulty,
     options,
     correctOptionIndexes,
   };

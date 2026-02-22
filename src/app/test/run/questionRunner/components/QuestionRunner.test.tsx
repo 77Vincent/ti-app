@@ -9,6 +9,7 @@ const MOCK_QUESTION: Question = {
   id: "question-1",
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Mock prompt",
+  difficulty: "A1",
   options: [
     { text: "A", explanation: "A" },
     { text: "B", explanation: "B" },

@@ -16,6 +16,7 @@ const VALID_INPUT = {
     id: "q-1",
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: "Prompt",
+    difficulty: "A1",
     options: [
       { text: "Option A", explanation: "A" },
       { text: "Option B", explanation: "B" },
@@ -47,6 +48,7 @@ describe("addFavoriteQuestion", () => {
         questionId: "q-1",
         questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
         prompt: "Prompt",
+        difficulty: "A1",
         options: VALID_INPUT.question.options,
         correctOptionIndexes: [0],
       }),

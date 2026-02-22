@@ -19,6 +19,7 @@ type QuestionPoolReadRow = {
   id: string;
   questionType: string;
   prompt: string;
+  difficulty: string;
   options: unknown;
   correctOptionIds: unknown;
 };
@@ -27,6 +28,7 @@ const QUESTION_POOL_READ_SELECT = {
   id: true,
   questionType: true,
   prompt: true,
+  difficulty: true,
   options: true,
   correctOptionIds: true,
 } as const;
@@ -37,6 +39,7 @@ export type QuestionPoolUpsertInput = {
   subcategoryId: SubcategoryEnum;
   questionType: QuestionType;
   prompt: string;
+  difficulty: string;
   options: readonly QuestionPoolOption[];
   correctOptionIndexes: readonly QuestionOptionIndex[];
 };
@@ -87,6 +90,7 @@ function toQuestion(row: QuestionPoolReadRow): Question {
     id: row.id,
     questionType: row.questionType as QuestionType,
     prompt: row.prompt,
+    difficulty: row.difficulty,
     options: row.options as Question["options"],
     correctOptionIndexes: row.correctOptionIds as QuestionOptionIndex[],
   };
@@ -139,6 +143,7 @@ export async function upsertQuestionPool(
         slot: context.questionCount,
         questionType: input.questionType,
         prompt: input.prompt,
+        difficulty: input.difficulty,
         options: input.options,
         correctOptionIds: input.correctOptionIndexes,
       },

@@ -71,6 +71,7 @@ model QuestionPool {
   slot             Int
   questionType     String
   prompt           String   @db.Text
+  difficulty       String
   options          Json
   correctOptionIds Json
   createdAt        DateTime @default(now())

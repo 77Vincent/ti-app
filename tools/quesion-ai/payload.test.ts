@@ -4,6 +4,7 @@ import { parseAIQuestionPayload } from "./payload";
 
 const VALID_COMPACT_QUESTION = {
   p: "What is the capital of France?",
+  d: "A2",
   o: [
     ["Berlin", "Wrong."],
     ["Paris", "Correct."],
@@ -16,6 +17,7 @@ const VALID_COMPACT_QUESTION = {
 const VALID_PARSED_QUESTION = {
   questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
+  difficulty: "A2",
   options: [
     { text: "Berlin", explanation: "Wrong." },
     { text: "Paris", explanation: "Correct." },
@@ -72,6 +74,19 @@ describe("parseAIQuestionPayload", () => {
     const invalidCompactQuestion = {
       ...VALID_COMPACT_QUESTION,
       p: "",
+    };
+
+    expect(() =>
+      parseAIQuestionPayload(
+        JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
+      ),
+    ).toThrow("AI response shape is invalid.");
+  });
+
+  it("throws when question payload misses difficulty", () => {
+    const invalidCompactQuestion = {
+      ...VALID_COMPACT_QUESTION,
+      d: "",
     };
 
     expect(() =>
