@@ -24,38 +24,31 @@ const QUESTION_POOL_READ_SELECT = {
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
-  const context = await prisma.questionPoolContext.findUnique({
-    where: {
-      subjectId_subcategoryId: {
-        subjectId: input.subjectId,
-        subcategoryId: input.subcategoryId,
-      },
-    },
-    select: {
-      questionCount: true,
-    },
-  });
+  const where = {
+    subjectId: input.subjectId,
+    subcategoryId: input.subcategoryId,
+  } as const;
 
-  if (!context || context.questionCount < 1) {
+  const total = await prisma.questionPool.count({ where });
+  if (total < 1) {
     return null;
   }
 
-  const randomSlot = Math.floor(Math.random() * context.questionCount) + 1;
+  const randomOffset = Math.floor(Math.random() * total);
 
-  const row = await prisma.questionPool.findUnique({
-    where: {
-      subjectId_subcategoryId_slot: {
-        subjectId: input.subjectId,
-        subcategoryId: input.subcategoryId,
-        slot: randomSlot,
-      },
+  const [row] = await prisma.questionPool.findMany({
+    where,
+    orderBy: {
+      slot: "asc",
     },
+    skip: randomOffset,
+    take: 1,
     select: QUESTION_POOL_READ_SELECT,
   });
 
   if (!row) {
     throw new Error(
-      "Question pool context is inconsistent with slot records.",
+      "Question pool random selection returned no rows.",
     );
   }
 

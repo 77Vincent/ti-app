@@ -73,15 +73,6 @@ CREATE TABLE "QuestionPool" (
 );
 
 -- CreateTable
-CREATE TABLE "QuestionPoolContext" (
-    "subjectId" TEXT NOT NULL,
-    "subcategoryId" TEXT NOT NULL,
-    "questionCount" INTEGER NOT NULL DEFAULT 0,
-
-    CONSTRAINT "QuestionPoolContext_pkey" PRIMARY KEY ("subjectId","subcategoryId")
-);
-
--- CreateTable
 CREATE TABLE "FavoriteQuestion" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,

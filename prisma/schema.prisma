@@ -80,14 +80,6 @@ model QuestionPool {
   @@unique([subjectId, subcategoryId, slot])
 }
 
-model QuestionPoolContext {
-  subjectId     String
-  subcategoryId String
-  questionCount Int    @default(0)
-
-  @@id([subjectId, subcategoryId])
-}
-
 model FavoriteQuestion {
   id         String   @id @default(cuid())
   userId     String
