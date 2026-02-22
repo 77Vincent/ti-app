@@ -1,5 +1,3 @@
-import type { QuestionType } from "@/lib/meta";
-
 export type QuestionOptionIndex = number;
 
 export type QuestionOption = {
@@ -11,7 +9,6 @@ export type Question = {
   id: string;
   prompt: string;
   difficulty: string;
-  questionType: QuestionType;
   options: QuestionOption[];
   correctOptionIndexes: QuestionOptionIndex[];
 };

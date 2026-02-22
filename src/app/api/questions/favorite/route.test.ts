@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
   deleteFavoriteQuestion,
@@ -28,7 +27,6 @@ const VALID_FAVORITE_PAYLOAD = {
   questionId: "question-1",
   subjectId: "language",
   subcategoryId: "english",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "  What is the capital of France?  ",
   difficulty: "A1",
   options: [

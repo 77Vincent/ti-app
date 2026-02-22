@@ -1,20 +1,21 @@
+import type { QuestionPool } from "@prisma/client";
+
 export type GenerateQuestionRequest = {
   subjectId: string;
   subcategoryId: string;
 };
-
-export const QUESTION_TYPE_MULTIPLE_CHOICE = "multiple_choice" as const;
 
 export type QuestionOption = {
   text: string;
   explanation: string;
 };
 
+export type QuestionDifficulty = QuestionPool["difficulty"];
+
 export type Question = {
-  id: string;
-  questionType: typeof QUESTION_TYPE_MULTIPLE_CHOICE;
-  prompt: string;
-  difficulty: string;
+  id: QuestionPool["id"];
+  prompt: QuestionPool["prompt"];
+  difficulty: QuestionDifficulty;
   options: QuestionOption[];
   correctOptionIndexes: number[];
 };

@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
 import React from "react";
@@ -7,7 +6,6 @@ import type { Question } from "../types";
 
 const MOCK_QUESTION: Question = {
   id: "question-1",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Mock prompt",
   difficulty: "A1",
   options: [

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { QUESTION_TYPES } from "@/lib/meta";
 import { parseQuestionParam } from "@/lib/testSession/validation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
@@ -27,7 +26,6 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   const raw = value as Record<string, unknown>;
   const params = parseQuestionParam(raw);
   const questionId = raw.questionId;
-  const questionType = raw.questionType;
   const prompt = raw.prompt;
   const difficulty = parseQuestionDifficulty(raw.difficulty);
   const options = parseQuestionOptions(raw.options, QUESTION_OPTION_LIMITS);
@@ -35,7 +33,6 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   if (
     !params ||
     !isNonEmptyString(questionId) ||
-    questionType !== QUESTION_TYPES.MULTIPLE_CHOICE ||
     !isNonEmptyString(prompt) ||
     !difficulty ||
     !options
@@ -59,7 +56,6 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
   return {
     ...params,
     questionId,
-    questionType,
     prompt: prompt.trim(),
     difficulty,
     options,

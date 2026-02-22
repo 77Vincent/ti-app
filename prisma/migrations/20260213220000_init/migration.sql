@@ -62,7 +62,6 @@ CREATE TABLE "QuestionPool" (
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
     "slot" INTEGER NOT NULL,
-    "questionType" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
     "options" JSONB NOT NULL,

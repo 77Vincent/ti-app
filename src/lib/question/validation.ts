@@ -1,4 +1,3 @@
-import { QUESTION_TYPES, type QuestionType } from "@/lib/meta";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 import {
@@ -12,10 +11,6 @@ type ParseQuestionOptionsConfig = {
 };
 
 export type ParsedQuestionOption = QuestionOption;
-
-export function isQuestionType(value: unknown): value is QuestionType {
-  return value === QUESTION_TYPES.MULTIPLE_CHOICE;
-}
 
 export function parseQuestionOptions(
   value: unknown,

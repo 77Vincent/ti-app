@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { QUESTION_TYPE_MULTIPLE_CHOICE } from "./types";
 import { parseAIQuestionPayload } from "./payload";
 
 const VALID_COMPACT_QUESTION = {
@@ -15,7 +14,6 @@ const VALID_COMPACT_QUESTION = {
 } as const;
 
 const VALID_PARSED_QUESTION = {
-  questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   difficulty: "A2",
   options: [
@@ -54,7 +52,7 @@ describe("parseAIQuestionPayload", () => {
       parseAIQuestionPayload(
         JSON.stringify([VALID_COMPACT_QUESTION, invalidCompactQuestion]),
       ),
-    ).toThrow("AI multiple_choice must have exactly one correct option.");
+    ).toThrow("AI question must have exactly one correct option.");
   });
 
   it("throws when one answer index is out of range", () => {

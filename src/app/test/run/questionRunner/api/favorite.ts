@@ -23,7 +23,6 @@ export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise
       subjectId: input.subjectId,
       subcategoryId: input.subcategoryId,
       questionId: input.question.id,
-      questionType: input.question.questionType,
       prompt: input.question.prompt,
       difficulty: input.question.difficulty,
       options: input.question.options,

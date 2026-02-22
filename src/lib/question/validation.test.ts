@@ -1,19 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { QUESTION_TYPES } from "@/lib/meta";
 import {
   hasSingleCorrectOption,
-  isQuestionType,
   parseCorrectOptionIndexes,
   parseQuestionDifficulty,
   parseQuestionOptions,
 } from "./validation";
 
 describe("question validation helpers", () => {
-  it("recognizes supported question types", () => {
-    expect(isQuestionType(QUESTION_TYPES.MULTIPLE_CHOICE)).toBe(true);
-    expect(isQuestionType("invalid")).toBe(false);
-  });
-
   it("parses valid options and enforces uniqueness", () => {
     expect(
       parseQuestionOptions([

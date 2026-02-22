@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { toggleQuestionFavorite } from "./favorite";
 import type { Question } from "../types";
@@ -24,7 +23,6 @@ vi.mock("../api", () => ({
 
 const QUESTION: Question = {
   id: "q-1",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Prompt",
   difficulty: "A1",
   options: [

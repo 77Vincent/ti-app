@@ -1,23 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import type {
-  QuestionType,
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
-import type {
   Question,
   QuestionOptionIndex,
 } from "@/lib/question/model";
 import type { QuestionParam } from "@/lib/testSession/validation";
 
-type QuestionPoolOption = {
-  text: string;
-  explanation: string;
-};
-
 type QuestionPoolReadRow = {
   id: string;
-  questionType: string;
   prompt: string;
   difficulty: string;
   options: unknown;
@@ -26,23 +15,11 @@ type QuestionPoolReadRow = {
 
 const QUESTION_POOL_READ_SELECT = {
   id: true,
-  questionType: true,
   prompt: true,
   difficulty: true,
   options: true,
   correctOptionIds: true,
 } as const;
-
-export type QuestionPoolUpsertInput = {
-  id: string;
-  subjectId: SubjectEnum;
-  subcategoryId: SubcategoryEnum;
-  questionType: QuestionType;
-  prompt: string;
-  difficulty: string;
-  options: readonly QuestionPoolOption[];
-  correctOptionIndexes: readonly QuestionOptionIndex[];
-};
 
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
@@ -88,65 +65,9 @@ export async function readRandomQuestionFromPool(
 function toQuestion(row: QuestionPoolReadRow): Question {
   return {
     id: row.id,
-    questionType: row.questionType as QuestionType,
     prompt: row.prompt,
     difficulty: row.difficulty,
     options: row.options as Question["options"],
     correctOptionIndexes: row.correctOptionIds as QuestionOptionIndex[],
   };
-}
-
-export async function upsertQuestionPool(
-  input: QuestionPoolUpsertInput,
-): Promise<void> {
-  await prisma.$transaction(async (tx) => {
-    const existing = await tx.questionPool.findUnique({
-      where: {
-        id: input.id,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (existing) {
-      return;
-    }
-
-    const context = await tx.questionPoolContext.upsert({
-      where: {
-        subjectId_subcategoryId: {
-          subjectId: input.subjectId,
-          subcategoryId: input.subcategoryId,
-        },
-      },
-      create: {
-        subjectId: input.subjectId,
-        subcategoryId: input.subcategoryId,
-        questionCount: 1,
-      },
-      update: {
-        questionCount: {
-          increment: 1,
-        },
-      },
-      select: {
-        questionCount: true,
-      },
-    });
-
-    await tx.questionPool.create({
-      data: {
-        id: input.id,
-        subjectId: input.subjectId,
-        subcategoryId: input.subcategoryId,
-        slot: context.questionCount,
-        questionType: input.questionType,
-        prompt: input.prompt,
-        difficulty: input.difficulty,
-        options: input.options,
-        correctOptionIds: input.correctOptionIndexes,
-      },
-    });
-  });
 }

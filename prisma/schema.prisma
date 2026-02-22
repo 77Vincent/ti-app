@@ -69,7 +69,6 @@ model QuestionPool {
   subjectId        String
   subcategoryId    String
   slot             Int
-  questionType     String
   prompt           String   @db.Text
   difficulty       String
   options          Json

@@ -1,17 +1,11 @@
 import {
   QUESTION_OPTION_LIMITS,
+  type Question,
   type QuestionOption,
-  QUESTION_TYPE_MULTIPLE_CHOICE,
 } from "./types";
 import { isNonEmptyString } from "./string";
 
-export type ParsedAIQuestionPayload = {
-  questionType: typeof QUESTION_TYPE_MULTIPLE_CHOICE;
-  prompt: string;
-  difficulty: string;
-  options: QuestionOption[];
-  correctOptionIndexes: number[];
-};
+export type ParsedAIQuestionPayload = Omit<Question, "id">;
 
 function parseJsonValue(content: string): unknown {
   try {
@@ -123,11 +117,10 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   }
 
   if (parsedCorrectOptionIndexes.length !== 1) {
-    throw new Error("AI multiple_choice must have exactly one correct option.");
+    throw new Error("AI question must have exactly one correct option.");
   }
 
   return {
-    questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
     prompt: p.trim(),
     difficulty: difficulty.trim(),
     options: parsedOptions,

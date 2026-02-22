@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { describe, expect, it } from "vitest";
 import type { Question } from "../types";
 import {
@@ -9,7 +8,6 @@ import {
 function createMockQuestion(id: string): Question {
   return {
     id,
-    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: `Prompt ${id}`,
     difficulty: "A1",
     options: [

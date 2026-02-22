@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { QUESTION_TYPES } from "@/lib/meta";
 
 const {
   parseQuestionParam,
@@ -24,7 +23,6 @@ const VALID_INPUT = {
 
 const VALID_QUESTION = {
   id: "question-1",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   difficulty: "A1",
   options: [

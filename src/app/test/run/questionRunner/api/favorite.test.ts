@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { API_PATHS } from "@/lib/config/paths";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -14,7 +13,6 @@ const VALID_INPUT = {
   subcategoryId: "english",
   question: {
     id: "q-1",
-    questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: "Prompt",
     difficulty: "A1",
     options: [
@@ -46,7 +44,6 @@ describe("addFavoriteQuestion", () => {
         subjectId: "language",
         subcategoryId: "english",
         questionId: "q-1",
-        questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
         prompt: "Prompt",
         difficulty: "A1",
         options: VALID_INPUT.question.options,

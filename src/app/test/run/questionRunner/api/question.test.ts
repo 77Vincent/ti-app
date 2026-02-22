@@ -1,4 +1,3 @@
-import { QUESTION_TYPES } from "@/lib/meta";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchQuestion } from "./question";
 import type { Question } from "../types";
@@ -10,7 +9,6 @@ const VALID_INPUT = {
 
 const MOCK_QUESTION: Question = {
   id: "q-1",
-  questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Prompt",
   difficulty: "A1",
   options: [

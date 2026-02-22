@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { QUESTION_TYPE_MULTIPLE_CHOICE } from "./types";
 
 const {
   requestDeepSeekQuestionContent,
@@ -34,7 +33,6 @@ describe("generateQuestionWithAI", () => {
     requestDeepSeekQuestionContent.mockResolvedValueOnce("{\"ok\":true}");
     parseAIQuestionPayload.mockReturnValueOnce([
       {
-        questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q1",
         difficulty: "A1",
         options: [
@@ -45,7 +43,6 @@ describe("generateQuestionWithAI", () => {
         correctOptionIndexes: [0],
       },
       {
-        questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q2",
         difficulty: "A2",
         options: [
@@ -62,13 +59,11 @@ describe("generateQuestionWithAI", () => {
     expect(requestDeepSeekQuestionContent).toHaveBeenCalledWith(VALID_INPUT);
     expect(parseAIQuestionPayload).toHaveBeenCalledWith("{\"ok\":true}");
     expect(question).toMatchObject({
-      questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q1",
       difficulty: "A1",
       correctOptionIndexes: [0],
     });
     expect(nextQuestion).toMatchObject({
-      questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q2",
       difficulty: "A2",
       correctOptionIndexes: [1],
