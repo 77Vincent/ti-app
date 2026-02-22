@@ -31,11 +31,11 @@ const VALID_FAVORITE_PAYLOAD = {
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "  What is the capital of France?  ",
   options: [
-    { id: "A", text: "Paris", explanation: "Correct." },
-    { id: "B", text: "Berlin", explanation: "Incorrect." },
-    { id: "C", text: "Madrid", explanation: "Incorrect." },
+    { text: "Paris", explanation: "Correct." },
+    { text: "Berlin", explanation: "Incorrect." },
+    { text: "Madrid", explanation: "Incorrect." },
   ],
-  correctOptionIds: ["A"],
+  correctOptionIndexes: [0],
 } as const;
 
 describe("favorite question route", () => {

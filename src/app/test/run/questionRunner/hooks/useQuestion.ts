@@ -10,7 +10,7 @@ import { QuestionRunnerApiError } from "../api/error";
 import { recordQuestionResult } from "../session/storage";
 import type {
   Question as QuestionType,
-  QuestionOptionId,
+  QuestionOptionIndex,
   QuestionSignInDemand,
 } from "../types";
 import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
@@ -43,8 +43,8 @@ export type UseQuestionResult = {
   isSignInRequired: boolean;
   signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
-  selectedOptionIds: QuestionOptionId[];
-  selectOption: (optionId: QuestionOptionId) => void;
+  selectedOptionIndexes: QuestionOptionIndex[];
+  selectOption: (optionIndex: QuestionOptionIndex) => void;
   submit: () => Promise<void>;
 };
 
@@ -70,7 +70,7 @@ export function useQuestion({
     INITIAL_QUESTION_SESSION_UI_STATE,
   );
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
-  const { selectedOptionIds, setSelection, selectOption: selectQuestionOption } =
+  const { selectedOptionIndexes, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
   const showLoadError = useCallback((error: unknown) => {
     toast.error(error, {
@@ -149,10 +149,10 @@ export function useQuestion({
     showLoadError,
   ]);
 
-  function selectOption(optionId: QuestionOptionId) {
+  function selectOption(optionIndex: QuestionOptionIndex) {
     selectQuestionOption(
       question,
-      optionId,
+      optionIndex,
       isSubmitting || hasSubmitted,
     );
   }
@@ -162,13 +162,13 @@ export function useQuestion({
       !canSubmitQuestion({
         hasQuestion: Boolean(question),
         hasSubmitted,
-        selectedOptionCount: selectedOptionIds.length,
+        selectedOptionCount: selectedOptionIndexes.length,
         isSubmitting,
       })
     ) {
       return;
     }
-    const isCurrentAnswerCorrect = isAnswerCorrect(question, selectedOptionIds);
+    const isCurrentAnswerCorrect = isAnswerCorrect(question, selectedOptionIndexes);
 
     await submitQuestion({
       hasSubmitted,
@@ -230,7 +230,7 @@ export function useQuestion({
     isSignInRequired,
     signInDemand,
     hasSubmitted,
-    selectedOptionIds,
+    selectedOptionIndexes,
     selectOption,
     submit,
   };

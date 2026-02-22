@@ -36,7 +36,7 @@ export default function QuestionWrapper({
     isSignInRequired: isQuestionSignInRequired,
     signInDemand: questionSignInDemand,
     hasSubmitted,
-    selectedOptionIds,
+    selectedOptionIndexes,
     selectOption,
     submit,
   } = useQuestion({
@@ -143,7 +143,7 @@ export default function QuestionWrapper({
             isSubmitting={isSubmitting}
             question={question}
             selectOption={selectOption}
-            selectedOptionIds={selectedOptionIds}
+            selectedOptionIndexes={selectedOptionIndexes}
             signInDemand={signInDemand}
             submit={submit}
           />

@@ -26,7 +26,7 @@ export async function addFavoriteQuestion(input: FavoriteQuestionInput): Promise
       questionType: input.question.questionType,
       prompt: input.question.prompt,
       options: input.question.options,
-      correctOptionIds: input.question.correctOptionIds,
+      correctOptionIndexes: input.question.correctOptionIndexes,
     }),
   });
 

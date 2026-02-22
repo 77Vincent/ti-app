@@ -1,9 +1,8 @@
 import type { QuestionType } from "@/lib/meta";
 
-export type QuestionOptionId = "A" | "B" | "C" | "D";
+export type QuestionOptionIndex = number;
 
 export type QuestionOption = {
-  id: QuestionOptionId;
   text: string;
   explanation: string;
 };
@@ -13,12 +12,5 @@ export type Question = {
   prompt: string;
   questionType: QuestionType;
   options: QuestionOption[];
-  correctOptionIds: QuestionOptionId[];
+  correctOptionIndexes: QuestionOptionIndex[];
 };
-
-export const QUESTION_OPTION_IDS: QuestionOptionId[] = [
-  "A",
-  "B",
-  "C",
-  "D",
-];

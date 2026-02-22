@@ -10,12 +10,12 @@ const MOCK_QUESTION: Question = {
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Mock prompt",
   options: [
-    { id: "A", text: "A", explanation: "A" },
-    { id: "B", text: "B", explanation: "B" },
-    { id: "C", text: "C", explanation: "C" },
-    { id: "D", text: "D", explanation: "D" },
+    { text: "A", explanation: "A" },
+    { text: "B", explanation: "B" },
+    { text: "C", explanation: "C" },
+    { text: "D", explanation: "D" },
   ],
-  correctOptionIds: ["A"],
+  correctOptionIndexes: [0],
 };
 
 function hasTooltipContent(node: ReactNode, content: string): boolean {
@@ -50,7 +50,7 @@ describe("QuestionRunner", () => {
       isLoadingQuestion: false,
       isSubmitting: false,
       hasSubmitted: false,
-      selectedOptionIds: [],
+      selectedOptionIndexes: [],
       isFavoriteSubmitting: false,
       isSignInRequired: false,
       signInDemand: null,

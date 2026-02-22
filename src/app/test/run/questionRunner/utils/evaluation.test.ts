@@ -12,44 +12,44 @@ const mockQuestion: Question = {
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Pick the prime number below.",
   options: [
-    { id: "A", text: "2", explanation: "2 is prime." },
-    { id: "B", text: "4", explanation: "4 is composite." },
-    { id: "C", text: "6", explanation: "6 is composite." },
-    { id: "D", text: "8", explanation: "8 is composite." },
+    { text: "2", explanation: "2 is prime." },
+    { text: "4", explanation: "4 is composite." },
+    { text: "6", explanation: "6 is composite." },
+    { text: "8", explanation: "8 is composite." },
   ],
-  correctOptionIds: ["A"],
+  correctOptionIndexes: [0],
 };
 
 describe("question evaluation utils", () => {
   it("returns false for isOptionCorrect when question is null", () => {
-    expect(isOptionCorrect(null, "A")).toBe(false);
+    expect(isOptionCorrect(null, 0)).toBe(false);
   });
 
   it("detects whether an option is correct", () => {
-    expect(isOptionCorrect(mockQuestion, "A")).toBe(true);
-    expect(isOptionCorrect(mockQuestion, "C")).toBe(false);
+    expect(isOptionCorrect(mockQuestion, 0)).toBe(true);
+    expect(isOptionCorrect(mockQuestion, 2)).toBe(false);
   });
 
   it("returns false for wrong selection when question is null", () => {
-    expect(isOptionWrongSelection(null, ["A"], "A")).toBe(false);
+    expect(isOptionWrongSelection(null, [0], 0)).toBe(false);
   });
 
   it("returns true only for selected incorrect options", () => {
-    expect(isOptionWrongSelection(mockQuestion, ["C"], "C")).toBe(true);
-    expect(isOptionWrongSelection(mockQuestion, ["A"], "A")).toBe(false);
+    expect(isOptionWrongSelection(mockQuestion, [2], 2)).toBe(true);
+    expect(isOptionWrongSelection(mockQuestion, [0], 0)).toBe(false);
   });
 
   it("returns false for unselected options", () => {
-    expect(isOptionWrongSelection(mockQuestion, ["A"], "D")).toBe(false);
+    expect(isOptionWrongSelection(mockQuestion, [0], 3)).toBe(false);
   });
 
   it("returns true only when selected answers exactly match correct answers", () => {
-    expect(isAnswerCorrect(mockQuestion, ["A"])).toBe(true);
-    expect(isAnswerCorrect(mockQuestion, ["B"])).toBe(false);
-    expect(isAnswerCorrect(mockQuestion, ["A", "C"])).toBe(false);
+    expect(isAnswerCorrect(mockQuestion, [0])).toBe(true);
+    expect(isAnswerCorrect(mockQuestion, [1])).toBe(false);
+    expect(isAnswerCorrect(mockQuestion, [0, 2])).toBe(false);
   });
 
   it("returns false for duplicated selected options", () => {
-    expect(isAnswerCorrect(mockQuestion, ["A", "A"])).toBe(false);
+    expect(isAnswerCorrect(mockQuestion, [0, 0])).toBe(false);
   });
 });

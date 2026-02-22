@@ -5,7 +5,7 @@ import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
 import {
   hasSingleCorrectOption,
-  parseCorrectOptionIds,
+  parseCorrectOptionIndexes,
   parseQuestionOptions,
 } from "@/lib/question/validation";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
@@ -40,13 +40,16 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
     return null;
   }
 
-  const correctOptionIds = parseCorrectOptionIds(raw.correctOptionIds, options);
+  const correctOptionIndexes = parseCorrectOptionIndexes(
+    raw.correctOptionIndexes,
+    options,
+  );
 
-  if (!correctOptionIds) {
+  if (!correctOptionIndexes) {
     return null;
   }
 
-  if (!hasSingleCorrectOption(correctOptionIds)) {
+  if (!hasSingleCorrectOption(correctOptionIndexes)) {
     return null;
   }
 
@@ -56,7 +59,7 @@ function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | nul
     questionType,
     prompt: prompt.trim(),
     options,
-    correctOptionIds,
+    correctOptionIndexes,
   };
 }
 

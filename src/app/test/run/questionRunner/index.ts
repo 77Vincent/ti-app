@@ -1,7 +1,7 @@
 export { default as QuestionRunner } from "./components/QuestionWrapper";
 export type {
   Question,
-  QuestionOptionId,
+  QuestionOptionIndex,
   QuestionOption,
   QuestionRunnerProps,
 } from "./types";

@@ -2,13 +2,13 @@ import type { TestSession } from "@/lib/testSession/validation";
 import type {
   Question,
   QuestionOption,
-  QuestionOptionId,
+  QuestionOptionIndex,
 } from "@/lib/question/model";
 
 export type {
   Question,
   QuestionOption,
-  QuestionOptionId,
+  QuestionOptionIndex,
 };
 
 export type SignInDemand = "favorite" | "more_questions";

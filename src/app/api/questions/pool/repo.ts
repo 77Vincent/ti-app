@@ -6,12 +6,11 @@ import type {
 } from "@/lib/meta";
 import type {
   Question,
-  QuestionOptionId,
+  QuestionOptionIndex,
 } from "@/lib/question/model";
 import type { QuestionParam } from "@/lib/testSession/validation";
 
 type QuestionPoolOption = {
-  id: QuestionOptionId;
   text: string;
   explanation: string;
 };
@@ -39,7 +38,7 @@ export type QuestionPoolUpsertInput = {
   questionType: QuestionType;
   prompt: string;
   options: readonly QuestionPoolOption[];
-  correctOptionIds: readonly QuestionOptionId[];
+  correctOptionIndexes: readonly QuestionOptionIndex[];
 };
 
 export async function readRandomQuestionFromPool(
@@ -89,7 +88,7 @@ function toQuestion(row: QuestionPoolReadRow): Question {
     questionType: row.questionType as QuestionType,
     prompt: row.prompt,
     options: row.options as Question["options"],
-    correctOptionIds: row.correctOptionIds as QuestionOptionId[],
+    correctOptionIndexes: row.correctOptionIds as QuestionOptionIndex[],
   };
 }
 
@@ -141,7 +140,7 @@ export async function upsertQuestionPool(
         questionType: input.questionType,
         prompt: input.prompt,
         options: input.options,
-        correctOptionIds: input.correctOptionIds,
+        correctOptionIds: input.correctOptionIndexes,
       },
     });
   });

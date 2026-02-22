@@ -4,10 +4,9 @@ import type {
   SubjectEnum,
   SubcategoryEnum,
 } from "@/lib/meta";
-import type { QuestionOptionId } from "@/lib/question/model";
+import type { QuestionOptionIndex } from "@/lib/question/model";
 
 type FavoriteOption = {
-  id: QuestionOptionId;
   text: string;
   explanation: string;
 };
@@ -19,7 +18,7 @@ export type FavoriteQuestionInput = {
   questionType: QuestionType;
   prompt: string;
   options: readonly FavoriteOption[];
-  correctOptionIds: readonly QuestionOptionId[];
+  correctOptionIndexes: readonly QuestionOptionIndex[];
 };
 
 export async function upsertFavoriteQuestion(

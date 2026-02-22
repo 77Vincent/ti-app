@@ -11,18 +11,18 @@ import {
   isOptionCorrect,
   isOptionWrongSelection,
 } from "../utils/evaluation";
-import type { Question, QuestionOptionId, SignInDemand } from "../types";
+import type { Question, QuestionOptionIndex, SignInDemand } from "../types";
 
 type QuestionProps = {
   question: Question | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
   hasSubmitted: boolean;
-  selectedOptionIds: QuestionOptionId[];
+  selectedOptionIndexes: QuestionOptionIndex[];
   isFavoriteSubmitting: boolean;
   isSignInRequired: boolean;
   signInDemand: SignInDemand | null;
-  selectOption: (optionId: QuestionOptionId) => void;
+  selectOption: (optionIndex: QuestionOptionIndex) => void;
   submit: () => Promise<void>;
 };
 
@@ -36,7 +36,7 @@ export default function QuestionRunner({
   isLoadingQuestion,
   isSubmitting,
   hasSubmitted,
-  selectedOptionIds,
+  selectedOptionIndexes,
   isFavoriteSubmitting,
   isSignInRequired,
   signInDemand,
@@ -65,19 +65,19 @@ export default function QuestionRunner({
             <QuestionPrompt markdown={question.prompt} />
 
             <div className="space-y-3">
-              {question.options.map((option) => (
+              {question.options.map((option, optionIndex) => (
                 <QuestionChoice
                   hasSubmitted={hasSubmitted}
-                  isCorrect={isOptionCorrect(question, option.id)}
-                  isSelected={selectedOptionIds.includes(option.id)}
+                  isCorrect={isOptionCorrect(question, optionIndex)}
+                  isSelected={selectedOptionIndexes.includes(optionIndex)}
                   isSubmitting={isSubmitting}
                   isWrongSelection={isOptionWrongSelection(
                     question,
-                    selectedOptionIds,
-                    option.id,
+                    selectedOptionIndexes,
+                    optionIndex,
                   )}
-                  key={option.id}
-                  onSelect={() => selectOption(option.id)}
+                  key={optionIndex}
+                  onSelect={() => selectOption(optionIndex)}
                   option={option}
                 />
               ))}
@@ -92,7 +92,7 @@ export default function QuestionRunner({
                     !canSubmitQuestion({
                       hasQuestion: true,
                       hasSubmitted,
-                      selectedOptionCount: selectedOptionIds.length,
+                      selectedOptionCount: selectedOptionIndexes.length,
                       isSubmitting,
                     })
                   }

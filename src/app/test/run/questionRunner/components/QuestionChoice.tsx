@@ -62,10 +62,7 @@ export default function QuestionChoice({
         onPress={onSelect}
       >
         <CardBody className="px-4 py-2">
-          <div>
-            <span className="font-mono">{option.id}. </span>
-            <span>{renderInlineMarkdown(option.text)}</span>
-          </div>
+          <div>{renderInlineMarkdown(option.text)}</div>
         </CardBody>
       </Card>
 

@@ -34,11 +34,11 @@ const VALID_INPUT = {
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   options: [
-    { id: "A", text: "Berlin", explanation: "Wrong." },
-    { id: "B", text: "Paris", explanation: "Correct." },
-    { id: "C", text: "Madrid", explanation: "Wrong." },
+    { text: "Berlin", explanation: "Wrong." },
+    { text: "Paris", explanation: "Correct." },
+    { text: "Madrid", explanation: "Wrong." },
   ],
-  correctOptionIds: ["B"],
+  correctOptionIndexes: [1],
 } as const;
 
 describe("favorite question repo", () => {

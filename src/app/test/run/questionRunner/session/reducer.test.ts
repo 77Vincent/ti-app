@@ -12,12 +12,12 @@ function createMockQuestion(id: string): Question {
     questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
     prompt: `Prompt ${id}`,
     options: [
-      { id: "A", text: "A", explanation: "A explanation" },
-      { id: "B", text: "B", explanation: "B explanation" },
-      { id: "C", text: "C", explanation: "C explanation" },
-      { id: "D", text: "D", explanation: "D explanation" },
+      { text: "A", explanation: "A explanation" },
+      { text: "B", explanation: "B explanation" },
+      { text: "C", explanation: "C explanation" },
+      { text: "D", explanation: "D explanation" },
     ],
-    correctOptionIds: ["A"],
+    correctOptionIndexes: [0],
   };
 }
 

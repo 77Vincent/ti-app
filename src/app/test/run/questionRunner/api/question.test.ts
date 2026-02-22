@@ -13,12 +13,12 @@ const MOCK_QUESTION: Question = {
   questionType: QUESTION_TYPES.MULTIPLE_CHOICE,
   prompt: "Prompt",
   options: [
-    { id: "A", text: "Option A", explanation: "A" },
-    { id: "B", text: "Option B", explanation: "B" },
-    { id: "C", text: "Option C", explanation: "C" },
-    { id: "D", text: "Option D", explanation: "D" },
+    { text: "Option A", explanation: "A" },
+    { text: "Option B", explanation: "B" },
+    { text: "Option C", explanation: "C" },
+    { text: "Option D", explanation: "D" },
   ],
-  correctOptionIds: ["A"],
+  correctOptionIndexes: [0],
 };
 
 afterEach(() => {

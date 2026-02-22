@@ -2,25 +2,19 @@ import { QUESTION_TYPES, type QuestionType } from "@/lib/meta";
 import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import { isNonEmptyString } from "@/lib/string";
 import {
-  QUESTION_OPTION_IDS,
   type QuestionOption,
-  type QuestionOptionId,
+  type QuestionOptionIndex,
 } from "./model";
 
 type ParseQuestionOptionsConfig = {
   minOptions?: number;
   maxOptions?: number;
-  requireSequentialFromA?: boolean;
 };
 
 export type ParsedQuestionOption = QuestionOption;
 
 export function isQuestionType(value: unknown): value is QuestionType {
   return value === QUESTION_TYPES.MULTIPLE_CHOICE;
-}
-
-export function isQuestionOptionId(value: string): value is QuestionOptionId {
-  return QUESTION_OPTION_IDS.includes(value as QuestionOptionId);
 }
 
 export function parseQuestionOptions(
@@ -41,13 +35,10 @@ export function parseQuestionOptions(
       return null;
     }
 
-    const id = (item as { id?: unknown }).id;
     const text = (item as { text?: unknown }).text;
     const explanation = (item as { explanation?: unknown }).explanation;
 
     if (
-      !isNonEmptyString(id) ||
-      !isQuestionOptionId(id) ||
       !isNonEmptyString(text) ||
       !isNonEmptyString(explanation)
     ) {
@@ -55,60 +46,46 @@ export function parseQuestionOptions(
     }
 
     options.push({
-      id,
       text: text.trim(),
       explanation: explanation.trim(),
     });
   }
 
-  const ids = options.map((option) => option.id);
-  if (new Set(ids).size !== ids.length) {
-    return null;
-  }
-
-  if (config?.requireSequentialFromA) {
-    const expectedIds = QUESTION_OPTION_IDS.slice(0, options.length);
-
-    if (!expectedIds.every((expectedId, index) => ids[index] === expectedId)) {
-      return null;
-    }
-  }
-
   return options;
 }
 
-export function parseCorrectOptionIds(
+export function parseCorrectOptionIndexes(
   value: unknown,
   options: readonly ParsedQuestionOption[],
-): QuestionOptionId[] | null {
+): QuestionOptionIndex[] | null {
   if (!Array.isArray(value) || value.length === 0) {
     return null;
   }
 
-  const optionIdSet = new Set(options.map((option) => option.id));
-  const ids: QuestionOptionId[] = [];
+  const indexes: QuestionOptionIndex[] = [];
 
   for (const item of value) {
-    if (!isNonEmptyString(item) || !isQuestionOptionId(item)) {
+    if (!Number.isInteger(item)) {
       return null;
     }
 
-    if (!optionIdSet.has(item)) {
+    const index = item;
+    if (index < 0 || index >= options.length) {
       return null;
     }
 
-    ids.push(item);
+    indexes.push(index);
   }
 
-  if (new Set(ids).size !== ids.length) {
+  if (new Set(indexes).size !== indexes.length) {
     return null;
   }
 
-  return ids;
+  return indexes;
 }
 
 export function hasSingleCorrectOption(
-  correctOptionIds: QuestionOptionId[],
+  correctOptionIndexes: QuestionOptionIndex[],
 ): boolean {
-  return correctOptionIds.length === 1;
+  return correctOptionIndexes.length === 1;
 }

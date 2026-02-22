@@ -1,41 +1,43 @@
-import type { Question as QuestionType, QuestionOptionId } from "../types";
+import type { Question as QuestionType, QuestionOptionIndex } from "../types";
 
 export function isOptionCorrect(
   question: QuestionType | null,
-  optionId: QuestionOptionId,
+  optionIndex: QuestionOptionIndex,
 ): boolean {
-  return question ? question.correctOptionIds.includes(optionId) : false;
+  return question ? question.correctOptionIndexes.includes(optionIndex) : false;
 }
 
 export function isOptionWrongSelection(
   question: QuestionType | null,
-  selectedOptionIds: QuestionOptionId[],
-  optionId: QuestionOptionId,
+  selectedOptionIndexes: QuestionOptionIndex[],
+  optionIndex: QuestionOptionIndex,
 ): boolean {
   if (!question) {
     return false;
   }
 
-  return selectedOptionIds.includes(optionId) && !isOptionCorrect(question, optionId);
+  return selectedOptionIndexes.includes(optionIndex) && !isOptionCorrect(question, optionIndex);
 }
 
 export function isAnswerCorrect(
   question: QuestionType | null,
-  selectedOptionIds: QuestionOptionId[],
+  selectedOptionIndexes: QuestionOptionIndex[],
 ): boolean {
   if (!question) {
     return false;
   }
 
-  const correctOptionIds = question.correctOptionIds;
-  if (selectedOptionIds.length !== correctOptionIds.length) {
+  const correctOptionIndexes = question.correctOptionIndexes;
+  if (selectedOptionIndexes.length !== correctOptionIndexes.length) {
     return false;
   }
 
-  const selectedOptionIdSet = new Set(selectedOptionIds);
-  if (selectedOptionIdSet.size !== selectedOptionIds.length) {
+  const selectedOptionIndexSet = new Set(selectedOptionIndexes);
+  if (selectedOptionIndexSet.size !== selectedOptionIndexes.length) {
     return false;
   }
 
-  return correctOptionIds.every((optionId) => selectedOptionIdSet.has(optionId));
+  return correctOptionIndexes.every((optionIndex) =>
+    selectedOptionIndexSet.has(optionIndex),
+  );
 }
