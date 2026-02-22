@@ -5,24 +5,6 @@ type SessionAccuracyProps = {
   submittedCount: number;
 };
 
-export function getSessionAccuracyTextClass(accuracyRate: number): string {
-  const accuracyPercent = accuracyRate * 100;
-
-  if (accuracyPercent < 25) {
-    return "text-red-500";
-  }
-
-  if (accuracyPercent <= 50) {
-    return "text-amber-500";
-  }
-
-  if (accuracyPercent <= 75) {
-    return "text-primary";
-  }
-
-  return "text-green-500";
-}
-
 export function formatSessionAccuracyLabel({
   correctCount,
   submittedCount,
@@ -39,11 +21,11 @@ export default function SessionAccuracy({
 }: SessionAccuracyProps) {
 
   return (
-    <p className="font-semibold tabular-nums">
-        {formatSessionAccuracyLabel({
-          correctCount,
-          submittedCount,
-        })}
+    <p className="font-bold tabular-nums">
+      {formatSessionAccuracyLabel({
+        correctCount,
+        submittedCount,
+      })}
     </p>
   );
 }
