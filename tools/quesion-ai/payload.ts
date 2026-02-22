@@ -39,7 +39,9 @@ function parseCompactOptions(value: unknown): QuestionOption[] | null {
     return null;
   }
 
-  const options = value.map((item) => {
+  const options: QuestionOption[] = [];
+
+  for (const item of value) {
     if (
       !Array.isArray(item) ||
       item.length !== 2 ||
@@ -49,14 +51,10 @@ function parseCompactOptions(value: unknown): QuestionOption[] | null {
       return null;
     }
 
-    return {
+    options.push({
       text: item[0].trim(),
       explanation: item[1].trim(),
-    };
-  });
-
-  if (options.some((option) => option === null)) {
-    return null;
+    });
   }
 
   return options;
@@ -73,11 +71,11 @@ function parseCompactCorrectOptionIndexes(
   const indexes: number[] = [];
 
   for (const item of value) {
-    if (!Number.isInteger(item)) {
+    if (typeof item !== "number" || !Number.isInteger(item)) {
       return null;
     }
 
-    const index = item;
+    const index: number = item;
     if (index < 0 || index >= optionCount) {
       return null;
     }
