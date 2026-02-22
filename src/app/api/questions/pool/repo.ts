@@ -10,7 +10,7 @@ type QuestionPoolReadRow = {
   prompt: string;
   difficulty: string;
   options: unknown;
-  correctOptionIds: unknown;
+  correctOptionIndexes: unknown;
 };
 
 const QUESTION_POOL_READ_SELECT = {
@@ -18,7 +18,7 @@ const QUESTION_POOL_READ_SELECT = {
   prompt: true,
   difficulty: true,
   options: true,
-  correctOptionIds: true,
+  correctOptionIndexes: true,
 } as const;
 
 export async function readRandomQuestionFromPool(
@@ -68,6 +68,6 @@ function toQuestion(row: QuestionPoolReadRow): Question {
     prompt: row.prompt,
     difficulty: row.difficulty,
     options: row.options as Question["options"],
-    correctOptionIndexes: row.correctOptionIds as QuestionOptionIndex[],
+    correctOptionIndexes: row.correctOptionIndexes as QuestionOptionIndex[],
   };
 }

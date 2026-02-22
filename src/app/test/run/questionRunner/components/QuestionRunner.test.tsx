@@ -43,7 +43,7 @@ function hasTooltipContent(node: ReactNode, content: string): boolean {
 }
 
 describe("QuestionRunner", () => {
-  it("does not render previous question controls", () => {
+  it("does not render navigation controls", () => {
     const tree = QuestionRunner({
       question: MOCK_QUESTION,
       isLoadingQuestion: false,

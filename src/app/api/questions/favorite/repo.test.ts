@@ -26,20 +26,6 @@ import {
   upsertFavoriteQuestion,
 } from "./repo";
 
-const VALID_INPUT = {
-  questionId: "question-1",
-  subjectId: "language",
-  subcategoryId: "english",
-  prompt: "What is the capital of France?",
-  difficulty: "A1",
-  options: [
-    { text: "Berlin", explanation: "Wrong." },
-    { text: "Paris", explanation: "Correct." },
-    { text: "Madrid", explanation: "Wrong." },
-  ],
-  correctOptionIndexes: [1],
-} as const;
-
 describe("favorite question repo", () => {
   beforeEach(() => {
     favoriteQuestionDeleteMany.mockReset();
@@ -50,7 +36,7 @@ describe("favorite question repo", () => {
   it("upserts favorite mapping", async () => {
     favoriteQuestionUpsert.mockResolvedValueOnce(undefined);
 
-    await upsertFavoriteQuestion("user-1", VALID_INPUT);
+    await upsertFavoriteQuestion("user-1", "question-1");
 
     expect(favoriteQuestionUpsert).toHaveBeenCalledWith({
       where: {

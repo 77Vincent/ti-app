@@ -36,8 +36,6 @@ const QUESTION: Question = {
 
 const BASE_INPUT = {
   question: QUESTION,
-  subjectId: "language",
-  subcategoryId: "english",
 } as const;
 
 describe("toggleQuestionFavorite", () => {
@@ -62,11 +60,7 @@ describe("toggleQuestionFavorite", () => {
       isFavorite: false,
     });
 
-    expect(addFavoriteQuestion).toHaveBeenCalledWith({
-      question: QUESTION,
-      subjectId: "language",
-      subcategoryId: "english",
-    });
+    expect(addFavoriteQuestion).toHaveBeenCalledWith("q-1");
     expect(removeFavoriteQuestion).not.toHaveBeenCalled();
     expect(result).toEqual({ type: "success", isFavorite: true });
   });

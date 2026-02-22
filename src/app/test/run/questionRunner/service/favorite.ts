@@ -1,4 +1,3 @@
-import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import {
   addFavoriteQuestion,
   removeFavoriteQuestion,
@@ -8,8 +7,6 @@ import { isFavoriteAuthError } from "../utils/questionGuards";
 
 export type ToggleQuestionFavoriteInput = {
   isFavorite: boolean;
-  subjectId: SubjectEnum;
-  subcategoryId: SubcategoryEnum;
   question: Question;
 };
 
@@ -27,11 +24,7 @@ export async function toggleQuestionFavorite(
       return { type: "success", isFavorite: false };
     }
 
-    await addFavoriteQuestion({
-      subjectId: input.subjectId,
-      subcategoryId: input.subcategoryId,
-      question: input.question,
-    });
+    await addFavoriteQuestion(input.question.id);
     return { type: "success", isFavorite: true };
   } catch (error) {
     if (isFavoriteAuthError(error)) {

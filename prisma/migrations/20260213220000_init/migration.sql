@@ -65,7 +65,7 @@ CREATE TABLE "QuestionPool" (
     "prompt" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
     "options" JSONB NOT NULL,
-    "correctOptionIds" JSONB NOT NULL,
+    "correctOptionIndexes" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

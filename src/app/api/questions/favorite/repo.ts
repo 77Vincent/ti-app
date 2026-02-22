@@ -1,39 +1,19 @@
 import { prisma } from "@/lib/prisma";
-import type {
-  SubjectEnum,
-  SubcategoryEnum,
-} from "@/lib/meta";
-import type { QuestionOptionIndex } from "@/lib/question/model";
-
-type FavoriteOption = {
-  text: string;
-  explanation: string;
-};
-
-export type FavoriteQuestionInput = {
-  questionId: string;
-  subjectId: SubjectEnum;
-  subcategoryId: SubcategoryEnum;
-  prompt: string;
-  difficulty: string;
-  options: readonly FavoriteOption[];
-  correctOptionIndexes: readonly QuestionOptionIndex[];
-};
 
 export async function upsertFavoriteQuestion(
   userId: string,
-  input: FavoriteQuestionInput,
+  questionId: string,
 ): Promise<void> {
   await prisma.favoriteQuestion.upsert({
     where: {
       userId_questionId: {
         userId,
-        questionId: input.questionId,
+        questionId,
       },
     },
     create: {
       userId,
-      questionId: input.questionId,
+      questionId,
     },
     update: {},
   });

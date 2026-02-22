@@ -6,24 +6,8 @@ import {
   removeFavoriteQuestion,
 } from "./favorite";
 import { QuestionRunnerApiError } from "./error";
-import type { Question } from "../types";
 
-const VALID_INPUT = {
-  subjectId: "language",
-  subcategoryId: "english",
-  question: {
-    id: "q-1",
-    prompt: "Prompt",
-    difficulty: "A1",
-    options: [
-      { text: "Option A", explanation: "A" },
-      { text: "Option B", explanation: "B" },
-      { text: "Option C", explanation: "C" },
-      { text: "Option D", explanation: "D" },
-    ],
-    correctOptionIndexes: [0],
-  } as Question,
-} as const;
+const VALID_QUESTION_ID = "q-1";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -35,19 +19,13 @@ describe("addFavoriteQuestion", () => {
       new Response(JSON.stringify({ ok: true }), { status: 200 }),
     );
 
-    await addFavoriteQuestion(VALID_INPUT);
+    await addFavoriteQuestion(VALID_QUESTION_ID);
 
     expect(fetchSpy).toHaveBeenCalledWith(API_PATHS.QUESTIONS_FAVORITE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        subjectId: "language",
-        subcategoryId: "english",
         questionId: "q-1",
-        prompt: "Prompt",
-        difficulty: "A1",
-        options: VALID_INPUT.question.options,
-        correctOptionIndexes: [0],
       }),
     });
   });
@@ -59,7 +37,7 @@ describe("addFavoriteQuestion", () => {
       }),
     );
 
-    await expect(addFavoriteQuestion(VALID_INPUT)).rejects.toMatchObject({
+    await expect(addFavoriteQuestion(VALID_QUESTION_ID)).rejects.toMatchObject({
       message: "Authentication required.",
       name: "QuestionRunnerApiError",
       status: 401,

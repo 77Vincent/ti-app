@@ -6,6 +6,5 @@ export {
   addFavoriteQuestion,
   readFavoriteQuestionState,
   removeFavoriteQuestion,
-  type FavoriteQuestionInput,
 } from "./favorite";
 export { QuestionRunnerApiError } from "./error";

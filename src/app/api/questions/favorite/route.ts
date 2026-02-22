@@ -1,75 +1,20 @@
 import { NextResponse } from "next/server";
-import { parseQuestionParam } from "@/lib/testSession/validation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { isNonEmptyString } from "@/lib/string";
-import {
-  hasSingleCorrectOption,
-  parseCorrectOptionIndexes,
-  parseQuestionDifficulty,
-  parseQuestionOptions,
-} from "@/lib/question/validation";
-import { QUESTION_OPTION_LIMITS } from "@/lib/config/questionPolicy";
 import {
   deleteFavoriteQuestion,
   isQuestionFavorited,
   upsertFavoriteQuestion,
-  type FavoriteQuestionInput,
 } from "./repo";
 
 export const runtime = "nodejs";
 
-function parseFavoriteQuestionInput(value: unknown): FavoriteQuestionInput | null {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-
-  const raw = value as Record<string, unknown>;
-  const params = parseQuestionParam(raw);
-  const questionId = raw.questionId;
-  const prompt = raw.prompt;
-  const difficulty = parseQuestionDifficulty(raw.difficulty);
-  const options = parseQuestionOptions(raw.options, QUESTION_OPTION_LIMITS);
-
-  if (
-    !params ||
-    !isNonEmptyString(questionId) ||
-    !isNonEmptyString(prompt) ||
-    !difficulty ||
-    !options
-  ) {
-    return null;
-  }
-
-  const correctOptionIndexes = parseCorrectOptionIndexes(
-    raw.correctOptionIndexes,
-    options,
-  );
-
-  if (!correctOptionIndexes) {
-    return null;
-  }
-
-  if (!hasSingleCorrectOption(correctOptionIndexes)) {
-    return null;
-  }
-
-  return {
-    ...params,
-    questionId,
-    prompt: prompt.trim(),
-    difficulty,
-    options,
-    correctOptionIndexes,
-  };
-}
-
-function parseDeletePayload(value: unknown): { questionId: string } | null {
+function parseQuestionIdPayload(value: unknown): { questionId: string } | null {
   if (!value || typeof value !== "object") {
     return null;
   }
 
   const questionId = (value as { questionId?: unknown }).questionId;
-
   if (!isNonEmptyString(questionId)) {
     return null;
   }
@@ -126,16 +71,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const input = parseFavoriteQuestionInput(body);
+  const input = parseQuestionIdPayload(body);
 
   if (!input) {
     return NextResponse.json(
-      { error: "Invalid favorite question payload." },
+      { error: "questionId is required." },
       { status: 400 },
     );
   }
 
-  await upsertFavoriteQuestion(userId, input);
+  await upsertFavoriteQuestion(userId, input.questionId);
 
   return NextResponse.json({ ok: true });
 }
@@ -155,7 +100,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const payload = parseDeletePayload(body);
+  const payload = parseQuestionIdPayload(body);
 
   if (!payload) {
     return NextResponse.json(

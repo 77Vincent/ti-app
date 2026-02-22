@@ -60,8 +60,6 @@ export default function QuestionWrapper({
     syncFavoriteState,
     toggleFavorite,
   } = useQuestionFavorite({
-    subjectId,
-    subcategoryId,
     onAuthRequired: handleFavoriteAuthRequired,
   });
 

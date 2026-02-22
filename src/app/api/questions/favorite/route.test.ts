@@ -25,16 +25,6 @@ vi.mock("./repo", () => ({
 
 const VALID_FAVORITE_PAYLOAD = {
   questionId: "question-1",
-  subjectId: "language",
-  subcategoryId: "english",
-  prompt: "  What is the capital of France?  ",
-  difficulty: "A1",
-  options: [
-    { text: "Paris", explanation: "Correct." },
-    { text: "Berlin", explanation: "Incorrect." },
-    { text: "Madrid", explanation: "Incorrect." },
-  ],
-  correctOptionIndexes: [0],
 } as const;
 
 describe("favorite question route", () => {
@@ -130,7 +120,7 @@ describe("favorite question route", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "Invalid favorite question payload.",
+      error: "questionId is required.",
     });
     expect(upsertFavoriteQuestion).not.toHaveBeenCalled();
   });
@@ -147,13 +137,7 @@ describe("favorite question route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ ok: true });
-    expect(upsertFavoriteQuestion).toHaveBeenCalledWith(
-      "user-1",
-      expect.objectContaining({
-        questionId: "question-1",
-        prompt: "What is the capital of France?",
-      }),
-    );
+    expect(upsertFavoriteQuestion).toHaveBeenCalledWith("user-1", "question-1");
   });
 
   it("returns 401 for unauthenticated favorite delete", async () => {

@@ -97,15 +97,9 @@ const QUESTION: Question = {
   correctOptionIndexes: [0],
 };
 
-const FAVORITE_INPUT = {
-  subjectId: "language",
-  subcategoryId: "english",
-} as const;
-
 function useQuestionFavoriteHarness(onAuthRequired = vi.fn()) {
   react.beginRender();
   return useQuestionFavorite({
-    ...FAVORITE_INPUT,
     onAuthRequired,
   });
 }
