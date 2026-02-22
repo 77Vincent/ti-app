@@ -53,6 +53,7 @@ model TestSession {
   anonymousSessionId String?  @unique
   subjectId          String
   subcategoryId      String
+  difficulty         String
   correctCount       Int      @default(0)
   submittedCount     Int      @default(0)
   startedAt          DateTime @default(now())

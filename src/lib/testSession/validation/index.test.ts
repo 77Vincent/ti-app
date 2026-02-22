@@ -4,11 +4,13 @@ import { parseTestParam, parseTestSession } from "@/lib/testSession/validation";
 describe("parseTestParam", () => {
   it("parses a valid test session payload", () => {
     const parsed = parseTestParam({
+      difficulty: "A1",
       subjectId: "language",
       subcategoryId: "english",
     });
 
     expect(parsed).toEqual({
+      difficulty: "A1",
       subjectId: "language",
       subcategoryId: "english",
     });
@@ -17,7 +19,17 @@ describe("parseTestParam", () => {
   it("returns null for invalid payload", () => {
     expect(
       parseTestParam({
+        difficulty: "A1",
         subjectId: "unknown",
+        subcategoryId: "english",
+      }),
+    ).toBeNull();
+  });
+
+  it("returns null when difficulty is missing", () => {
+    expect(
+      parseTestParam({
+        subjectId: "language",
         subcategoryId: "english",
       }),
     ).toBeNull();
@@ -29,6 +41,7 @@ describe("parseTestSession", () => {
     expect(
       parseTestSession({
         correctCount: 2,
+        difficulty: "A1",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
@@ -37,6 +50,7 @@ describe("parseTestSession", () => {
       }),
     ).toEqual({
       correctCount: 2,
+      difficulty: "A1",
       id: "session-1",
       startedAtMs: 1_738_000_000_000,
       submittedCount: 3,
@@ -48,6 +62,7 @@ describe("parseTestSession", () => {
   it("returns null when startedAtMs is missing", () => {
     expect(
       parseTestSession({
+        difficulty: "A1",
         subjectId: "language",
         subcategoryId: "english",
       }),
@@ -57,6 +72,7 @@ describe("parseTestSession", () => {
   it("returns null when id is missing", () => {
     expect(
       parseTestSession({
+        difficulty: "A1",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
@@ -67,6 +83,7 @@ describe("parseTestSession", () => {
   it("returns null when correctCount is missing", () => {
     expect(
       parseTestSession({
+        difficulty: "A1",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
@@ -80,6 +97,7 @@ describe("parseTestSession", () => {
     expect(
       parseTestSession({
         correctCount: 2,
+        difficulty: "A1",
         id: "session-1",
         startedAtMs: 1_738_000_000_000,
         subjectId: "language",

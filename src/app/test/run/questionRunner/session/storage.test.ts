@@ -27,6 +27,7 @@ import {
 const REMOTE_SESSION_PAYLOAD = {
   session: {
     correctCount: 0,
+    difficulty: "A1",
     id: "session-1",
     subjectId: "language",
     subcategoryId: "english",
@@ -133,6 +134,7 @@ describe("session storage", () => {
 
     await expect(
       writeTestSession({
+        difficulty: "A1",
         subjectId: "language",
         subcategoryId: "english",
       }),

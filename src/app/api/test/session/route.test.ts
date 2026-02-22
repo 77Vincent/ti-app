@@ -43,6 +43,7 @@ import { GET, PATCH, POST } from "./route";
 const STORED_SESSION = {
   id: "session-1",
   correctCount: 0,
+  difficulty: "A1",
   startedAt: new Date("2026-02-12T09:00:00.000Z"),
   submittedCount: 0,
   subjectId: "language",
@@ -50,6 +51,7 @@ const STORED_SESSION = {
 } as const;
 
 const VALID_PARAMS = {
+  difficulty: "A1",
   subjectId: "language",
   subcategoryId: "english",
 } as const;
@@ -57,6 +59,7 @@ const VALID_PARAMS = {
 const SESSION_RESPONSE = {
   ...VALID_PARAMS,
   correctCount: STORED_SESSION.correctCount,
+  difficulty: STORED_SESSION.difficulty,
   id: STORED_SESSION.id,
   submittedCount: STORED_SESSION.submittedCount,
   startedAtMs: STORED_SESSION.startedAt.getTime(),
@@ -192,7 +195,7 @@ describe("test session route POST", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "subjectId and subcategoryId are required.",
+      error: "subjectId, subcategoryId, and difficulty are required.",
     });
     expect(upsertTestSession).not.toHaveBeenCalled();
   });

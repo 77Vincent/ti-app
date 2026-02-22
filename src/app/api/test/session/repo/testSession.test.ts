@@ -50,6 +50,7 @@ describe("test session repo", () => {
       submittedCount: 5,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     });
 
     await expect(
@@ -61,6 +62,7 @@ describe("test session repo", () => {
       submittedCount: 5,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     });
 
     expect(testSessionFindFirst).toHaveBeenCalledWith({
@@ -71,6 +73,7 @@ describe("test session repo", () => {
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
+        difficulty: true,
       },
       where: {
         id: "session-1",
@@ -87,6 +90,7 @@ describe("test session repo", () => {
       submittedCount: 4,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     });
 
     await expect(
@@ -98,6 +102,7 @@ describe("test session repo", () => {
       submittedCount: 4,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     });
 
     expect(testSessionFindFirst).toHaveBeenCalledWith({
@@ -108,6 +113,7 @@ describe("test session repo", () => {
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
+        difficulty: true,
       },
       where: {
         id: "anon-session-1",
@@ -124,6 +130,7 @@ describe("test session repo", () => {
       submittedCount: 6,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     };
     testSessionCreate.mockRejectedValueOnce({ code: "P2002" });
     testSessionFindFirst.mockResolvedValueOnce(existingSession);
@@ -138,6 +145,7 @@ describe("test session repo", () => {
         },
         "session-new",
         {
+          difficulty: "A1",
           subjectId: "language",
           subcategoryId: "english",
         },
@@ -154,6 +162,7 @@ describe("test session repo", () => {
         userId: "user-1",
         subjectId: "language",
         subcategoryId: "english",
+        difficulty: "A1",
       },
       select: {
         id: true,
@@ -162,6 +171,7 @@ describe("test session repo", () => {
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
+        difficulty: true,
       },
     });
     expect(testSessionFindFirst).toHaveBeenCalledWith({
@@ -177,6 +187,7 @@ describe("test session repo", () => {
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
+        difficulty: true,
       },
     });
     expect(testSessionUpsert).not.toHaveBeenCalled();
@@ -191,6 +202,7 @@ describe("test session repo", () => {
       submittedCount: 0,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     };
     testSessionCreate.mockResolvedValueOnce(createdSession);
 
@@ -203,6 +215,7 @@ describe("test session repo", () => {
         },
         "session-new",
         {
+          difficulty: "A1",
           subjectId: "language",
           subcategoryId: "english",
         },
@@ -223,6 +236,7 @@ describe("test session repo", () => {
       submittedCount: 0,
       subjectId: "language",
       subcategoryId: "english",
+      difficulty: "A1",
     });
 
     await upsertTestSession(
@@ -231,6 +245,7 @@ describe("test session repo", () => {
       },
       "anon-session-1",
       {
+        difficulty: "A1",
         subjectId: "language",
         subcategoryId: "english",
       },
@@ -249,6 +264,7 @@ describe("test session repo", () => {
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
+        difficulty: "A1",
       },
       update: {
         id: "anon-session-1",
@@ -257,6 +273,7 @@ describe("test session repo", () => {
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
+        difficulty: "A1",
       },
       select: {
         id: true,
@@ -265,6 +282,7 @@ describe("test session repo", () => {
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
+        difficulty: true,
       },
     });
     expect(testSessionFindFirst).not.toHaveBeenCalled();

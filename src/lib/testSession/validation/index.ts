@@ -10,7 +10,9 @@ export type QuestionParam = {
   subcategoryId: SubcategoryEnum;
 };
 
-export type TestParam = QuestionParam;
+export type TestParam = QuestionParam & {
+  difficulty: string;
+};
 
 export type TestSession = TestParam & {
   id: string;
@@ -24,10 +26,8 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
     return null;
   }
 
-  const raw = value as Partial<QuestionParam>;
-  const subjectId = raw.subjectId;
-  const subcategoryId = raw.subcategoryId;
-
+  const subjectId = (value as { subjectId?: unknown }).subjectId;
+  const subcategoryId = (value as { subcategoryId?: unknown }).subcategoryId;
   if (
     !isNonEmptyString(subjectId) ||
     !isNonEmptyString(subcategoryId)
@@ -39,29 +39,34 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
   const isValidSubcategory = SUBCATEGORIES.some(
     (item) => item.id === subcategoryId && item.subjectId === subjectId,
   );
-
   if (!isValidSubject || !isValidSubcategory) {
     return null;
   }
 
-  const parsedSubjectId = subjectId as SubjectEnum;
-  const parsedSubcategoryId = subcategoryId as SubcategoryEnum;
-
   return {
-    subjectId: parsedSubjectId,
-    subcategoryId: parsedSubcategoryId,
+    subjectId: subjectId as SubjectEnum,
+    subcategoryId: subcategoryId as SubcategoryEnum,
   };
 }
 
 export function parseTestParam(value: unknown): TestParam | null {
-  return parseQuestionParam(value);
-}
-
-export function parseTestSession(value: unknown): TestSession | null {
-  if (!value || typeof value !== "object") {
+  const params = parseQuestionParam(value);
+  if (!params) {
     return null;
   }
 
+  const difficulty = (value as { difficulty?: unknown }).difficulty;
+  if (!isNonEmptyString(difficulty)) {
+    return null;
+  }
+
+  return {
+    ...params,
+    difficulty: difficulty.trim(),
+  };
+}
+
+export function parseTestSession(value: unknown): TestSession | null {
   const params = parseTestParam(value);
   if (!params) {
     return null;

@@ -36,6 +36,7 @@ function toTestSessionPayload(
   return {
     ...params,
     correctCount: session.correctCount,
+    difficulty: params.difficulty,
     id: session.id,
     submittedCount: session.submittedCount,
     startedAtMs: session.startedAt.getTime(),
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
   if (!params) {
     return NextResponse.json(
       {
-        error: "subjectId and subcategoryId are required.",
+        error: "subjectId, subcategoryId, and difficulty are required.",
       },
       { status: 400 },
     );

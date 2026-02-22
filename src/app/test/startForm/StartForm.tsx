@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";
 import {
   START_FORM_STEP_TITLES,
+  INITIAL_DIFFICULTY_BY_SUBCATEGORY,
 } from "./constants";
 
 export default function StartForm() {
@@ -47,9 +48,11 @@ export default function StartForm() {
       return;
     }
 
+    const difficulty = INITIAL_DIFFICULTY_BY_SUBCATEGORY[subcategoryId];
     const testSession = {
       subjectId: selectedSubjectId,
       subcategoryId,
+      difficulty,
     };
 
     void writeTestSession(testSession)

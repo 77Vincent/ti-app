@@ -33,6 +33,7 @@ const TEST_RUN_PARAMS_SELECT = {
   submittedCount: true,
   subjectId: true,
   subcategoryId: true,
+  difficulty: true,
 } as const;
 
 function isAuthTestSessionWhere(
@@ -83,6 +84,7 @@ export async function upsertTestSession(
           submittedCount: 0,
           subjectId: params.subjectId,
           subcategoryId: params.subcategoryId,
+          difficulty: params.difficulty,
           userId: where.userId,
         },
         select: TEST_RUN_PARAMS_SELECT,
@@ -121,6 +123,7 @@ export async function upsertTestSession(
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
+      difficulty: params.difficulty,
     },
     update: {
       id,
@@ -129,6 +132,7 @@ export async function upsertTestSession(
       submittedCount: 0,
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
+      difficulty: params.difficulty,
     },
     select: TEST_RUN_PARAMS_SELECT,
   });
