@@ -1,14 +1,6 @@
 import {
-  hasSingleCorrectOption,
-  type ParsedQuestionOption,
-  parseCorrectOptionIds,
-  parseQuestionOptions,
-} from "./questionValidation";
-import {
   QUESTION_OPTION_LIMITS,
-  QUESTION_OPTION_IDS,
   type QuestionOption,
-  type QuestionOptionId,
   QUESTION_TYPE_MULTIPLE_CHOICE,
 } from "./types";
 import { isNonEmptyString } from "./string";
@@ -17,7 +9,7 @@ export type ParsedAIQuestionPayload = {
   questionType: typeof QUESTION_TYPE_MULTIPLE_CHOICE;
   prompt: string;
   options: QuestionOption[];
-  correctOptionIds: QuestionOptionId[];
+  correctOptionIndexes: number[];
 };
 
 function parseJsonValue(content: string): unknown {
@@ -43,12 +35,16 @@ function parseJsonValue(content: string): unknown {
   }
 }
 
-function parseCompactOptions(value: unknown): ParsedQuestionOption[] | null {
-  if (!Array.isArray(value)) {
+function parseCompactOptions(value: unknown): QuestionOption[] | null {
+  if (
+    !Array.isArray(value) ||
+    value.length < QUESTION_OPTION_LIMITS.minOptions ||
+    value.length > QUESTION_OPTION_LIMITS.maxOptions
+  ) {
     return null;
   }
 
-  const options = value.map((item, index) => {
+  const options = value.map((item) => {
     if (
       !Array.isArray(item) ||
       item.length !== 2 ||
@@ -59,7 +55,6 @@ function parseCompactOptions(value: unknown): ParsedQuestionOption[] | null {
     }
 
     return {
-      id: QUESTION_OPTION_IDS[index],
       text: item[0].trim(),
       explanation: item[1].trim(),
     };
@@ -69,21 +64,18 @@ function parseCompactOptions(value: unknown): ParsedQuestionOption[] | null {
     return null;
   }
 
-  return parseQuestionOptions(options, {
-    ...QUESTION_OPTION_LIMITS,
-    requireSequentialFromA: true,
-  });
+  return options;
 }
 
-function parseCompactCorrectOptionIds(
+function parseCompactCorrectOptionIndexes(
   value: unknown,
-  options: ParsedQuestionOption[],
-): QuestionOptionId[] | null {
+  optionCount: number,
+): number[] | null {
   if (!Array.isArray(value) || value.length === 0) {
     return null;
   }
 
-  const ids: QuestionOptionId[] = [];
+  const indexes: number[] = [];
 
   for (const item of value) {
     if (!Number.isInteger(item)) {
@@ -91,19 +83,18 @@ function parseCompactCorrectOptionIds(
     }
 
     const index = item;
-    if (index < 0 || index >= options.length) {
+    if (index < 0 || index >= optionCount) {
       return null;
     }
 
-    const optionId = options[index]?.id;
-    if (!optionId) {
-      return null;
-    }
-
-    ids.push(optionId);
+    indexes.push(index);
   }
 
-  return parseCorrectOptionIds(ids, options);
+  if (new Set(indexes).size !== indexes.length) {
+    return null;
+  }
+
+  return indexes;
 }
 
 function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
@@ -121,15 +112,15 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     throw new Error("AI options are invalid.");
   }
 
-  const parsedCorrectOptionIds = parseCompactCorrectOptionIds(
+  const parsedCorrectOptionIndexes = parseCompactCorrectOptionIndexes(
     a,
-    parsedOptions,
+    parsedOptions.length,
   );
-  if (!parsedCorrectOptionIds) {
+  if (!parsedCorrectOptionIndexes) {
     throw new Error("AI correct options are invalid.");
   }
 
-  if (!hasSingleCorrectOption(parsedCorrectOptionIds)) {
+  if (parsedCorrectOptionIndexes.length !== 1) {
     throw new Error("AI multiple_choice must have exactly one correct option.");
   }
 
@@ -137,7 +128,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
     prompt: p.trim(),
     options: parsedOptions,
-    correctOptionIds: parsedCorrectOptionIds,
+    correctOptionIndexes: parsedCorrectOptionIndexes,
   };
 }
 

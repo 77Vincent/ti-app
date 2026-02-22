@@ -37,21 +37,21 @@ describe("generateQuestionWithAI", () => {
         questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q1",
         options: [
-          { id: "A", text: "A1", explanation: "A1" },
-          { id: "B", text: "B1", explanation: "B1" },
-          { id: "C", text: "C1", explanation: "C1" },
+          { text: "A1", explanation: "A1" },
+          { text: "B1", explanation: "B1" },
+          { text: "C1", explanation: "C1" },
         ],
-        correctOptionIds: ["A"],
+        correctOptionIndexes: [0],
       },
       {
         questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
         prompt: "Q2",
         options: [
-          { id: "A", text: "A2", explanation: "A2" },
-          { id: "B", text: "B2", explanation: "B2" },
-          { id: "C", text: "C2", explanation: "C2" },
+          { text: "A2", explanation: "A2" },
+          { text: "B2", explanation: "B2" },
+          { text: "C2", explanation: "C2" },
         ],
-        correctOptionIds: ["B"],
+        correctOptionIndexes: [1],
       },
     ]);
 
@@ -62,12 +62,12 @@ describe("generateQuestionWithAI", () => {
     expect(question).toMatchObject({
       questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q1",
-      correctOptionIds: ["A"],
+      correctOptionIndexes: [0],
     });
     expect(nextQuestion).toMatchObject({
       questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
       prompt: "Q2",
-      correctOptionIds: ["B"],
+      correctOptionIndexes: [1],
     });
     expect(typeof question.id).toBe("string");
     expect(typeof nextQuestion.id).toBe("string");

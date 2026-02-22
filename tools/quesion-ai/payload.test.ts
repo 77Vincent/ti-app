@@ -17,12 +17,12 @@ const VALID_PARSED_QUESTION = {
   questionType: QUESTION_TYPE_MULTIPLE_CHOICE,
   prompt: "What is the capital of France?",
   options: [
-    { id: "A", text: "Berlin", explanation: "Wrong." },
-    { id: "B", text: "Paris", explanation: "Correct." },
-    { id: "C", text: "Madrid", explanation: "Wrong." },
-    { id: "D", text: "Rome", explanation: "Wrong." },
+    { text: "Berlin", explanation: "Wrong." },
+    { text: "Paris", explanation: "Correct." },
+    { text: "Madrid", explanation: "Wrong." },
+    { text: "Rome", explanation: "Wrong." },
   ],
-  correctOptionIds: ["B"],
+  correctOptionIndexes: [1],
 };
 
 describe("parseAIQuestionPayload", () => {
