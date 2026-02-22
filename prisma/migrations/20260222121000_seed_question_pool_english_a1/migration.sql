@@ -14,14 +14,14 @@ INSERT INTO "QuestionPool" (
     'language',
     'english',
     1,
-    'Choose the correct sentence.',
+    'Mina is new at her school. She wants to join the music club, but she is nervous to speak in front of others. Her friend says, "Do not worry. You can start small." The next day, Mina decides to ___ and introduce herself to one classmate.',
     'A1',
     '[
-      {"text":"She go to school every day.","explanation":"Incorrect verb form: use goes with she."},
-      {"text":"She is go to school every day.","explanation":"Incorrect auxiliary + base verb construction."},
-      {"text":"She goes to school every day.","explanation":"Correct present simple sentence."},
-      {"text":"She going to school every day.","explanation":"Missing auxiliary verb for present continuous."}
+      {"text":"take a deep breath","explanation":"Best fit for the context and correct after decides to."},
+      {"text":"takes a deep breathe","explanation":"Wrong verb form and spelling for this sentence."},
+      {"text":"taking a deep breath","explanation":"Wrong form after decides to in this structure."},
+      {"text":"took a deep breath yesterday","explanation":"Past-time phrase does not fit the current action in context."}
     ]'::jsonb,
-    '[2]'::jsonb,
+    '[0]'::jsonb,
     CURRENT_TIMESTAMP
 );

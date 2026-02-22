@@ -47,6 +47,7 @@ CREATE TABLE "TestSession" (
     "anonymousSessionId" TEXT,
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
     "correctCount" INTEGER NOT NULL DEFAULT 0,
     "submittedCount" INTEGER NOT NULL DEFAULT 0,
     "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
