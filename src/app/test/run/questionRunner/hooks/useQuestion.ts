@@ -67,6 +67,7 @@ export function useQuestion({
     }),
   );
   const [sessionDifficulty, setSessionDifficulty] = useState(difficulty);
+  const [pendingDifficulty, setPendingDifficulty] = useState<string | null>(null);
   const [signInDemand, setSignInDemand] =
     useState<QuestionSignInDemand | null>(null);
   const [uiState, dispatchUiState] = useReducer(
@@ -82,11 +83,11 @@ export function useQuestion({
     });
   }, []);
 
-  const loadQuestion = useCallback(() => {
+  const loadQuestion = useCallback((difficultyToLoad: string = sessionDifficulty) => {
     return fetchQuestion({
       subjectId,
       subcategoryId,
-      difficulty: sessionDifficulty,
+      difficulty: difficultyToLoad,
     });
   }, [sessionDifficulty, subcategoryId, subjectId]);
 
@@ -213,11 +214,16 @@ export function useQuestion({
           correctCount:
             prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
         }));
-        setSessionDifficulty(nextDifficulty);
+        setPendingDifficulty(nextDifficulty);
       },
       advanceToNextQuestion: async () => {
+        const targetDifficulty = pendingDifficulty ?? sessionDifficulty;
         try {
-          const loadedQuestion = await loadQuestion();
+          const loadedQuestion = await loadQuestion(targetDifficulty);
+          if (targetDifficulty !== sessionDifficulty) {
+            setSessionDifficulty(targetDifficulty);
+          }
+          setPendingDifficulty(null);
           applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true });
         } catch (error) {
           showLoadError(error);

@@ -21,6 +21,17 @@ export function isDifficultyAllowedForSubcategory(
   return ladder.includes(difficulty);
 }
 
+export function isDifficultyUpgrade(
+  subcategoryId: SubcategoryEnum,
+  currentDifficulty: string,
+  nextDifficulty: string,
+): boolean {
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const currentIndex = ladder.indexOf(currentDifficulty);
+  const nextIndex = ladder.indexOf(nextDifficulty);
+  return currentIndex >= 0 && nextIndex >= 0 && nextIndex > currentIndex;
+}
+
 type NextDifficultyInput = {
   subcategoryId: SubcategoryEnum;
   currentDifficulty: string;
