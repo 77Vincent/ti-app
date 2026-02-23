@@ -3,7 +3,7 @@
 import { Command, InvalidArgumentError } from "commander";
 import { config as loadDotenv } from "dotenv";
 import { fileURLToPath } from "node:url";
-import { generateQuestionWithAI } from "./generate";
+import { createQuestionCandidatesWithAI } from "./createCandidates";
 import type { GenerateQuestionRequest } from "./types";
 import { DIFFICULTY_LEVELS_BY_SUBCATEGORY } from "./config/constants";
 
@@ -67,15 +67,16 @@ async function main(): Promise<void> {
     difficulty: GenerateQuestionRequest["difficulty"];
   }>();
 
-  const allowedDifficulties =
-    DIFFICULTY_LEVELS_BY_SUBCATEGORY[options.subcategory];
+  const allowedDifficulties = DIFFICULTY_LEVELS_BY_SUBCATEGORY[
+    options.subcategory
+  ] as readonly string[];
   if (!allowedDifficulties.includes(options.difficulty)) {
     throw new Error(
       `difficulty "${options.difficulty}" is not allowed for subcategory "${options.subcategory}". Allowed values: ${allowedDifficulties.join(", ")}.`,
     );
   }
 
-  const questions = await generateQuestionWithAI({
+  const questions = await createQuestionCandidatesWithAI({
     subcategory: options.subcategory,
     difficulty: options.difficulty,
   });

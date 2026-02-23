@@ -21,3 +21,9 @@ export type Question = {
   options: QuestionOption[];
   correctOptionIndexes: number[];
 };
+
+export type ResolveQuestionRequest = Pick<Question, "prompt" | "options">;
+
+export type ResolveQuestionResult = {
+  correctOptionIndex: number;
+};
