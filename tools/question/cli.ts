@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 import { Command, InvalidArgumentError } from "commander";
-import { generateQuestionWithAI } from "./index";
+import { config as loadDotenv } from "dotenv";
+import { fileURLToPath } from "node:url";
+import { generateQuestionWithAI } from "./generate";
 import type { GenerateQuestionRequest } from "./types";
+
+const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
 
 function parseDifficulty(value: string): GenerateQuestionRequest["difficulty"] {
   const normalizedValue = value.trim();
@@ -14,6 +18,17 @@ function parseDifficulty(value: string): GenerateQuestionRequest["difficulty"] {
 }
 
 async function main(): Promise<void> {
+  const dotenvResult = loadDotenv({
+    override: false,
+    path: TOOL_ENV_PATH,
+  });
+  if (
+    dotenvResult.error &&
+    (dotenvResult.error as NodeJS.ErrnoException).code !== "ENOENT"
+  ) {
+    throw dotenvResult.error;
+  }
+
   const program = new Command();
 
   program

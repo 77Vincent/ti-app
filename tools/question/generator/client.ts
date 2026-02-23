@@ -3,7 +3,10 @@ import {
   getDeepSeekApiKey,
   requestDeepSeekContent,
 } from "../provider/deepseek";
-import { GENERATOR_MODEL } from "../config/constants";
+import {
+  GENERATOR_MODEL,
+  GENERATOR_TEMPERATURE,
+} from "../config/constants";
 import {
   buildGeneratorSystemPrompt,
   buildGeneratorUserPrompt,
@@ -19,5 +22,6 @@ export async function requestDeepSeekGeneratorContent(
       { role: "system", content: buildGeneratorSystemPrompt(input) },
       { role: "user", content: buildGeneratorUserPrompt(input) },
     ],
+    GENERATOR_TEMPERATURE,
   );
 }
