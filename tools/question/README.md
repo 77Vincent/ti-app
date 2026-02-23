@@ -10,8 +10,8 @@ Generation flow:
 
 Environment variables:
 - `AI_API_KEY` (required)
-- Example file: `tools/quesion-ai/.env.example`
-- Runtime loads `tools/quesion-ai/.env` automatically.
+- Example file: `tools/question/.env.example`
+- Runtime loads `tools/question/.env` automatically.
 
 Fixed models (not configurable):
 - Generator: `deepseek-chat`

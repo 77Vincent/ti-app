@@ -7,7 +7,7 @@
     "build": "next build",
     "deploy:build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
-    "tool:question-ai": "tsx tools/quesion-ai/cli.ts",
+    "tool:question-ai": "tsx tools/question/cli.ts",
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",
     "test:staged": "vitest related --run --passWithNoTests",
