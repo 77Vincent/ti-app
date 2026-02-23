@@ -139,25 +139,23 @@ export default function QuestionWrapper({
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
-          <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
-            <Button
-              aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
-              color={isFavorite ? "warning" : "default"}
-              isIconOnly
-              isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isSignInRequired}
-              isLoading={isFavoriteSubmitting || isFavoriteSyncing}
-              onPress={() => toggleFavorite(question)}
-              radius="full"
-              size="sm"
-              variant="light"
-            >
-              <Star
-                aria-hidden
-                className={isFavorite ? "fill-current" : undefined}
-                size={19}
-              />
-            </Button>
-          </Tooltip>
+          <Button
+            aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
+            color={isFavorite ? "warning" : "default"}
+            isIconOnly
+            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isSignInRequired}
+            isLoading={isFavoriteSubmitting || isFavoriteSyncing}
+            onPress={() => toggleFavorite(question)}
+            radius="full"
+            size="sm"
+            variant="light"
+          >
+            <Star
+              aria-hidden
+              className={isFavorite ? "fill-current" : undefined}
+              size={19}
+            />
+          </Button>
 
           <Tooltip content="Accuracy" placement="right">
             <span>
@@ -177,7 +175,7 @@ export default function QuestionWrapper({
           radius="full"
           size="sm"
         >
-          {hasSubmitted ? "Next" : "Submit"}
+          {isSubmitting ? null : hasSubmitted ? "Next" : "Submit"}
         </Button>
       </div>
 
