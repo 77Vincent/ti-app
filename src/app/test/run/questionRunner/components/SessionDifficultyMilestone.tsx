@@ -79,7 +79,7 @@ export default function SessionDifficultyMilestone({
       />
 
       <Card shadow="sm">
-        <CardBody className="space-y-3 px-4 py-3">
+        <CardBody className="space-y-3">
           <div className="flex items-center gap-1.5">
             {ladder.map((level, index) => {
               const isReached = index <= activeIndex;

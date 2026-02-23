@@ -182,7 +182,7 @@ export default function QuestionWrapper({
       </div>
 
       <Card shadow="sm">
-        <CardBody className="p-6">
+        <CardBody>
           <QuestionRunner
             hasSubmitted={hasSubmitted}
             isLoadingQuestion={isLoadingQuestion}
