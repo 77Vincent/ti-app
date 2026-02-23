@@ -32,17 +32,6 @@ export function isDifficultyUpgrade(
   return currentIndex >= 0 && nextIndex >= 0 && nextIndex > currentIndex;
 }
 
-export function isDifficultyDowngrade(
-  subcategoryId: SubcategoryEnum,
-  currentDifficulty: string,
-  nextDifficulty: string,
-): boolean {
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
-  const currentIndex = ladder.indexOf(currentDifficulty);
-  const nextIndex = ladder.indexOf(nextDifficulty);
-  return currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex;
-}
-
 type NextDifficultyInput = {
   subcategoryId: SubcategoryEnum;
   currentDifficulty: string;

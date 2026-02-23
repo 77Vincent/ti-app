@@ -3,7 +3,6 @@
 import confetti from "canvas-confetti";
 import {
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
-  isDifficultyDowngrade,
   isDifficultyUpgrade,
 } from "@/lib/difficulty";
 import type { SubcategoryEnum } from "@/lib/meta";
@@ -14,8 +13,6 @@ type SessionDifficultyMilestoneProps = {
   subcategoryId: SubcategoryEnum;
   difficulty: string;
 };
-
-const DIFFICULTY_DOWNGRADE_EFFECT_DURATION_MS = 750;
 
 function fireDifficultyUpgradeConfetti() {
   confetti({
@@ -32,19 +29,9 @@ export default function SessionDifficultyMilestone({
 }: SessionDifficultyMilestoneProps) {
   const previousDifficultyRef = useRef<string>(difficulty);
   const previousSubcategoryRef = useRef(subcategoryId);
-  const downgradeEffectTimeoutRef = useRef<number | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
   const currentIndex = ladder.indexOf(difficulty);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0;
-
-  useEffect(() => {
-    return () => {
-      if (downgradeEffectTimeoutRef.current !== null) {
-        window.clearTimeout(downgradeEffectTimeoutRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (previousSubcategoryRef.current !== subcategoryId) {
@@ -62,33 +49,13 @@ export default function SessionDifficultyMilestone({
       )
     ) {
       fireDifficultyUpgradeConfetti();
-    } else if (
-      isDifficultyDowngrade(
-        subcategoryId,
-        previousDifficulty,
-        difficulty,
-      )
-    ) {
-      const element = wrapperRef.current;
-      if (element) {
-        if (downgradeEffectTimeoutRef.current !== null) {
-          window.clearTimeout(downgradeEffectTimeoutRef.current);
-        }
-        element.classList.remove("difficulty-downgrade-active");
-        void element.offsetWidth;
-        element.classList.add("difficulty-downgrade-active");
-        downgradeEffectTimeoutRef.current = window.setTimeout(() => {
-          element.classList.remove("difficulty-downgrade-active");
-          downgradeEffectTimeoutRef.current = null;
-        }, DIFFICULTY_DOWNGRADE_EFFECT_DURATION_MS);
-      }
     }
 
     previousDifficultyRef.current = difficulty;
   }, [difficulty, subcategoryId]);
 
   return (
-    <div className="rounded-2xl transition-colors" ref={wrapperRef}>
+    <div className="rounded-2xl transition-colors">
       <Card shadow="sm">
         <CardBody className="space-y-3 px-4 py-3">
           <div className="flex items-center gap-1.5">
