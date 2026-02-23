@@ -1,4 +1,5 @@
 import { SUBJECTS, SUBCATEGORIES } from "@/lib/meta";
+import { isDifficultyAllowedForSubcategory } from "@/lib/difficulty";
 import type {
   SubjectEnum,
   SubcategoryEnum,
@@ -46,10 +47,20 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
     return null;
   }
 
+  const normalizedDifficulty = difficulty.trim();
+  if (
+    !isDifficultyAllowedForSubcategory(
+      subcategoryId as SubcategoryEnum,
+      normalizedDifficulty,
+    )
+  ) {
+    return null;
+  }
+
   return {
     subjectId: subjectId as SubjectEnum,
     subcategoryId: subcategoryId as SubcategoryEnum,
-    difficulty: difficulty.trim(),
+    difficulty: normalizedDifficulty,
   };
 }
 

@@ -12,14 +12,12 @@ import type {
   SubcategoryEnum,
 } from "@/lib/meta";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import { getInitialDifficultyForSubcategory } from "@/lib/difficulty";
 import { writeTestSession } from "@/app/test/run/questionRunner/session/storage";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createElement, useMemo, useState } from "react";
-import {
-  START_FORM_STEP_TITLES,
-  INITIAL_DIFFICULTY_BY_SUBCATEGORY,
-} from "./constants";
+import { START_FORM_STEP_TITLES } from "./constants";
 
 export default function StartForm() {
   const router = useRouter();
@@ -48,7 +46,7 @@ export default function StartForm() {
       return;
     }
 
-    const difficulty = INITIAL_DIFFICULTY_BY_SUBCATEGORY[subcategoryId];
+    const difficulty = getInitialDifficultyForSubcategory(subcategoryId);
     const testSession = {
       subjectId: selectedSubjectId,
       subcategoryId,
