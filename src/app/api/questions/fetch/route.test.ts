@@ -30,6 +30,7 @@ const VALID_QUESTION = {
     { text: "Paris", explanation: "Correct." },
     { text: "Berlin", explanation: "Incorrect." },
     { text: "Madrid", explanation: "Incorrect." },
+    { text: "Rome", explanation: "Incorrect." },
   ],
   correctOptionIndexes: [0],
 } as const;
