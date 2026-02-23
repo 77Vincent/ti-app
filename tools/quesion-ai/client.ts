@@ -1,4 +1,4 @@
-import { isNonEmptyString } from "./string";
+import { isNonEmptyString } from "../../src/lib/string";
 import type { GenerateQuestionRequest } from "./types";
 import {
   buildQuestionSystemPrompt,

@@ -3,7 +3,7 @@ import {
   type QuestionOption,
 } from "./types";
 import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
-import { isNonEmptyString } from "./string";
+import { isNonEmptyString } from "../../src/lib/string";
 
 export type ParsedAIQuestionPayload = Pick<
   Question,
