@@ -2,9 +2,8 @@ import {
   type Question,
   type QuestionOption,
 } from "./types";
+import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 import { isNonEmptyString } from "./string";
-
-const AI_QUESTION_OPTION_COUNT = 4;
 
 export type ParsedAIQuestionPayload = Pick<
   Question,
@@ -35,7 +34,7 @@ function parseJsonValue(content: string): unknown {
 }
 
 function parseCompactOptions(value: unknown): QuestionOption[] | null {
-  if (!Array.isArray(value) || value.length !== AI_QUESTION_OPTION_COUNT) {
+  if (!Array.isArray(value) || value.length !== QUESTION_OPTION_COUNT) {
     return null;
   }
 
