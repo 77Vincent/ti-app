@@ -1,5 +1,5 @@
-import type { QuestionResolverInput } from "../../types";
-import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
+import type { QuestionResolverInput } from "../types";
+import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
 
 export const RESOLVER_SYSTEM_PROMPT = `
 You resolve one high-quality assessment question.

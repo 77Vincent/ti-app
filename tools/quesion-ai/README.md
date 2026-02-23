@@ -12,7 +12,8 @@ Generation flow:
 
 Environment variables:
 - `AI_API_KEY` (required)
-- `AI_MODEL` (optional, creator model)
+- Example file: `tools/quesion-ai/.env.example`
 
-Resolver model:
-- Fixed to `deepseek-reasoner` (not configurable)
+Fixed models (not configurable):
+- Generator: `deepseek-chat`
+- Resolver: `deepseek-reasoner`
