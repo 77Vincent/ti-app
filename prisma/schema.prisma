@@ -54,8 +54,10 @@ model TestSession {
   subjectId          String
   subcategoryId      String
   difficulty         String
+  difficultyCooldownRemaining Int @default(0)
   correctCount       Int      @default(0)
   submittedCount     Int      @default(0)
+  recentOutcomes     Int[]    @default([])
   startedAt          DateTime @default(now())
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

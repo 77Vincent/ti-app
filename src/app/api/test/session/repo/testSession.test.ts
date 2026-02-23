@@ -4,12 +4,14 @@ const {
   testSessionCreate,
   testSessionDeleteMany,
   testSessionFindFirst,
+  testSessionUpdate,
   testSessionUpsert,
   testSessionUpdateMany,
 } = vi.hoisted(() => ({
   testSessionCreate: vi.fn(),
   testSessionDeleteMany: vi.fn(),
   testSessionFindFirst: vi.fn(),
+  testSessionUpdate: vi.fn(),
   testSessionUpsert: vi.fn(),
   testSessionUpdateMany: vi.fn(),
 }));
@@ -20,6 +22,7 @@ vi.mock("@/lib/prisma", () => ({
       create: testSessionCreate,
       deleteMany: testSessionDeleteMany,
       findFirst: testSessionFindFirst,
+      update: testSessionUpdate,
       upsert: testSessionUpsert,
       updateMany: testSessionUpdateMany,
     },
@@ -30,6 +33,7 @@ import {
   deleteTestSession,
   incrementTestSessionProgress,
   readTestSession,
+  updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 } from "./testSession";
 
@@ -38,6 +42,7 @@ describe("test session repo", () => {
     testSessionCreate.mockReset();
     testSessionDeleteMany.mockReset();
     testSessionFindFirst.mockReset();
+    testSessionUpdate.mockReset();
     testSessionUpsert.mockReset();
     testSessionUpdateMany.mockReset();
   });
@@ -153,6 +158,8 @@ describe("test session repo", () => {
         subjectId: "language",
         subcategoryId: "english",
         difficulty: "A1",
+        difficultyCooldownRemaining: 0,
+        recentOutcomes: [],
       },
       select: {
         id: true,
@@ -246,6 +253,8 @@ describe("test session repo", () => {
         subjectId: "language",
         subcategoryId: "english",
         difficulty: "A1",
+        difficultyCooldownRemaining: 0,
+        recentOutcomes: [],
       },
       update: {
         id: "anon-session-1",
@@ -254,6 +263,8 @@ describe("test session repo", () => {
         subjectId: "language",
         subcategoryId: "english",
         difficulty: "A1",
+        difficultyCooldownRemaining: 0,
+        recentOutcomes: [],
       },
       select: {
         id: true,
@@ -363,6 +374,70 @@ describe("test session repo", () => {
     expect(testSessionDeleteMany).toHaveBeenCalledWith({
       where: {
         anonymousSessionId: "anon-1",
+      },
+    });
+  });
+
+  it("updates adaptive difficulty after submission based on recent outcomes", async () => {
+    testSessionFindFirst.mockResolvedValueOnce({
+      id: "session-1",
+      subcategoryId: "english",
+      difficulty: "A1",
+      difficultyCooldownRemaining: 0,
+      recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    });
+    testSessionUpdate.mockResolvedValueOnce({
+      id: "session-1",
+      correctCount: 8,
+      submittedCount: 9,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "A2",
+    });
+
+    await expect(
+      updateTestSessionDifficultyByRecentAccuracy(
+        { id: "session-1", userId: "user-1" },
+        true,
+      ),
+    ).resolves.toEqual({
+      id: "session-1",
+      correctCount: 8,
+      submittedCount: 9,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "A2",
+    });
+
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+        userId: "user-1",
+      },
+      select: {
+        id: true,
+        subcategoryId: true,
+        difficulty: true,
+        difficultyCooldownRemaining: true,
+        recentOutcomes: true,
+      },
+    });
+    expect(testSessionUpdate).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+      },
+      data: {
+        difficulty: "A2",
+        difficultyCooldownRemaining: 5,
+        recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+      },
+      select: {
+        id: true,
+        correctCount: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+        difficulty: true,
       },
     });
   });

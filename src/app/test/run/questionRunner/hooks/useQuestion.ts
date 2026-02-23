@@ -38,6 +38,7 @@ export type UseQuestionResult = {
   question: QuestionType | null;
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
+  difficulty: string;
   currentQuestionIndex: number;
   submittedCount: number;
   correctCount: number;
@@ -65,6 +66,7 @@ export function useQuestion({
       correctCount: initialCorrectCount,
     }),
   );
+  const [sessionDifficulty, setSessionDifficulty] = useState(difficulty);
   const [signInDemand, setSignInDemand] =
     useState<QuestionSignInDemand | null>(null);
   const [uiState, dispatchUiState] = useReducer(
@@ -84,13 +86,9 @@ export function useQuestion({
     return fetchQuestion({
       subjectId,
       subcategoryId,
-      difficulty,
+      difficulty: sessionDifficulty,
     });
-  }, [difficulty, subcategoryId, subjectId]);
-
-  const loadOneQuestion = useCallback((): Promise<QuestionType> => {
-    return loadQuestion();
-  }, [loadQuestion]);
+  }, [sessionDifficulty, subcategoryId, subjectId]);
 
   const applyLoadedQuestion = useCallback(
     (
@@ -124,7 +122,11 @@ export function useQuestion({
     async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
       try {
-        const loadedQuestion = await loadOneQuestion();
+        const loadedQuestion = await fetchQuestion({
+          subjectId,
+          subcategoryId,
+          difficulty,
+        });
         if (cancelled) {
           return;
         }
@@ -148,8 +150,10 @@ export function useQuestion({
     };
   }, [
     applyLoadedQuestion,
-    loadOneQuestion,
+    difficulty,
     showLoadError,
+    subcategoryId,
+    subjectId,
   ]);
 
   function selectOption(optionIndex: QuestionOptionIndex) {
@@ -172,12 +176,17 @@ export function useQuestion({
       return;
     }
     const isCurrentAnswerCorrect = isAnswerCorrect(question, selectedOptionIndexes);
+    let nextDifficulty = sessionDifficulty;
 
     await submitQuestion({
       hasSubmitted,
       isCurrentAnswerCorrect,
-      recordQuestionResult: (isCorrect) =>
-        recordQuestionResult(sessionId, isCorrect),
+      recordQuestionResult: async (isCorrect) => {
+        const updatedSession = await recordQuestionResult(sessionId, isCorrect);
+        if (updatedSession?.difficulty) {
+          nextDifficulty = updatedSession.difficulty;
+        }
+      },
       onSubmitRequestStarted: () => {
         dispatchUiState({ type: "submitFetchStarted" });
       },
@@ -204,10 +213,11 @@ export function useQuestion({
           correctCount:
             prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
         }));
+        setSessionDifficulty(nextDifficulty);
       },
       advanceToNextQuestion: async () => {
         try {
-          const loadedQuestion = await loadOneQuestion();
+          const loadedQuestion = await loadQuestion();
           applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true });
         } catch (error) {
           showLoadError(error);
@@ -227,6 +237,7 @@ export function useQuestion({
     question,
     isLoadingQuestion,
     isSubmitting,
+    difficulty: sessionDifficulty,
     currentQuestionIndex: sessionProgress.currentQuestionIndex,
     submittedCount: sessionProgress.submittedCount,
     correctCount: sessionProgress.correctCount,

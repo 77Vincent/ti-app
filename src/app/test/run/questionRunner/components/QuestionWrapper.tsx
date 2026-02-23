@@ -30,6 +30,7 @@ export default function QuestionWrapper({
     question,
     isLoadingQuestion,
     isSubmitting,
+    difficulty: sessionDifficulty,
     currentQuestionIndex,
     submittedCount,
     correctCount,
@@ -144,7 +145,7 @@ export default function QuestionWrapper({
       </Card>
 
       <SessionDifficultyMilestone
-        difficulty={difficulty}
+        difficulty={sessionDifficulty}
         subcategoryId={subcategoryId}
       />
 

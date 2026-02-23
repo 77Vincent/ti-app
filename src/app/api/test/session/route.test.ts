@@ -9,6 +9,7 @@ const {
   readAnonymousTestSessionCookie,
   readAuthenticatedUserId,
   readTestSession,
+  updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 } = vi.hoisted(() => ({
   clearAnonymousTestSessionCookie: vi.fn((response: Response) => response),
@@ -18,6 +19,7 @@ const {
   readAnonymousTestSessionCookie: vi.fn(),
   readAuthenticatedUserId: vi.fn(),
   readTestSession: vi.fn(),
+  updateTestSessionDifficultyByRecentAccuracy: vi.fn(),
   upsertTestSession: vi.fn(),
 }));
 
@@ -35,6 +37,7 @@ vi.mock("./repo/testSession", () => ({
   deleteTestSession,
   incrementTestSessionProgress,
   readTestSession,
+  updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 }));
 
@@ -223,11 +226,13 @@ describe("test session route PATCH", () => {
     readAnonymousTestSessionCookie.mockReset();
     readAuthenticatedUserId.mockReset();
     readTestSession.mockReset();
+    updateTestSessionDifficultyByRecentAccuracy.mockReset();
 
     incrementTestSessionProgress.mockResolvedValue(1);
     readAuthenticatedUserId.mockResolvedValue(null);
     readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
     readTestSession.mockResolvedValue(STORED_SESSION);
+    updateTestSessionDifficultyByRecentAccuracy.mockResolvedValue(STORED_SESSION);
   });
 
   it("increments authenticated test session progress", async () => {
@@ -241,8 +246,15 @@ describe("test session route PATCH", () => {
     );
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ ok: true });
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      session: SESSION_RESPONSE,
+    });
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
+      { id: "session-1", userId: "user-1" },
+      true,
+    );
+    expect(updateTestSessionDifficultyByRecentAccuracy).toHaveBeenCalledWith(
       { id: "session-1", userId: "user-1" },
       true,
     );
@@ -308,11 +320,18 @@ describe("test session route PATCH", () => {
     );
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ ok: true });
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      session: SESSION_RESPONSE,
+    });
     expect(incrementTestSessionProgress).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1", id: "session-1" },
       false,
       MAX_ANONYMOUS_QUESTION_COUNT,
+    );
+    expect(updateTestSessionDifficultyByRecentAccuracy).toHaveBeenCalledWith(
+      { anonymousSessionId: "anon-1", id: "session-1" },
+      false,
     );
     expect(readTestSession).not.toHaveBeenCalled();
   });

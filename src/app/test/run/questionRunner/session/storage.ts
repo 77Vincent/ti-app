@@ -144,9 +144,11 @@ export async function clearTestSession(): Promise<void> {
 export async function recordQuestionResult(
   sessionId: string,
   isCorrect: boolean,
-): Promise<void> {
-  await requestSession({
+): Promise<TestSession | null> {
+  const payload = await requestSession({
     body: JSON.stringify({ isCorrect, sessionId }),
     method: "PATCH",
   });
+
+  return parseSessionFromResponse(payload);
 }

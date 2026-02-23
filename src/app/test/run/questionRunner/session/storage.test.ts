@@ -146,11 +146,15 @@ describe("session storage", () => {
   });
 
   it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {
+    const updatedSession = {
+      ...REMOTE_SESSION_PAYLOAD.session,
+      difficulty: "A2",
+    };
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+      new Response(JSON.stringify({ ok: true, session: updatedSession }), { status: 200 }),
     );
 
-    await expect(recordQuestionResult("session-1", true)).resolves.toBeUndefined();
+    await expect(recordQuestionResult("session-1", true)).resolves.toEqual(updatedSession);
 
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,

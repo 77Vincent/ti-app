@@ -1,5 +1,7 @@
 import type { TestParam } from "@/lib/testSession/validation";
 import { prisma } from "@/lib/prisma";
+import { getNextDifficultyByRecentAccuracy } from "@/lib/difficulty";
+import type { SubcategoryEnum } from "@/lib/meta";
 
 export type AuthTestSessionWhere = {
   userId: string;
@@ -33,6 +35,14 @@ const TEST_RUN_PARAMS_SELECT = {
   subjectId: true,
   subcategoryId: true,
   difficulty: true,
+} as const;
+
+const TEST_SESSION_ADAPTIVE_SELECT = {
+  id: true,
+  subcategoryId: true,
+  difficulty: true,
+  difficultyCooldownRemaining: true,
+  recentOutcomes: true,
 } as const;
 
 function isAuthTestSessionWhere(
@@ -82,6 +92,8 @@ export async function upsertTestSession(
           subjectId: params.subjectId,
           subcategoryId: params.subcategoryId,
           difficulty: params.difficulty,
+          difficultyCooldownRemaining: 0,
+          recentOutcomes: [],
           userId: where.userId,
         },
         select: TEST_RUN_PARAMS_SELECT,
@@ -120,6 +132,8 @@ export async function upsertTestSession(
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
       difficulty: params.difficulty,
+      difficultyCooldownRemaining: 0,
+      recentOutcomes: [],
     },
     update: {
       id,
@@ -128,6 +142,8 @@ export async function upsertTestSession(
       subjectId: params.subjectId,
       subcategoryId: params.subcategoryId,
       difficulty: params.difficulty,
+      difficultyCooldownRemaining: 0,
+      recentOutcomes: [],
     },
     select: TEST_RUN_PARAMS_SELECT,
   });
@@ -167,6 +183,42 @@ export async function incrementTestSessionProgress(
   });
 
   return result.count;
+}
+
+export async function updateTestSessionDifficultyByRecentAccuracy(
+  where: TestSessionReadWhere,
+  isCorrect: boolean,
+) {
+  const session = await prisma.testSession.findFirst({
+    where: {
+      id: where.id,
+      ...toIdentityWhere(where),
+    },
+    select: TEST_SESSION_ADAPTIVE_SELECT,
+  });
+  if (!session) {
+    return null;
+  }
+
+  const adaptiveResult = getNextDifficultyByRecentAccuracy({
+    subcategoryId: session.subcategoryId as SubcategoryEnum,
+    currentDifficulty: session.difficulty,
+    recentOutcomes: session.recentOutcomes,
+    difficultyCooldownRemaining: session.difficultyCooldownRemaining,
+    isCorrect,
+  });
+
+  return prisma.testSession.update({
+    where: {
+      id: session.id,
+    },
+    data: {
+      difficulty: adaptiveResult.difficulty,
+      difficultyCooldownRemaining: adaptiveResult.difficultyCooldownRemaining,
+      recentOutcomes: adaptiveResult.recentOutcomes,
+    },
+    select: TEST_RUN_PARAMS_SELECT,
+  });
 }
 
 export async function deleteTestSession(

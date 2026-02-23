@@ -15,6 +15,7 @@ import {
   deleteTestSession,
   incrementTestSessionProgress,
   readTestSession,
+  updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 } from "./repo/testSession";
 
@@ -22,6 +23,7 @@ export const runtime = "nodejs";
 
 function toTestSessionPayload(
   session: Awaited<ReturnType<typeof readTestSession>>
+    | Awaited<ReturnType<typeof updateTestSessionDifficultyByRecentAccuracy>>
     | Awaited<ReturnType<typeof upsertTestSession>>,
 ): TestSession | null {
   if (!session) {
@@ -189,7 +191,6 @@ export async function PATCH(request: Request) {
   }
 
   const userId = await readAuthenticatedUserId();
-  const response = NextResponse.json({ ok: true });
 
   if (userId) {
     const updatedCount = await incrementTestSessionProgress(
@@ -197,7 +198,22 @@ export async function PATCH(request: Request) {
       isCorrect,
     );
     if (updatedCount > 0) {
-      return response;
+      const session = toTestSessionPayload(
+        await updateTestSessionDifficultyByRecentAccuracy(
+          { id: sessionId, userId },
+          isCorrect,
+        ),
+      );
+      if (!session) {
+        return NextResponse.json(
+          {
+            error: "Test session not found.",
+          },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json({ ok: true, session });
     }
 
     return NextResponse.json(
@@ -224,7 +240,22 @@ export async function PATCH(request: Request) {
     MAX_ANONYMOUS_QUESTION_COUNT,
   );
   if (updatedCount > 0) {
-    return response;
+    const session = toTestSessionPayload(
+      await updateTestSessionDifficultyByRecentAccuracy(
+        { id: sessionId, anonymousSessionId },
+        isCorrect,
+      ),
+    );
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Anonymous test session not found.",
+        },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ ok: true, session });
   }
 
   const session = await readTestSession({ id: sessionId, anonymousSessionId });
