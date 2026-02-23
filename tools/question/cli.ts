@@ -87,7 +87,7 @@ async function main(): Promise<void> {
   });
 
   process.stdout.write(
-    `Successfully persisted ${questions.length} question(s) to QuestionPool.\n`,
+    `Successfully persisted ${questions.length} ${options.difficulty} ${options.subcategory} question(s) to QuestionPool.\n`,
   );
 }
 

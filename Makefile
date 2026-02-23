@@ -2,7 +2,7 @@
 
 NPM := npm
 
-.PHONY: help install dev build start lint test check clean clean-deps question
+.PHONY: help install dev build start lint test check clean clean-deps question question-english
 
 help:
 	@echo "Common commands:"
@@ -16,6 +16,7 @@ help:
 	@echo "  make clean      Remove Next.js build output"
 	@echo "  make clean-deps Remove node_modules"
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
+	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -49,6 +50,11 @@ clean-deps:
 
 question:
 	$(NPM) run tool:question-ai -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
+
+question-english:
+	for d in A1 A2 B1 B2 C1 C2; do \
+		$(MAKE) question subcategory=english difficulty=$$d || exit 1; \
+	done
 
 up:
 	docker-compose up -d
