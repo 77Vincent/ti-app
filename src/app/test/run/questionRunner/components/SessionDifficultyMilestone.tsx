@@ -90,10 +90,8 @@ export default function SessionDifficultyMilestone({
                   <Chip
                     aria-current={isCurrent ? "step" : undefined}
                     color={isReached ? "primary" : "default"}
-                    className={[
-                      "min-w-10 text-center text-sm font-semibold tabular-nums",
-                    ].join(" ")}
                     size="sm"
+                    className="tabular-nums"
                     variant={isReached ? "solid" : "bordered"}
                   >
                     {level}

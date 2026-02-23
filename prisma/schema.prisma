@@ -71,7 +71,6 @@ model QuestionPool {
   id               String   @id
   subjectId        String
   subcategoryId    String
-  slot             Int
   prompt           String   @db.Text
   difficulty       String
   options          Json
@@ -80,7 +79,7 @@ model QuestionPool {
   updatedAt        DateTime @updatedAt
   favorites        FavoriteQuestion[]
 
-  @@unique([subjectId, subcategoryId, slot])
+  @@index([subjectId, subcategoryId, difficulty, id])
 }
 
 model FavoriteQuestion {

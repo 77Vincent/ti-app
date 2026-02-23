@@ -64,7 +64,6 @@ CREATE TABLE "QuestionPool" (
     "id" TEXT NOT NULL,
     "subjectId" TEXT NOT NULL,
     "subcategoryId" TEXT NOT NULL,
-    "slot" INTEGER NOT NULL,
     "prompt" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
     "options" JSONB NOT NULL,
@@ -109,7 +108,7 @@ CREATE UNIQUE INDEX "TestSession_userId_subjectId_subcategoryId_key" ON "TestSes
 CREATE UNIQUE INDEX "TestSession_anonymousSessionId_key" ON "TestSession"("anonymousSessionId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "QuestionPool_subjectId_subcategoryId_slot_key" ON "QuestionPool"("subjectId", "subcategoryId", "slot");
+CREATE INDEX "QuestionPool_subjectId_subcategoryId_difficulty_id_idx" ON "QuestionPool"("subjectId", "subcategoryId", "difficulty", "id");
 
 -- CreateIndex
 CREATE INDEX "FavoriteQuestion_userId_idx" ON "FavoriteQuestion"("userId");

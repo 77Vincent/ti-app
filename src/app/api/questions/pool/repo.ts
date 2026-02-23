@@ -21,8 +21,6 @@ const QUESTION_POOL_READ_SELECT = {
   correctOptionIndexes: true,
 } as const;
 
-const MAX_RANDOM_SLOT_ATTEMPTS = 3;
-
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
 ): Promise<Question | null> {
@@ -32,38 +30,19 @@ export async function readRandomQuestionFromPool(
     difficulty: input.difficulty,
   } as const;
 
-  const bounds = await prisma.questionPool.aggregate({
-    where,
-    _min: { slot: true },
-    _max: { slot: true },
-  });
-
-  const minSlot = bounds._min.slot;
-  const maxSlot = bounds._max.slot;
-  if (minSlot === null || maxSlot === null) {
+  const total = await prisma.questionPool.count({ where });
+  if (total === 0) {
     return null;
   }
 
-  for (let attempt = 0; attempt < MAX_RANDOM_SLOT_ATTEMPTS; attempt += 1) {
-    const randomSlot = getRandomIntInclusive(minSlot, maxSlot);
-    const row = await prisma.questionPool.findFirst({
-      where: {
-        ...where,
-        slot: randomSlot,
-      },
-      select: QUESTION_POOL_READ_SELECT,
-    });
-
-    if (row) {
-      return toQuestion(row);
-    }
-  }
+  const randomOffset = getRandomOffset(total);
 
   const row = await prisma.questionPool.findFirst({
     where,
     orderBy: {
-      slot: "asc",
+      id: "asc",
     },
+    skip: randomOffset,
     select: QUESTION_POOL_READ_SELECT,
   });
 
@@ -74,8 +53,8 @@ export async function readRandomQuestionFromPool(
   return toQuestion(row);
 }
 
-function getRandomIntInclusive(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function getRandomOffset(total: number): number {
+  return Math.floor(Math.random() * total);
 }
 
 function toQuestion(row: QuestionPoolReadRow): Question {

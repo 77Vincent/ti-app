@@ -3,14 +3,8 @@
 import type { QuestionRunnerProps, SignInDemand } from "../types";
 import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import Mousetrap from "mousetrap";
-import {
-  getSubcategoryLabel,
-  getSubjectIcon,
-  getSubjectLabel,
-} from "@/lib/meta";
 import { Star } from "lucide-react";
 import {
-  createElement,
   useCallback,
   useEffect,
   useMemo,
@@ -133,10 +127,6 @@ export default function QuestionWrapper({
     handleSubmitPress,
   ]);
 
-  const SubjectIcon = getSubjectIcon(subjectId);
-  const subjectLabel = getSubjectLabel(subjectId);
-  const subcategoryLabel = getSubcategoryLabel(subcategoryId);
-
   return (
     <div className="w-full max-w-2xl space-y-3">
       <MidiSfx
@@ -212,18 +202,6 @@ export default function QuestionWrapper({
         difficulty={sessionDifficulty}
         subcategoryId={subcategoryId}
       />
-
-      <div className="flex flex-wrap items-center gap-1.5">
-        <Chip size="sm" color="primary" variant="bordered">
-          <span className="inline-flex items-center gap-1.5">
-            {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
-            {subjectLabel}
-          </span>
-        </Chip>
-        <Chip size="sm" color="primary" variant="bordered">
-          {subcategoryLabel}
-        </Chip>
-      </div>
     </div>
   );
 }

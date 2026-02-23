@@ -34,18 +34,6 @@ export async function persistQuestionsToPool(
     });
     const existingIds = new Set(existingRows.map((row) => row.id));
 
-    const slotBounds = await prisma.questionPool.aggregate({
-      where: {
-        subjectId,
-        subcategoryId: input.subcategory,
-      },
-      _max: {
-        slot: true,
-      },
-    });
-
-    let nextSlot = (slotBounds._max.slot ?? 0) + 1;
-
     for (const question of input.questions) {
       const data = {
         subjectId,
@@ -68,11 +56,9 @@ export async function persistQuestionsToPool(
       await prisma.questionPool.create({
         data: {
           id: question.id,
-          slot: nextSlot,
           ...data,
         },
       });
-      nextSlot += 1;
     }
   } finally {
     await prisma.$disconnect();

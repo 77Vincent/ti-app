@@ -384,7 +384,7 @@ describe("test session repo", () => {
       subcategoryId: "english",
       difficulty: "A1",
       difficultyCooldownRemaining: 0,
-      recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
     });
     testSessionUpdate.mockResolvedValueOnce({
       id: "session-1",
@@ -428,8 +428,8 @@ describe("test session repo", () => {
       },
       data: {
         difficulty: "A2",
-        difficultyCooldownRemaining: 5,
-        recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+        difficultyCooldownRemaining: 15,
+        recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
       },
       select: {
         id: true,
