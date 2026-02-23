@@ -13,20 +13,7 @@ export type MidiSfxPreset = {
 };
 
 export const MIDI_SFX_PRESETS = {
-  optionSelect: {
-    tones: [
-      {
-        startOffsetSeconds: 0,
-        durationSeconds: 0.075,
-        waveform: "square",
-        startFrequencyHz: 523.25,
-        endFrequencyHz: 466.16,
-        peakGain: 0.032,
-        attackSeconds: 0.004,
-      },
-    ],
-  },
-  submitAction: {
+  submitCorrect: {
     tones: [
       {
         startOffsetSeconds: 0,
@@ -44,6 +31,41 @@ export const MIDI_SFX_PRESETS = {
         endFrequencyHz: 1046.5,
         peakGain: 0.068,
         attackSeconds: 0.01,
+      },
+    ],
+  },
+  submitWrong: {
+    tones: [
+      {
+        startOffsetSeconds: 0,
+        durationSeconds: 0.1,
+        waveform: "sawtooth",
+        startFrequencyHz: 587.33,
+        endFrequencyHz: 523.25,
+        peakGain: 0.07,
+        attackSeconds: 0.006,
+      },
+      {
+        startOffsetSeconds: 0.06,
+        durationSeconds: 0.12,
+        waveform: "square",
+        startFrequencyHz: 440,
+        endFrequencyHz: 349.23,
+        peakGain: 0.078,
+        attackSeconds: 0.006,
+      },
+    ],
+  },
+  nextAction: {
+    tones: [
+      {
+        startOffsetSeconds: 0,
+        durationSeconds: 0.09,
+        waveform: "triangle",
+        startFrequencyHz: 783.99,
+        endFrequencyHz: 987.77,
+        peakGain: 0.052,
+        attackSeconds: 0.008,
       },
     ],
   },

@@ -21,6 +21,7 @@ import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { canSubmitQuestion } from "../utils/questionGuards";
+import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
 
@@ -34,7 +35,9 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
-  const submitMidiSfxRef = useRef<MidiSfxHandle | null>(null);
+  const submitCorrectMidiSfxRef = useRef<MidiSfxHandle | null>(null);
+  const submitWrongMidiSfxRef = useRef<MidiSfxHandle | null>(null);
+  const nextActionMidiSfxRef = useRef<MidiSfxHandle | null>(null);
 
   const {
     question,
@@ -105,9 +108,15 @@ export default function QuestionWrapper({
       return;
     }
 
-    submitMidiSfxRef.current?.play();
+    if (hasSubmitted) {
+      nextActionMidiSfxRef.current?.play();
+    } else if (isAnswerCorrect(question, selectedOptionIndexes)) {
+      submitCorrectMidiSfxRef.current?.play();
+    } else {
+      submitWrongMidiSfxRef.current?.play();
+    }
     void submit();
-  }, [canTriggerSubmit, submit]);
+  }, [canTriggerSubmit, hasSubmitted, question, selectedOptionIndexes, submit]);
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const subjectLabel = getSubjectLabel(subjectId);
@@ -116,8 +125,16 @@ export default function QuestionWrapper({
   return (
     <div className="w-full max-w-2xl space-y-3">
       <MidiSfx
-        presetId="submitAction"
-        ref={submitMidiSfxRef}
+        presetId="submitCorrect"
+        ref={submitCorrectMidiSfxRef}
+      />
+      <MidiSfx
+        presetId="submitWrong"
+        ref={submitWrongMidiSfxRef}
+      />
+      <MidiSfx
+        presetId="nextAction"
+        ref={nextActionMidiSfxRef}
       />
 
       <div className="flex items-center justify-between gap-2">
