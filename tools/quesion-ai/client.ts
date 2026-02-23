@@ -3,7 +3,7 @@ import type { GenerateQuestionRequest } from "./types";
 import {
   buildQuestionSystemPrompt,
   buildQuestionUserPrompt,
-} from "./prompt";
+} from "./prompts/prompt";
 
 const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
 const DEFAULT_AI_MODEL = "deepseek-chat";

@@ -1,8 +1,8 @@
-import type { GenerateQuestionRequest } from "./types";
+import type { GenerateQuestionRequest } from "../types";
 import {
   ENGLISH_QUESTION_SYSTEM_PROMPT,
   buildEnglishQuestionUserPrompt,
-} from "./prompts/english";
+} from "./english";
 
 export function buildQuestionSystemPrompt(
   input: GenerateQuestionRequest,
