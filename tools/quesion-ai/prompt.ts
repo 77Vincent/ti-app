@@ -1,5 +1,4 @@
 import type { GenerateQuestionRequest } from "./types";
-import { QUESTION_OPTION_LIMITS } from "./types";
 
 export const AI_QUESTION_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions.
@@ -26,7 +25,7 @@ Rules:
 - p is the question prompt.
 - d is the difficulty label for the question (example: A1, A2, B1, B2, C1, C2).
 - o is options as [text, explanation] tuples.
-- options count must be between ${QUESTION_OPTION_LIMITS.minOptions} and ${QUESTION_OPTION_LIMITS.maxOptions}.
+- options count must be 4.
 - a is zero-based indexes of correct options in o.
 - a length must be exactly 1.
 - explanations in o must be concise and explain why each option is correct or incorrect.

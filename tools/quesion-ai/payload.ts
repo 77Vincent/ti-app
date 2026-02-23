@@ -1,5 +1,4 @@
 import {
-  QUESTION_OPTION_LIMITS,
   type Question,
   type QuestionOption,
 } from "./types";
@@ -33,8 +32,8 @@ function parseJsonValue(content: string): unknown {
 function parseCompactOptions(value: unknown): QuestionOption[] | null {
   if (
     !Array.isArray(value) ||
-    value.length < QUESTION_OPTION_LIMITS.minOptions ||
-    value.length > QUESTION_OPTION_LIMITS.maxOptions
+    value.length < 3 ||
+    value.length > 4
   ) {
     return null;
   }
