@@ -13,6 +13,7 @@ import QuestionRunner from "./QuestionRunner";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import SessionAccuracy from "./SessionAccuracy";
+import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
 
 export default function QuestionWrapper({
   id,
@@ -141,6 +142,11 @@ export default function QuestionWrapper({
           />
         </CardBody>
       </Card>
+
+      <SessionDifficultyMilestone
+        difficulty={difficulty}
+        subcategoryId={subcategoryId}
+      />
 
       <div className="flex flex-wrap items-center gap-1.5">
         <Chip variant="bordered">
