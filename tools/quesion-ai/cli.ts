@@ -18,7 +18,7 @@ async function main(): Promise<void> {
 
   program
     .name("question-ai")
-    .description("Generate resolver-validated English questions via local tool")
+    .description("Generate English questions via local tool")
     .requiredOption(
       "-d, --difficulty <difficulty>",
       "Target difficulty, e.g. <A1, A1, A2, B1, B2, C1, C2",

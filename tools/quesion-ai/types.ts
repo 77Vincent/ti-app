@@ -18,5 +18,3 @@ export type Question = {
   options: QuestionOption[];
   correctOptionIndexes: number[];
 };
-
-export type QuestionResolverInput = Pick<Question, "prompt" | "options">;
