@@ -1,16 +1,15 @@
 import type { QuestionPool } from "@prisma/client";
 
+export type QuestionDifficulty = QuestionPool["difficulty"];
+
 export type GenerateQuestionRequest = {
-  subjectId: string;
-  subcategoryId: string;
+  difficulty: QuestionDifficulty;
 };
 
 export type QuestionOption = {
   text: string;
   explanation: string;
 };
-
-export type QuestionDifficulty = QuestionPool["difficulty"];
 
 export type Question = {
   id: QuestionPool["id"];

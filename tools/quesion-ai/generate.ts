@@ -19,18 +19,19 @@ export async function generateQuestionWithAI(
   const questions: [Question, Question] = [
     {
       id: createQuestionId(),
+      difficulty: input.difficulty,
       ...firstQuestion,
     },
     {
       id: createQuestionId(),
+      difficulty: input.difficulty,
       ...secondQuestion,
     },
   ];
 
   console.info("AI question generation completed.", {
     count: questions.length,
-    subcategoryId: input.subcategoryId,
-    subjectId: input.subjectId,
+    difficulty: input.difficulty,
   });
 
   return questions;

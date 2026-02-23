@@ -4,7 +4,10 @@ import {
 } from "./types";
 import { isNonEmptyString } from "./string";
 
-export type ParsedAIQuestionPayload = Omit<Question, "id">;
+export type ParsedAIQuestionPayload = Pick<
+  Question,
+  "prompt" | "options" | "correctOptionIndexes"
+>;
 
 function parseJsonValue(content: string): unknown {
   try {
@@ -95,8 +98,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   }
 
   const { p, o, a } = value as Record<string, unknown>;
-  const difficulty = (value as Record<string, unknown>).d;
-  if (!isNonEmptyString(p) || !isNonEmptyString(difficulty)) {
+  if (!isNonEmptyString(p)) {
     throw new Error("AI response shape is invalid.");
   }
 
@@ -119,7 +121,6 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
 
   return {
     prompt: p.trim(),
-    difficulty: difficulty.trim(),
     options: parsedOptions,
     correctOptionIndexes: parsedCorrectOptionIndexes,
   };

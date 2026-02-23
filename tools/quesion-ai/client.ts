@@ -1,7 +1,7 @@
 import { isNonEmptyString } from "./string";
 import type { GenerateQuestionRequest } from "./types";
 import {
-  AI_QUESTION_SYSTEM_PROMPT,
+  buildQuestionSystemPrompt,
   buildQuestionUserPrompt,
 } from "./prompt";
 
@@ -33,7 +33,7 @@ export async function requestDeepSeekQuestionContent(
     body: JSON.stringify({
       model,
       messages: [
-        { role: "system", content: AI_QUESTION_SYSTEM_PROMPT },
+        { role: "system", content: buildQuestionSystemPrompt(input) },
         { role: "user", content: buildQuestionUserPrompt(input) },
       ],
     }),
