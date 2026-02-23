@@ -1,7 +1,7 @@
-import type { GenerateQuestionRequest } from "../types";
-import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
+import type { GenerateQuestionRequest } from "../../types";
+import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
 
-export const ENGLISH_QUESTION_SYSTEM_PROMPT = `
+export const ENGLISH_GENERATOR_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions:
 - subject: language
 - subcategory: english
@@ -23,7 +23,7 @@ Rules:
 - explanations in o must be clear.
 `.trim();
 
-export function buildEnglishQuestionUserPrompt(
+export function buildEnglishGeneratorUserPrompt(
   input: GenerateQuestionRequest,
 ): string {
   return `difficulty: CEFR - ${input.difficulty}`;

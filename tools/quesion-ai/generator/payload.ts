@@ -1,35 +1,20 @@
 import {
   type Question,
   type QuestionOption,
-} from "./types";
-import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
-import { isNonEmptyString } from "../../src/lib/string";
+} from "../types";
+import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
+import { isNonEmptyString } from "../../../src/lib/string";
 
 export type ParsedAIQuestionPayload = Pick<
   Question,
   "prompt" | "options" | "correctOptionIndexes"
 >;
 
-function parseJsonValue(content: string): unknown {
+function parseJsonArrayValue(content: string): unknown {
   try {
     return JSON.parse(content);
   } catch {
-    const firstBracket = content.indexOf("[");
-    const lastBracket = content.lastIndexOf("]");
-
-    if (
-      firstBracket === -1 ||
-      lastBracket === -1 ||
-      firstBracket >= lastBracket
-    ) {
-      throw new Error("AI response was not valid JSON.");
-    }
-
-    try {
-      return JSON.parse(content.slice(firstBracket, lastBracket + 1));
-    } catch {
-      throw new Error("AI response was not valid JSON.");
-    }
+    throw new Error("AI response was not valid JSON.");
   }
 }
 
@@ -126,7 +111,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
 export function parseAIQuestionPayload(
   content: string,
 ): [ParsedAIQuestionPayload, ParsedAIQuestionPayload] {
-  const questions = parseJsonValue(content);
+  const questions = parseJsonArrayValue(content);
 
   if (!Array.isArray(questions) || questions.length !== 2) {
     throw new Error("AI response shape is invalid.");

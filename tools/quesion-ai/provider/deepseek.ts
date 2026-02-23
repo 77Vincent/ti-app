@@ -1,29 +1,28 @@
-import { isNonEmptyString } from "../../src/lib/string";
-import type { GenerateQuestionRequest } from "./types";
+import { isNonEmptyString } from "../../../src/lib/string";
 import {
-  buildQuestionSystemPrompt,
-  buildQuestionUserPrompt,
-} from "./prompts/prompt";
+  AI_API_KEY_ENV_VAR,
+  DEEPSEEK_API_URL,
+} from "../config/constants";
 
-const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
-const DEFAULT_AI_MODEL = "deepseek-chat";
+export type DeepSeekMessage = {
+  role: "system" | "user";
+  content: string;
+};
 
-function getDeepSeekConfig() {
-  const apiKey = process.env.AI_API_KEY;
-  const model = process.env.AI_MODEL ?? DEFAULT_AI_MODEL;
-
+export function getDeepSeekApiKey(): string {
+  const apiKey = process.env[AI_API_KEY_ENV_VAR];
   if (!apiKey) {
     throw new Error("AI_API_KEY is not configured.");
   }
 
-  return { apiKey, model };
+  return apiKey;
 }
 
-export async function requestDeepSeekQuestionContent(
-  input: GenerateQuestionRequest,
+export async function requestDeepSeekContent(
+  apiKey: string,
+  model: string,
+  messages: DeepSeekMessage[],
 ): Promise<string> {
-  const { apiKey, model } = getDeepSeekConfig();
-
   const response = await fetch(DEEPSEEK_API_URL, {
     method: "POST",
     headers: {
@@ -32,10 +31,7 @@ export async function requestDeepSeekQuestionContent(
     },
     body: JSON.stringify({
       model,
-      messages: [
-        { role: "system", content: buildQuestionSystemPrompt(input) },
-        { role: "user", content: buildQuestionUserPrompt(input) },
-      ],
+      messages,
     }),
   });
 
