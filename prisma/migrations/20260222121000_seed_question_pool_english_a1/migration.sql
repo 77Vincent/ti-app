@@ -10,10 +10,25 @@ INSERT INTO "QuestionPool" (
     "correctOptionIndexes",
     "updatedAt"
 ) VALUES (
-    'q_language_english_a1_001',
+    'q_language_english_pre_a1_001',
     'language',
     'english',
     1,
+    'Tom says "hello" to everyone. He is very ___.',
+    '<A1',
+    '[
+      {"text":"friendly","explanation":"Correct: saying hello to everyone shows a friendly personality."},
+      {"text":"shy","explanation":"Shy means not confident in social situations, opposite of greeting everyone."},
+      {"text":"angry","explanation":"Angry describes feeling mad; it does not match this warm behavior."},
+      {"text":"hungry","explanation":"Hungry is about food, not social personality."}
+    ]'::jsonb,
+    '[0]'::jsonb,
+    CURRENT_TIMESTAMP
+), (
+    'q_language_english_a1_001',
+    'language',
+    'english',
+    2,
     'The kitchen is too ___, so Anna opens the window.',
     'A1',
     '[
@@ -28,7 +43,7 @@ INSERT INTO "QuestionPool" (
     'q_language_english_a2_001',
     'language',
     'english',
-    2,
+    3,
     'After the movie ended, Lisa checked the bus schedule and hurried home to avoid being ___ for dinner.',
     'A2',
     '[
@@ -43,7 +58,7 @@ INSERT INTO "QuestionPool" (
     'q_language_english_b1_001',
     'language',
     'english',
-    3,
+    4,
     'Nora revised her notes every evening, so she felt ___ before the exam.',
     'B1',
     '[
@@ -58,7 +73,7 @@ INSERT INTO "QuestionPool" (
     'q_language_english_b2_001',
     'language',
     'english',
-    4,
+    5,
     'Investors rejected the business plan because its cost assumptions were not ___ enough.',
     'B2',
     '[
@@ -73,7 +88,7 @@ INSERT INTO "QuestionPool" (
     'q_language_english_c1_001',
     'language',
     'english',
-    5,
+    6,
     'Although the sample size was large, the conclusion remained ___ because key variables were not controlled.',
     'C1',
     '[
@@ -88,7 +103,7 @@ INSERT INTO "QuestionPool" (
     'q_language_english_c2_001',
     'language',
     'english',
-    6,
+    7,
     'In her final chapter, the author drew a ___ distinction between legal compliance and moral legitimacy.',
     'C2',
     '[
