@@ -2,7 +2,7 @@
 
 NPM := npm
 
-.PHONY: help install dev build start lint test check clean clean-deps
+.PHONY: help install dev build start lint test check clean clean-deps question
 
 help:
 	@echo "Common commands:"
@@ -15,6 +15,7 @@ help:
 	@echo "  make check      Run lint, test, and build"
 	@echo "  make clean      Remove Next.js build output"
 	@echo "  make clean-deps Remove node_modules"
+	@echo "  make question difficulty=A1                 Run question AI tool"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -45,6 +46,9 @@ clean:
 
 clean-deps:
 	rm -rf node_modules
+
+question:
+	$(NPM) run tool:question-ai -- --difficulty "$(difficulty)"
 
 up:
 	docker-compose up -d
