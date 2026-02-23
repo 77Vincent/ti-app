@@ -41,7 +41,6 @@ export default function QuestionWrapper({
     isLoadingQuestion,
     isSubmitting,
     difficulty: sessionDifficulty,
-    currentQuestionIndex,
     submittedCount,
     correctCount,
     isSignInRequired: isQuestionSignInRequired,
@@ -143,9 +142,6 @@ export default function QuestionWrapper({
             </Button>
           </Tooltip>
 
-          <span className="font-bold text-lg tabular-nums">
-            Q{currentQuestionIndex + 1}
-          </span>
         </div>
 
         <div className="flex items-center gap-4">
