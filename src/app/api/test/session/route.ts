@@ -30,15 +30,11 @@ function toTestSessionPayload(
     return null;
   }
 
-  const params = parseTestParam(session);
-  if (!params) {
-    return null;
-  }
-
   return {
-    ...params,
+    subjectId: session.subjectId as TestSession["subjectId"],
+    subcategoryId: session.subcategoryId as TestSession["subcategoryId"],
     correctCount: session.correctCount,
-    difficulty: params.difficulty,
+    difficulty: session.difficulty,
     id: session.id,
     submittedCount: session.submittedCount,
   };

@@ -5,8 +5,22 @@ import { config as loadDotenv } from "dotenv";
 import { fileURLToPath } from "node:url";
 import { generateQuestionWithAI } from "./generate";
 import type { GenerateQuestionRequest } from "./types";
+import { DIFFICULTY_LEVELS_BY_SUBCATEGORY } from "./config/constants";
 
 const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
+
+function parseSubcategory(
+  value: string,
+): GenerateQuestionRequest["subcategory"] {
+  const normalizedValue = value.trim().toLowerCase();
+  if (!(normalizedValue in DIFFICULTY_LEVELS_BY_SUBCATEGORY)) {
+    throw new InvalidArgumentError(
+      `subcategory must be one of: ${Object.keys(DIFFICULTY_LEVELS_BY_SUBCATEGORY).join(", ")}.`,
+    );
+  }
+
+  return normalizedValue as GenerateQuestionRequest["subcategory"];
+}
 
 function parseDifficulty(value: string): GenerateQuestionRequest["difficulty"] {
   const normalizedValue = value.trim();
@@ -14,7 +28,7 @@ function parseDifficulty(value: string): GenerateQuestionRequest["difficulty"] {
     throw new InvalidArgumentError("difficulty must be a non-empty string.");
   }
 
-  return normalizedValue;
+  return normalizedValue as GenerateQuestionRequest["difficulty"];
 }
 
 async function main(): Promise<void> {
@@ -33,10 +47,15 @@ async function main(): Promise<void> {
 
   program
     .name("question-ai")
-    .description("Generate English questions via local tool")
+    .description("Generate subcategory questions via local tool")
+    .requiredOption(
+      "-s, --subcategory <subcategory>",
+      "Target subcategory, e.g. english",
+      parseSubcategory,
+    )
     .requiredOption(
       "-d, --difficulty <difficulty>",
-      "Target difficulty, e.g. <A1, A1, A2, B1, B2, C1, C2",
+      "Target difficulty level for the given subcategory",
       parseDifficulty,
     )
     .showHelpAfterError();
@@ -44,10 +63,20 @@ async function main(): Promise<void> {
   await program.parseAsync(process.argv);
 
   const options = program.opts<{
+    subcategory: GenerateQuestionRequest["subcategory"];
     difficulty: GenerateQuestionRequest["difficulty"];
   }>();
 
+  const allowedDifficulties =
+    DIFFICULTY_LEVELS_BY_SUBCATEGORY[options.subcategory];
+  if (!allowedDifficulties.includes(options.difficulty)) {
+    throw new Error(
+      `difficulty "${options.difficulty}" is not allowed for subcategory "${options.subcategory}". Allowed values: ${allowedDifficulties.join(", ")}.`,
+    );
+  }
+
   const questions = await generateQuestionWithAI({
+    subcategory: options.subcategory,
     difficulty: options.difficulty,
   });
 

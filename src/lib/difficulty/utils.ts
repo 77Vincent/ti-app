@@ -87,7 +87,7 @@ function moveDifficultyByStep(
     ladder.length - 1,
   );
 
-  return ladder[nextIndex] ?? ladder[0] ?? currentDifficulty;
+  return ladder[nextIndex];
 }
 
 export function getNextDifficultyByRecentAccuracy({
@@ -98,13 +98,6 @@ export function getNextDifficultyByRecentAccuracy({
   isCorrect,
 }: NextDifficultyInput): AdaptiveDifficultyResult {
   const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
-  if (ladder.length === 0) {
-    return {
-      difficulty: currentDifficulty,
-      recentOutcomes: [],
-      difficultyCooldownRemaining: 0,
-    };
-  }
 
   const nextRecentOutcomes = appendOutcomeToWindow(recentOutcomes, isCorrect);
   const normalizedCooldown = Math.max(

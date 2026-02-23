@@ -15,7 +15,7 @@ help:
 	@echo "  make check      Run lint, test, and build"
 	@echo "  make clean      Remove Next.js build output"
 	@echo "  make clean-deps Remove node_modules"
-	@echo "  make question difficulty=A1                 Run question AI tool"
+	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -48,7 +48,7 @@ clean-deps:
 	rm -rf node_modules
 
 question:
-	$(NPM) run tool:question-ai -- --difficulty "$(difficulty)"
+	$(NPM) run tool:question-ai -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
 
 up:
 	docker-compose up -d

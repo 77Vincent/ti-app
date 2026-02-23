@@ -17,4 +17,7 @@ Fixed models (not configurable):
 - Generator: `deepseek-chat`
 
 CLI usage:
-- `npm run tool:question-ai -- --difficulty A1`
+- `npm run tool:question-ai -- --subcategory english --difficulty A1`
+
+Subcategory difficulty ladders:
+- `english`: `<A1`, `A1`, `A2`, `B1`, `B2`, `C1`, `C2`
