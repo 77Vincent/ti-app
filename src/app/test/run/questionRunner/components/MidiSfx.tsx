@@ -5,7 +5,6 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useRef,
 } from "react";
 import {
   MIDI_SFX_PRESETS,
@@ -31,6 +30,18 @@ function resolveAudioContextConstructor() {
     webkitAudioContext?: typeof AudioContext;
   };
   return globalThis.AudioContext ?? windowWithWebkitAudioContext.webkitAudioContext ?? null;
+}
+
+let sharedAudioContext: AudioContext | null = null;
+
+function getSharedAudioContext(
+  audioContextConstructor: typeof AudioContext,
+): AudioContext {
+  if (!sharedAudioContext) {
+    sharedAudioContext = new audioContextConstructor();
+  }
+
+  return sharedAudioContext;
 }
 
 function playTone(context: AudioContext, startTime: number, tone: MidiSfxTone) {
@@ -70,7 +81,6 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
   ref,
 ) {
   const isSoundEnabled = useSettingsStore((state) => state.isSoundEnabled);
-  const audioContextRef = useRef<AudioContext | null>(null);
 
   const play = useCallback(() => {
     if (!isSoundEnabled) {
@@ -82,9 +92,7 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
       return;
     }
 
-    const context =
-      audioContextRef.current ?? new audioContextConstructor();
-    audioContextRef.current = context;
+    const context = getSharedAudioContext(audioContextConstructor);
     if (context.state === "suspended") {
       void context.resume();
     }
@@ -101,7 +109,7 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
       return;
     }
 
-    const context = audioContextRef.current;
+    const context = sharedAudioContext;
     if (!context) {
       return;
     }
@@ -112,16 +120,6 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
   }, [isSoundEnabled]);
 
   useImperativeHandle(ref, () => ({ play }), [play]);
-
-  useEffect(() => {
-    return () => {
-      const context = audioContextRef.current;
-      if (context) {
-        void context.close();
-        audioContextRef.current = null;
-      }
-    };
-  }, []);
 
   return null;
 });

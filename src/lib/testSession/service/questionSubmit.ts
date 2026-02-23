@@ -30,6 +30,7 @@ export async function submitQuestion({
   advanceToNextQuestion,
 }: SubmitQuestionInput): Promise<void> {
   if (!hasSubmitted) {
+    onSubmissionMarked();
     onSubmitRequestStarted();
     try {
       await recordQuestionResult(isCurrentAnswerCorrect);
@@ -45,7 +46,6 @@ export async function submitQuestion({
       onSubmitRequestFinished();
     }
 
-    onSubmissionMarked();
     persistSubmission();
     return;
   }

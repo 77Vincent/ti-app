@@ -32,6 +32,12 @@ describe("submitQuestion", () => {
     expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
     expect(onSubmissionMarked).toHaveBeenCalledTimes(1);
     expect(persistSubmission).toHaveBeenCalledTimes(1);
+    expect(onSubmissionMarked.mock.invocationCallOrder[0]).toBeLessThan(
+      onSubmitRequestStarted.mock.invocationCallOrder[0],
+    );
+    expect(onSubmissionMarked.mock.invocationCallOrder[0]).toBeLessThan(
+      recordQuestionResult.mock.invocationCallOrder[0],
+    );
   });
 
   it("requests sign-in when quota limit is reached", async () => {
@@ -40,6 +46,8 @@ describe("submitQuestion", () => {
     const onSubmitRequestFinished = vi.fn();
     const onQuestionLimitReached = vi.fn();
     const onError = vi.fn();
+    const onSubmissionMarked = vi.fn();
+    const persistSubmission = vi.fn();
 
     await submitQuestion({
       hasSubmitted: false,
@@ -52,8 +60,8 @@ describe("submitQuestion", () => {
       isQuestionLimitError: (error) => error === limitError,
       onQuestionLimitReached,
       onError,
-      onSubmissionMarked: vi.fn(),
-      persistSubmission: vi.fn(),
+      onSubmissionMarked,
+      persistSubmission,
       onNextQuestionLoadStarted: vi.fn(),
       onNextQuestionLoadFinished: vi.fn(),
       advanceToNextQuestion: vi.fn(async () => undefined),
@@ -63,6 +71,8 @@ describe("submitQuestion", () => {
     expect(onError).not.toHaveBeenCalled();
     expect(onSubmitRequestStarted).toHaveBeenCalledTimes(1);
     expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
+    expect(onSubmissionMarked).toHaveBeenCalledTimes(1);
+    expect(persistSubmission).not.toHaveBeenCalled();
   });
 
   it("forwards non-limit errors", async () => {
@@ -70,6 +80,8 @@ describe("submitQuestion", () => {
     const onSubmitRequestStarted = vi.fn();
     const onSubmitRequestFinished = vi.fn();
     const onError = vi.fn();
+    const onSubmissionMarked = vi.fn();
+    const persistSubmission = vi.fn();
 
     await submitQuestion({
       hasSubmitted: false,
@@ -82,8 +94,8 @@ describe("submitQuestion", () => {
       isQuestionLimitError: () => false,
       onQuestionLimitReached: vi.fn(),
       onError,
-      onSubmissionMarked: vi.fn(),
-      persistSubmission: vi.fn(),
+      onSubmissionMarked,
+      persistSubmission,
       onNextQuestionLoadStarted: vi.fn(),
       onNextQuestionLoadFinished: vi.fn(),
       advanceToNextQuestion: vi.fn(async () => undefined),
@@ -92,6 +104,8 @@ describe("submitQuestion", () => {
     expect(onError).toHaveBeenCalledWith(requestError);
     expect(onSubmitRequestStarted).toHaveBeenCalledTimes(1);
     expect(onSubmitRequestFinished).toHaveBeenCalledTimes(1);
+    expect(onSubmissionMarked).toHaveBeenCalledTimes(1);
+    expect(persistSubmission).not.toHaveBeenCalled();
   });
 
   it("advances to next question and toggles loading state", async () => {
