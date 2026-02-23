@@ -7,9 +7,11 @@ Runtime test flows must read questions from the database only.
 
 Generation flow:
 - `creator` model generates question candidates.
+- Passed candidates are persisted into `QuestionPool`.
 
 Environment variables:
 - `AI_API_KEY` (required)
+- `DATABASE_URL` (required, for persisting into `QuestionPool`)
 - Example file: `tools/question/.env.example`
 - Runtime loads `tools/question/.env` automatically.
 

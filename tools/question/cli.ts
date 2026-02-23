@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { createQuestionCandidatesWithAI } from "./createCandidates";
 import type { GenerateQuestionRequest } from "./types";
 import { DIFFICULTY_LEVELS_BY_SUBCATEGORY } from "./config/constants";
+import { persistQuestionsToPool } from "./pool";
 
 const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
 
@@ -80,10 +81,14 @@ async function main(): Promise<void> {
     subcategory: options.subcategory,
     difficulty: options.difficulty,
   });
+  await persistQuestionsToPool({
+    subcategory: options.subcategory,
+    questions,
+  });
 
-  const serializedOutput = JSON.stringify(questions, null, 2);
-
-  process.stdout.write(`${serializedOutput}\n`);
+  process.stdout.write(
+    `Successfully persisted ${questions.length} question(s) to QuestionPool.\n`,
+  );
 }
 
 main().catch((error: unknown) => {
