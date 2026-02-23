@@ -3,6 +3,7 @@
 import confetti from "canvas-confetti";
 import {
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
+  isDifficultyDowngrade,
   isDifficultyUpgrade,
 } from "@/lib/difficulty";
 import type { SubcategoryEnum } from "@/lib/meta";
@@ -29,6 +30,7 @@ export default function SessionDifficultyMilestone({
   difficulty,
 }: SessionDifficultyMilestoneProps) {
   const difficultyUpgradeSfxRef = useRef<MidiSfxHandle | null>(null);
+  const difficultyDowngradeSfxRef = useRef<MidiSfxHandle | null>(null);
   const previousDifficultyRef = useRef<string>(difficulty);
   const previousSubcategoryRef = useRef(subcategoryId);
   const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
@@ -52,6 +54,14 @@ export default function SessionDifficultyMilestone({
     ) {
       difficultyUpgradeSfxRef.current?.play();
       fireDifficultyUpgradeConfetti();
+    } else if (
+      isDifficultyDowngrade(
+        subcategoryId,
+        previousDifficulty,
+        difficulty,
+      )
+    ) {
+      difficultyDowngradeSfxRef.current?.play();
     }
 
     previousDifficultyRef.current = difficulty;
@@ -62,6 +72,10 @@ export default function SessionDifficultyMilestone({
       <MidiSfx
         presetId="difficultyUpgrade"
         ref={difficultyUpgradeSfxRef}
+      />
+      <MidiSfx
+        presetId="difficultyDowngrade"
+        ref={difficultyDowngradeSfxRef}
       />
 
       <Card shadow="sm">

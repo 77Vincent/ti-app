@@ -68,6 +68,37 @@ export const MIDI_SFX_PRESETS = {
       },
     ],
   },
+  difficultyDowngrade: {
+    tones: [
+      {
+        startOffsetSeconds: 0,
+        durationSeconds: 0.12,
+        waveform: "sawtooth",
+        startFrequencyHz: 659.25,
+        endFrequencyHz: 622.25,
+        peakGain: 0.065,
+        attackSeconds: 0.006,
+      },
+      {
+        startOffsetSeconds: 0.08,
+        durationSeconds: 0.16,
+        waveform: "square",
+        startFrequencyHz: 523.25,
+        endFrequencyHz: 415.3,
+        peakGain: 0.075,
+        attackSeconds: 0.006,
+      },
+      {
+        startOffsetSeconds: 0.18,
+        durationSeconds: 0.2,
+        waveform: "triangle",
+        startFrequencyHz: 392,
+        endFrequencyHz: 293.66,
+        peakGain: 0.082,
+        attackSeconds: 0.008,
+      },
+    ],
+  },
 } as const satisfies Record<string, MidiSfxPreset>;
 
 export type MidiSfxPresetId = keyof typeof MIDI_SFX_PRESETS;
