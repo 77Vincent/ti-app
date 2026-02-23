@@ -8,11 +8,10 @@ import { isNonEmptyString } from "@/lib/string";
 export type QuestionParam = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
-};
-
-export type TestParam = QuestionParam & {
   difficulty: string;
 };
+
+export type TestParam = QuestionParam;
 
 export type TestSession = TestParam & {
   id: string;
@@ -42,27 +41,20 @@ export function parseQuestionParam(value: unknown): QuestionParam | null {
     return null;
   }
 
-  return {
-    subjectId: subjectId as SubjectEnum,
-    subcategoryId: subcategoryId as SubcategoryEnum,
-  };
-}
-
-export function parseTestParam(value: unknown): TestParam | null {
-  const params = parseQuestionParam(value);
-  if (!params) {
-    return null;
-  }
-
   const difficulty = (value as { difficulty?: unknown }).difficulty;
   if (!isNonEmptyString(difficulty)) {
     return null;
   }
 
   return {
-    ...params,
+    subjectId: subjectId as SubjectEnum,
+    subcategoryId: subcategoryId as SubcategoryEnum,
     difficulty: difficulty.trim(),
   };
+}
+
+export function parseTestParam(value: unknown): TestParam | null {
+  return parseQuestionParam(value);
 }
 
 export function parseTestSession(value: unknown): TestSession | null {

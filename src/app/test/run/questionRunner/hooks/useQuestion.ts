@@ -28,6 +28,7 @@ export type UseQuestionInput = {
   sessionId: string;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
+  difficulty: string;
   initialCorrectCount: number;
   initialSubmittedCount: number;
   onQuestionApplied?: () => void;
@@ -52,6 +53,7 @@ export function useQuestion({
   sessionId,
   subjectId,
   subcategoryId,
+  difficulty,
   initialCorrectCount,
   initialSubmittedCount,
   onQuestionApplied,
@@ -82,8 +84,9 @@ export function useQuestion({
     return fetchQuestion({
       subjectId,
       subcategoryId,
+      difficulty,
     });
-  }, [subcategoryId, subjectId]);
+  }, [difficulty, subcategoryId, subjectId]);
 
   const loadOneQuestion = useCallback((): Promise<QuestionType> => {
     return loadQuestion();

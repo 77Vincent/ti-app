@@ -7,6 +7,7 @@ import { QuestionRunnerApiError } from "./error";
 export type FetchQuestionInput = {
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
+  difficulty: string;
 };
 
 type FetchQuestionResponse = {

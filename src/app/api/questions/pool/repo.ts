@@ -29,6 +29,7 @@ export async function readRandomQuestionFromPool(
   const where = {
     subjectId: input.subjectId,
     subcategoryId: input.subcategoryId,
+    difficulty: input.difficulty,
   } as const;
 
   const bounds = await prisma.questionPool.aggregate({
@@ -45,13 +46,10 @@ export async function readRandomQuestionFromPool(
 
   for (let attempt = 0; attempt < MAX_RANDOM_SLOT_ATTEMPTS; attempt += 1) {
     const randomSlot = getRandomIntInclusive(minSlot, maxSlot);
-    const row = await prisma.questionPool.findUnique({
+    const row = await prisma.questionPool.findFirst({
       where: {
-        subjectId_subcategoryId_slot: {
-          subjectId: input.subjectId,
-          subcategoryId: input.subcategoryId,
-          slot: randomSlot,
-        },
+        ...where,
+        slot: randomSlot,
       },
       select: QUESTION_POOL_READ_SELECT,
     });

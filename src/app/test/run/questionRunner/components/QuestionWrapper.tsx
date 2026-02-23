@@ -18,6 +18,7 @@ export default function QuestionWrapper({
   id,
   subjectId,
   subcategoryId,
+  difficulty,
   correctCount: initialCorrectCount,
   submittedCount: initialSubmittedCount,
 }: QuestionRunnerProps) {
@@ -41,6 +42,7 @@ export default function QuestionWrapper({
     sessionId: id,
     subjectId,
     subcategoryId,
+    difficulty,
     initialCorrectCount,
     initialSubmittedCount,
   });
