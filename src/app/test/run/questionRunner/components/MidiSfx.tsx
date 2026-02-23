@@ -12,6 +12,7 @@ import {
   type MidiSfxPresetId,
   type MidiSfxTone,
 } from "@/lib/sfx/midiConfig";
+import { useSettingsStore } from "@/lib/settings/store";
 
 export type MidiSfxHandle = {
   play: () => void;
@@ -68,9 +69,14 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
   { presetId },
   ref,
 ) {
+  const isSoundEnabled = useSettingsStore((state) => state.isSoundEnabled);
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const play = useCallback(() => {
+    if (!isSoundEnabled) {
+      return;
+    }
+
     const audioContextConstructor = resolveAudioContextConstructor();
     if (!audioContextConstructor) {
       return;
@@ -88,7 +94,22 @@ const MidiSfx = forwardRef<MidiSfxHandle, MidiSfxProps>(function MidiSfx(
     for (const tone of preset.tones) {
       playTone(context, now + tone.startOffsetSeconds, tone);
     }
-  }, [presetId]);
+  }, [isSoundEnabled, presetId]);
+
+  useEffect(() => {
+    if (isSoundEnabled) {
+      return;
+    }
+
+    const context = audioContextRef.current;
+    if (!context) {
+      return;
+    }
+
+    if (context.state === "running") {
+      void context.suspend();
+    }
+  }, [isSoundEnabled]);
 
   useImperativeHandle(ref, () => ({ play }), [play]);
 
