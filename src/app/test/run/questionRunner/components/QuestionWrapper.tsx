@@ -1,7 +1,5 @@
 "use client";
 
-import confetti from "canvas-confetti";
-import { isDifficultyUpgrade } from "@/lib/difficulty";
 import type { QuestionRunnerProps, SignInDemand } from "../types";
 import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
@@ -15,7 +13,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import QuestionRunner from "./QuestionRunner";
@@ -24,15 +21,6 @@ import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { canSubmitQuestion } from "../utils/questionGuards";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
-
-function fireDifficultyUpgradeConfetti() {
-  confetti({
-    particleCount: 120,
-    spread: 80,
-    startVelocity: 50,
-    origin: { y: 0.7 },
-  });
-}
 
 export default function QuestionWrapper({
   id,
@@ -44,8 +32,6 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
-  const previousDifficultyRef = useRef<string>(difficulty);
-  const previousSubcategoryRef = useRef(subcategoryId);
 
   const {
     question,
@@ -89,27 +75,6 @@ export default function QuestionWrapper({
   useEffect(() => {
     void syncFavoriteState(question);
   }, [question, syncFavoriteState]);
-
-  useEffect(() => {
-    if (previousSubcategoryRef.current !== subcategoryId) {
-      previousSubcategoryRef.current = subcategoryId;
-      previousDifficultyRef.current = sessionDifficulty;
-      return;
-    }
-
-    const previousDifficulty = previousDifficultyRef.current;
-    if (
-      isDifficultyUpgrade(
-        subcategoryId,
-        previousDifficulty,
-        sessionDifficulty,
-      )
-    ) {
-      fireDifficultyUpgradeConfetti();
-    }
-
-    previousDifficultyRef.current = sessionDifficulty;
-  }, [sessionDifficulty, subcategoryId]);
 
   const signInDemand: SignInDemand | null = useMemo(() => {
     if (isQuestionSignInRequired) {
