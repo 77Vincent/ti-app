@@ -54,9 +54,10 @@ export default function QuestionChoice({
     <div className="space-y-1">
       <Card
         shadow="none"
-        className={`border w-full ${containerClassName}`}
+        className={`border w-full outline-none focus:outline-none focus-visible:outline-none ${containerClassName}`}
         isPressable={!hasSubmitted}
         onPress={onSelect}
+        tabIndex={-1}
       >
         <CardBody className="px-4 py-2">
           <div>{renderInlineMarkdown(option.text)}</div>

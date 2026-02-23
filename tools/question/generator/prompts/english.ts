@@ -25,7 +25,11 @@ Rules:
 - o is options as [text, explanation] tuples.
 - options count must be ${QUESTION_OPTION_COUNT}.
 - a is a single zero-based index of the correct option in o.
+- the index of a must evenly spread across the options in o.
 - explanations in o must be clear.
+- two question styles to choose from:
+    - one is selecting the correct word/phrase/sentence to fill in the blank in the prompt.
+    - the other is selecting the correct interpretation of the prompt.
 `.trim();
 
 export function buildEnglishGeneratorUserPrompt(

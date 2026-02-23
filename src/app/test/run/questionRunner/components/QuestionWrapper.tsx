@@ -2,6 +2,7 @@
 
 import type { QuestionRunnerProps, SignInDemand } from "../types";
 import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
+import Mousetrap from "mousetrap";
 import {
   getSubcategoryLabel,
   getSubjectIcon,
@@ -117,6 +118,20 @@ export default function QuestionWrapper({
     }
     void submit();
   }, [canTriggerSubmit, hasSubmitted, question, selectedOptionIndexes, submit]);
+
+  useEffect(() => {
+    Mousetrap.bind("enter", (event) => {
+      event.preventDefault();
+      handleSubmitPress();
+      return false;
+    });
+
+    return () => {
+      Mousetrap.unbind("enter");
+    };
+  }, [
+    handleSubmitPress,
+  ]);
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const subjectLabel = getSubjectLabel(subjectId);
