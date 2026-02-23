@@ -1,4 +1,4 @@
-import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../../src/lib/difficulty/config";
+import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../../shared/difficultyLadder";
 
 export const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
 
