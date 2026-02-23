@@ -187,7 +187,6 @@ export default function QuestionWrapper({
             hasSubmitted={hasSubmitted}
             isLoadingQuestion={isLoadingQuestion}
             isSignInRequired={isSignInRequired}
-            isSubmitting={isSubmitting}
             question={question}
             selectOption={selectOption}
             selectedOptionIndexes={selectedOptionIndexes}
@@ -202,13 +201,13 @@ export default function QuestionWrapper({
       />
 
       <div className="flex flex-wrap items-center gap-1.5">
-        <Chip color="primary" variant="bordered">
+        <Chip size="sm" color="primary" variant="bordered">
           <span className="inline-flex items-center gap-1.5">
             {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
             {subjectLabel}
           </span>
         </Chip>
-        <Chip color="primary" variant="bordered">
+        <Chip size="sm" color="primary" variant="bordered">
           {subcategoryLabel}
         </Chip>
       </div>

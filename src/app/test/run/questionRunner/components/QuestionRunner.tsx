@@ -15,7 +15,6 @@ import type { Question, QuestionOptionIndex, SignInDemand } from "../types";
 type QuestionProps = {
   question: Question | null;
   isLoadingQuestion: boolean;
-  isSubmitting: boolean;
   hasSubmitted: boolean;
   selectedOptionIndexes: QuestionOptionIndex[];
   isSignInRequired: boolean;
@@ -31,7 +30,6 @@ const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
 export default function QuestionRunner({
   question,
   isLoadingQuestion,
-  isSubmitting,
   hasSubmitted,
   selectedOptionIndexes,
   isSignInRequired,
@@ -65,7 +63,6 @@ export default function QuestionRunner({
                   hasSubmitted={hasSubmitted}
                   isCorrect={isOptionCorrect(question, optionIndex)}
                   isSelected={selectedOptionIndexes.includes(optionIndex)}
-                  isSubmitting={isSubmitting}
                   isWrongSelection={isOptionWrongSelection(
                     question,
                     selectedOptionIndexes,

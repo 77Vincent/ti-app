@@ -10,7 +10,6 @@ import type { QuestionOption } from "../types";
 type QuestionChoiceProps = {
   option: QuestionOption;
   hasSubmitted: boolean;
-  isSubmitting: boolean;
   isSelected: boolean;
   isCorrect: boolean;
   isWrongSelection: boolean;
@@ -36,7 +35,6 @@ function renderInlineMarkdown(markdown: string) {
 export default function QuestionChoice({
   option,
   hasSubmitted,
-  isSubmitting,
   isSelected,
   isCorrect,
   isWrongSelection,
@@ -57,7 +55,6 @@ export default function QuestionChoice({
       <Card
         shadow="none"
         className={`border w-full ${containerClassName}`}
-        isDisabled={isSubmitting}
         isPressable={!hasSubmitted}
         onPress={onSelect}
       >

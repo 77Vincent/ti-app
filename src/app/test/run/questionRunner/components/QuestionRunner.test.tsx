@@ -23,7 +23,6 @@ describe("QuestionRunner", () => {
         hasSubmitted={false}
         isLoadingQuestion={false}
         isSignInRequired={false}
-        isSubmitting={false}
         question={MOCK_QUESTION}
         selectOption={() => {}}
         selectedOptionIndexes={[]}
