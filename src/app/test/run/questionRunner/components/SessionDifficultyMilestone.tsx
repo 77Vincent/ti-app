@@ -8,6 +8,7 @@ import {
 import type { SubcategoryEnum } from "@/lib/meta";
 import { Card, CardBody, Chip } from "@heroui/react";
 import { Fragment, useEffect, useRef } from "react";
+import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 
 type SessionDifficultyMilestoneProps = {
   subcategoryId: SubcategoryEnum;
@@ -27,6 +28,7 @@ export default function SessionDifficultyMilestone({
   subcategoryId,
   difficulty,
 }: SessionDifficultyMilestoneProps) {
+  const difficultyUpgradeSfxRef = useRef<MidiSfxHandle | null>(null);
   const previousDifficultyRef = useRef<string>(difficulty);
   const previousSubcategoryRef = useRef(subcategoryId);
   const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
@@ -48,6 +50,7 @@ export default function SessionDifficultyMilestone({
         difficulty,
       )
     ) {
+      difficultyUpgradeSfxRef.current?.play();
       fireDifficultyUpgradeConfetti();
     }
 
@@ -56,6 +59,11 @@ export default function SessionDifficultyMilestone({
 
   return (
     <div className="rounded-2xl transition-colors">
+      <MidiSfx
+        presetId="difficultyUpgrade"
+        ref={difficultyUpgradeSfxRef}
+      />
+
       <Card shadow="sm">
         <CardBody className="space-y-3 px-4 py-3">
           <div className="flex items-center gap-1.5">
