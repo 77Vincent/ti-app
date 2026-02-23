@@ -18,7 +18,6 @@ export type TestSession = TestParam & {
   id: string;
   correctCount: number;
   submittedCount: number;
-  startedAtMs: number;
 };
 
 export function parseQuestionParam(value: unknown): QuestionParam | null {
@@ -77,15 +76,6 @@ export function parseTestSession(value: unknown): TestSession | null {
     return null;
   }
 
-  const startedAtMs = (value as { startedAtMs?: unknown }).startedAtMs;
-  if (
-    typeof startedAtMs !== "number" ||
-    !Number.isFinite(startedAtMs) ||
-    startedAtMs <= 0
-  ) {
-    return null;
-  }
-
   const correctCount = (value as { correctCount?: unknown }).correctCount;
   if (
     typeof correctCount !== "number" ||
@@ -109,6 +99,5 @@ export function parseTestSession(value: unknown): TestSession | null {
     id,
     correctCount: Math.floor(correctCount),
     submittedCount: Math.floor(submittedCount),
-    startedAtMs: Math.floor(startedAtMs),
   };
 }

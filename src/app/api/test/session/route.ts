@@ -39,7 +39,6 @@ function toTestSessionPayload(
     difficulty: params.difficulty,
     id: session.id,
     submittedCount: session.submittedCount,
-    startedAtMs: session.startedAt.getTime(),
   };
 }
 
@@ -97,7 +96,6 @@ export async function POST(request: Request) {
 
   const userId = await readAuthenticatedUserId();
   const id = crypto.randomUUID();
-  const startedAt = new Date();
 
   if (userId) {
     const session = toTestSessionPayload(
@@ -109,7 +107,6 @@ export async function POST(request: Request) {
         },
         id,
         params,
-        startedAt,
       ),
     );
 
@@ -129,7 +126,6 @@ export async function POST(request: Request) {
       },
       id,
       params,
-      startedAt,
     ),
   );
 

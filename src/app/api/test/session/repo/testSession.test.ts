@@ -46,7 +46,6 @@ describe("test session repo", () => {
     testSessionFindFirst.mockResolvedValueOnce({
       id: "session-1",
       correctCount: 3,
-      startedAt: new Date("2026-02-11T09:00:00.000Z"),
       submittedCount: 5,
       subjectId: "language",
       subcategoryId: "english",
@@ -58,7 +57,6 @@ describe("test session repo", () => {
     ).resolves.toEqual({
       id: "session-1",
       correctCount: 3,
-      startedAt: new Date("2026-02-11T09:00:00.000Z"),
       submittedCount: 5,
       subjectId: "language",
       subcategoryId: "english",
@@ -69,7 +67,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        startedAt: true,
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
@@ -86,7 +83,6 @@ describe("test session repo", () => {
     testSessionFindFirst.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 2,
-      startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
       subcategoryId: "english",
@@ -98,7 +94,6 @@ describe("test session repo", () => {
     ).resolves.toEqual({
       id: "anon-session-1",
       correctCount: 2,
-      startedAt: new Date("2026-02-12T09:00:00.000Z"),
       submittedCount: 4,
       subjectId: "language",
       subcategoryId: "english",
@@ -109,7 +104,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        startedAt: true,
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
@@ -126,7 +120,6 @@ describe("test session repo", () => {
     const existingSession = {
       id: "session-existing",
       correctCount: 4,
-      startedAt: new Date("2026-02-10T08:00:00.000Z"),
       submittedCount: 6,
       subjectId: "language",
       subcategoryId: "english",
@@ -134,7 +127,6 @@ describe("test session repo", () => {
     };
     testSessionCreate.mockRejectedValueOnce({ code: "P2002" });
     testSessionFindFirst.mockResolvedValueOnce(existingSession);
-    const startedAt = new Date("2026-02-12T08:00:00.000Z");
 
     await expect(
       upsertTestSession(
@@ -149,7 +141,6 @@ describe("test session repo", () => {
           subjectId: "language",
           subcategoryId: "english",
         },
-        startedAt,
       ),
     ).resolves.toEqual(existingSession);
 
@@ -157,7 +148,6 @@ describe("test session repo", () => {
       data: {
         id: "session-new",
         correctCount: 0,
-        startedAt,
         submittedCount: 0,
         userId: "user-1",
         subjectId: "language",
@@ -167,7 +157,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        startedAt: true,
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
@@ -183,7 +172,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        startedAt: true,
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,
@@ -194,11 +182,9 @@ describe("test session repo", () => {
   });
 
   it("creates authenticated session when context does not exist", async () => {
-    const startedAt = new Date("2026-02-12T08:00:00.000Z");
     const createdSession = {
       id: "session-new",
       correctCount: 0,
-      startedAt,
       submittedCount: 0,
       subjectId: "language",
       subcategoryId: "english",
@@ -219,7 +205,6 @@ describe("test session repo", () => {
           subjectId: "language",
           subcategoryId: "english",
         },
-        startedAt,
       ),
     ).resolves.toEqual(createdSession);
 
@@ -228,11 +213,9 @@ describe("test session repo", () => {
   });
 
   it("upserts a single anonymous session regardless of context", async () => {
-    const startedAt = new Date("2026-02-12T08:00:00.000Z");
     testSessionUpsert.mockResolvedValueOnce({
       id: "anon-session-1",
       correctCount: 0,
-      startedAt,
       submittedCount: 0,
       subjectId: "language",
       subcategoryId: "english",
@@ -249,7 +232,6 @@ describe("test session repo", () => {
         subjectId: "language",
         subcategoryId: "english",
       },
-      startedAt,
     );
 
     expect(testSessionUpsert).toHaveBeenCalledWith({
@@ -260,7 +242,6 @@ describe("test session repo", () => {
         id: "anon-session-1",
         anonymousSessionId: "anon-1",
         correctCount: 0,
-        startedAt,
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
@@ -269,7 +250,6 @@ describe("test session repo", () => {
       update: {
         id: "anon-session-1",
         correctCount: 0,
-        startedAt,
         submittedCount: 0,
         subjectId: "language",
         subcategoryId: "english",
@@ -278,7 +258,6 @@ describe("test session repo", () => {
       select: {
         id: true,
         correctCount: true,
-        startedAt: true,
         submittedCount: true,
         subjectId: true,
         subcategoryId: true,

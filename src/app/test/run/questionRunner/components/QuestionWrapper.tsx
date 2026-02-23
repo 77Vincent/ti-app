@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuestionRunnerProps, SignInDemand } from "../types";
-import { Button, Card, CardBody, Chip, Divider, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
 import {
   getSubcategoryLabel,
   getSubjectIcon,
@@ -12,14 +12,12 @@ import { createElement, useCallback, useEffect, useMemo, useState } from "react"
 import QuestionRunner from "./QuestionRunner";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
-import ElapsedSessionTimer from "./ElapsedSessionTimer";
 import SessionAccuracy from "./SessionAccuracy";
 
 export default function QuestionWrapper({
   id,
   subjectId,
   subcategoryId,
-  startedAtMs,
   correctCount: initialCorrectCount,
   submittedCount: initialSubmittedCount,
 }: QuestionRunnerProps) {
@@ -120,12 +118,6 @@ export default function QuestionWrapper({
                 correctCount={correctCount}
                 submittedCount={submittedCount}
               />
-            </span>
-          </Tooltip>
-          <Divider orientation="vertical" className="h-4"/>
-          <Tooltip content="Elapsed time">
-            <span>
-              <ElapsedSessionTimer startedAtMs={startedAtMs} />
             </span>
           </Tooltip>
         </div>

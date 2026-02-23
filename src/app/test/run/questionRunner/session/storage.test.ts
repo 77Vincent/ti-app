@@ -31,7 +31,6 @@ const REMOTE_SESSION_PAYLOAD = {
     id: "session-1",
     subjectId: "language",
     subcategoryId: "english",
-    startedAtMs: 1739395200000,
     submittedCount: 0,
   },
 } as const;

@@ -44,7 +44,6 @@ const STORED_SESSION = {
   id: "session-1",
   correctCount: 0,
   difficulty: "A1",
-  startedAt: new Date("2026-02-12T09:00:00.000Z"),
   submittedCount: 0,
   subjectId: "language",
   subcategoryId: "english",
@@ -62,7 +61,6 @@ const SESSION_RESPONSE = {
   difficulty: STORED_SESSION.difficulty,
   id: STORED_SESSION.id,
   submittedCount: STORED_SESSION.submittedCount,
-  startedAtMs: STORED_SESSION.startedAt.getTime(),
 } as const;
 
 describe("test session route GET", () => {
@@ -154,7 +152,6 @@ describe("test session route POST", () => {
       },
       expect.any(String),
       VALID_PARAMS,
-      expect.any(Date),
     );
     expect(persistAnonymousTestSessionCookie).not.toHaveBeenCalled();
   });
@@ -177,7 +174,6 @@ describe("test session route POST", () => {
       },
       expect.any(String),
       VALID_PARAMS,
-      expect.any(Date),
     );
     expect(persistAnonymousTestSessionCookie).toHaveBeenCalledWith(
       expect.any(Response),

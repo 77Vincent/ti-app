@@ -37,13 +37,12 @@ describe("parseTestParam", () => {
 });
 
 describe("parseTestSession", () => {
-  it("parses a valid session payload with startedAtMs", () => {
+  it("parses a valid session payload", () => {
     expect(
       parseTestSession({
         correctCount: 2,
         difficulty: "A1",
         id: "session-1",
-        startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
         subjectId: "language",
         subcategoryId: "english",
@@ -52,28 +51,18 @@ describe("parseTestSession", () => {
       correctCount: 2,
       difficulty: "A1",
       id: "session-1",
-      startedAtMs: 1_738_000_000_000,
       submittedCount: 3,
       subjectId: "language",
       subcategoryId: "english",
     });
   });
 
-  it("returns null when startedAtMs is missing", () => {
-    expect(
-      parseTestSession({
-        difficulty: "A1",
-        subjectId: "language",
-        subcategoryId: "english",
-      }),
-    ).toBeNull();
-  });
-
   it("returns null when id is missing", () => {
     expect(
       parseTestSession({
+        correctCount: 2,
         difficulty: "A1",
-        startedAtMs: 1_738_000_000_000,
+        submittedCount: 3,
         subjectId: "language",
         subcategoryId: "english",
       }),
@@ -85,7 +74,6 @@ describe("parseTestSession", () => {
       parseTestSession({
         difficulty: "A1",
         id: "session-1",
-        startedAtMs: 1_738_000_000_000,
         submittedCount: 3,
         subjectId: "language",
         subcategoryId: "english",
@@ -99,7 +87,6 @@ describe("parseTestSession", () => {
         correctCount: 2,
         difficulty: "A1",
         id: "session-1",
-        startedAtMs: 1_738_000_000_000,
         subjectId: "language",
         subcategoryId: "english",
       }),
