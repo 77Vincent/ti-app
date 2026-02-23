@@ -142,10 +142,7 @@ export default function QuestionWrapper({
             </Button>
           </Tooltip>
 
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Tooltip content="Accuracy">
+          <Tooltip content="Accuracy" placement="right">
             <span>
               <SessionAccuracy
                 correctCount={correctCount}
@@ -153,17 +150,18 @@ export default function QuestionWrapper({
               />
             </span>
           </Tooltip>
-          <Button
-            color="primary"
-            isDisabled={!canTriggerSubmit}
-            isLoading={isSubmitting}
-            onPress={handleSubmitPress}
-            radius="full"
-            size="sm"
-          >
-            {hasSubmitted ? "Next" : "Submit"}
-          </Button>
         </div>
+
+        <Button
+          color="primary"
+          isDisabled={!canTriggerSubmit}
+          isLoading={isSubmitting}
+          onPress={handleSubmitPress}
+          radius="full"
+          size="sm"
+        >
+          {hasSubmitted ? "Next" : "Submit"}
+        </Button>
       </div>
 
       <Card shadow="sm">

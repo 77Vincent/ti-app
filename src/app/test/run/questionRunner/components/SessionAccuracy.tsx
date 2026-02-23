@@ -12,7 +12,7 @@ export function formatSessionAccuracyLabel({
   const accuracyRate =
     submittedCount === 0 ? 0 : correctCount / submittedCount;
 
-  return `${Math.round(accuracyRate * 100)}% (${correctCount}/${submittedCount})`;
+  return `${correctCount}/${submittedCount} (${Math.round(accuracyRate * 100)}%)`;
 }
 
 export default function SessionAccuracy({
