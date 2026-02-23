@@ -14,13 +14,13 @@ INSERT INTO "QuestionPool" (
     'language',
     'english',
     1,
-    'Tom is late for class. He runs to school and says, "I am ___, teacher."',
+    'The kitchen is too ___, so Anna opens the window.',
     'A1',
     '[
-      {"text":"sorry","explanation":"Correct adjective for apologizing in this context."},
-      {"text":"hungry","explanation":"Possible feeling, but it does not fit the apology context."},
-      {"text":"run","explanation":"Verb form does not fit after I am in this sentence."},
-      {"text":"to school","explanation":"Prepositional phrase does not complete the sentence naturally."}
+      {"text":"hot","explanation":"Correct: the window is opened to cool a room that is too hot."},
+      {"text":"quiet","explanation":"Quiet describes sound, not temperature."},
+      {"text":"slow","explanation":"Slow describes speed, not room conditions."},
+      {"text":"sweet","explanation":"Sweet describes taste, not air temperature."}
     ]'::jsonb,
     '[0]'::jsonb,
     CURRENT_TIMESTAMP
@@ -29,58 +29,58 @@ INSERT INTO "QuestionPool" (
     'language',
     'english',
     2,
-    'Emma forgot her lunch at home. At noon, she feels hungry, so her friend shares a sandwich and she says, "Thank you for being so ___."',
+    'After the movie ended, Lisa checked the bus schedule and hurried home to avoid being ___ for dinner.',
     'A2',
     '[
-      {"text":"kind","explanation":"Correct adjective after being so in this sentence."},
-      {"text":"kindly","explanation":"Adverb form does not fit this adjective position."},
-      {"text":"kindness","explanation":"Noun form does not fit after being so."},
-      {"text":"kinder than","explanation":"Comparative phrase is incomplete in this context."}
+      {"text":"early","explanation":"Opposite meaning; she is rushing to avoid being late."},
+      {"text":"late","explanation":"Correct: the sentence directly expresses arriving after the expected time."},
+      {"text":"hungry","explanation":"Possible feeling, but not what ''avoid being ___'' refers to here."},
+      {"text":"quiet","explanation":"Not meaningful in the context of punctuality."}
     ]'::jsonb,
-    '[0]'::jsonb,
+    '[1]'::jsonb,
     CURRENT_TIMESTAMP
 ), (
     'q_language_english_b1_001',
     'language',
     'english',
     3,
-    'Ravi studies every evening, but he still feels nervous before tests. His teacher reminds him to review calmly, sleep early, and trust his preparation. During the exam, Ravi tries to stay ___.',
+    'Nora revised her notes every evening, so she felt ___ before the exam.',
     'B1',
     '[
-      {"text":"focused","explanation":"Correct adjective after stay in this sentence."},
-      {"text":"focus","explanation":"Base verb does not fit after stay here."},
-      {"text":"to focus","explanation":"Infinitive form does not fit this structure."},
-      {"text":"focuses","explanation":"Third-person verb form is grammatically incorrect here."}
+      {"text":"nervous","explanation":"Possible emotion before exams, but it conflicts with regular revision context."},
+      {"text":"confused","explanation":"Would suggest poor understanding, not expected after steady revision."},
+      {"text":"prepared","explanation":"Correct: consistent revision leads to feeling ready."},
+      {"text":"absent","explanation":"Describes not being present, not exam readiness."}
     ]'::jsonb,
-    '[0]'::jsonb,
+    '[2]'::jsonb,
     CURRENT_TIMESTAMP
 ), (
     'q_language_english_b2_001',
     'language',
     'english',
     4,
-    'After moving to a new city, Lina found the fast pace overwhelming. She created a weekly plan, joined a local club, and asked neighbors for advice. Within a month, she felt much more ___ in her daily life.',
+    'Investors rejected the business plan because its cost assumptions were not ___ enough.',
     'B2',
     '[
-      {"text":"confident","explanation":"Correct adjective after felt much more in this context."},
-      {"text":"confidence","explanation":"Noun form does not fit the adjective slot."},
-      {"text":"confidently","explanation":"Adverb form does not fit after felt more."},
-      {"text":"confide","explanation":"Verb form does not match sentence grammar."}
+      {"text":"creative","explanation":"Creativity can help ideas, but does not validate financial assumptions."},
+      {"text":"optional","explanation":"Optional does not describe whether assumptions match reality."},
+      {"text":"convenient","explanation":"Convenience is not the evaluation criterion investors apply here."},
+      {"text":"realistic","explanation":"Correct: investors require assumptions that are plausible and evidence-based."}
     ]'::jsonb,
-    '[0]'::jsonb,
+    '[3]'::jsonb,
     CURRENT_TIMESTAMP
 ), (
     'q_language_english_c1_001',
     'language',
     'english',
     5,
-    'Marcus had always been confident in technical meetings, yet his first presentation to clients went poorly because he used too much jargon. After feedback, he reorganized his slides, added practical examples, and practiced with colleagues. His second presentation was far more ___ and persuasive.',
+    'Although the sample size was large, the conclusion remained ___ because key variables were not controlled.',
     'C1',
     '[
-      {"text":"clear","explanation":"Correct adjective paired with persuasive in this sentence."},
-      {"text":"clearly","explanation":"Adverb form does not fit after was far more."},
-      {"text":"clarity","explanation":"Noun form does not fit this adjective position."},
-      {"text":"clarify","explanation":"Verb form is not grammatically correct here."}
+      {"text":"tentative","explanation":"Correct: without controlling key variables, conclusions stay provisional."},
+      {"text":"comprehensive","explanation":"Large samples do not automatically make conclusions comprehensive."},
+      {"text":"transparent","explanation":"Transparency concerns clarity, not evidential certainty by itself."},
+      {"text":"efficient","explanation":"Efficiency describes process speed, not inferential strength."}
     ]'::jsonb,
     '[0]'::jsonb,
     CURRENT_TIMESTAMP
@@ -89,14 +89,14 @@ INSERT INTO "QuestionPool" (
     'language',
     'english',
     6,
-    'During a public policy debate, Nora noticed that both sides cited selective evidence to support predetermined conclusions. Instead of reacting immediately, she compared methodologies, checked original datasets, and mapped unstated assumptions. Her final response was praised for being analytically rigorous, intellectually fair, and remarkably ___.',
+    'In her final chapter, the author drew a ___ distinction between legal compliance and moral legitimacy.',
     'C2',
     '[
-      {"text":"balanced","explanation":"Best adjective for describing fair and rigorous reasoning."},
-      {"text":"balance","explanation":"Noun or verb form does not fit the adjective slot."},
-      {"text":"balancingly","explanation":"This form is unnatural and not standard English."},
-      {"text":"to balance","explanation":"Infinitive form does not complete the sentence grammar."}
+      {"text":"ordinary","explanation":"Ordinary does not capture the subtle conceptual separation described."},
+      {"text":"nuanced","explanation":"Correct: nuanced conveys fine-grained, precise conceptual differentiation."},
+      {"text":"random","explanation":"Random would undermine the intentional analytical contrast."},
+      {"text":"brief","explanation":"Brief describes length, not intellectual precision of distinction."}
     ]'::jsonb,
-    '[0]'::jsonb,
+    '[1]'::jsonb,
     CURRENT_TIMESTAMP
 );
