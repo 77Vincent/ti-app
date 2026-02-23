@@ -21,7 +21,7 @@ export default function SessionAccuracy({
 }: SessionAccuracyProps) {
 
   return (
-    <p className="font-bold tabular-nums">
+    <p className="font-bold text-lg tabular-nums">
       {formatSessionAccuracyLabel({
         correctCount,
         submittedCount,

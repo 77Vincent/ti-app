@@ -50,11 +50,9 @@ describe("QuestionRunner", () => {
       isSubmitting: false,
       hasSubmitted: false,
       selectedOptionIndexes: [],
-      isFavoriteSubmitting: false,
       isSignInRequired: false,
       signInDemand: null,
       selectOption: () => {},
-      submit: async () => {},
     });
 
     expect(hasTooltipContent(tree, "Previous question")).toBe(false);

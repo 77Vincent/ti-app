@@ -4,7 +4,6 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button } from "@heroui/react";
 import Link from "next/link";
-import { canSubmitQuestion } from "../utils/questionGuards";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
 import {
@@ -19,11 +18,9 @@ type QuestionProps = {
   isSubmitting: boolean;
   hasSubmitted: boolean;
   selectedOptionIndexes: QuestionOptionIndex[];
-  isFavoriteSubmitting: boolean;
   isSignInRequired: boolean;
   signInDemand: SignInDemand | null;
   selectOption: (optionIndex: QuestionOptionIndex) => void;
-  submit: () => Promise<void>;
 };
 
 const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
@@ -37,11 +34,9 @@ export default function QuestionRunner({
   isSubmitting,
   hasSubmitted,
   selectedOptionIndexes,
-  isFavoriteSubmitting,
   isSignInRequired,
   signInDemand,
   selectOption,
-  submit,
 }: QuestionProps) {
   const isLoading = isLoadingQuestion || !question;
 
@@ -81,27 +76,6 @@ export default function QuestionRunner({
                   option={option}
                 />
               ))}
-            </div>
-
-            <div className="flex items-center justify-end">
-              <div className="flex items-center justify-end gap-4">
-                <Button
-                  color="primary"
-                  isDisabled={
-                    isFavoriteSubmitting ||
-                    !canSubmitQuestion({
-                      hasQuestion: true,
-                      hasSubmitted,
-                      selectedOptionCount: selectedOptionIndexes.length,
-                      isSubmitting,
-                    })
-                  }
-                  isLoading={isSubmitting}
-                  onPress={submit}
-                >
-                  {hasSubmitted ? "Next" : "Submit"}
-                </Button>
-              </div>
             </div>
           </div>
         )}

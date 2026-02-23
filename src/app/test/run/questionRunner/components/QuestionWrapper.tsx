@@ -21,6 +21,7 @@ import {
 import QuestionRunner from "./QuestionRunner";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
+import { canSubmitQuestion } from "../utils/questionGuards";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
 
@@ -156,7 +157,7 @@ export default function QuestionWrapper({
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Tooltip content="Accuracy">
             <span>
               <SessionAccuracy
@@ -165,6 +166,25 @@ export default function QuestionWrapper({
               />
             </span>
           </Tooltip>
+          <Button
+            color="primary"
+            isDisabled={
+              isFavoriteSubmitting ||
+              isSignInRequired ||
+              !canSubmitQuestion({
+                hasQuestion: Boolean(question),
+                hasSubmitted,
+                selectedOptionCount: selectedOptionIndexes.length,
+                isSubmitting,
+              })
+            }
+            isLoading={isSubmitting}
+            onPress={submit}
+            radius="full"
+            size="sm"
+          >
+            {hasSubmitted ? "Next" : "Submit"}
+          </Button>
         </div>
       </div>
 
@@ -172,7 +192,6 @@ export default function QuestionWrapper({
         <CardBody className="p-6">
           <QuestionRunner
             hasSubmitted={hasSubmitted}
-            isFavoriteSubmitting={isFavoriteSubmitting}
             isLoadingQuestion={isLoadingQuestion}
             isSignInRequired={isSignInRequired}
             isSubmitting={isSubmitting}
@@ -180,7 +199,6 @@ export default function QuestionWrapper({
             selectOption={selectOption}
             selectedOptionIndexes={selectedOptionIndexes}
             signInDemand={signInDemand}
-            submit={submit}
           />
         </CardBody>
       </Card>
@@ -191,13 +209,13 @@ export default function QuestionWrapper({
       />
 
       <div className="flex flex-wrap items-center gap-1.5">
-        <Chip variant="bordered">
+        <Chip color="primary" variant="bordered">
           <span className="inline-flex items-center gap-1.5">
             {createElement(SubjectIcon, { "aria-hidden": true, size: 14 })}
             {subjectLabel}
           </span>
         </Chip>
-        <Chip variant="bordered">
+        <Chip color="primary" variant="bordered">
           {subcategoryLabel}
         </Chip>
       </div>
