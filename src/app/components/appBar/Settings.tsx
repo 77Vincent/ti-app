@@ -4,8 +4,7 @@ import {
   Switch,
 } from "@heroui/react";
 import { useTheme } from "next-themes";
-import { Moon, Languages, Music } from "lucide-react";
-import { useState } from "react";
+import { Moon, Music } from "lucide-react";
 import { useSettingsStore } from "@/lib/settings/store";
 
 export default function Menu() {
@@ -18,9 +17,6 @@ export default function Menu() {
 
   const DARK_MODE_LABEL = "Dark mode";
   const isDark = resolvedTheme === "dark";
-
-  const [isBigFont, setIsBigFont] = useState(false);
-  const BIG_FONT_LABEL = "Big font";
 
   const HAS_SOUND_LABEL = "Sound";
 
@@ -37,22 +33,6 @@ export default function Menu() {
             aria-label={HAS_SOUND_LABEL}
             isSelected={isSoundEnabled}
             onValueChange={setIsSoundEnabled}
-            size="sm"
-          />
-        </div>
-      </DropdownItem>
-
-      <DropdownItem
-        key={BIG_FONT_LABEL}
-        textValue={BIG_FONT_LABEL}
-        startContent={<Languages aria-hidden="true" size={16} />}
-      >
-        <div className="flex w-full items-center justify-between gap-3">
-          <span>{BIG_FONT_LABEL}</span>
-          <Switch
-            aria-label={BIG_FONT_LABEL}
-            isSelected={isBigFont}
-            onValueChange={(nextValue) => setIsBigFont(nextValue)}
             size="sm"
           />
         </div>
