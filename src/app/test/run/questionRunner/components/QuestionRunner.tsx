@@ -6,11 +6,13 @@ import { Button } from "@heroui/react";
 import Link from "next/link";
 import QuestionPrompt from "./QuestionPrompt";
 import QuestionChoice from "./QuestionChoice";
+import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import {
   isOptionCorrect,
   isOptionWrongSelection,
 } from "../utils/evaluation";
 import type { Question, QuestionOptionIndex, SignInDemand } from "../types";
+import { useCallback, useRef } from "react";
 
 type QuestionProps = {
   question: Question | null;
@@ -39,9 +41,20 @@ export default function QuestionRunner({
   selectOption,
 }: QuestionProps) {
   const isLoading = isLoadingQuestion || !question;
+  const optionSelectMidiSfxRef = useRef<MidiSfxHandle | null>(null);
+
+  const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
+    optionSelectMidiSfxRef.current?.play();
+    selectOption(optionIndex);
+  }, [selectOption]);
 
   return (
     <div className="relative">
+      <MidiSfx
+        presetId="optionSelect"
+        ref={optionSelectMidiSfxRef}
+      />
+
       {isSignInRequired ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <Button as={Link} color="primary" href={PAGE_PATHS.SIGN_IN} size="lg">
@@ -72,7 +85,7 @@ export default function QuestionRunner({
                     optionIndex,
                   )}
                   key={optionIndex}
-                  onSelect={() => selectOption(optionIndex)}
+                  onSelect={() => handleOptionSelect(optionIndex)}
                   option={option}
                 />
               ))}

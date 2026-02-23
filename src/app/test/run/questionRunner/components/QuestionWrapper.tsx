@@ -13,9 +13,11 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import QuestionRunner from "./QuestionRunner";
+import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { canSubmitQuestion } from "../utils/questionGuards";
@@ -32,6 +34,7 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
+  const submitMidiSfxRef = useRef<MidiSfxHandle | null>(null);
 
   const {
     question,
@@ -88,6 +91,24 @@ export default function QuestionWrapper({
     return null;
   }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
   const isSignInRequired = signInDemand !== null;
+  const canTriggerSubmit =
+    !isFavoriteSubmitting &&
+    !isSignInRequired &&
+    canSubmitQuestion({
+      hasQuestion: Boolean(question),
+      hasSubmitted,
+      selectedOptionCount: selectedOptionIndexes.length,
+      isSubmitting,
+    });
+
+  const handleSubmitPress = useCallback(() => {
+    if (!canTriggerSubmit) {
+      return;
+    }
+
+    submitMidiSfxRef.current?.play();
+    void submit();
+  }, [canTriggerSubmit, submit]);
 
   const SubjectIcon = getSubjectIcon(subjectId);
   const subjectLabel = getSubjectLabel(subjectId);
@@ -95,6 +116,11 @@ export default function QuestionWrapper({
 
   return (
     <div className="w-full max-w-2xl space-y-3">
+      <MidiSfx
+        presetId="submitAction"
+        ref={submitMidiSfxRef}
+      />
+
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
           <Tooltip content={isFavorite ? "Remove favorite" : "Favorite this question"}>
@@ -133,18 +159,9 @@ export default function QuestionWrapper({
           </Tooltip>
           <Button
             color="primary"
-            isDisabled={
-              isFavoriteSubmitting ||
-              isSignInRequired ||
-              !canSubmitQuestion({
-                hasQuestion: Boolean(question),
-                hasSubmitted,
-                selectedOptionCount: selectedOptionIndexes.length,
-                isSubmitting,
-              })
-            }
+            isDisabled={!canTriggerSubmit}
             isLoading={isSubmitting}
-            onPress={submit}
+            onPress={handleSubmitPress}
             radius="full"
             size="sm"
           >
