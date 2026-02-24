@@ -45,10 +45,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <section className="flex flex-1 gap-4">
-      <aside className="flex min-h-64 w-56 shrink-0">
-        <nav aria-label="Dashboard sections" className="flex w-full flex-col">
-          <ul className="flex flex-col gap-3">
+    <section className="flex flex-1 flex-col gap-4 md:flex-row">
+      <aside className="w-full md:flex md:min-h-64 md:w-40 lg:w-56 md:shrink-0">
+        <nav aria-label="Dashboard sections" className="w-full">
+          <ul className="flex items-center gap-2 md:hidden">
             {DASHBOARD_NAV_ITEMS.map((item) => (
               <li key={item.href}>
                 <Link
@@ -57,24 +57,61 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   aria-current={pathname === item.href ? "page" : undefined}
                   color="foreground"
                   underline={pathname === item.href ? "always" : "none"}
-                  isBlock
-                  className="w-full"
+                  className="inline-flex h-9 w-9 items-center justify-center"
                 >
-                  <span className="inline-flex items-center gap-2">
-                    <item.icon aria-hidden size={18} />
-                    <span>{item.label}</span>
-                  </span>
+                  <item.icon aria-hidden size={18} />
+                  <span className="sr-only">{item.label}</span>
                 </Link>
               </li>
             ))}
-          </ul>
-          <div className="mt-auto pt-3">
-            <Link as="button" onPress={handleLogout} color="foreground" isBlock className="w-full">
-              <span className="inline-flex items-center cursor-pointer gap-2">
+            <li className="ml-auto">
+              <Link
+                as="button"
+                onPress={handleLogout}
+                color="foreground"
+                className="inline-flex h-9 w-9 items-center justify-center"
+              >
                 <LogOut aria-hidden size={18} />
-                <span>Logout</span>
-              </span>
-            </Link>
+                <span className="sr-only">Logout</span>
+              </Link>
+            </li>
+          </ul>
+
+          <div className="hidden h-full flex-col md:flex">
+            <ul className="flex flex-col gap-3">
+              {DASHBOARD_NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    as={NextLink}
+                    href={item.href}
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    color="foreground"
+                    underline={pathname === item.href ? "always" : "none"}
+                    isBlock
+                    className="w-full"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <item.icon aria-hidden size={18} />
+                      <span>{item.label}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-auto pt-3">
+              <Link
+                as="button"
+                onPress={handleLogout}
+                color="foreground"
+                isBlock
+                className="w-full"
+              >
+                <span className="inline-flex items-center cursor-pointer gap-2">
+                  <LogOut aria-hidden size={18} />
+                  <span>Logout</span>
+                </span>
+              </Link>
+            </div>
           </div>
         </nav>
       </aside>
