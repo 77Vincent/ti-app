@@ -19,7 +19,7 @@ type DashboardLayoutProps = {
 
 const DASHBOARD_NAV_ITEMS = [
   {
-    label: "Overview",
+    label: "Dashboard",
     href: PAGE_PATHS.DASHBOARD,
     icon: LayoutDashboard,
   },
@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <section className="flex flex-1 gap-4">
-      <aside className="flex min-h-64 w-56 shrink-0 p-2">
+      <aside className="flex min-h-64 w-56 shrink-0">
         <nav aria-label="Dashboard sections" className="flex w-full flex-col">
           <ul className="flex flex-col gap-3">
             {DASHBOARD_NAV_ITEMS.map((item) => (
@@ -79,7 +79,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
       </aside>
 
-      <div className="flex min-h-64 flex-1 p-4">
+      <div className="flex min-h-64 flex-1">
         {children}
       </div>
     </section>
