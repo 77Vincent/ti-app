@@ -3,14 +3,35 @@ import {
   ENGLISH_GENERATOR_SYSTEM_PROMPT,
   buildEnglishGeneratorUserPrompt,
 } from "./english";
+import {
+  CHINESE_GENERATOR_SYSTEM_PROMPT,
+  buildChineseGeneratorUserPrompt,
+} from "./chinese";
 
 export function buildGeneratorSystemPrompt(
   input: GenerateQuestionRequest,
 ): string {
-  void input;
-  return ENGLISH_GENERATOR_SYSTEM_PROMPT;
+  switch (input.subcategory) {
+    case "english":
+      return ENGLISH_GENERATOR_SYSTEM_PROMPT;
+    case "chinese":
+      return CHINESE_GENERATOR_SYSTEM_PROMPT;
+    default:
+      throw new Error(
+        `No generator system prompt configured for subcategory "${input.subcategory}".`,
+      );
+  }
 }
 
 export function buildGeneratorUserPrompt(input: GenerateQuestionRequest): string {
-  return buildEnglishGeneratorUserPrompt(input);
+  switch (input.subcategory) {
+    case "english":
+      return buildEnglishGeneratorUserPrompt(input);
+    case "chinese":
+      return buildChineseGeneratorUserPrompt(input);
+    default:
+      throw new Error(
+        `No generator user prompt configured for subcategory "${input.subcategory}".`,
+      );
+  }
 }

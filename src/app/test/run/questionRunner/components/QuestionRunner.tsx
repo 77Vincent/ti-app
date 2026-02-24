@@ -54,10 +54,10 @@ export default function QuestionRunner({
         {isLoading ? (
           <QuestionSkeleton />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <QuestionPrompt markdown={question.prompt} />
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {question.options.map((option, optionIndex) => (
                 <QuestionChoice
                   hasSubmitted={hasSubmitted}

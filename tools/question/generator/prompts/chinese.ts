@@ -1,11 +1,11 @@
 import type { GenerateQuestionRequest } from "../../types";
 import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
-import { DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY } from "../../../../shared/difficultyLadder"
+import { DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY } from "../../../../shared/difficultyLadder";
 
-export const ENGLISH_GENERATOR_SYSTEM_PROMPT = `
+export const CHINESE_GENERATOR_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions:
 - subject: language
-- subcategory: english
+- subcategory: chinese
 
 Return only valid JSON with this exact shape:
 [
@@ -16,13 +16,13 @@ Return only valid JSON with this exact shape:
   }
 ]
 
-Difficulty levels: CEFR - A1, A2, B1, B2, C1, C2
-- A1: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.A1}
-- A2: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.A2}
-- B1: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.B1}
-- B2: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.B2}
-- C1: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.C1}
-- C2: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.C2}
+Difficulty levels: HSK - HSK1, HSK2, HSK3, HSK4, HSK5, HSK6
+- HSK1: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK1}
+- HSK2: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK2}
+- HSK3: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK3}
+- HSK4: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK4}
+- HSK5: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK5}
+- HSK6: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.chinese.HSK6}
 
 Rules:
 - output must be raw JSON only.
@@ -40,13 +40,14 @@ Rules:
 - in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
+- question and option text should be in Simplified Chinese.
 - two question styles to choose from:
     1. selecting the correct word/phrase/sentence to fill in the blank in the prompt.
     2. selecting the correct interpretation of the prompt.
 `.trim();
 
-export function buildEnglishGeneratorUserPrompt(
+export function buildChineseGeneratorUserPrompt(
   input: GenerateQuestionRequest,
 ): string {
-  return `difficulty: CEFR - ${input.difficulty}`;
+  return `difficulty: HSK - ${input.difficulty}`;
 }

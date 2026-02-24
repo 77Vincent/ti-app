@@ -119,7 +119,7 @@ export function TestsPanel() {
               <span>{subjectGroup.label}</span>
             </h2>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-5">
               {subjectGroup.subcategories.map((subcategory) => {
                 const ongoingDifficulty =
                   ongoingDifficultyBySubcategory.get(subcategory.id);
