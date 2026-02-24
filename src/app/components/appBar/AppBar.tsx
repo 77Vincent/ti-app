@@ -3,14 +3,12 @@
 import {
   Avatar,
   Button,
-  Dropdown,
-  DropdownTrigger,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
 } from "@heroui/react";
-import { Settings, User, User2 } from "lucide-react";
+import { User, User2 } from "lucide-react";
 import { getSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,12 +18,10 @@ import {
   hasAuthenticatedUser,
 } from "../../auth/sessionState";
 import { clearTestSession } from "../../test/run/questionRunner/session/storage";
-import Menu from "./Settings";
 
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userDisplayName, setUserDisplayName] = useState("");
-  const SETTINGS_LABEL = "Settings";
   const SIGN_IN_LABEL = "Sign in";
   const DASHBOARD_LABEL = "Dashboard";
 
@@ -95,26 +91,6 @@ export default function AppBar() {
               }
             />
           )}
-        </NavbarItem>
-
-        <NavbarItem>
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Button
-                aria-label={SETTINGS_LABEL}
-                isIconOnly
-                radius="full"
-                size="sm"
-                title={SETTINGS_LABEL}
-                variant="light"
-                startContent={
-                  <Settings aria-hidden="true" size={20} />
-                }
-              />
-            </DropdownTrigger>
-
-            <Menu />
-          </Dropdown>
         </NavbarItem>
       </NavbarContent>
     </Navbar>
