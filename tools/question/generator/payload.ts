@@ -58,7 +58,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
 
 export function parseAIQuestionPayload(
   content: string,
-): [ParsedAIQuestionPayload, ParsedAIQuestionPayload] {
+): ParsedAIQuestionPayload[] {
   let questions: unknown;
   try {
     questions = JSON.parse(content);
@@ -66,14 +66,9 @@ export function parseAIQuestionPayload(
     throw new Error("AI response was not valid JSON.");
   }
 
-  if (!Array.isArray(questions) || questions.length !== 2) {
+  if (!Array.isArray(questions) || questions.length === 0) {
     throw new Error("AI response shape is invalid.");
   }
 
-  const [firstQuestion, secondQuestion] = questions;
-
-  return [
-    parseQuestionPayload(firstQuestion),
-    parseQuestionPayload(secondQuestion),
-  ];
+  return questions.map((question) => parseQuestionPayload(question));
 }

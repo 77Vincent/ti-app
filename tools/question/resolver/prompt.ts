@@ -19,6 +19,7 @@ Rules:
 - d must be one raw difficulty ID from this ladder: ${difficultyLadder.join(", ")}.
 - do not include "${difficultyFramework}: " prefix in d.
 - d must reflect your own judgment of the question difficulty.
+- the difficulty ladder is based on real world framework and standards.
 `.trim();
 }
 

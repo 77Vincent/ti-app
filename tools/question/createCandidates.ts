@@ -21,20 +21,12 @@ export async function createQuestionCandidatesWithAI(
   input: GenerateQuestionRequest,
 ): Promise<Question[]> {
   const content = await requestDeepSeekGeneratorContent(input);
-  const [firstQuestion, secondQuestion] = parseAIQuestionPayload(content);
-
-  const questions: Question[] = [
-    {
-      id: createQuestionId(firstQuestion.prompt),
-      difficulty: input.difficulty,
-      ...firstQuestion,
-    },
-    {
-      id: createQuestionId(secondQuestion.prompt),
-      difficulty: input.difficulty,
-      ...secondQuestion,
-    },
-  ];
+  const parsedQuestions = parseAIQuestionPayload(content);
+  const questions: Question[] = parsedQuestions.map((question) => ({
+    id: createQuestionId(question.prompt),
+    difficulty: input.difficulty,
+    ...question,
+  }));
   const difficultyProfile = DIFFICULTY_LADDER_BY_SUBCATEGORY[input.subcategory];
   const difficultyFramework = difficultyProfile.framework;
   const difficultyLadder = difficultyProfile.ladder;
