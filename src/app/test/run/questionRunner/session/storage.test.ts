@@ -46,75 +46,6 @@ describe("session storage", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns remote session when local snapshot matches id", async () => {
-    readLocalTestSessionRaw.mockReturnValue(
-      JSON.stringify({ sessionId: "session-1" }),
-    );
-
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
-    );
-
-    await expect(readTestSession()).resolves.toEqual(REMOTE_SESSION_PAYLOAD.session);
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(clearLocalTestSessionRaw).not.toHaveBeenCalled();
-    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
-    expect(fetchSpy).toHaveBeenCalledWith(
-      `${API_PATHS.TEST_SESSION}?sessionId=session-1`,
-      expect.objectContaining({ cache: "no-store", method: "GET" }),
-    );
-  });
-
-  it("returns null without remote call when local snapshot is missing", async () => {
-    readLocalTestSessionRaw.mockReturnValue(null);
-
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
-
-    await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it("returns remote session even when remote id differs", async () => {
-    readLocalTestSessionRaw.mockReturnValue(
-      JSON.stringify({ sessionId: "session-1" }),
-    );
-
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          session: {
-            ...REMOTE_SESSION_PAYLOAD.session,
-            id: "session-other",
-          },
-        }),
-        { status: 200 },
-      ),
-    );
-
-    await expect(readTestSession()).resolves.toEqual({
-      ...REMOTE_SESSION_PAYLOAD.session,
-      id: "session-other",
-    });
-    expect(clearLocalTestSessionRaw).not.toHaveBeenCalled();
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it("clears local session when remote session is absent", async () => {
-    readLocalTestSessionRaw.mockReturnValue(
-      JSON.stringify({ sessionId: "session-1" }),
-    );
-
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(null, { status: 204 }),
-    );
-
-    await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
-    expect(readLocalTestSessionRaw).toHaveBeenCalledTimes(1);
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-  });
-
   it("clearTestSession wipes local and remote", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(null, { status: 204 }),
@@ -129,7 +60,7 @@ describe("session storage", () => {
     );
   });
 
-  it("writeTestSession persists session id snapshot", async () => {
+  it("writeTestSession posts and does not write local snapshot", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
     );
@@ -142,10 +73,20 @@ describe("session storage", () => {
       }),
     ).resolves.toBeUndefined();
 
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(writeLocalTestSessionRaw).toHaveBeenCalledWith(
-      JSON.stringify({ sessionId: "session-1" }),
+    expect(fetchSpy).toHaveBeenCalledWith(
+      API_PATHS.TEST_SESSION,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          difficulty: "A1",
+          subjectId: "language",
+          subcategoryId: "english",
+        }),
+        headers: { "content-type": "application/json" },
+      }),
     );
+    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
+    expect(readLocalTestSessionRaw).not.toHaveBeenCalled();
   });
 
   it("reads session by context without local-storage dependency", async () => {
@@ -165,6 +106,7 @@ describe("session storage", () => {
       expect.objectContaining({ cache: "no-store", method: "GET" }),
     );
     expect(readLocalTestSessionRaw).not.toHaveBeenCalled();
+    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
   });
 
   it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {

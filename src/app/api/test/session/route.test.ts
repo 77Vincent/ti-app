@@ -82,7 +82,7 @@ describe("test session route GET", () => {
     readTestSession.mockResolvedValue(STORED_SESSION);
   });
 
-  it("returns null when sessionId query param is missing", async () => {
+  it("returns null when subject/subcategory query params are missing", async () => {
     const response = await GET(
       new Request("http://localhost/api/test/session"),
     );
@@ -90,41 +90,6 @@ describe("test session route GET", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ session: null });
     expect(readTestSession).not.toHaveBeenCalled();
-    expect(readTestSessionByContext).not.toHaveBeenCalled();
-  });
-
-  it("reads authenticated session by id", async () => {
-    readAuthenticatedUserId.mockResolvedValueOnce("user-1");
-
-    const response = await GET(
-      new Request("http://localhost/api/test/session?sessionId=session-1"),
-    );
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      session: SESSION_RESPONSE,
-    });
-    expect(readTestSession).toHaveBeenCalledWith({
-      id: "session-1",
-      userId: "user-1",
-    });
-    expect(readTestSessionByContext).not.toHaveBeenCalled();
-    expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
-  });
-
-  it("reads anonymous session by id", async () => {
-    const response = await GET(
-      new Request("http://localhost/api/test/session?sessionId=session-1"),
-    );
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      session: SESSION_RESPONSE,
-    });
-    expect(readTestSession).toHaveBeenCalledWith({
-      id: "session-1",
-      anonymousSessionId: "anon-1",
-    });
     expect(readTestSessionByContext).not.toHaveBeenCalled();
   });
 

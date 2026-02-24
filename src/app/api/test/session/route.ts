@@ -75,18 +75,8 @@ async function readActiveSession(
   }
 
   const searchParams = new URL(request.url).searchParams;
-  const sessionId = searchParams.get("sessionId");
   const subjectId = searchParams.get("subjectId");
   const subcategoryId = searchParams.get("subcategoryId");
-
-  if (isNonEmptyString(sessionId)) {
-    return toTestSessionPayload(
-      await readTestSession({
-        ...selector,
-        id: sessionId,
-      }),
-    );
-  }
 
   if (
     !isNonEmptyString(subjectId) ||
