@@ -2,12 +2,20 @@
 
 import confetti from "canvas-confetti";
 import {
+  DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY,
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
   isDifficultyDowngrade,
   isDifficultyUpgrade,
 } from "@/lib/difficulty";
 import type { SubcategoryEnum } from "@/lib/meta";
-import { Card, CardBody, Chip } from "@heroui/react";
+import {
+  Card,
+  CardBody,
+  Chip,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@heroui/react";
 import { Fragment, useEffect, useRef } from "react";
 import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 
@@ -34,6 +42,7 @@ export default function SessionDifficultyMilestone({
   const previousDifficultyRef = useRef<string>(difficulty);
   const previousSubcategoryRef = useRef(subcategoryId);
   const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const descriptions = DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY[subcategoryId];
   const currentIndex = ladder.indexOf(difficulty);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0;
 
@@ -84,18 +93,29 @@ export default function SessionDifficultyMilestone({
             {ladder.map((level, index) => {
               const isReached = index <= activeIndex;
               const isCurrent = index === activeIndex;
+              const description =
+                descriptions[level as keyof typeof descriptions];
 
               return (
                 <Fragment key={level}>
-                  <Chip
-                    aria-current={isCurrent ? "step" : undefined}
-                    color={isReached ? "primary" : "default"}
-                    size="sm"
-                    className="tabular-nums"
-                    variant={isReached ? "solid" : "bordered"}
-                  >
-                    {level}
-                  </Chip>
+                  <Popover placement="top" shadow="md">
+                    <PopoverTrigger>
+                      <button type="button">
+                        <Chip
+                          aria-current={isCurrent ? "step" : undefined}
+                          color={isReached ? "primary" : "default"}
+                          size="sm"
+                          className="tabular-nums"
+                          variant={isReached ? "solid" : "bordered"}
+                        >
+                          {level}
+                        </Chip>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-3">
+                      <p className="max-w-3xs text-sm">{description}</p>
+                    </PopoverContent>
+                  </Popover>
                   {index < ladder.length - 1 ? (
                     <div
                       className={[

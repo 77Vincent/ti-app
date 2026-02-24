@@ -1,4 +1,7 @@
-export { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../../shared/difficultyLadder";
+export {
+  DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY,
+  DIFFICULTY_LADDER_BY_SUBCATEGORY,
+} from "../../../shared/difficultyLadder";
 
 export const DIFFICULTY_ADAPTIVE_WINDOW_SIZE = 15;
 export const DIFFICULTY_PROMOTE_ACCURACY_THRESHOLD = 0.8;
