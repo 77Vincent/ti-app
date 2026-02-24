@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@heroui/react";
+import { Divider, Link } from "@heroui/react";
 import {
   ClipboardCheck,
   LayoutDashboard,
@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </li>
             ))}
             <li>
-              <Link as="button" onPress={handleLogout}>
+              <Link as="button" onPress={handleLogout} color="foreground">
                 <span className="inline-flex items-center gap-2">
                   <LogOut aria-hidden size={18} />
                   <span>Logout</span>
@@ -75,8 +75,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
       </aside>
 
+
       <div className="flex min-h-64 flex-1 flex-col gap-4 p-4">
         <h1 className="text-lg font-semibold">{pageTitle}</h1>
+        <Divider />
         {children}
       </div>
     </section>

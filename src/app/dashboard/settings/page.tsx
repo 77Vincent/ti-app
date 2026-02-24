@@ -50,23 +50,23 @@ export default function DashboardSettingsPage() {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="flex w-full max-w-2xs flex-col gap-4">
       <SettingItem
-        icon={<Music aria-hidden size={16} />}
+        icon={<Music aria-hidden size={18} />}
         isSelected={isSoundEnabled}
         label="Sound"
         onValueChange={setIsSoundEnabled}
       />
 
       <SettingItem
-        icon={<Moon aria-hidden size={16} />}
+        icon={<Moon aria-hidden size={18} />}
         isSelected={isDark}
         label="Dark mode"
         onValueChange={(nextIsDark) => setTheme(nextIsDark ? "dark" : "light")}
       />
 
       <SettingItem
-        icon={<Type aria-hidden size={16} />}
+        icon={<Type aria-hidden size={18} />}
         isSelected={isLargeQuestionTextEnabled}
         label="Large font"
         onValueChange={setIsLargeQuestionTextEnabled}
