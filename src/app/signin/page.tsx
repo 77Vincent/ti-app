@@ -27,7 +27,7 @@ export default function SignInPage() {
             }
             onPress={() => {
               void signIn(GOOGLE_PROVIDER_ID, {
-                callbackUrl: PAGE_PATHS.TEST,
+                callbackUrl: PAGE_PATHS.DASHBOARD,
               });
             }}
             variant="bordered"
