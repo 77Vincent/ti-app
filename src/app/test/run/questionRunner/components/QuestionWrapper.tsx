@@ -1,9 +1,13 @@
 "use client";
 
-import type { QuestionRunnerProps, SignInDemand } from "../types";
-import { Button, Card, CardBody, Chip, Tooltip } from "@heroui/react";
+import type {
+  QuestionOptionIndex,
+  QuestionRunnerProps,
+  SignInDemand,
+} from "../types";
+import { Button, Card, CardBody, Tooltip } from "@heroui/react";
 import Mousetrap from "mousetrap";
-import { Star } from "lucide-react";
+import { ChevronRight, Star } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -15,7 +19,6 @@ import QuestionRunner from "./QuestionRunner";
 import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
-import { canSubmitQuestion } from "../utils/questionGuards";
 import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
@@ -88,35 +91,46 @@ export default function QuestionWrapper({
     return null;
   }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
   const isSignInRequired = signInDemand !== null;
-  const canTriggerSubmit =
+  const canAutoSubmitOnChoice =
     !isFavoriteSubmitting &&
     !isSignInRequired &&
-    canSubmitQuestion({
-      hasQuestion: Boolean(question),
-      hasSubmitted,
-      selectedOptionCount: selectedOptionIndexes.length,
-      isSubmitting,
-    });
+    Boolean(question) &&
+    !hasSubmitted &&
+    !isSubmitting;
+  const canTriggerNext =
+    !isFavoriteSubmitting &&
+    !isSignInRequired &&
+    Boolean(question) &&
+    hasSubmitted &&
+    !isSubmitting;
 
-  const handleSubmitPress = useCallback(() => {
-    if (!canTriggerSubmit) {
+  const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
+    const nextSelection = selectOption(optionIndex);
+    if (!nextSelection || !canAutoSubmitOnChoice || !question) {
       return;
     }
 
-    if (hasSubmitted) {
-      nextActionMidiSfxRef.current?.play();
-    } else if (isAnswerCorrect(question, selectedOptionIndexes)) {
+    if (isAnswerCorrect(question, nextSelection)) {
       submitCorrectMidiSfxRef.current?.play();
     } else {
       submitWrongMidiSfxRef.current?.play();
     }
+    void submit(nextSelection);
+  }, [canAutoSubmitOnChoice, question, selectOption, submit]);
+
+  const handleNextPress = useCallback(() => {
+    if (!canTriggerNext) {
+      return;
+    }
+
+    nextActionMidiSfxRef.current?.play();
     void submit();
-  }, [canTriggerSubmit, hasSubmitted, question, selectedOptionIndexes, submit]);
+  }, [canTriggerNext, submit]);
 
   useEffect(() => {
     Mousetrap.bind("enter", (event) => {
       event.preventDefault();
-      handleSubmitPress();
+      handleNextPress();
       return false;
     });
 
@@ -124,7 +138,7 @@ export default function QuestionWrapper({
       Mousetrap.unbind("enter");
     };
   }, [
-    handleSubmitPress,
+    handleNextPress,
   ]);
 
   return (
@@ -172,16 +186,20 @@ export default function QuestionWrapper({
           </Tooltip>
         </div>
 
-        <Button
-          color="primary"
-          isDisabled={!canTriggerSubmit}
-          isLoading={isSubmitting}
-          onPress={handleSubmitPress}
-          radius="full"
-          size="sm"
-        >
-          {isSubmitting ? null : hasSubmitted ? "Next" : "Submit"}
-        </Button>
+        {hasSubmitted ? (
+          <Button
+            aria-label="Next question"
+            color="primary"
+            isIconOnly
+            isDisabled={!canTriggerNext}
+            isLoading={isSubmitting}
+            onPress={handleNextPress}
+            radius="full"
+            size="sm"
+          >
+            {isSubmitting ? null : <ChevronRight aria-hidden size={18} />}
+          </Button>
+        ) : null}
       </div>
 
       <Card shadow="sm">
@@ -191,7 +209,7 @@ export default function QuestionWrapper({
             isLoadingQuestion={isLoadingQuestion}
             isSignInRequired={isSignInRequired}
             question={question}
-            selectOption={selectOption}
+            selectOption={handleOptionSelect}
             selectedOptionIndexes={selectedOptionIndexes}
             signInDemand={signInDemand}
           />

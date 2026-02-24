@@ -31,7 +31,6 @@ export type UseQuestionInput = {
   difficulty: string;
   initialCorrectCount: number;
   initialSubmittedCount: number;
-  onQuestionApplied?: () => void;
 };
 
 export type UseQuestionResult = {
@@ -39,15 +38,18 @@ export type UseQuestionResult = {
   isLoadingQuestion: boolean;
   isSubmitting: boolean;
   difficulty: string;
-  currentQuestionIndex: number;
   submittedCount: number;
   correctCount: number;
   isSignInRequired: boolean;
   signInDemand: QuestionSignInDemand | null;
   hasSubmitted: boolean;
   selectedOptionIndexes: QuestionOptionIndex[];
-  selectOption: (optionIndex: QuestionOptionIndex) => void;
-  submit: () => Promise<void>;
+  selectOption: (
+    optionIndex: QuestionOptionIndex,
+  ) => QuestionOptionIndex[] | null;
+  submit: (
+    selectionOverride?: QuestionOptionIndex[] | null,
+  ) => Promise<void>;
 };
 
 export function useQuestion({
@@ -57,11 +59,9 @@ export function useQuestion({
   difficulty,
   initialCorrectCount,
   initialSubmittedCount,
-  onQuestionApplied,
 }: UseQuestionInput): UseQuestionResult {
   const [sessionProgress, setSessionProgress] = useState(
     () => ({
-      currentQuestionIndex: initialSubmittedCount,
       submittedCount: initialSubmittedCount,
       correctCount: initialCorrectCount,
     }),
@@ -91,31 +91,15 @@ export function useQuestion({
     });
   }, [sessionDifficulty, subcategoryId, subjectId]);
 
-  const applyLoadedQuestion = useCallback(
-    (
-      nextQuestion: QuestionType,
-      options?: {
-        incrementQuestionIndex?: boolean;
-      },
-    ): boolean => {
-      setSignInDemand(null);
-      setSelection([]);
-      dispatchUiState({
-        type: "questionApplied",
-        question: nextQuestion,
-        hasSubmitted: false,
-      });
-      if (options?.incrementQuestionIndex) {
-        setSessionProgress((prev) => ({
-          ...prev,
-          currentQuestionIndex: prev.currentQuestionIndex + 1,
-        }));
-      }
-      onQuestionApplied?.();
-      return true;
-    },
-    [onQuestionApplied, setSelection],
-  );
+  const applyLoadedQuestion = useCallback((nextQuestion: QuestionType): void => {
+    setSignInDemand(null);
+    setSelection([]);
+    dispatchUiState({
+      type: "questionApplied",
+      question: nextQuestion,
+      hasSubmitted: false,
+    });
+  }, [setSelection]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,26 +141,27 @@ export function useQuestion({
     subjectId,
   ]);
 
-  function selectOption(optionIndex: QuestionOptionIndex) {
-    selectQuestionOption(
+  function selectOption(optionIndex: QuestionOptionIndex): QuestionOptionIndex[] | null {
+    return selectQuestionOption(
       question,
       optionIndex,
       isSubmitting || hasSubmitted,
     );
   }
 
-  async function submit() {
+  async function submit(selectionOverride?: QuestionOptionIndex[] | null) {
+    const currentSelection = selectionOverride ?? selectedOptionIndexes;
     if (
       !canSubmitQuestion({
         hasQuestion: Boolean(question),
         hasSubmitted,
-        selectedOptionCount: selectedOptionIndexes.length,
+        selectedOptionCount: currentSelection.length,
         isSubmitting,
       })
     ) {
       return;
     }
-    const isCurrentAnswerCorrect = isAnswerCorrect(question, selectedOptionIndexes);
+    const isCurrentAnswerCorrect = isAnswerCorrect(question, currentSelection);
     let nextDifficulty = sessionDifficulty;
 
     await submitQuestion({
@@ -224,7 +209,7 @@ export function useQuestion({
             setSessionDifficulty(targetDifficulty);
           }
           setPendingDifficulty(null);
-          applyLoadedQuestion(loadedQuestion, { incrementQuestionIndex: true });
+          applyLoadedQuestion(loadedQuestion);
         } catch (error) {
           showLoadError(error);
         }
@@ -244,7 +229,6 @@ export function useQuestion({
     isLoadingQuestion,
     isSubmitting,
     difficulty: sessionDifficulty,
-    currentQuestionIndex: sessionProgress.currentQuestionIndex,
     submittedCount: sessionProgress.submittedCount,
     correctCount: sessionProgress.correctCount,
     isSignInRequired,
