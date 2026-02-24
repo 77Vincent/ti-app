@@ -75,7 +75,7 @@ describe("session storage", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("clears local session when remote id mismatches", async () => {
+  it("returns remote session even when remote id differs", async () => {
     readLocalTestSessionRaw.mockReturnValue(
       JSON.stringify({ sessionId: "session-1" }),
     );
@@ -92,8 +92,11 @@ describe("session storage", () => {
       ),
     );
 
-    await expect(readTestSession()).resolves.toBeNull();
-    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
+    await expect(readTestSession()).resolves.toEqual({
+      ...REMOTE_SESSION_PAYLOAD.session,
+      id: "session-other",
+    });
+    expect(clearLocalTestSessionRaw).not.toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -143,6 +146,25 @@ describe("session storage", () => {
     expect(writeLocalTestSessionRaw).toHaveBeenCalledWith(
       JSON.stringify({ sessionId: "session-1" }),
     );
+  });
+
+  it("reads session by context without local-storage dependency", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(REMOTE_SESSION_PAYLOAD), { status: 200 }),
+    );
+
+    await expect(
+      readTestSession({
+        subjectId: "language",
+        subcategoryId: "english",
+      }),
+    ).resolves.toEqual(REMOTE_SESSION_PAYLOAD.session);
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_PATHS.TEST_SESSION}?subjectId=language&subcategoryId=english`,
+      expect.objectContaining({ cache: "no-store", method: "GET" }),
+    );
+    expect(readLocalTestSessionRaw).not.toHaveBeenCalled();
   });
 
   it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {

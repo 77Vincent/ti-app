@@ -14,6 +14,7 @@ import { readAuthenticatedUserId } from "./auth";
 import {
   deleteTestSession,
   incrementTestSessionProgress,
+  readTestSessionByContext,
   readTestSession,
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
@@ -21,8 +22,17 @@ import {
 
 export const runtime = "nodejs";
 
+type SessionSelector =
+  | {
+      userId: string;
+    }
+  | {
+      anonymousSessionId: string;
+    };
+
 function toTestSessionPayload(
   session: Awaited<ReturnType<typeof readTestSession>>
+    | Awaited<ReturnType<typeof readTestSessionByContext>>
     | Awaited<ReturnType<typeof updateTestSessionDifficultyByRecentAccuracy>>
     | Awaited<ReturnType<typeof upsertTestSession>>,
 ): TestSession | null {
@@ -40,19 +50,11 @@ function toTestSessionPayload(
   };
 }
 
-async function readActiveSession(
-  request: Request,
+async function readSessionSelector(
   userId: string | null,
-): Promise<TestSession | null> {
-  const sessionId = new URL(request.url).searchParams.get("sessionId");
-  if (!isNonEmptyString(sessionId)) {
-    return null;
-  }
-
+): Promise<SessionSelector | null> {
   if (userId) {
-    return toTestSessionPayload(
-      await readTestSession({ id: sessionId, userId }),
-    );
+    return { userId };
   }
 
   const anonymousSessionId = await readAnonymousTestSessionCookie();
@@ -60,8 +62,45 @@ async function readActiveSession(
     return null;
   }
 
+  return { anonymousSessionId };
+}
+
+async function readActiveSession(
+  request: Request,
+  userId: string | null,
+): Promise<TestSession | null> {
+  const selector = await readSessionSelector(userId);
+  if (!selector) {
+    return null;
+  }
+
+  const searchParams = new URL(request.url).searchParams;
+  const sessionId = searchParams.get("sessionId");
+  const subjectId = searchParams.get("subjectId");
+  const subcategoryId = searchParams.get("subcategoryId");
+
+  if (isNonEmptyString(sessionId)) {
+    return toTestSessionPayload(
+      await readTestSession({
+        ...selector,
+        id: sessionId,
+      }),
+    );
+  }
+
+  if (
+    !isNonEmptyString(subjectId) ||
+    !isNonEmptyString(subcategoryId)
+  ) {
+    return null;
+  }
+
   return toTestSessionPayload(
-    await readTestSession({ id: sessionId, anonymousSessionId }),
+    await readTestSessionByContext({
+      ...selector,
+      subjectId,
+      subcategoryId,
+    }),
   );
 }
 

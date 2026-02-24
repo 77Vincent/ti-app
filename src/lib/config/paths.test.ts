@@ -10,7 +10,6 @@ describe("PAGE_PATHS", () => {
       DASHBOARD_TESTS: "/dashboard/tests",
       DASHBOARD_SETTINGS: "/dashboard/settings",
       SIGN_IN: "/signin",
-      TEST: "/test",
       TEST_RUN: "/test/run",
     });
   });

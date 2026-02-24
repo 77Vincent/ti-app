@@ -28,6 +28,11 @@ export type TestSessionReadWhere = TestSessionIdentityWhere & {
   id: string;
 };
 
+export type TestSessionReadByContextWhere = TestSessionIdentityWhere & {
+  subjectId: string;
+  subcategoryId: string;
+};
+
 const TEST_RUN_PARAMS_SELECT = {
   id: true,
   correctCount: true,
@@ -49,6 +54,7 @@ function isAuthTestSessionWhere(
   where:
     | TestSessionIdentityWhere
     | TestSessionUpsertWhere
+    | TestSessionReadByContextWhere
     | TestSessionReadWhere,
 ): where is AuthTestSessionWhere {
   return "userId" in where;
@@ -58,6 +64,7 @@ function toIdentityWhere(
   where:
     | TestSessionIdentityWhere
     | TestSessionUpsertWhere
+    | TestSessionReadByContextWhere
     | TestSessionReadWhere,
 ): TestSessionIdentityWhere {
   return isAuthTestSessionWhere(where)
@@ -71,6 +78,19 @@ export async function readTestSession(
   return prisma.testSession.findFirst({
     where: {
       id: where.id,
+      ...toIdentityWhere(where),
+    },
+    select: TEST_RUN_PARAMS_SELECT,
+  });
+}
+
+export async function readTestSessionByContext(
+  where: TestSessionReadByContextWhere,
+) {
+  return prisma.testSession.findFirst({
+    where: {
+      subjectId: where.subjectId,
+      subcategoryId: where.subcategoryId,
       ...toIdentityWhere(where),
     },
     select: TEST_RUN_PARAMS_SELECT,

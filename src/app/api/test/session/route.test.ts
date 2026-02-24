@@ -8,6 +8,7 @@ const {
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
   readAuthenticatedUserId,
+  readTestSessionByContext,
   readTestSession,
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
@@ -18,6 +19,7 @@ const {
   persistAnonymousTestSessionCookie: vi.fn((response: Response) => response),
   readAnonymousTestSessionCookie: vi.fn(),
   readAuthenticatedUserId: vi.fn(),
+  readTestSessionByContext: vi.fn(),
   readTestSession: vi.fn(),
   updateTestSessionDifficultyByRecentAccuracy: vi.fn(),
   upsertTestSession: vi.fn(),
@@ -36,6 +38,7 @@ vi.mock("./cookie/anonymous", () => ({
 vi.mock("./repo/testSession", () => ({
   deleteTestSession,
   incrementTestSessionProgress,
+  readTestSessionByContext,
   readTestSession,
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
@@ -70,10 +73,12 @@ describe("test session route GET", () => {
   beforeEach(() => {
     readAuthenticatedUserId.mockReset();
     readAnonymousTestSessionCookie.mockReset();
+    readTestSessionByContext.mockReset();
     readTestSession.mockReset();
 
     readAuthenticatedUserId.mockResolvedValue(null);
     readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
+    readTestSessionByContext.mockResolvedValue(STORED_SESSION);
     readTestSession.mockResolvedValue(STORED_SESSION);
   });
 
@@ -85,6 +90,7 @@ describe("test session route GET", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ session: null });
     expect(readTestSession).not.toHaveBeenCalled();
+    expect(readTestSessionByContext).not.toHaveBeenCalled();
   });
 
   it("reads authenticated session by id", async () => {
@@ -102,6 +108,7 @@ describe("test session route GET", () => {
       id: "session-1",
       userId: "user-1",
     });
+    expect(readTestSessionByContext).not.toHaveBeenCalled();
     expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
   });
 
@@ -118,6 +125,48 @@ describe("test session route GET", () => {
       id: "session-1",
       anonymousSessionId: "anon-1",
     });
+    expect(readTestSessionByContext).not.toHaveBeenCalled();
+  });
+
+  it("reads authenticated session by subject and subcategory", async () => {
+    readAuthenticatedUserId.mockResolvedValueOnce("user-1");
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/test/session?subjectId=language&subcategoryId=english",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      session: SESSION_RESPONSE,
+    });
+    expect(readTestSessionByContext).toHaveBeenCalledWith({
+      userId: "user-1",
+      subjectId: "language",
+      subcategoryId: "english",
+    });
+    expect(readTestSession).not.toHaveBeenCalled();
+    expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
+  });
+
+  it("reads anonymous session by subject and subcategory", async () => {
+    const response = await GET(
+      new Request(
+        "http://localhost/api/test/session?subjectId=language&subcategoryId=english",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      session: SESSION_RESPONSE,
+    });
+    expect(readTestSessionByContext).toHaveBeenCalledWith({
+      anonymousSessionId: "anon-1",
+      subjectId: "language",
+      subcategoryId: "english",
+    });
+    expect(readTestSession).not.toHaveBeenCalled();
   });
 });
 

@@ -5,20 +5,64 @@ import {
 } from "@/app/test/run/questionRunner/session/storage";
 import { QuestionRunner } from "@/app/test/run/questionRunner";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import {
+  SUBCATEGORIES,
+  type SubcategoryEnum,
+  type SubjectEnum,
+} from "@/lib/meta";
+import { isNonEmptyString } from "@/lib/string";
 import type { TestSession } from "@/lib/testSession/validation";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
-export default function TestRunPage() {
+type SessionContextParams = {
+  subjectId: SubjectEnum;
+  subcategoryId: SubcategoryEnum;
+};
+
+function parseSessionContextParams(
+  searchParams: { get: (name: string) => string | null },
+): SessionContextParams | null {
+  const subjectId = searchParams.get("subjectId");
+  const subcategoryId = searchParams.get("subcategoryId");
+  if (!isNonEmptyString(subjectId) || !isNonEmptyString(subcategoryId)) {
+    return null;
+  }
+
+  const isValidPair = SUBCATEGORIES.some(
+    (subcategory) =>
+      subcategory.subjectId === subjectId && subcategory.id === subcategoryId,
+  );
+  if (!isValidPair) {
+    return null;
+  }
+
+  return {
+    subjectId: subjectId as SubjectEnum,
+    subcategoryId: subcategoryId as SubcategoryEnum,
+  };
+}
+
+function TestRunPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const contextParams = useMemo(
+    () => parseSessionContextParams(searchParams),
+    [searchParams],
+  );
   const [params, setParams] = useState<TestSession | null | undefined>(
     undefined,
   );
 
   useEffect(() => {
+    if (!contextParams) {
+      router.replace(PAGE_PATHS.DASHBOARD_TESTS);
+      return;
+    }
+
     let active = true;
 
-    void readTestSession()
+    void readTestSession(contextParams)
       .then((session) => {
         if (active) {
           setParams(session);
@@ -33,11 +77,11 @@ export default function TestRunPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [contextParams, router]);
 
   useEffect(() => {
     if (params === null) {
-      router.replace(PAGE_PATHS.TEST);
+      router.replace(PAGE_PATHS.DASHBOARD_TESTS);
     }
   }, [params, router]);
 
@@ -56,5 +100,13 @@ export default function TestRunPage() {
         subjectId={params.subjectId}
       />
     </section>
+  );
+}
+
+export default function TestRunPage() {
+  return (
+    <Suspense fallback={null}>
+      <TestRunPageContent />
+    </Suspense>
   );
 }

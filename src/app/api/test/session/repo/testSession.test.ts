@@ -32,6 +32,7 @@ vi.mock("@/lib/prisma", () => ({
 import {
   deleteTestSession,
   incrementTestSessionProgress,
+  readTestSessionByContext,
   readTestSession,
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
@@ -117,6 +118,48 @@ describe("test session repo", () => {
       where: {
         id: "anon-session-1",
         anonymousSessionId: "anon-1",
+      },
+    });
+  });
+
+  it("reads a stored session payload by subject and subcategory context", async () => {
+    testSessionFindFirst.mockResolvedValueOnce({
+      id: "session-1",
+      correctCount: 2,
+      submittedCount: 4,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "A1",
+    });
+
+    await expect(
+      readTestSessionByContext({
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      }),
+    ).resolves.toEqual({
+      id: "session-1",
+      correctCount: 2,
+      submittedCount: 4,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "A1",
+    });
+
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
+      select: {
+        id: true,
+        correctCount: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+        difficulty: true,
+      },
+      where: {
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
       },
     });
   });

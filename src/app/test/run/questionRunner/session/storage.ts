@@ -3,6 +3,7 @@ import {
   type TestParam,
   type TestSession,
 } from "@/lib/testSession/validation";
+import type { SubcategoryEnum, SubjectEnum } from "@/lib/meta";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
 import {
@@ -18,6 +19,11 @@ type TestSessionResponse = {
   error?: unknown;
 };
 
+type ReadTestSessionInput = {
+  subjectId: SubjectEnum;
+  subcategoryId: SubcategoryEnum;
+};
+
 type LocalTestSessionSnapshot = {
   sessionId: string;
 };
@@ -27,6 +33,8 @@ type SessionRequestOptions = {
   cache?: RequestCache;
   method: "GET" | "POST" | "DELETE" | "PATCH";
   sessionId?: string;
+  subjectId?: SubjectEnum;
+  subcategoryId?: SubcategoryEnum;
 };
 
 function parseSessionFromResponse(payload: unknown): TestSession | null {
@@ -56,12 +64,30 @@ function writeLocalSessionId(sessionId: string): void {
   writeLocalTestSessionRaw(JSON.stringify(snapshot));
 }
 
+function buildSessionPath(options: SessionRequestOptions): string {
+  const params = new URLSearchParams();
+
+  if (isNonEmptyString(options.sessionId)) {
+    params.set("sessionId", options.sessionId);
+  }
+
+  if (isNonEmptyString(options.subjectId)) {
+    params.set("subjectId", options.subjectId);
+  }
+
+  if (isNonEmptyString(options.subcategoryId)) {
+    params.set("subcategoryId", options.subcategoryId);
+  }
+
+  const query = params.toString();
+  return query ? `${API_PATHS.TEST_SESSION}?${query}` : API_PATHS.TEST_SESSION;
+}
+
 async function requestSession(
   options: SessionRequestOptions,
 ): Promise<TestSessionResponse | null> {
-  const path = options.sessionId
-    ? `${API_PATHS.TEST_SESSION}?sessionId=${encodeURIComponent(options.sessionId)}`
-    : API_PATHS.TEST_SESSION;
+  const path = buildSessionPath(options);
+
   const response = await fetch(path, {
     body: options.body,
     cache: options.cache,
@@ -91,26 +117,43 @@ async function requestSession(
   }
 }
 
-export async function readTestSession(): Promise<TestSession | null> {
+async function readSessionById(sessionId: string): Promise<TestSession | null> {
+  const payload = await requestSession({
+    cache: "no-store",
+    method: "GET",
+    sessionId,
+  });
+  return parseSessionFromResponse(payload);
+}
+
+async function readSessionByContext(
+  input: ReadTestSessionInput,
+): Promise<TestSession | null> {
+  const payload = await requestSession({
+    cache: "no-store",
+    method: "GET",
+    subjectId: input.subjectId,
+    subcategoryId: input.subcategoryId,
+  });
+
+  return parseSessionFromResponse(payload);
+}
+
+export async function readTestSession(
+  input?: ReadTestSessionInput,
+): Promise<TestSession | null> {
+  if (input) {
+    return readSessionByContext(input);
+  }
+
   const localSessionId = readLocalSessionId();
   if (!localSessionId) {
     clearLocalTestSessionRaw();
     return null;
   }
 
-  const payload = await requestSession({
-    cache: "no-store",
-    method: "GET",
-    sessionId: localSessionId,
-  });
-  const session = parseSessionFromResponse(payload);
-
+  const session = await readSessionById(localSessionId);
   if (!session) {
-    clearLocalTestSessionRaw();
-    return null;
-  }
-
-  if (session.id !== localSessionId) {
     clearLocalTestSessionRaw();
     return null;
   }

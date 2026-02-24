@@ -17,29 +17,43 @@ import type {
   SubjectEnum,
 } from "@/lib/meta";
 import { toast } from "@/lib/toast";
+import type { TestSession } from "@/lib/testSession/validation";
 import { Badge, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 export default function DashboardTestsPage() {
   const router = useRouter();
-  const [ongoingSubcategoryId, setOngoingSubcategoryId] =
-    useState<SubcategoryEnum | null>(null);
+  const [ongoingSubcategoryIds, setOngoingSubcategoryIds] =
+    useState<Set<SubcategoryEnum>>(new Set());
 
   useEffect(() => {
     let active = true;
 
-    void readTestSession()
-      .then((session) => {
+    void Promise.all(
+      SUBCATEGORIES.map((subcategory) =>
+        readTestSession({
+          subjectId: subcategory.subjectId,
+          subcategoryId: subcategory.id,
+        }),
+      ),
+    )
+      .then((sessions) => {
         if (!active) {
           return;
         }
 
-        setOngoingSubcategoryId(session?.subcategoryId ?? null);
+        setOngoingSubcategoryIds(
+          new Set(
+            sessions
+              .filter((session): session is TestSession => session !== null)
+              .map((session) => session.subcategoryId),
+          ),
+        );
       })
       .catch(() => {
         if (active) {
-          setOngoingSubcategoryId(null);
+          setOngoingSubcategoryIds(new Set());
         }
       });
 
@@ -73,7 +87,16 @@ export default function DashboardTestsPage() {
       difficulty,
     })
       .then(() => {
-        router.push(PAGE_PATHS.TEST_RUN);
+        setOngoingSubcategoryIds((previousIds) => {
+          const nextIds = new Set(previousIds);
+          nextIds.add(subcategoryId);
+          return nextIds;
+        });
+        const testRunSearchParams = new URLSearchParams({
+          subjectId,
+          subcategoryId,
+        });
+        router.push(`${PAGE_PATHS.TEST_RUN}?${testRunSearchParams.toString()}`);
       })
       .catch((error) => {
         toast.error(error, {
@@ -95,26 +118,10 @@ export default function DashboardTestsPage() {
             </h2>
 
             <div className="flex flex-wrap gap-2">
-              {subjectGroup.subcategories.map((subcategory) => (
-                ongoingSubcategoryId === subcategory.id ? (
-                  <Badge color="danger" content="" key={subcategory.id}>
-                    <Button
-                      color="primary"
-                      onPress={() =>
-                        handleSelectSubcategory(
-                          subjectGroup.id,
-                          subcategory.id,
-                        )
-                      }
-                      variant="bordered"
-                    >
-                      {subcategory.label}
-                    </Button>
-                  </Badge>
-                ) : (
+              {subjectGroup.subcategories.map((subcategory) => {
+                const button = (
                   <Button
                     color="primary"
-                    key={subcategory.id}
                     onPress={() =>
                       handleSelectSubcategory(
                         subjectGroup.id,
@@ -125,8 +132,18 @@ export default function DashboardTestsPage() {
                   >
                     {subcategory.label}
                   </Button>
-                )
-              ))}
+                );
+
+                if (ongoingSubcategoryIds.has(subcategory.id)) {
+                  return (
+                    <Badge color="danger" content="" key={subcategory.id}>
+                      {button}
+                    </Badge>
+                  );
+                }
+
+                return <Fragment key={subcategory.id}>{button}</Fragment>;
+              })}
             </div>
           </section>
         );
