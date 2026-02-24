@@ -2,7 +2,7 @@
 
 NPM := npm
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-english question-chinese
+.PHONY: help install dev build start lint test check clean clean-deps question question-english question-chinese question-japanese
 
 help:
 	@echo "Common commands:"
@@ -18,6 +18,7 @@ help:
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
+	@echo "  make question-japanese Generate Japanese questions for N5..N1"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -60,6 +61,11 @@ question-english:
 question-chinese:
 	for d in HSK1 HSK2 HSK3 HSK4 HSK5 HSK6; do \
 		$(MAKE) question subcategory=chinese difficulty=$$d || exit 1; \
+	done
+
+question-japanese:
+	for d in N5 N4 N3 N2 N1; do \
+		$(MAKE) question subcategory=japanese difficulty=$$d || exit 1; \
 	done
 
 up:

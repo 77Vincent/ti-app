@@ -23,3 +23,5 @@ CLI usage:
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`
+- `chinese`: `HSK1`, `HSK2`, `HSK3`, `HSK4`, `HSK5`, `HSK6`
+- `japanese`: `N5`, `N4`, `N3`, `N2`, `N1`
