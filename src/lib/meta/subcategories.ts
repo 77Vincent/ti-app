@@ -1,6 +1,6 @@
 import type { SubjectEnum } from "./subjects";
 
-export type SubcategoryEnum = "english";
+export type SubcategoryEnum = "english" | "chinese" | "japanese";
 
 export type SubcategoryOption = {
   id: SubcategoryEnum;
@@ -16,4 +16,16 @@ export const SUBCATEGORIES: SubcategoryOption[] = [
     subjectId: "language",
     order: 1,
   },
+  {
+    id: "chinese",
+    label: "Chinese",
+    subjectId: "language",
+    order: 2,
+  },
+  {
+    id: "japanese",
+    label: "Japanese",
+    subjectId: "language",
+    order: 3,
+  }
 ];
