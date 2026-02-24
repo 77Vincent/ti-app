@@ -24,8 +24,8 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 
 export default function DashboardTestsPage() {
   const router = useRouter();
-  const [ongoingSubcategoryIds, setOngoingSubcategoryIds] =
-    useState<Set<SubcategoryEnum>>(new Set());
+  const [ongoingDifficultyBySubcategory, setOngoingDifficultyBySubcategory] =
+    useState<Map<SubcategoryEnum, string>>(new Map());
 
   useEffect(() => {
     let active = true;
@@ -43,17 +43,17 @@ export default function DashboardTestsPage() {
           return;
         }
 
-        setOngoingSubcategoryIds(
-          new Set(
-            sessions
-              .filter((session): session is TestSession => session !== null)
-              .map((session) => session.subcategoryId),
-          ),
-        );
+        const nextMap = new Map<SubcategoryEnum, string>();
+        sessions
+          .filter((session): session is TestSession => session !== null)
+          .forEach((session) => {
+            nextMap.set(session.subcategoryId, session.difficulty);
+          });
+        setOngoingDifficultyBySubcategory(nextMap);
       })
       .catch(() => {
         if (active) {
-          setOngoingSubcategoryIds(new Set());
+          setOngoingDifficultyBySubcategory(new Map());
         }
       });
 
@@ -79,7 +79,9 @@ export default function DashboardTestsPage() {
     subjectId: SubjectEnum,
     subcategoryId: SubcategoryEnum,
   ) {
-    const difficulty = getInitialDifficultyForSubcategory(subcategoryId);
+    const difficulty =
+      ongoingDifficultyBySubcategory.get(subcategoryId) ??
+      getInitialDifficultyForSubcategory(subcategoryId);
 
     void writeTestSession({
       subjectId,
@@ -87,10 +89,10 @@ export default function DashboardTestsPage() {
       difficulty,
     })
       .then(() => {
-        setOngoingSubcategoryIds((previousIds) => {
-          const nextIds = new Set(previousIds);
-          nextIds.add(subcategoryId);
-          return nextIds;
+        setOngoingDifficultyBySubcategory((previousMap) => {
+          const nextMap = new Map(previousMap);
+          nextMap.set(subcategoryId, difficulty);
+          return nextMap;
         });
         const testRunSearchParams = new URLSearchParams({
           subjectId,
@@ -119,6 +121,8 @@ export default function DashboardTestsPage() {
 
             <div className="flex flex-wrap gap-2">
               {subjectGroup.subcategories.map((subcategory) => {
+                const ongoingDifficulty =
+                  ongoingDifficultyBySubcategory.get(subcategory.id);
                 const button = (
                   <Button
                     color="primary"
@@ -134,9 +138,13 @@ export default function DashboardTestsPage() {
                   </Button>
                 );
 
-                if (ongoingSubcategoryIds.has(subcategory.id)) {
+                if (ongoingDifficulty) {
                   return (
-                    <Badge color="danger" content="" key={subcategory.id}>
+                    <Badge
+                      color="danger"
+                      content={ongoingDifficulty}
+                      key={subcategory.id}
+                    >
                       {button}
                     </Badge>
                   );
