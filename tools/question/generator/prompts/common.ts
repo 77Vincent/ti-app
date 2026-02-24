@@ -1,5 +1,16 @@
 import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
 
+export const GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK = `
+Return only valid JSON with this exact shape:
+[
+  {
+    "p": string,
+    "o": [[string, string]],
+    "a": number
+  }
+]
+`.trim();
+
 export const GENERATOR_COMMON_RULES_BLOCK = `
 Rules:
 - output must be raw JSON only.

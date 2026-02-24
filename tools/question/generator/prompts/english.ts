@@ -1,20 +1,16 @@
 import type { GenerateQuestionRequest } from "../../types";
 import { DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY } from "../../../../shared/difficultyLadder";
-import { GENERATOR_COMMON_RULES_BLOCK } from "./common";
+import {
+  GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK,
+  GENERATOR_COMMON_RULES_BLOCK,
+} from "./common";
 
 export const ENGLISH_GENERATOR_SYSTEM_PROMPT = `
 You generate two high-quality assessment questions:
 - subject: language
 - subcategory: english
 
-Return only valid JSON with this exact shape:
-[
-  {
-    "p": string,
-    "o": [[string, string]],
-    "a": number
-  }
-]
+${GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK}
 
 Difficulty levels: CEFR - A1, A2, B1, B2, C1, C2
 - A1: ${DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY.english.A1}
