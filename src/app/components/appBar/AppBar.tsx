@@ -8,6 +8,7 @@ import {
   NavbarContent,
   NavbarItem,
 } from "@heroui/react";
+import dynamic from "next/dynamic";
 import { User, User2 } from "lucide-react";
 import { getSession } from "next-auth/react";
 import Image from "next/image";
@@ -18,6 +19,14 @@ import {
   hasAuthenticatedUser,
 } from "../../auth/sessionState";
 import { clearTestSession } from "../../test/run/questionRunner/session/storage";
+
+const ThemeToggleButton = dynamic(
+  () =>
+    import("./ThemeToggleButton").then(
+      (module) => module.ThemeToggleButton,
+    ),
+  { ssr: false },
+);
 
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,7 +64,7 @@ export default function AppBar() {
   }
 
   return (
-    <Navbar shouldHideOnScroll height={50} maxWidth="full" position="sticky">
+    <Navbar shouldHideOnScroll height={52} maxWidth="full" position="sticky">
       <NavbarBrand>
         <Link className="hover:brightness-125 flex gap-2" href={PAGE_PATHS.HOME} aria-label="Ti">
           <Image src="/logo.svg" alt="Ti Logo" width={44} height={40} />
@@ -91,6 +100,9 @@ export default function AppBar() {
               }
             />
           )}
+        </NavbarItem>
+        <NavbarItem>
+          <ThemeToggleButton />
         </NavbarItem>
       </NavbarContent>
     </Navbar>
