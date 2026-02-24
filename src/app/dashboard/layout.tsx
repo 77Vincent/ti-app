@@ -2,6 +2,7 @@
 
 import { Link } from "@heroui/react";
 import {
+  BarChart3,
   LayoutDashboard,
   LogOut,
   Settings as SettingsIcon,
@@ -22,6 +23,11 @@ const DASHBOARD_NAV_ITEMS = [
     label: "Dashboard",
     href: PAGE_PATHS.DASHBOARD,
     icon: LayoutDashboard,
+  },
+  {
+    label: "Performance",
+    href: PAGE_PATHS.DASHBOARD_PERFORMANCE,
+    icon: BarChart3,
   },
   {
     label: "Settings",
@@ -116,7 +122,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
       </aside>
 
-      <div className="flex min-h-64 flex-1">
+      <div className="min-h-64 flex-1">
         {children}
       </div>
     </section>

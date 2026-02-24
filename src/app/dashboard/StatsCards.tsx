@@ -13,7 +13,7 @@ type StatsCardsProps = {
 
 export default function StatsCards({ items }: StatsCardsProps) {
   return (
-    <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid self-start gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
         <Card key={item.label} shadow="sm">
           <CardBody className="gap-1 px-4 py-3">
