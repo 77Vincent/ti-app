@@ -11,7 +11,6 @@ import { ChevronRight, Star } from "lucide-react";
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -79,24 +78,13 @@ export default function QuestionWrapper({
     void syncFavoriteState(question);
   }, [question, syncFavoriteState]);
 
-  const signInDemand: SignInDemand | null = useMemo(() => {
-    if (isQuestionSignInRequired) {
-      return questionSignInDemand;
-    }
-
-    if (question && favoriteAuthRequiredQuestionId === question.id) {
-      return "favorite";
-    }
-
-    return null;
-  }, [favoriteAuthRequiredQuestionId, isQuestionSignInRequired, question, questionSignInDemand]);
+  let signInDemand: SignInDemand | null = null;
+  if (isQuestionSignInRequired) {
+    signInDemand = questionSignInDemand;
+  } else if (question && favoriteAuthRequiredQuestionId === question.id) {
+    signInDemand = "favorite";
+  }
   const isSignInRequired = signInDemand !== null;
-  const canAutoSubmitOnChoice =
-    !isFavoriteSubmitting &&
-    !isSignInRequired &&
-    Boolean(question) &&
-    !hasSubmitted &&
-    !isSubmitting;
   const canTriggerNext =
     !isFavoriteSubmitting &&
     !isSignInRequired &&
@@ -105,8 +93,12 @@ export default function QuestionWrapper({
     !isSubmitting;
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
+    if (!question || isFavoriteSubmitting || isSignInRequired) {
+      return;
+    }
+
     const nextSelection = selectOption(optionIndex);
-    if (!nextSelection || !canAutoSubmitOnChoice || !question) {
+    if (!nextSelection) {
       return;
     }
 
@@ -116,7 +108,7 @@ export default function QuestionWrapper({
       submitWrongMidiSfxRef.current?.play();
     }
     void submit(nextSelection);
-  }, [canAutoSubmitOnChoice, question, selectOption, submit]);
+  }, [isFavoriteSubmitting, isSignInRequired, question, selectOption, submit]);
 
   const handleNextPress = useCallback(() => {
     if (!canTriggerNext) {

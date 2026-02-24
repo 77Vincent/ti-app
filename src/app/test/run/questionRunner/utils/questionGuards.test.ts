@@ -1,65 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { QuestionRunnerApiError } from "../api";
 import {
-  canSubmitQuestion,
   isActiveFavoriteMutation,
   isFavoriteAuthError,
 } from "./questionGuards";
-
-describe("canSubmitQuestion", () => {
-  it("returns false when no question is available", () => {
-    expect(
-      canSubmitQuestion({
-        hasQuestion: false,
-        hasSubmitted: false,
-        selectedOptionCount: 1,
-        isSubmitting: false,
-      }),
-    ).toBe(false);
-  });
-
-  it("returns false during submit request", () => {
-    expect(
-      canSubmitQuestion({
-        hasQuestion: true,
-        hasSubmitted: true,
-        selectedOptionCount: 1,
-        isSubmitting: true,
-      }),
-    ).toBe(false);
-  });
-
-  it("requires at least one selection before first submit", () => {
-    expect(
-      canSubmitQuestion({
-        hasQuestion: true,
-        hasSubmitted: false,
-        selectedOptionCount: 0,
-        isSubmitting: false,
-      }),
-    ).toBe(false);
-
-    expect(
-      canSubmitQuestion({
-        hasQuestion: true,
-        hasSubmitted: false,
-        selectedOptionCount: 1,
-        isSubmitting: false,
-      }),
-    ).toBe(true);
-  });
-
-  it("allows submit when user already submitted and requests are idle", () => {
-    expect(
-      canSubmitQuestion({
-        hasQuestion: true,
-        hasSubmitted: true,
-        selectedOptionCount: 0,
-        isSubmitting: false,
-      }),
-    ).toBe(true);
-  });
-});
 
 describe("isFavoriteAuthError", () => {
   it("returns true only for 401 API errors", () => {

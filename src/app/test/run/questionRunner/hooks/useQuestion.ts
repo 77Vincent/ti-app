@@ -18,9 +18,6 @@ import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
 } from "../session/reducer";
-import {
-  canSubmitQuestion,
-} from "../utils/questionGuards";
 import { isAnswerCorrect } from "../utils/evaluation";
 import { useQuestionSelection } from "./useQuestionSelection";
 
@@ -151,16 +148,14 @@ export function useQuestion({
 
   async function submit(selectionOverride?: QuestionOptionIndex[] | null) {
     const currentSelection = selectionOverride ?? selectedOptionIndexes;
-    if (
-      !canSubmitQuestion({
-        hasQuestion: Boolean(question),
-        hasSubmitted,
-        selectedOptionCount: currentSelection.length,
-        isSubmitting,
-      })
-    ) {
+    if (!question || isSubmitting) {
       return;
     }
+
+    if (!hasSubmitted && currentSelection.length === 0) {
+      return;
+    }
+
     const isCurrentAnswerCorrect = isAnswerCorrect(question, currentSelection);
     let nextDifficulty = sessionDifficulty;
 
