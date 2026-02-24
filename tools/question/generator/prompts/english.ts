@@ -39,9 +39,10 @@ Rules:
 - explanations in o must be clear.
 - in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging
+- answers should not simply repeat the prompt
 - two question styles to choose from:
-    - one is selecting the correct word/phrase/sentence to fill in the blank in the prompt.
-    - the other is selecting the correct interpretation of the prompt.
+    1. selecting the correct word/phrase/sentence to fill in the blank in the prompt.
+    2. selecting the correct interpretation of the prompt.
 `.trim();
 
 export function buildEnglishGeneratorUserPrompt(
