@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
-          <div className="bg-background text-foreground flex min-h-dvh flex-col">
+          <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
             <main className="flex flex-1 flex-col p-4">{main}</main>
           </div>

@@ -136,7 +136,7 @@ export default function HeroBanner() {
         onPointerEnter={() => setIsPaused(true)}
         onPointerLeave={() => setIsPaused(false)}
       >
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(var(--heroui-content1)/0.7)_0%,hsl(var(--heroui-background)/0.9)_100%)]" />
+        <div className="absolute inset-0 " />
         <div
           className="relative z-0 flex flex-col gap-2"
           style={{
