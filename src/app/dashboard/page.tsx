@@ -1,3 +1,3 @@
 export default function DashboardPage() {
-  return <h1 className="text-lg font-semibold">Overview</h1>;
+  return null;
 }

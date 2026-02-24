@@ -51,8 +51,6 @@ export default function DashboardSettingsPage() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <h1 className="text-lg font-semibold">Settings</h1>
-
       <SettingItem
         icon={<Music aria-hidden size={16} />}
         isSelected={isSoundEnabled}
