@@ -56,7 +56,7 @@ function TestRunPageContent() {
 
   useEffect(() => {
     if (!contextParams) {
-      router.replace(PAGE_PATHS.DASHBOARD_TESTS);
+      router.replace(PAGE_PATHS.DASHBOARD);
       return;
     }
 
@@ -81,7 +81,7 @@ function TestRunPageContent() {
 
   useEffect(() => {
     if (params === null) {
-      router.replace(PAGE_PATHS.DASHBOARD_TESTS);
+      router.replace(PAGE_PATHS.DASHBOARD);
     }
   }, [params, router]);
 

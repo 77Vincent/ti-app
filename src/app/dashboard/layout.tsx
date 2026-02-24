@@ -2,7 +2,6 @@
 
 import { Link } from "@heroui/react";
 import {
-  ClipboardCheck,
   LayoutDashboard,
   LogOut,
   Settings as SettingsIcon,
@@ -23,11 +22,6 @@ const DASHBOARD_NAV_ITEMS = [
     label: "Overview",
     href: PAGE_PATHS.DASHBOARD,
     icon: LayoutDashboard,
-  },
-  {
-    label: "Tests",
-    href: PAGE_PATHS.DASHBOARD_TESTS,
-    icon: ClipboardCheck,
   },
   {
     label: "Settings",
