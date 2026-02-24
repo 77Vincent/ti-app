@@ -4,6 +4,7 @@ import { Card, CardBody } from "@heroui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import { QUESTION_RUNNER_TEXT_SIZE_NORMAL } from "@/lib/config/typography";
 import { normalizeMathMarkdown } from "@/lib/question/markdown";
 import type { QuestionOption } from "../types";
 
@@ -60,13 +61,15 @@ export default function QuestionChoice({
         tabIndex={-1}
       >
         <CardBody className="px-4 py-2">
-          <div>{renderInlineMarkdown(option.text)}</div>
+          <div className={`${QUESTION_RUNNER_TEXT_SIZE_NORMAL} leading-relaxed`}>
+            {renderInlineMarkdown(option.text)}
+          </div>
         </CardBody>
       </Card>
 
       {hasSubmitted ? (
         <Card shadow="none">
-          <CardBody className="px-4 py-1 opacity-70">
+          <CardBody className={`px-4 py-1 ${QUESTION_RUNNER_TEXT_SIZE_NORMAL} leading-relaxed opacity-70`}>
             <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
               {normalizeMathMarkdown(option.explanation)}
             </ReactMarkdown>
