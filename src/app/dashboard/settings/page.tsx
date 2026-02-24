@@ -1,9 +1,8 @@
 "use client";
 
-import { Switch } from "@heroui/react";
-import { Moon, Music, Type } from "lucide-react";
-import { useTheme } from "next-themes";
-import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
+import { Music, Type } from "lucide-react";
+import { type ReactNode } from "react";
 import { useSettingsStore } from "@/lib/settings/store";
 
 type SettingItemProps = {
@@ -25,7 +24,7 @@ function SettingItem({
         {icon}
         <span>{label}</span>
       </span>
-      <Switch
+      <ClientSwitch
         aria-label={label}
         isSelected={isSelected}
         onValueChange={onValueChange}
@@ -35,8 +34,12 @@ function SettingItem({
   );
 }
 
+const ClientSwitch = dynamic(
+  () => import("./ClientSwitch").then((module) => module.ClientSwitch),
+  { ssr: false },
+);
+
 export default function DashboardSettingsPage() {
-  const { resolvedTheme, setTheme } = useTheme();
   const isSoundEnabled = useSettingsStore((state) => state.isSoundEnabled);
   const setIsSoundEnabled = useSettingsStore(
     (state) => state.setIsSoundEnabled,
@@ -47,7 +50,6 @@ export default function DashboardSettingsPage() {
   const setIsLargeQuestionTextEnabled = useSettingsStore(
     (state) => state.setIsLargeQuestionTextEnabled,
   );
-  const isDark = resolvedTheme === "dark";
 
   return (
     <div className="flex w-full max-w-2xs flex-col gap-4">
@@ -56,13 +58,6 @@ export default function DashboardSettingsPage() {
         isSelected={isSoundEnabled}
         label="Sound"
         onValueChange={setIsSoundEnabled}
-      />
-
-      <SettingItem
-        icon={<Moon aria-hidden size={18} />}
-        isSelected={isDark}
-        label="Dark mode"
-        onValueChange={(nextIsDark) => setTheme(nextIsDark ? "dark" : "light")}
       />
 
       <SettingItem
