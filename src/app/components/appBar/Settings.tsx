@@ -4,7 +4,7 @@ import {
   Switch,
 } from "@heroui/react";
 import { useTheme } from "next-themes";
-import { Moon, Music } from "lucide-react";
+import { Moon, Music, Type } from "lucide-react";
 import { useSettingsStore } from "@/lib/settings/store";
 
 export default function Menu() {
@@ -13,12 +13,19 @@ export default function Menu() {
   const setIsSoundEnabled = useSettingsStore(
     (state) => state.setIsSoundEnabled,
   );
+  const isLargeQuestionTextEnabled = useSettingsStore(
+    (state) => state.isLargeQuestionTextEnabled,
+  );
+  const setIsLargeQuestionTextEnabled = useSettingsStore(
+    (state) => state.setIsLargeQuestionTextEnabled,
+  );
   const SETTINGS_LABEL = "Settings";
 
   const DARK_MODE_LABEL = "Dark mode";
   const isDark = resolvedTheme === "dark";
 
   const HAS_SOUND_LABEL = "Sound";
+  const LARGE_TEXT_LABEL = "Large font";
 
   return (
     <DropdownMenu aria-label={SETTINGS_LABEL} closeOnSelect={false}>
@@ -51,6 +58,22 @@ export default function Menu() {
             onValueChange={(nextIsDark) =>
               setTheme(nextIsDark ? "dark" : "light")
             }
+            size="sm"
+          />
+        </div>
+      </DropdownItem>
+
+      <DropdownItem
+        key={LARGE_TEXT_LABEL}
+        textValue={LARGE_TEXT_LABEL}
+        startContent={<Type aria-hidden="true" size={16} />}
+      >
+        <div className="flex w-full items-center justify-between gap-3">
+          <span>{LARGE_TEXT_LABEL}</span>
+          <Switch
+            aria-label={LARGE_TEXT_LABEL}
+            isSelected={isLargeQuestionTextEnabled}
+            onValueChange={setIsLargeQuestionTextEnabled}
             size="sm"
           />
         </div>
