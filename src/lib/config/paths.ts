@@ -1,5 +1,6 @@
 export const PAGE_PATHS = {
   HOME: "/",
+  TEST: "/test",
   DASHBOARD: "/dashboard",
   DASHBOARD_ACCOUNT: "/dashboard/account",
   DASHBOARD_SETTINGS: "/dashboard/settings",

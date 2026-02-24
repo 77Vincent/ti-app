@@ -84,7 +84,7 @@ export default function AppBar() {
       <NavbarBrand>
         <Link className="hover:brightness-125 flex gap-2" href={PAGE_PATHS.HOME} aria-label="Ti">
           <Image src="/logo.svg" alt="Ti Logo" width={44} height={40} />
-          <span className="text-2xl font-semibold">Ti</span>
+          {/* <span className="text-2xl font-semibold">Ti</span> */}
         </Link>
       </NavbarBrand>
 

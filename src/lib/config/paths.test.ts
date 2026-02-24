@@ -5,6 +5,7 @@ describe("PAGE_PATHS", () => {
   it("exports stable page routes", () => {
     expect(PAGE_PATHS).toEqual({
       HOME: "/",
+      TEST: "/test",
       DASHBOARD: "/dashboard",
       DASHBOARD_ACCOUNT: "/dashboard/account",
       DASHBOARD_SETTINGS: "/dashboard/settings",

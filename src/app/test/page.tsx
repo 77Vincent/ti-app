@@ -1,6 +1,5 @@
-import { PAGE_PATHS } from "@/lib/config/paths";
-import { redirect } from "next/navigation";
+import { TestsPanel } from "@/app/components/testsPanel/TestsPanel";
 
 export default function TestPage() {
-  redirect(PAGE_PATHS.DASHBOARD);
+  return <TestsPanel />;
 }

@@ -5,36 +5,21 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button } from "@heroui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { HeroBanner } from "./components";
 import GlobalStatistics from "./components/statistics/GlobalStatistics";
 
 export default function Home() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-
+  function handleStart() {
     void getSession().then((session) => {
-      if (!active) {
+      if (hasAuthenticatedUser(session)) {
+        router.push(PAGE_PATHS.DASHBOARD);
         return;
       }
 
-      setIsAuthenticated(hasAuthenticatedUser(session));
+      router.push(PAGE_PATHS.TEST);
     });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  function handleStart() {
-    if (!isAuthenticated) {
-      return;
-    }
-
-    router.push(PAGE_PATHS.DASHBOARD);
   }
 
   return (
