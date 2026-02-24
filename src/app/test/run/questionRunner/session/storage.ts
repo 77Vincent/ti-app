@@ -6,9 +6,6 @@ import {
 import type { SubcategoryEnum, SubjectEnum } from "@/lib/meta";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { API_PATHS } from "@/lib/config/paths";
-import {
-  clearLocalTestSessionRaw,
-} from "@/lib/testSession/adapters/browser/localStorage";
 import { QuestionRunnerApiError } from "../api/error";
 
 type TestSessionResponse = {
@@ -119,8 +116,6 @@ export async function writeTestSession(
 }
 
 export async function clearTestSession(): Promise<void> {
-  clearLocalTestSessionRaw();
-
   await requestSession({
     method: "DELETE",
   });

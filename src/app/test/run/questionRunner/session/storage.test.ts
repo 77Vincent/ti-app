@@ -1,21 +1,5 @@
 import { API_PATHS } from "@/lib/config/paths";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-const {
-  clearLocalTestSessionRaw,
-  readLocalTestSessionRaw,
-  writeLocalTestSessionRaw,
-} = vi.hoisted(() => ({
-  clearLocalTestSessionRaw: vi.fn(),
-  readLocalTestSessionRaw: vi.fn(),
-  writeLocalTestSessionRaw: vi.fn(),
-}));
-
-vi.mock("@/lib/testSession/adapters/browser/localStorage", () => ({
-  clearLocalTestSessionRaw,
-  readLocalTestSessionRaw,
-  writeLocalTestSessionRaw,
-}));
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   clearTestSession,
@@ -36,12 +20,6 @@ const REMOTE_SESSION_PAYLOAD = {
 } as const;
 
 describe("session storage", () => {
-  beforeEach(() => {
-    clearLocalTestSessionRaw.mockReset();
-    readLocalTestSessionRaw.mockReset();
-    writeLocalTestSessionRaw.mockReset();
-  });
-
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -52,7 +30,6 @@ describe("session storage", () => {
     );
 
     await expect(clearTestSession()).resolves.toBeUndefined();
-    expect(clearLocalTestSessionRaw).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,
@@ -85,8 +62,6 @@ describe("session storage", () => {
         headers: { "content-type": "application/json" },
       }),
     );
-    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
-    expect(readLocalTestSessionRaw).not.toHaveBeenCalled();
   });
 
   it("reads session by context without local-storage dependency", async () => {
@@ -105,8 +80,6 @@ describe("session storage", () => {
       `${API_PATHS.TEST_SESSION}?subjectId=language&subcategoryId=english`,
       expect.objectContaining({ cache: "no-store", method: "GET" }),
     );
-    expect(readLocalTestSessionRaw).not.toHaveBeenCalled();
-    expect(writeLocalTestSessionRaw).not.toHaveBeenCalled();
   });
 
   it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {
