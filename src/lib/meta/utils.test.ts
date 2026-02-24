@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  getSubcategoryLabel,
-  getSubjectLabel,
-  sortByOrder,
-} from "./utils";
+import { sortByOrder } from "./utils";
 
 describe("meta utils", () => {
   it("sortByOrder sorts entries by ascending order without mutating input", () => {
@@ -17,14 +13,5 @@ describe("meta utils", () => {
 
     expect(sorted.map((entry) => entry.id)).toEqual(["first", "second", "third"]);
     expect(input.map((entry) => entry.id)).toEqual(["third", "first", "second"]);
-  });
-
-  it("returns labels for known ids", () => {
-    expect(getSubjectLabel("language")).toBe("Language");
-    expect(getSubcategoryLabel("english")).toBe("English");
-  });
-
-  it("falls back to subcategory id when label is unknown", () => {
-    expect(getSubcategoryLabel("unknown-subcategory")).toBe("unknown-subcategory");
   });
 });

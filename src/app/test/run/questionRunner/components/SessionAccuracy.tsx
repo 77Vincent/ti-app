@@ -5,7 +5,7 @@ type SessionAccuracyProps = {
   submittedCount: number;
 };
 
-export function formatSessionAccuracyLabel({
+function formatSessionAccuracyLabel({
   correctCount,
   submittedCount,
 }: SessionAccuracyProps): string {
