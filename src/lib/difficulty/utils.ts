@@ -10,14 +10,15 @@ import {
 export function getInitialDifficultyForSubcategory(
   subcategoryId: SubcategoryEnum,
 ): string {
-  return DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId][0];
+  return DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId].ladder[0];
 }
 
 export function isDifficultyAllowedForSubcategory(
   subcategoryId: SubcategoryEnum,
   difficulty: string,
 ): boolean {
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId]
+    .ladder as readonly string[];
   return ladder.includes(difficulty);
 }
 
@@ -26,7 +27,8 @@ export function isDifficultyUpgrade(
   currentDifficulty: string,
   nextDifficulty: string,
 ): boolean {
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId]
+    .ladder as readonly string[];
   const currentIndex = ladder.indexOf(currentDifficulty);
   const nextIndex = ladder.indexOf(nextDifficulty);
   return currentIndex >= 0 && nextIndex >= 0 && nextIndex > currentIndex;
@@ -37,7 +39,8 @@ export function isDifficultyDowngrade(
   currentDifficulty: string,
   nextDifficulty: string,
 ): boolean {
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId]
+    .ladder as readonly string[];
   const currentIndex = ladder.indexOf(currentDifficulty);
   const nextIndex = ladder.indexOf(nextDifficulty);
   return currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex;
@@ -97,7 +100,8 @@ export function getNextDifficultyByRecentAccuracy({
   difficultyCooldownRemaining,
   isCorrect,
 }: NextDifficultyInput): AdaptiveDifficultyResult {
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId]
+    .ladder as readonly string[];
 
   const nextRecentOutcomes = appendOutcomeToWindow(recentOutcomes, isCorrect);
   const normalizedCooldown = Math.max(

@@ -41,7 +41,8 @@ export default function SessionDifficultyMilestone({
   const difficultyDowngradeSfxRef = useRef<MidiSfxHandle | null>(null);
   const previousDifficultyRef = useRef<string>(difficulty);
   const previousSubcategoryRef = useRef(subcategoryId);
-  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId] as readonly string[];
+  const ladder = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategoryId]
+    .ladder as readonly string[];
   const descriptions = DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY[subcategoryId];
   const currentIndex = ladder.indexOf(difficulty);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0;

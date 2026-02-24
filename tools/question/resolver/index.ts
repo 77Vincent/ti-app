@@ -7,8 +7,14 @@ import { requestDeepSeekResolverContent } from "./client";
 
 export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
+  difficultyFramework: string,
+  difficultyLadder: readonly string[],
 ): Promise<ResolveQuestionResult> {
-  const content = await requestDeepSeekResolverContent(input);
+  const content = await requestDeepSeekResolverContent(
+    input,
+    difficultyFramework,
+    difficultyLadder,
+  );
 
   let payload: unknown;
   try {
@@ -31,5 +37,16 @@ export async function resolveQuestionWithAI(
     throw new Error("Resolver response answer index is invalid.");
   }
 
-  return { correctOptionIndex: answerIndex };
+  const resolvedDifficulty = (payload as Record<string, unknown>).d;
+  if (
+    typeof resolvedDifficulty !== "string" ||
+    !difficultyLadder.includes(resolvedDifficulty)
+  ) {
+    throw new Error("Resolver response difficulty is invalid.");
+  }
+
+  return {
+    correctOptionIndex: answerIndex,
+    difficulty: resolvedDifficulty,
+  };
 }

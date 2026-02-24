@@ -4,6 +4,7 @@ import {
   QUESTION_ID_HASH_ALGORITHM,
   QUESTION_ID_HASH_ENCODING,
 } from "./config/constants";
+import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
 import {
   requestDeepSeekGeneratorContent,
   parseAIQuestionPayload,
@@ -34,16 +35,26 @@ export async function createQuestionCandidatesWithAI(
       ...secondQuestion,
     },
   ];
+  const difficultyProfile = DIFFICULTY_LADDER_BY_SUBCATEGORY[input.subcategory];
+  const difficultyFramework = difficultyProfile.framework;
+  const difficultyLadder = difficultyProfile.ladder;
 
   const resolutionResults = await Promise.all(
     questions.map(async (question) => {
-      const resolved = await resolveQuestionWithAI({
-        prompt: question.prompt,
-        options: question.options,
-      });
+      const resolved = await resolveQuestionWithAI(
+        {
+          prompt: question.prompt,
+          options: question.options,
+        },
+        difficultyFramework,
+        difficultyLadder,
+      );
+      console.log("Resolved question:", resolved);
 
       const creatorCorrectOptionIndex = question.correctOptionIndexes[0];
-      const isMatched = resolved.correctOptionIndex === creatorCorrectOptionIndex;
+      const isMatched =
+        resolved.correctOptionIndex === creatorCorrectOptionIndex &&
+        resolved.difficulty === question.difficulty;
 
       return { question, isMatched };
     }),

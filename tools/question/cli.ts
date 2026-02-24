@@ -5,7 +5,7 @@ import { config as loadDotenv } from "dotenv";
 import { fileURLToPath } from "node:url";
 import { createQuestionCandidatesWithAI } from "./createCandidates";
 import type { GenerateQuestionRequest } from "./types";
-import { DIFFICULTY_LEVELS_BY_SUBCATEGORY } from "./config/constants";
+import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
 import { persistQuestionsToPool } from "./pool";
 
 const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
@@ -14,9 +14,9 @@ function parseSubcategory(
   value: string,
 ): GenerateQuestionRequest["subcategory"] {
   const normalizedValue = value.trim().toLowerCase();
-  if (!(normalizedValue in DIFFICULTY_LEVELS_BY_SUBCATEGORY)) {
+  if (!(normalizedValue in DIFFICULTY_LADDER_BY_SUBCATEGORY)) {
     throw new InvalidArgumentError(
-      `subcategory must be one of: ${Object.keys(DIFFICULTY_LEVELS_BY_SUBCATEGORY).join(", ")}.`,
+      `subcategory must be one of: ${Object.keys(DIFFICULTY_LADDER_BY_SUBCATEGORY).join(", ")}.`,
     );
   }
 
@@ -68,9 +68,8 @@ async function main(): Promise<void> {
     difficulty: GenerateQuestionRequest["difficulty"];
   }>();
 
-  const allowedDifficulties = DIFFICULTY_LEVELS_BY_SUBCATEGORY[
-    options.subcategory
-  ] as readonly string[];
+  const allowedDifficulties =
+    DIFFICULTY_LADDER_BY_SUBCATEGORY[options.subcategory].ladder as readonly string[];
   if (!allowedDifficulties.includes(options.difficulty)) {
     throw new Error(
       `difficulty "${options.difficulty}" is not allowed for subcategory "${options.subcategory}". Allowed values: ${allowedDifficulties.join(", ")}.`,
