@@ -6,6 +6,8 @@ describe("PAGE_PATHS", () => {
     expect(PAGE_PATHS).toEqual({
       HOME: "/",
       DASHBOARD: "/dashboard",
+      DASHBOARD_TESTS: "/dashboard/tests",
+      DASHBOARD_SETTINGS: "/dashboard/settings",
       SIGN_IN: "/signin",
       TEST: "/test",
       TEST_RUN: "/test/run",
