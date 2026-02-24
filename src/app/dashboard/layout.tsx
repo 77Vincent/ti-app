@@ -50,12 +50,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <section className="flex flex-1 gap-4">
-      <aside className="flex min-h-64 w-56 shrink-0 items-center p-2">
-        <nav aria-label="Dashboard sections" className="w-full">
+      <aside className="flex min-h-64 w-56 shrink-0 p-2">
+        <nav aria-label="Dashboard sections" className="flex w-full flex-col">
           <ul className="flex flex-col gap-3">
             {DASHBOARD_NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <Link as={NextLink} href={item.href} color="foreground">
+                <Link as={NextLink} href={item.href} color="foreground" isBlock className="w-full">
                   <span className="inline-flex items-center gap-2">
                     <item.icon aria-hidden size={18} />
                     <span>{item.label}</span>
@@ -63,15 +63,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link as="button" onPress={handleLogout} color="foreground">
-                <span className="inline-flex items-center gap-2">
-                  <LogOut aria-hidden size={18} />
-                  <span>Logout</span>
-                </span>
-              </Link>
-            </li>
           </ul>
+          <div className="mt-auto pt-3">
+            <Link as="button" onPress={handleLogout} color="foreground" isBlock className="w-full">
+              <span className="inline-flex items-center cursor-pointer gap-2">
+                <LogOut aria-hidden size={18} />
+                <span>Logout</span>
+              </span>
+            </Link>
+          </div>
         </nav>
       </aside>
 
