@@ -1,10 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
-import { PAGE_PATHS } from "@/lib/config/paths";
-import Link from "next/link";
 import { HeroBanner } from "./components";
-import { PlayIcon } from "lucide-react";
 import GlobalStatistics from "./components/statistics/GlobalStatistics";
 
 
@@ -22,13 +18,6 @@ export default function Home() {
             Infinite high-quality, tailored questions of various subjects.
           </p>
         </div>
-
-        <Button
-          as={Link} color="primary" href={PAGE_PATHS.TEST} size="lg"
-          endContent={<PlayIcon size={24} />}
-        >
-          Start
-        </Button>
       </section>
 
       <GlobalStatistics />
