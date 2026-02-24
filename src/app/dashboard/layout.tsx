@@ -1,11 +1,12 @@
 "use client";
 
-import { Divider, Link } from "@heroui/react";
+import { Link } from "@heroui/react";
 import {
   ClipboardCheck,
   LayoutDashboard,
   LogOut,
   Settings as SettingsIcon,
+  User,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
@@ -33,6 +34,11 @@ const DASHBOARD_NAV_ITEMS = [
     href: PAGE_PATHS.DASHBOARD_SETTINGS,
     icon: SettingsIcon,
   },
+  {
+    label: "Account",
+    href: PAGE_PATHS.DASHBOARD_ACCOUNT,
+    icon: User,
+  },
 ] as const;
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -44,10 +50,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     });
   }
 
-  const pageTitle =
-    DASHBOARD_NAV_ITEMS.find((item) => item.href === pathname)?.label ??
-    "Dashboard";
-
   return (
     <section className="flex flex-1 gap-4">
       <aside className="flex min-h-64 w-56 shrink-0 p-2">
@@ -55,7 +57,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <ul className="flex flex-col gap-3">
             {DASHBOARD_NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <Link as={NextLink} href={item.href} color="foreground" isBlock className="w-full">
+                <Link
+                  as={NextLink}
+                  href={item.href}
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  color="foreground"
+                  underline={pathname === item.href ? "always" : "none"}
+                  isBlock
+                  className="w-full"
+                >
                   <span className="inline-flex items-center gap-2">
                     <item.icon aria-hidden size={18} />
                     <span>{item.label}</span>
@@ -75,10 +85,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
       </aside>
 
-
-      <div className="flex min-h-64 flex-1 flex-col gap-4 p-4">
-        <h1 className="text-lg font-semibold">{pageTitle}</h1>
-        <Divider />
+      <div className="flex min-h-64 flex-1 p-4">
         {children}
       </div>
     </section>
