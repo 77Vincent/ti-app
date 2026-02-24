@@ -35,7 +35,7 @@ function SettingItem({
 }
 
 const ClientSwitch = dynamic(
-  () => import("./ClientSwitch").then((module) => module.ClientSwitch),
+  () => import("@/app/components/ClientSwitch").then((module) => module.ClientSwitch),
   { ssr: false },
 );
 
