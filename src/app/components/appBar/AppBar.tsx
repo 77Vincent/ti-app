@@ -15,6 +15,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import { readUserSettings } from "@/lib/settings/api";
+import { useSettingsStore } from "@/lib/settings/store";
 import {
   hasAuthenticatedUser,
 } from "../../auth/sessionState";
@@ -31,6 +33,7 @@ const ThemeToggleButton = dynamic(
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userDisplayName, setUserDisplayName] = useState("");
+  const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
   const SIGN_IN_LABEL = "Sign in";
   const DASHBOARD_LABEL = "Dashboard";
 
@@ -42,14 +45,27 @@ export default function AppBar() {
         return;
       }
 
-      setIsAuthenticated(hasAuthenticatedUser(session));
+      const authenticated = hasAuthenticatedUser(session);
+      setIsAuthenticated(authenticated);
       setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
+
+      if (!authenticated) {
+        return;
+      }
+
+      void readUserSettings()
+        .then((settings) => {
+          if (active) {
+            applyUserSettings(settings);
+          }
+        })
+        .catch(() => undefined);
     });
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [applyUserSettings]);
 
   function clearSessionThen(action: () => void) {
     void clearTestSession()

@@ -13,6 +13,8 @@ model User {
   email         String?            @unique
   emailVerified DateTime?
   image         String?
+  isSoundEnabled Boolean           @default(true)
+  isLargeQuestionTextEnabled Boolean @default(false)
   accounts      Account[]
   sessions      Session[]
   testSessions  TestSession[]

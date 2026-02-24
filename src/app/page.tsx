@@ -15,7 +15,7 @@ export default function Home() {
             Learning through <span className="text-primary-500">testing</span>
           </h1>
           <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
-            Infinite high-quality, tailored questions of various subjects.
+            Infinite high-quality questions for adaptive learning.
           </p>
         </div>
       </section>

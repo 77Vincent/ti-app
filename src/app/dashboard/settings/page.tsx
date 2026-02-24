@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Music, Type } from "lucide-react";
 import { type ReactNode } from "react";
+import { updateUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
 
 type SettingItemProps = {
@@ -50,6 +51,27 @@ export default function DashboardSettingsPage() {
   const setIsLargeQuestionTextEnabled = useSettingsStore(
     (state) => state.setIsLargeQuestionTextEnabled,
   );
+  const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
+
+  function handleSoundChange(nextValue: boolean) {
+    setIsSoundEnabled(nextValue);
+
+    void updateUserSettings({ isSoundEnabled: nextValue })
+      .then((settings) => {
+        applyUserSettings(settings);
+      })
+      .catch(() => undefined);
+  }
+
+  function handleLargeFontChange(nextValue: boolean) {
+    setIsLargeQuestionTextEnabled(nextValue);
+
+    void updateUserSettings({ isLargeQuestionTextEnabled: nextValue })
+      .then((settings) => {
+        applyUserSettings(settings);
+      })
+      .catch(() => undefined);
+  }
 
   return (
     <div className="flex w-full max-w-2xs flex-col gap-4">
@@ -57,14 +79,14 @@ export default function DashboardSettingsPage() {
         icon={<Music aria-hidden size={18} />}
         isSelected={isSoundEnabled}
         label="Sound"
-        onValueChange={setIsSoundEnabled}
+        onValueChange={handleSoundChange}
       />
 
       <SettingItem
         icon={<Type aria-hidden size={18} />}
         isSelected={isLargeQuestionTextEnabled}
         label="Large font"
-        onValueChange={setIsLargeQuestionTextEnabled}
+        onValueChange={handleLargeFontChange}
       />
     </div>
   );

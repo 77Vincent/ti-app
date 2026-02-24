@@ -8,6 +8,8 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "isSoundEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "isLargeQuestionTextEnabled" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
