@@ -12,6 +12,8 @@ import { getSubjectIcon } from "@/lib/meta";
 import { Star } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { useState } from "react";
+import QuestionChoice from "@/app/test/run/questionRunner/components/QuestionChoice";
+import QuestionPrompt from "@/app/test/run/questionRunner/components/QuestionPrompt";
 import { useFavoritesFilters } from "./useFavoritesFilters";
 import { useFavoriteQuestions } from "./useFavoriteQuestions";
 
@@ -138,24 +140,27 @@ export default function DashboardFavoritesPage() {
                   role="button"
                   tabIndex={0}
                 >
-                  <p>{question.prompt}</p>
+                  <QuestionPrompt markdown={question.prompt} />
 
                   {isExpanded ? (
                     <div
                       className="space-y-3"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      {question.options.map((option, index) => (
-                        <Card
-                          key={`${question.id}:${index}`}
-                          shadow="none"
-                          className="w-full border border-default-300 bg-background"
-                        >
-                          <CardBody className="px-4 py-2">
-                            <p>{option}</p>
-                          </CardBody>
-                        </Card>
-                      ))}
+                      {question.options.map((option, index) => {
+                        const isCorrect = question.correctOptionIndexes.includes(index);
+                        return (
+                          <QuestionChoice
+                            key={`${question.id}:${index}`}
+                            option={option}
+                            hasSubmitted
+                            isSelected={false}
+                            isCorrect={isCorrect}
+                            isWrongSelection={!isCorrect}
+                            onSelect={() => {}}
+                          />
+                        );
+                      })}
                     </div>
                   ) : null}
 

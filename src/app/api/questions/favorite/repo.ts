@@ -4,7 +4,11 @@ export type FavoriteQuestionPreview = {
   id: string;
   prompt: string;
   difficulty: string;
-  options: string[];
+  correctOptionIndexes: number[];
+  options: Array<{
+    text: string;
+    explanation: string;
+  }>;
 };
 
 export async function upsertFavoriteQuestion(
@@ -83,6 +87,7 @@ export async function readFavoriteQuestions(
           id: true,
           prompt: true,
           difficulty: true,
+          correctOptionIndexes: true,
           options: true,
         },
       },
@@ -93,8 +98,8 @@ export async function readFavoriteQuestions(
     id: favorite.question.id,
     prompt: favorite.question.prompt,
     difficulty: favorite.question.difficulty,
-    options: (favorite.question.options as Array<{ text: string }>).map(
-      (option) => option.text,
-    ),
+    correctOptionIndexes:
+      favorite.question.correctOptionIndexes as FavoriteQuestionPreview["correctOptionIndexes"],
+    options: favorite.question.options as FavoriteQuestionPreview["options"],
   }));
 }

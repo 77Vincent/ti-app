@@ -5,7 +5,11 @@ export type FavoriteQuestionPreview = {
   id: string;
   prompt: string;
   difficulty: string;
-  options: string[];
+  correctOptionIndexes: number[];
+  options: Array<{
+    text: string;
+    explanation: string;
+  }>;
 };
 
 type FavoriteQuestionsResponse = {

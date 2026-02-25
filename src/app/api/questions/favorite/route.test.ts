@@ -116,7 +116,13 @@ describe("favorite question route", () => {
         id: "question-1",
         prompt: "Prompt 1",
         difficulty: "A1",
-        options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+        correctOptionIndexes: [0],
+        options: [
+          { text: "Option 1", explanation: "Explanation 1" },
+          { text: "Option 2", explanation: "Explanation 2" },
+          { text: "Option 3", explanation: "Explanation 3" },
+          { text: "Option 4", explanation: "Explanation 4" },
+        ],
       },
     ]);
     const route = await import("./route");
@@ -137,7 +143,13 @@ describe("favorite question route", () => {
           id: "question-1",
           prompt: "Prompt 1",
           difficulty: "A1",
-          options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+          correctOptionIndexes: [0],
+          options: [
+            { text: "Option 1", explanation: "Explanation 1" },
+            { text: "Option 2", explanation: "Explanation 2" },
+            { text: "Option 3", explanation: "Explanation 3" },
+            { text: "Option 4", explanation: "Explanation 4" },
+          ],
         },
       ],
     });
