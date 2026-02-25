@@ -21,14 +21,27 @@ const QUESTION_POOL_READ_SELECT = {
   correctOptionIndexes: true,
 } as const;
 
+type ReadRandomQuestionFromPoolOptions = {
+  excludeQuestionIds?: string[];
+};
+
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
+  options?: ReadRandomQuestionFromPoolOptions,
 ): Promise<Question | null> {
+  const excludeQuestionIds = options?.excludeQuestionIds ?? [];
   const where = {
     subjectId: input.subjectId,
     subcategoryId: input.subcategoryId,
     difficulty: input.difficulty,
-  } as const;
+    ...(excludeQuestionIds.length > 0
+      ? {
+          id: {
+            notIn: excludeQuestionIds,
+          },
+        }
+      : {}),
+  };
 
   const total = await prisma.questionPool.count({ where });
   if (total === 0) {
@@ -43,6 +56,27 @@ export async function readRandomQuestionFromPool(
       id: "asc",
     },
     skip: randomOffset,
+    select: QUESTION_POOL_READ_SELECT,
+  });
+
+  if (!row) {
+    return null;
+  }
+
+  return toQuestion(row);
+}
+
+export async function readQuestionFromPoolById(
+  input: QuestionParam,
+  questionId: string,
+): Promise<Question | null> {
+  const row = await prisma.questionPool.findFirst({
+    where: {
+      id: questionId,
+      subjectId: input.subjectId,
+      subcategoryId: input.subcategoryId,
+      difficulty: input.difficulty,
+    },
     select: QUESTION_POOL_READ_SELECT,
   });
 

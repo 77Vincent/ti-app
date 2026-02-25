@@ -32,8 +32,10 @@ vi.mock("@/lib/prisma", () => ({
 import {
   deleteTestSession,
   incrementTestSessionProgress,
+  readTestSessionQuestionState,
   readTestSessionByContext,
   readTestSession,
+  updateTestSessionCurrentQuestionId,
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 } from "./testSession";
@@ -205,6 +207,7 @@ describe("test session repo", () => {
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
         recentQuestionResults: [],
+        currentQuestionId: null,
       },
       select: {
         id: true,
@@ -301,6 +304,7 @@ describe("test session repo", () => {
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
         recentQuestionResults: [],
+        currentQuestionId: null,
       },
       update: {
         id: "anon-session-1",
@@ -312,6 +316,7 @@ describe("test session repo", () => {
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
         recentQuestionResults: [],
+        currentQuestionId: null,
       },
       select: {
         id: true,
@@ -503,6 +508,54 @@ describe("test session repo", () => {
         subjectId: true,
         subcategoryId: true,
         difficulty: true,
+      },
+    });
+  });
+
+  it("reads test session question state by session id", async () => {
+    testSessionFindFirst.mockResolvedValueOnce({
+      id: "session-1",
+      currentQuestionId: "question-3",
+      recentQuestionResults: [
+        { questionId: "question-1", isCorrect: true },
+        { questionId: "question-2", isCorrect: false },
+      ],
+    });
+
+    await expect(readTestSessionQuestionState("session-1")).resolves.toEqual({
+      id: "session-1",
+      currentQuestionId: "question-3",
+      recentQuestionResults: [
+        { questionId: "question-1", isCorrect: true },
+        { questionId: "question-2", isCorrect: false },
+      ],
+    });
+
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+      },
+      select: {
+        id: true,
+        currentQuestionId: true,
+        recentQuestionResults: true,
+      },
+    });
+  });
+
+  it("updates current question id by session id", async () => {
+    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+
+    await expect(
+      updateTestSessionCurrentQuestionId("session-1", "question-9"),
+    ).resolves.toBe(1);
+
+    expect(testSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        id: "session-1",
+      },
+      data: {
+        currentQuestionId: "question-9",
       },
     });
   });

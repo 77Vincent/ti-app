@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { parseQuestionParam } from "@/lib/testSession/validation";
-import { readRandomQuestionFromPool } from "../pool/repo";
+import { isNonEmptyString } from "@/lib/string";
+import {
+  readQuestionFromPoolById,
+  readRandomQuestionFromPool,
+} from "../pool/repo";
+import {
+  readTestSessionQuestionState,
+  updateTestSessionCurrentQuestionId,
+} from "../../test/session/repo/testSession";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,6 +29,42 @@ export async function POST(request: Request) {
   }
 
   try {
+    const sessionId = (body as { sessionId?: unknown } | null)?.sessionId;
+    const next = (body as { next?: unknown } | null)?.next;
+    const isNext = next === true;
+
+    if (isNonEmptyString(sessionId)) {
+      const session = await readTestSessionQuestionState(sessionId);
+      if (session) {
+        if (!isNext && session.currentQuestionId) {
+          const currentQuestion = await readQuestionFromPoolById(
+            input,
+            session.currentQuestionId,
+          );
+          if (currentQuestion) {
+            return NextResponse.json({ question: currentQuestion });
+          }
+        }
+
+        const excludeQuestionIds = [
+          ...session.recentQuestionResults.map((item) => item.questionId),
+          ...(session.currentQuestionId ? [session.currentQuestionId] : []),
+        ];
+        const nextQuestion = await readRandomQuestionFromPool(input, {
+          excludeQuestionIds,
+        });
+        if (!nextQuestion) {
+          return NextResponse.json(
+            { error: "No question found for this context." },
+            { status: 404 },
+          );
+        }
+
+        await updateTestSessionCurrentQuestionId(session.id, nextQuestion.id);
+        return NextResponse.json({ question: nextQuestion });
+      }
+    }
+
     const question = await readRandomQuestionFromPool(input);
     if (!question) {
       return NextResponse.json(

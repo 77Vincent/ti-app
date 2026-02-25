@@ -52,6 +52,12 @@ const TEST_SESSION_ADAPTIVE_SELECT = {
   recentQuestionResults: true,
 } as const;
 
+const TEST_SESSION_QUESTION_STATE_SELECT = {
+  id: true,
+  currentQuestionId: true,
+  recentQuestionResults: true,
+} as const;
+
 type RecentQuestionResult = {
   questionId: string;
   isCorrect: boolean;
@@ -129,6 +135,7 @@ export async function upsertTestSession(
           difficultyCooldownRemaining: 0,
           recentOutcomes: [],
           recentQuestionResults: [],
+          currentQuestionId: null,
           userId: where.userId,
         },
         select: TEST_RUN_PARAMS_SELECT,
@@ -170,6 +177,7 @@ export async function upsertTestSession(
       difficultyCooldownRemaining: 0,
       recentOutcomes: [],
       recentQuestionResults: [],
+      currentQuestionId: null,
     },
     update: {
       id,
@@ -181,6 +189,7 @@ export async function upsertTestSession(
       difficultyCooldownRemaining: 0,
       recentOutcomes: [],
       recentQuestionResults: [],
+      currentQuestionId: null,
     },
     select: TEST_RUN_PARAMS_SELECT,
   });
@@ -265,6 +274,40 @@ export async function updateTestSessionDifficultyByRecentAccuracy(
     },
     select: TEST_RUN_PARAMS_SELECT,
   });
+}
+
+export async function readTestSessionQuestionState(sessionId: string) {
+  const session = await prisma.testSession.findFirst({
+    where: {
+      id: sessionId,
+    },
+    select: TEST_SESSION_QUESTION_STATE_SELECT,
+  });
+  if (!session) {
+    return null;
+  }
+
+  return {
+    id: session.id,
+    currentQuestionId: session.currentQuestionId,
+    recentQuestionResults: session.recentQuestionResults as RecentQuestionResult[],
+  };
+}
+
+export async function updateTestSessionCurrentQuestionId(
+  sessionId: string,
+  questionId: string,
+): Promise<number> {
+  const result = await prisma.testSession.updateMany({
+    where: {
+      id: sessionId,
+    },
+    data: {
+      currentQuestionId: questionId,
+    },
+  });
+
+  return result.count;
 }
 
 export async function deleteTestSession(

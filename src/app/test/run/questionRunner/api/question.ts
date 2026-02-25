@@ -5,9 +5,11 @@ import type { Question } from "../types";
 import { QuestionRunnerApiError } from "./error";
 
 export type FetchQuestionInput = {
+  sessionId: string;
   subjectId: SubjectEnum;
   subcategoryId: SubcategoryEnum;
   difficulty: string;
+  next?: boolean;
 };
 
 type FetchQuestionResponse = {

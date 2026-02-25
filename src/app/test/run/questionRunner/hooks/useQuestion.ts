@@ -7,7 +7,9 @@ import {
   fetchQuestion,
 } from "../api";
 import { QuestionRunnerApiError } from "../api/error";
-import { recordQuestionResult } from "../session/storage";
+import {
+  recordQuestionResult,
+} from "../session/storage";
 import type {
   Question as QuestionType,
   QuestionOptionIndex,
@@ -80,13 +82,18 @@ export function useQuestion({
     });
   }, []);
 
-  const loadQuestion = useCallback((difficultyToLoad: string = sessionDifficulty) => {
+  const loadQuestion = useCallback((
+    difficultyToLoad: string = sessionDifficulty,
+    next = false,
+  ) => {
     return fetchQuestion({
+      sessionId,
       subjectId,
       subcategoryId,
       difficulty: difficultyToLoad,
+      next,
     });
-  }, [sessionDifficulty, subcategoryId, subjectId]);
+  }, [sessionDifficulty, sessionId, subcategoryId, subjectId]);
 
   const applyLoadedQuestion = useCallback((nextQuestion: QuestionType): void => {
     setSignInDemand(null);
@@ -104,11 +111,7 @@ export function useQuestion({
     async function initializeQuestionState() {
       dispatchUiState({ type: "initialLoadStarted" });
       try {
-        const loadedQuestion = await fetchQuestion({
-          subjectId,
-          subcategoryId,
-          difficulty,
-        });
+        const loadedQuestion = await loadQuestion(difficulty);
         if (cancelled) {
           return;
         }
@@ -133,9 +136,8 @@ export function useQuestion({
   }, [
     applyLoadedQuestion,
     difficulty,
+    loadQuestion,
     showLoadError,
-    subcategoryId,
-    subjectId,
   ]);
 
   function selectOption(optionIndex: QuestionOptionIndex): QuestionOptionIndex[] | null {
@@ -203,7 +205,7 @@ export function useQuestion({
       advanceToNextQuestion: async () => {
         const targetDifficulty = pendingDifficulty ?? sessionDifficulty;
         try {
-          const loadedQuestion = await loadQuestion(targetDifficulty);
+          const loadedQuestion = await loadQuestion(targetDifficulty, true);
           if (targetDifficulty !== sessionDifficulty) {
             setSessionDifficulty(targetDifficulty);
           }

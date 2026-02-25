@@ -4,6 +4,7 @@ import type { Question } from "../types";
 
 const VALID_INPUT = {
   difficulty: "A1",
+  sessionId: "session-1",
   subjectId: "language",
   subcategoryId: "english",
 } as const;
@@ -27,7 +28,7 @@ afterEach(() => {
 
 describe("fetchQuestion", () => {
   it("returns one question when response is ok", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(
         JSON.stringify({
           question: MOCK_QUESTION,
@@ -37,6 +38,13 @@ describe("fetchQuestion", () => {
     );
 
     await expect(fetchQuestion(VALID_INPUT)).resolves.toEqual(MOCK_QUESTION);
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/questions/fetch",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify(VALID_INPUT),
+      }),
+    );
   });
 
   it("throws when question is missing in response", async () => {
