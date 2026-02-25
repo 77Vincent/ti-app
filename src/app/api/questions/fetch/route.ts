@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import type { Question } from "@/lib/question/model";
 import { parseQuestionParam } from "@/lib/testSession/validation";
 import { isNonEmptyString } from "@/lib/string";
+import { shuffleQuestionOptions } from "@/lib/question/shuffle";
 import {
   readQuestionFromPoolById,
   readRandomQuestionFromPool,
@@ -15,6 +17,14 @@ function noQuestionFoundResponse() {
     { error: "No question found for this context." },
     { status: 404 },
   );
+}
+
+function withShuffledOptions(
+  question: Question,
+  sessionId: string | null,
+): Question {
+  const seedKey = sessionId ? `${sessionId}:${question.id}` : question.id;
+  return shuffleQuestionOptions(question, seedKey);
 }
 
 export async function POST(request: Request) {
@@ -49,7 +59,9 @@ export async function POST(request: Request) {
             session.currentQuestionId,
           );
           if (currentQuestion) {
-            return NextResponse.json({ question: currentQuestion });
+            return NextResponse.json({
+              question: withShuffledOptions(currentQuestion, sessionId),
+            });
           }
         }
 
@@ -59,7 +71,9 @@ export async function POST(request: Request) {
         }
 
         await updateTestSessionCurrentQuestionId(session.id, nextQuestion.id);
-        return NextResponse.json({ question: nextQuestion });
+        return NextResponse.json({
+          question: withShuffledOptions(nextQuestion, sessionId),
+        });
       }
     }
 
@@ -68,7 +82,7 @@ export async function POST(request: Request) {
       return noQuestionFoundResponse();
     }
 
-    return NextResponse.json({ question });
+    return NextResponse.json({ question: withShuffledOptions(question, null) });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to fetch question.";

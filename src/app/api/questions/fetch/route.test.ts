@@ -5,12 +5,14 @@ const {
   readQuestionFromPoolById,
   readRandomQuestionFromPool,
   readTestSessionQuestionState,
+  shuffleQuestionOptions,
   updateTestSessionCurrentQuestionId,
 } = vi.hoisted(() => ({
   parseQuestionParam: vi.fn(),
   readQuestionFromPoolById: vi.fn(),
   readRandomQuestionFromPool: vi.fn(),
   readTestSessionQuestionState: vi.fn(),
+  shuffleQuestionOptions: vi.fn(),
   updateTestSessionCurrentQuestionId: vi.fn(),
 }));
 
@@ -21,6 +23,10 @@ vi.mock("@/lib/testSession/validation", () => ({
 vi.mock("../pool/repo", () => ({
   readQuestionFromPoolById,
   readRandomQuestionFromPool,
+}));
+
+vi.mock("@/lib/question/shuffle", () => ({
+  shuffleQuestionOptions,
 }));
 
 vi.mock("../../test/session/repo/testSession", () => ({
@@ -54,12 +60,14 @@ describe("fetch question route", () => {
     readQuestionFromPoolById.mockReset();
     readRandomQuestionFromPool.mockReset();
     readTestSessionQuestionState.mockReset();
+    shuffleQuestionOptions.mockReset();
     updateTestSessionCurrentQuestionId.mockReset();
 
     parseQuestionParam.mockReturnValue(VALID_INPUT);
     readQuestionFromPoolById.mockResolvedValue(null);
     readRandomQuestionFromPool.mockResolvedValue(VALID_QUESTION);
     readTestSessionQuestionState.mockResolvedValue(null);
+    shuffleQuestionOptions.mockImplementation((question) => question);
     updateTestSessionCurrentQuestionId.mockResolvedValue(undefined);
   });
 
@@ -78,6 +86,10 @@ describe("fetch question route", () => {
       question: VALID_QUESTION,
     });
     expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+    expect(shuffleQuestionOptions).toHaveBeenCalledWith(
+      VALID_QUESTION,
+      VALID_QUESTION.id,
+    );
   });
 
   it("returns persisted current question when session has one and next is false", async () => {
@@ -108,6 +120,10 @@ describe("fetch question route", () => {
     );
     expect(readRandomQuestionFromPool).not.toHaveBeenCalled();
     expect(updateTestSessionCurrentQuestionId).not.toHaveBeenCalled();
+    expect(shuffleQuestionOptions).toHaveBeenCalledWith(
+      VALID_QUESTION,
+      "session-1:question-1",
+    );
   });
 
   it("returns next question and persists it when next is true", async () => {
@@ -136,6 +152,10 @@ describe("fetch question route", () => {
     expect(updateTestSessionCurrentQuestionId).toHaveBeenCalledWith(
       "session-1",
       VALID_QUESTION.id,
+    );
+    expect(shuffleQuestionOptions).toHaveBeenCalledWith(
+      VALID_QUESTION,
+      "session-1:question-1",
     );
   });
 
