@@ -256,6 +256,7 @@ export async function updateTestSessionDifficultyByRecentAccuracy(
       difficultyCooldownRemaining: adaptiveResult.difficultyCooldownRemaining,
       recentOutcomes: adaptiveResult.recentOutcomes,
       recentQuestionResults,
+      currentQuestionId: null,
     },
     select: TEST_RUN_PARAMS_SELECT,
   });

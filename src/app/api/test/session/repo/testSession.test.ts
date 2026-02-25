@@ -504,6 +504,7 @@ describe("test session repo", () => {
             isCorrect: true,
           },
         ],
+        currentQuestionId: null,
       },
       select: {
         id: true,
