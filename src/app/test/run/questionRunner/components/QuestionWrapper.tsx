@@ -6,8 +6,9 @@ import type {
   SignInDemand,
 } from "../types";
 import { Button, Card, CardBody, Tooltip } from "@heroui/react";
+import { FavoriteIconButton } from "@/app/components";
 import Mousetrap from "mousetrap";
-import { ChevronRight, Star } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -159,23 +160,13 @@ export default function QuestionWrapper({
         </Tooltip>
 
         <div className="flex items-center gap-3">
-          <Button
-            aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
-            color={isFavorite ? "warning" : "default"}
-            isIconOnly
+          <FavoriteIconButton
+            isFavorite={isFavorite}
             isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isSignInRequired}
             isLoading={isFavoriteSubmitting || isFavoriteSyncing}
             onPress={() => toggleFavorite(question)}
-            radius="full"
             size="sm"
-            variant="light"
-          >
-            <Star
-              aria-hidden
-              className={isFavorite ? "fill-current" : undefined}
-              size={19}
-            />
-          </Button>
+          />
           <Button
             aria-label="Next question"
             color="primary"

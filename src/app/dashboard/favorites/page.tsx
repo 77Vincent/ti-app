@@ -1,15 +1,14 @@
 "use client";
 
 import {
-  Button,
   Card,
   CardBody,
   Chip,
   Select,
   SelectItem,
 } from "@heroui/react";
+import { FavoriteIconButton } from "@/app/components";
 import { getSubjectIcon } from "@/lib/meta";
-import { Star } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { useState } from "react";
 import QuestionChoice from "@/app/test/run/questionRunner/components/QuestionChoice";
@@ -173,18 +172,12 @@ export default function DashboardFavoritesPage() {
                       onClick={(event) => event.stopPropagation()}
                       onKeyDown={(event) => event.stopPropagation()}
                     >
-                      <Button
-                        aria-label="Remove favorite question"
-                        color="warning"
-                        isIconOnly
+                      <FavoriteIconButton
+                        isFavorite
                         isLoading={removingQuestionIds.has(question.id)}
                         onPress={() => handleUnfavoriteQuestion(question.id)}
-                        radius="full"
                         size="sm"
-                        variant="light"
-                      >
-                        <Star aria-hidden className="fill-current" size={18} />
-                      </Button>
+                      />
                     </div>
                   </div>
                 </CardBody>
