@@ -8,17 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String             @id @default(cuid())
-  name          String?
-  email         String?            @unique
-  emailVerified DateTime?
-  image         String?
-  isSoundEnabled Boolean           @default(true)
-  isLargeQuestionTextEnabled Boolean @default(false)
-  accounts      Account[]
-  sessions      Session[]
-  testSessions  TestSession[]
-  favorites     FavoriteQuestion[]
+  id                        String             @id @default(cuid())
+  name                      String?
+  email                     String?            @unique
+  emailVerified             DateTime?
+  image                     String?
+  stripeCustomerId          String?            @unique
+  isSoundEnabled            Boolean            @default(true)
+  isLargeQuestionTextEnabled Boolean           @default(false)
+  accounts                  Account[]
+  sessions                  Session[]
+  testSessions              TestSession[]
+  favorites                 FavoriteQuestion[]
+  subscription              Subscription?
 }
 
 model Account {
@@ -129,4 +131,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Subscription {
+  userId               String    @id
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  status               String
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
