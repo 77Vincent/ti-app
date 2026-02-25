@@ -125,4 +125,22 @@ export const DIFFICULTY_LADDER_BY_SUBCATEGORY: Record<
       },
     },
   },
+  probability: {
+    framework: "GAISE II",
+    ladder: ["A", "B", "C"],
+    description: {
+      A: {
+        summary: "GAISE Level A (Foundational)",
+        details: "Focuses on intuitive chance language, simple events, and basic interpretation of uncertainty in familiar contexts. Questions should be concrete, low-abstraction, and mostly single-step.",
+      },
+      B: {
+        summary: "GAISE Level B (Developing)",
+        details: "Introduces formal probability reasoning with compound events, complements, and structured counting in moderate complexity settings. Questions can be multi-step but should remain clearly scaffolded.",
+      },
+      C: {
+        summary: "GAISE Level C (Advanced)",
+        details: "Requires deeper statistical and probabilistic reasoning, including conditional structure, model-based thinking, and careful assumption handling. Questions should demand high precision and defensible justification.",
+      },
+    },
+  },
 } as const;

@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_ALL_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-analyze question-english question-chinese question-japanese question-all
+.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-analyze question-english question-chinese question-japanese question-probability question-all
 
 help:
 	@echo "Common commands:"
@@ -22,7 +22,8 @@ help:
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
-	@echo "  make question-all      Generate English, Chinese, and Japanese questions (10 passes)"
+	@echo "  make question-probability Generate Probability questions for A..C (GAISE II)"
+	@echo "  make question-all      Generate English, Chinese, Japanese, and Probability questions"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -78,11 +79,17 @@ question-japanese:
 		$(MAKE) question subcategory=japanese difficulty=$$d || exit 1; \
 	done
 
+question-probability:
+	for d in A B C; do \
+		$(MAKE) question subcategory=probability difficulty=$$d || exit 1; \
+	done
+
 question-all:
 	for i in $$(seq 1 $(QUESTION_ALL_REPEAT_COUNT)); do \
 		$(MAKE) question-english || exit 1; \
 		$(MAKE) question-chinese || exit 1; \
 		$(MAKE) question-japanese || exit 1; \
+		$(MAKE) question-probability || exit 1; \
 	done
 
 up:
