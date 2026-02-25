@@ -115,6 +115,7 @@ describe("favorite question route", () => {
       {
         id: "question-1",
         prompt: "Prompt 1",
+        options: ["Option 1", "Option 2", "Option 3", "Option 4"],
       },
     ]);
     const route = await import("./route");
@@ -130,7 +131,13 @@ describe("favorite question route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      questions: [{ id: "question-1", prompt: "Prompt 1" }],
+      questions: [
+        {
+          id: "question-1",
+          prompt: "Prompt 1",
+          options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+        },
+      ],
     });
     expect(readFavoriteQuestions).toHaveBeenCalledWith(
       "user-1",

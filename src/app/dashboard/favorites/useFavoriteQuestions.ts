@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 type FavoriteQuestionPreview = {
   id: string;
   prompt: string;
+  options: string[];
 };
 
 type FavoriteQuestionsResponse = {
   questions?: Array<{
     id?: unknown;
     prompt?: unknown;
+    options?: unknown;
   }>;
 };
 
@@ -34,12 +36,20 @@ function parseFavoriteQuestionsResponse(
       !question ||
       typeof question !== "object" ||
       typeof question.id !== "string" ||
-      typeof question.prompt !== "string"
+      typeof question.prompt !== "string" ||
+      !Array.isArray(question.options) ||
+      question.options.some((option) => typeof option !== "string")
     ) {
       return [];
     }
 
-    return [{ id: question.id, prompt: question.prompt }];
+    return [
+      {
+        id: question.id,
+        prompt: question.prompt,
+        options: question.options as string[],
+      },
+    ];
   });
 }
 

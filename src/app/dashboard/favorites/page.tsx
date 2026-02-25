@@ -7,6 +7,7 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { getSubjectIcon } from "@/lib/meta";
+import { useState } from "react";
 import { useFavoritesFilters } from "./useFavoritesFilters";
 import { useFavoriteQuestions } from "./useFavoriteQuestions";
 
@@ -24,6 +25,22 @@ export default function DashboardFavoritesPage() {
     subjectId: subjectFilter,
     subcategoryId: selectedSubcategoryId,
   });
+  const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  function toggleExpandedQuestion(questionId: string) {
+    setExpandedQuestionIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(questionId)) {
+        next.delete(questionId);
+      } else {
+        next.add(questionId);
+      }
+
+      return next;
+    });
+  }
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -79,13 +96,40 @@ export default function DashboardFavoritesPage() {
 
       {!isLoading && questions.length > 0 ? (
         <div className="flex w-full flex-col gap-3">
-          {questions.map((question) => (
-            <Card key={question.id} shadow="sm" className="border border-2 border-primary">
-              <CardBody>
-                <p>{question.prompt}</p>
-              </CardBody>
-            </Card>
-          ))}
+          {questions.map((question) => {
+            const isExpanded = expandedQuestionIds.has(question.id);
+
+            return (
+              <Card key={question.id} shadow="sm" className="border border-2 border-primary">
+                <CardBody className="p-0">
+                  <button
+                    type="button"
+                    aria-expanded={isExpanded}
+                    onClick={() => toggleExpandedQuestion(question.id)}
+                    className="w-full px-4 py-3 text-left"
+                  >
+                    <p>{question.prompt}</p>
+                  </button>
+
+                  {isExpanded ? (
+                    <div className="space-y-2 px-4 pb-3">
+                      {question.options.map((option, index) => (
+                        <Card
+                          key={`${question.id}:${index}`}
+                          shadow="none"
+                          className="w-full border border-default-300 bg-background"
+                        >
+                          <CardBody className="px-4 py-2">
+                            <p>{option}</p>
+                          </CardBody>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : null}
+                </CardBody>
+              </Card>
+            );
+          })}
         </div>
       ) : null}
     </div>

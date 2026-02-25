@@ -101,12 +101,17 @@ describe("favorite question repo", () => {
         question: {
           id: "question-2",
           prompt: "Prompt 2",
+          options: [
+            { text: "Option 2-1" },
+            { text: "Option 2-2" },
+          ],
         },
       },
       {
         question: {
           id: "question-1",
           prompt: "Prompt 1",
+          options: [{ text: "Option 1-1" }],
         },
       },
     ]);
@@ -114,8 +119,16 @@ describe("favorite question repo", () => {
     await expect(
       readFavoriteQuestions("user-1", "language", "english"),
     ).resolves.toEqual([
-      { id: "question-2", prompt: "Prompt 2" },
-      { id: "question-1", prompt: "Prompt 1" },
+      {
+        id: "question-2",
+        prompt: "Prompt 2",
+        options: ["Option 2-1", "Option 2-2"],
+      },
+      {
+        id: "question-1",
+        prompt: "Prompt 1",
+        options: ["Option 1-1"],
+      },
     ]);
 
     expect(favoriteQuestionFindMany).toHaveBeenCalledWith({
@@ -134,6 +147,7 @@ describe("favorite question repo", () => {
           select: {
             id: true,
             prompt: true,
+            options: true,
           },
         },
       },
@@ -162,6 +176,7 @@ describe("favorite question repo", () => {
           select: {
             id: true,
             prompt: true,
+            options: true,
           },
         },
       },
