@@ -24,6 +24,7 @@ export type DashboardStatsPayload = {
 const ORDERED_SUBCATEGORIES = [...SUBCATEGORIES].sort(
   (first, second) => first.order - second.order,
 );
+const TOP_SUBCATEGORY_LIMIT = 5;
 
 function buildSubcategorySubmissionStats(
   submittedCountBySubcategoryId: Map<string, number>,
@@ -40,8 +41,20 @@ function buildSubcategorySubmissionStats(
       label: subcategory.label,
       proportionPercent,
       submittedCount,
+      order: subcategory.order,
     };
-  });
+  })
+    .filter((item) => item.submittedCount > 0)
+    .sort(
+      (first, second) =>
+        second.submittedCount - first.submittedCount || first.order - second.order,
+    )
+    .slice(0, TOP_SUBCATEGORY_LIMIT)
+    .map(({ label, proportionPercent, submittedCount }) => ({
+      label,
+      proportionPercent,
+      submittedCount,
+    }));
 }
 
 export async function readDashboardStats(): Promise<DashboardStatsPayload> {
