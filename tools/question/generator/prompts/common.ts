@@ -35,10 +35,11 @@ Rules:
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
 - there should be no ambiguiy, the correct answer must be clearly correct.
+- low difficulty questions should not be lengthy.
 `.trim();
 
 export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `
 Question styles:
-1. selecting the correct word/phrase/sentence to fill in the blank in the prompt.
+1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank by any means, users will know what to do once they see the prompt.
 2. selecting the correct interpretation of the prompt.
 `.trim();

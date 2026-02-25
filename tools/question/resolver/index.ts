@@ -4,6 +4,7 @@ import type {
 } from "../types";
 import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
 import { requestDeepSeekResolverContent } from "./client";
+import { parseAIJson } from "../json";
 
 export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
@@ -20,7 +21,7 @@ export async function resolveQuestionWithAI(
 
   let payload: unknown;
   try {
-    payload = JSON.parse(content);
+    payload = parseAIJson(content);
   } catch {
     throw new Error("Resolver response was not valid JSON.");
   }

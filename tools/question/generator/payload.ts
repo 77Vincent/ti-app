@@ -4,6 +4,7 @@ import {
 } from "../types";
 import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
 import { isNonEmptyString } from "../../../src/lib/string";
+import { parseAIJson } from "../json";
 
 export type ParsedAIQuestionPayload = Pick<
   Question,
@@ -61,7 +62,7 @@ export function parseAIQuestionPayload(
 ): ParsedAIQuestionPayload[] {
   let questions: unknown;
   try {
-    questions = JSON.parse(content);
+    questions = parseAIJson(content);
   } catch {
     throw new Error("AI response was not valid JSON.");
   }
