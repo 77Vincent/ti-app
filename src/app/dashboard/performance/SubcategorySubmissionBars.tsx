@@ -39,7 +39,7 @@ export default function SubcategorySubmissionBars({
           </p>
         ) : (
           <div className="space-y-3">
-            <div className="flex h-3 overflow-hidden rounded-full bg-default-200">
+            <div className="flex h-5 overflow-hidden rounded bg-default-200">
               {items.map((item, index) => (
                 <div
                   className={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
