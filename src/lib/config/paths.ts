@@ -17,6 +17,7 @@ export const API_PATHS = {
   QUESTIONS_FETCH: "/api/questions/fetch",
   TEST_SESSION: "/api/test/session",
   USER_SETTINGS: "/api/user/settings",
+  USER_PLAN: "/api/user/plan",
 } as const;
 
 export const COOKIE_PATHS = {

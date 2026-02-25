@@ -14,7 +14,7 @@ import { getSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PAGE_PATHS } from "@/lib/config/paths";
+import { API_PATHS, PAGE_PATHS } from "@/lib/config/paths";
 import { readUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
 import {
@@ -30,8 +30,23 @@ const ThemeToggleButton = dynamic(
   { ssr: false },
 );
 
+async function readUserPlan(): Promise<boolean> {
+  const response = await fetch(API_PATHS.USER_PLAN, {
+    cache: "no-store",
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    return false;
+  }
+
+  const payload = (await response.json()) as { isPro?: unknown };
+  return payload.isPro === true;
+}
+
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPro, setIsPro] = useState(false);
   const [userDisplayName, setUserDisplayName] = useState("");
   const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
   const SIGN_IN_LABEL = "Sign in";
@@ -50,6 +65,7 @@ export default function AppBar() {
       setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
 
       if (!authenticated) {
+        setIsPro(false);
         return;
       }
 
@@ -57,6 +73,14 @@ export default function AppBar() {
         .then((settings) => {
           if (active) {
             applyUserSettings(settings);
+          }
+        })
+        .catch(() => undefined);
+
+      void readUserPlan()
+        .then((planIsPro) => {
+          if (active) {
+            setIsPro(planIsPro);
           }
         })
         .catch(() => undefined);
@@ -82,8 +106,14 @@ export default function AppBar() {
   return (
     <Navbar shouldHideOnScroll height={52} maxWidth="full" position="sticky">
       <NavbarBrand>
-        <Link title="Ti" className="hover:brightness-125 flex gap-2" href={PAGE_PATHS.HOME} aria-label="Ti">
+        <Link
+          title="Ti"
+          className="hover:brightness-125 flex items-center gap-2"
+          href={PAGE_PATHS.HOME}
+          aria-label="Ti"
+        >
           <Image src="/logo.svg" alt="Ti Logo" width={44} height={40} />
+          {isAuthenticated && isPro ? "Pro" : null}
         </Link>
       </NavbarBrand>
 
