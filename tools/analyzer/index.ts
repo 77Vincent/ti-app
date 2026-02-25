@@ -2,7 +2,6 @@ import type {
   AnalyzeQuestionRequest,
   AnalyzeQuestionResult,
 } from "../types";
-import { parseAIJson } from "../utils/json";
 import { requestDeepSeekAnalyzerContent } from "./client";
 
 export async function analyzeQuestionWithAI(
@@ -12,7 +11,7 @@ export async function analyzeQuestionWithAI(
 
   let payload: unknown;
   try {
-    payload = parseAIJson(content);
+    payload = JSON.parse(content);
   } catch {
     throw new Error("Analyzer response was not valid JSON.");
   }
