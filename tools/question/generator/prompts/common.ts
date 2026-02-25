@@ -33,7 +33,11 @@ Rules:
 - in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
-- two question styles to choose from:
-    1. selecting the correct word/phrase/sentence to fill in the blank in the prompt.
-    2. selecting the correct interpretation of the prompt.
+- there should be no ambiguiy, the correct answer must be clearly correct.
+`.trim();
+
+export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `
+Question styles:
+1. selecting the correct word/phrase/sentence to fill in the blank in the prompt.
+2. selecting the correct interpretation of the prompt.
 `.trim();
