@@ -1,5 +1,6 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
+import { roundToOneDecimalPercent } from "./format";
 import { readDashboardSessions } from "./repo";
 
 export type DashboardStats = {
@@ -33,7 +34,7 @@ function buildSubcategorySubmissionStats(
     const proportionPercent =
       totalSubmittedCount === 0
         ? 0
-        : Math.round((submittedCount / totalSubmittedCount) * 1000) / 10;
+        : roundToOneDecimalPercent(submittedCount / totalSubmittedCount);
 
     return {
       label: subcategory.label,
@@ -50,24 +51,31 @@ export async function readDashboardStats(): Promise<DashboardStatsPayload> {
   }
 
   const sessions = await readDashboardSessions(userId);
-  const submittedCount = sessions.reduce(
-    (sum, session) => sum + session.submittedCount,
-    0,
-  );
-  const correctCount = sessions.reduce(
-    (sum, session) => sum + session.correctCount,
-    0,
-  );
-  const submittedCountBySubcategoryId = sessions.reduce((acc, session) => {
-    const current = acc.get(session.subcategoryId) ?? 0;
-    acc.set(session.subcategoryId, current + session.submittedCount);
-    return acc;
-  }, new Map<string, number>());
+  const { submittedCount, correctCount, submittedCountBySubcategoryId } =
+    sessions.reduce(
+      (acc, session) => {
+        acc.submittedCount += session.submittedCount;
+        acc.correctCount += session.correctCount;
+
+        const current = acc.submittedCountBySubcategoryId.get(session.subcategoryId) ?? 0;
+        acc.submittedCountBySubcategoryId.set(
+          session.subcategoryId,
+          current + session.submittedCount,
+        );
+
+        return acc;
+      },
+      {
+        submittedCount: 0,
+        correctCount: 0,
+        submittedCountBySubcategoryId: new Map<string, number>(),
+      },
+    );
   const wrongCount = submittedCount - correctCount;
   const accuracyRatePercent =
     submittedCount === 0
       ? 0
-      : Math.round((correctCount / submittedCount) * 1000) / 10;
+      : roundToOneDecimalPercent(correctCount / submittedCount);
 
   return {
     stats: {

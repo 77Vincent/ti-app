@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/react";
+import { formatPercent } from "./format";
 
 type SubcategorySubmissionItem = {
   label: string;
@@ -12,14 +13,6 @@ type SubcategorySubmissionBarsProps = {
   items: readonly SubcategorySubmissionItem[];
   totalSubmittedCount: number;
 };
-
-function formatPercent(value: number): string {
-  if (Number.isInteger(value)) {
-    return `${value}%`;
-  }
-
-  return `${value.toFixed(1)}%`;
-}
 
 const SEGMENT_COLORS = [
   "bg-primary",

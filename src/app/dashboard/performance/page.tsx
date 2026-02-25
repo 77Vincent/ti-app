@@ -1,14 +1,7 @@
 import StatsCards from "./StatsCards";
 import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
+import { formatPercent } from "./format";
 import { readDashboardStats } from "./statsData";
-
-function formatAccuracy(accuracyRatePercent: number): string {
-  if (Number.isInteger(accuracyRatePercent)) {
-    return `${accuracyRatePercent}%`;
-  }
-
-  return `${accuracyRatePercent.toFixed(1)}%`;
-}
 
 export default async function DashboardPerformancePage() {
   const { stats, subcategorySubmissionStats } = await readDashboardStats();
@@ -28,7 +21,7 @@ export default async function DashboardPerformancePage() {
     },
     {
       label: "Average accuracy",
-      value: formatAccuracy(stats.accuracyRatePercent),
+      value: formatPercent(stats.accuracyRatePercent),
     },
   ] as const;
 
