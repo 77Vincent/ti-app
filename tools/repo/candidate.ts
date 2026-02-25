@@ -20,8 +20,6 @@ export async function persistQuestionToCandidate(
           prompt: question.prompt,
           difficulty: question.difficulty,
           options: question.options as unknown as Prisma.InputJsonValue,
-          correctOptionIndexes:
-            question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
         },
       ],
       skipDuplicates: true,

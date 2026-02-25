@@ -19,8 +19,7 @@ export async function persistQuestionCandidateToPool(
           prompt: question.prompt,
           difficulty: question.difficulty,
           options: question.options as unknown as Prisma.InputJsonValue,
-          correctOptionIndexes:
-            question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
+          correctOptionIndexes: [0] as unknown as Prisma.InputJsonValue,
         },
       ],
       skipDuplicates: true,

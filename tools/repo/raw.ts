@@ -35,8 +35,6 @@ export async function persistQuestionsToRaw(
         prompt: question.prompt,
         difficulty: question.difficulty,
         options: question.options as unknown as Prisma.InputJsonValue,
-        correctOptionIndexes:
-          question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
       })),
       skipDuplicates: true,
     });
