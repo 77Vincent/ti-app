@@ -1,8 +1,8 @@
-import { isNonEmptyString } from "../../../src/lib/string";
+import { isNonEmptyString } from "../../src/lib/string";
 import {
   AI_API_KEY_ENV_VAR,
   DEEPSEEK_API_URL,
-} from "../config/constants";
+} from "./config";
 
 export type DeepSeekMessage = {
   role: "system" | "user";

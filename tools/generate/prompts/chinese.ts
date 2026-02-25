@@ -1,5 +1,5 @@
 import type { GenerateQuestionRequest } from "../../types";
-import { buildDifficultyDescriptionBlock } from "../../../../shared/difficultyLadder";
+import { buildDifficultyDescriptionBlock } from "../../../shared/difficultyLadder";
 import {
   buildDifficultyTargetPrompt,
   GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK,

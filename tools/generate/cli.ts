@@ -3,12 +3,12 @@
 import { Command, InvalidArgumentError } from "commander";
 import { config as loadDotenv } from "dotenv";
 import { fileURLToPath } from "node:url";
-import { createQuestionCandidatesWithAI } from "./create";
-import type { GenerateQuestionRequest } from "./types";
+import { createQuestionCandidatesWithAI } from "./generate";
+import type { GenerateQuestionRequest } from "../types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
-import { persistQuestionsToRaw } from "./repo";
+import { persistQuestionsToRaw } from "../repo";
 
-const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
+const TOOL_ENV_PATH = fileURLToPath(new URL("../.env", import.meta.url));
 
 function parseSubcategory(
   value: string,
@@ -68,8 +68,10 @@ async function main(): Promise<void> {
     difficulty: GenerateQuestionRequest["difficulty"];
   }>();
 
+  const subcategory =
+    options.subcategory as keyof typeof DIFFICULTY_LADDER_BY_SUBCATEGORY;
   const allowedDifficulties =
-    DIFFICULTY_LADDER_BY_SUBCATEGORY[options.subcategory].ladder as readonly string[];
+    DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategory].ladder as readonly string[];
   if (!allowedDifficulties.includes(options.difficulty)) {
     throw new Error(
       `difficulty "${options.difficulty}" is not allowed for subcategory "${options.subcategory}". Allowed values: ${allowedDifficulties.join(", ")}.`,

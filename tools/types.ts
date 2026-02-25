@@ -1,5 +1,5 @@
 import type { QuestionPool } from "@prisma/client";
-import type { SubcategoryEnum } from "../../src/lib/meta/subcategories";
+import type { SubcategoryEnum } from "../src/lib/meta/subcategories";
 
 export type QuestionDifficulty = QuestionPool["difficulty"];
 export type QuestionSubcategory = SubcategoryEnum;

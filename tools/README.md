@@ -5,21 +5,26 @@ outside the Next.js app source tree.
 
 Runtime test flows must read questions from the database only.
 
-Generation flow:
-- `creator` model generates question candidates.
-- Generated questions are persisted into `QuestionRaw`.
+Flow:
+- Generator model creates question payloads and writes them into `QuestionRaw`.
+- Resolver model consumes one `QuestionRaw` row at a time, predicts difficulty + correct option index, and validates:
+  - predicted difficulty must match original stored difficulty
+  - predicted correct option index must be `0`
+- If validation passes, the row is inserted into `QuestionCandidate`.
 
 Environment variables:
 - `AI_API_KEY` (required)
 - `DATABASE_URL` (required, for persisting into `QuestionRaw`)
-- Example file: `tools/question/.env.example`
-- Runtime loads `tools/question/.env` automatically.
+- Example file: `tools/.env.example`
+- Runtime loads `tools/.env` automatically.
 
 Fixed models (not configurable):
 - Generator: `deepseek-chat`
+- Resolver: `deepseek-reasoner`
 
 CLI usage:
 - `npm run tool:question-ai -- --subcategory english --difficulty A1`
+- `npm run tool:question-resolver` (processes one `QuestionRaw` row)
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`

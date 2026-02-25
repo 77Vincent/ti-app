@@ -2,7 +2,7 @@ import type { ResolveQuestionRequest } from "../types";
 import {
   buildDifficultyDescriptionBlockByLadder,
   type DifficultyDescriptions,
-} from "../../../shared/difficultyLadder";
+} from "../../shared/difficultyLadder";
 
 export type { DifficultyDescriptions };
 

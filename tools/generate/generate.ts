@@ -1,13 +1,13 @@
 import { createHash } from "node:crypto";
-import type { GenerateQuestionRequest, Question } from "./types";
+import type { GenerateQuestionRequest, Question } from "../types";
 import {
   QUESTION_ID_HASH_ALGORITHM,
   QUESTION_ID_HASH_ENCODING,
-} from "./config/constants";
+} from "../utils/config";
 import {
   requestDeepSeekGeneratorContent,
   parseAIQuestionPayload,
-} from "./generator";
+} from "./index";
 
 function createQuestionId(prompt: string): string {
   return createHash(QUESTION_ID_HASH_ALGORITHM)

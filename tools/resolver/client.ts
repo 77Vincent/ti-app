@@ -2,11 +2,11 @@ import type { ResolveQuestionRequest } from "../types";
 import {
   getDeepSeekApiKey,
   requestDeepSeekContent,
-} from "../provider/deepseek";
+} from "../utils/deepseek";
 import {
   RESOLVER_MODEL,
   RESOLVER_TEMPERATURE,
-} from "../config/constants";
+} from "../utils/config";
 import {
   buildResolverSystemPrompt,
   buildResolverUserPrompt,

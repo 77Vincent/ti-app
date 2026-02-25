@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_ALL_REPEAT_COUNT := 10
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-prod question-english question-chinese question-japanese question-all question-english-prod question-chinese-prod question-japanese-prod question-all-prod
+.PHONY: help install dev build start lint test check clean clean-deps question question-prod question-resolve question-resolve-prod question-english question-chinese question-japanese question-all question-english-prod question-chinese-prod question-japanese-prod question-all-prod
 
 help:
 	@echo "Common commands:"
@@ -18,6 +18,8 @@ help:
 	@echo "  make clean-deps Remove node_modules"
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make question-prod subcategory=english difficulty=A1  Run question AI tool against prod env"
+	@echo "  make question-resolve   Resolve one QuestionRaw row and optionally move it to QuestionCandidate"
+	@echo "  make question-resolve-prod Resolve one QuestionRaw row against prod env"
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
@@ -63,9 +65,19 @@ question:
 question-prod:
 	@set -a; \
 	. ./.env.prod; \
-	. ./tools/question/.env.prod; \
+	. ./tools/.env.prod; \
 	set +a; \
 	NODE_ENV=production $(NPM) run tool:question-ai -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
+
+question-resolve:
+	$(NPM) run tool:question-resolver
+
+question-resolve-prod:
+	@set -a; \
+	. ./.env.prod; \
+	. ./tools/.env.prod; \
+	set +a; \
+	NODE_ENV=production $(NPM) run tool:question-resolver
 
 question-english:
 	for d in A1 A2 B1 B2 C1 C2; do \

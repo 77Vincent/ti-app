@@ -1,5 +1,5 @@
 import type { GenerateQuestionRequest } from "../../types";
-import { buildDifficultyDescriptionBlock } from "../../../../shared/difficultyLadder";
+import { buildDifficultyDescriptionBlock } from "../../../shared/difficultyLadder";
 import {
   buildDifficultyTargetPrompt,
   GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK,
@@ -19,6 +19,7 @@ ${buildDifficultyDescriptionBlock("english")}
 ${GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK}
 
 ${GENERATOR_COMMON_RULES_BLOCK}
+- Low difficulty level questions also test spelling where the prompt only asks which option has the correct spelling.
 `.trim();
 
 export function buildEnglishGeneratorUserPrompt(

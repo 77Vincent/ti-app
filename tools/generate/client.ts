@@ -2,11 +2,11 @@ import type { GenerateQuestionRequest } from "../types";
 import {
   getDeepSeekApiKey,
   requestDeepSeekContent,
-} from "../provider/deepseek";
+} from "../utils/deepseek";
 import {
   GENERATOR_MODEL,
   GENERATOR_TEMPERATURE,
-} from "../config/constants";
+} from "../utils/config";
 import {
   buildGeneratorSystemPrompt,
   buildGeneratorUserPrompt,

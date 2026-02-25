@@ -1,7 +1,7 @@
-import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
+import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
 import {
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
-} from "../../../../shared/difficultyLadder";
+} from "../../../shared/difficultyLadder";
 
 export const GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK = `
 Return only valid JSON with this exact shape:

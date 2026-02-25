@@ -1,8 +1,8 @@
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { PrismaClient, type Prisma, type QuestionRaw } from "@prisma/client";
 import { SUBCATEGORIES } from "../../src/lib/meta/subcategories";
-import type { Question, QuestionSubcategory } from "./types";
+import type { Question, QuestionSubcategory } from "../types";
 
-type PersistQuestionsInput = {
+type PersistQuestionsToRawInput = {
   subcategory: QuestionSubcategory;
   questions: Question[];
 };
@@ -16,8 +16,8 @@ function getSubjectId(subcategory: QuestionSubcategory): string {
   return matchedSubcategory.subjectId;
 }
 
-export async function persistQuestionsToPool(
-  input: PersistQuestionsInput,
+export async function persistQuestionsToRaw(
+  input: PersistQuestionsToRawInput,
 ): Promise<void> {
   if (input.questions.length === 0) {
     return;
@@ -27,15 +27,9 @@ export async function persistQuestionsToPool(
   const subjectId = getSubjectId(input.subcategory);
 
   try {
-    const questionIds = input.questions.map((question) => question.id);
-    const existingRows = await prisma.questionPool.findMany({
-      where: { id: { in: questionIds } },
-      select: { id: true },
-    });
-    const existingIds = new Set(existingRows.map((row) => row.id));
-
-    for (const question of input.questions) {
-      const data = {
+    await prisma.questionRaw.createMany({
+      data: input.questions.map((question) => ({
+        id: question.id,
         subjectId,
         subcategoryId: input.subcategory,
         prompt: question.prompt,
@@ -43,23 +37,32 @@ export async function persistQuestionsToPool(
         options: question.options as unknown as Prisma.InputJsonValue,
         correctOptionIndexes:
           question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
-      };
+      })),
+      skipDuplicates: true,
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
 
-      if (existingIds.has(question.id)) {
-        await prisma.questionPool.update({
-          where: { id: question.id },
-          data,
-        });
-        continue;
+export async function takeNextQuestionRaw(): Promise<QuestionRaw | null> {
+  const prisma = new PrismaClient();
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const nextQuestion = await tx.questionRaw.findFirst({
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      });
+      if (!nextQuestion) {
+        return null;
       }
 
-      await prisma.questionPool.create({
-        data: {
-          id: question.id,
-          ...data,
-        },
+      await tx.questionRaw.delete({
+        where: { id: nextQuestion.id },
       });
-    }
+
+      return nextQuestion;
+    });
   } finally {
     await prisma.$disconnect();
   }

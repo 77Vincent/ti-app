@@ -2,9 +2,9 @@ import type {
   ResolveQuestionRequest,
   ResolveQuestionResult,
 } from "../types";
-import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
+import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 import { requestDeepSeekResolverContent } from "./client";
-import { parseAIJson } from "../json";
+import { parseAIJson } from "../utils/json";
 import type { DifficultyDescriptions } from "./prompt";
 
 export async function resolveQuestionWithAI(
