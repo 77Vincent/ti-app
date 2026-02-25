@@ -3,6 +3,7 @@
 import {
   Card,
   CardBody,
+  Chip,
   Select,
   SelectItem,
 } from "@heroui/react";
@@ -101,18 +102,25 @@ export default function DashboardFavoritesPage() {
 
             return (
               <Card key={question.id} shadow="sm" className="border border-2 border-primary">
-                <CardBody className="p-0">
+                <CardBody className="space-y-3">
                   <button
                     type="button"
                     aria-expanded={isExpanded}
                     onClick={() => toggleExpandedQuestion(question.id)}
-                    className="w-full px-4 py-3 text-left"
                   >
-                    <p>{question.prompt}</p>
+                    <div className="flex text-left items-start justify-between gap-3">
+                      <p>{question.prompt}</p>
+                      <Chip
+                        color="danger"
+                        size="sm"
+                      >
+                        {question.difficulty}
+                      </Chip>
+                    </div>
                   </button>
 
                   {isExpanded ? (
-                    <div className="space-y-2 px-4 pb-3">
+                    <div className="space-y-3">
                       {question.options.map((option, index) => (
                         <Card
                           key={`${question.id}:${index}`}

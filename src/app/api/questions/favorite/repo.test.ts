@@ -101,6 +101,7 @@ describe("favorite question repo", () => {
         question: {
           id: "question-2",
           prompt: "Prompt 2",
+          difficulty: "A2",
           options: [
             { text: "Option 2-1" },
             { text: "Option 2-2" },
@@ -111,6 +112,7 @@ describe("favorite question repo", () => {
         question: {
           id: "question-1",
           prompt: "Prompt 1",
+          difficulty: "A1",
           options: [{ text: "Option 1-1" }],
         },
       },
@@ -122,11 +124,13 @@ describe("favorite question repo", () => {
       {
         id: "question-2",
         prompt: "Prompt 2",
+        difficulty: "A2",
         options: ["Option 2-1", "Option 2-2"],
       },
       {
         id: "question-1",
         prompt: "Prompt 1",
+        difficulty: "A1",
         options: ["Option 1-1"],
       },
     ]);
@@ -147,6 +151,7 @@ describe("favorite question repo", () => {
           select: {
             id: true,
             prompt: true,
+            difficulty: true,
             options: true,
           },
         },
@@ -176,6 +181,7 @@ describe("favorite question repo", () => {
           select: {
             id: true,
             prompt: true,
+            difficulty: true,
             options: true,
           },
         },

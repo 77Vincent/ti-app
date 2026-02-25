@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 export type FavoriteQuestionPreview = {
   id: string;
   prompt: string;
+  difficulty: string;
   options: string[];
 };
 
@@ -81,6 +82,7 @@ export async function readFavoriteQuestions(
         select: {
           id: true,
           prompt: true,
+          difficulty: true,
           options: true,
         },
       },
@@ -90,6 +92,7 @@ export async function readFavoriteQuestions(
   return favorites.map((favorite) => ({
     id: favorite.question.id,
     prompt: favorite.question.prompt,
+    difficulty: favorite.question.difficulty,
     options: (favorite.question.options as Array<{ text: string }>).map(
       (option) => option.text,
     ),

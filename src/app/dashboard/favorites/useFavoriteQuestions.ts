@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 type FavoriteQuestionPreview = {
   id: string;
   prompt: string;
+  difficulty: string;
   options: string[];
 };
 
@@ -15,6 +16,7 @@ type FavoriteQuestionsResponse = {
   questions?: Array<{
     id?: unknown;
     prompt?: unknown;
+    difficulty?: unknown;
     options?: unknown;
   }>;
 };
@@ -37,6 +39,7 @@ function parseFavoriteQuestionsResponse(
       typeof question !== "object" ||
       typeof question.id !== "string" ||
       typeof question.prompt !== "string" ||
+      typeof question.difficulty !== "string" ||
       !Array.isArray(question.options) ||
       question.options.some((option) => typeof option !== "string")
     ) {
@@ -47,6 +50,7 @@ function parseFavoriteQuestionsResponse(
       {
         id: question.id,
         prompt: question.prompt,
+        difficulty: question.difficulty,
         options: question.options as string[],
       },
     ];

@@ -115,6 +115,7 @@ describe("favorite question route", () => {
       {
         id: "question-1",
         prompt: "Prompt 1",
+        difficulty: "A1",
         options: ["Option 1", "Option 2", "Option 3", "Option 4"],
       },
     ]);
@@ -135,6 +136,7 @@ describe("favorite question route", () => {
         {
           id: "question-1",
           prompt: "Prompt 1",
+          difficulty: "A1",
           options: ["Option 1", "Option 2", "Option 3", "Option 4"],
         },
       ],
