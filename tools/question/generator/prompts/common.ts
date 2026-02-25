@@ -43,7 +43,7 @@ Rules:
 
 export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `
 Question styles:
-1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank, showing the blank is sufficient.
+1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank, showing the blank is sufficient. The blank should be represented by "___" (three underscores) in the prompt.
 2. selecting the correct interpretation of the prompt.
 `.trim();
 
