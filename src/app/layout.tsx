@@ -5,11 +5,13 @@ import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { AppBar } from "./components";
+import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "It",
   description: "Learning through testing",
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -21,6 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
+          <PwaServiceWorker />
           <NextTopLoader color="#2B54B6" showSpinner={false} />
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
