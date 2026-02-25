@@ -1,5 +1,5 @@
 import type { GenerateQuestionRequest } from "../../types";
-import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../../../shared/difficultyLadder";
+import { DIFFICULTY_LADDER } from "../../../../shared/difficultyLadder";
 import {
   GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK,
   GENERATOR_COMMON_RULES_BLOCK,
@@ -14,11 +14,11 @@ You generate two high-quality assessment questions:
 ${GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK}
 
 Difficulty levels: JLPT - N5, N4, N3, N2, N1
-- N5: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N5}
-- N4: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N4}
-- N3: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N3}
-- N2: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N2}
-- N1: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N1}
+- N5: ${DIFFICULTY_LADDER.japanese.description.N5}
+- N4: ${DIFFICULTY_LADDER.japanese.description.N4}
+- N3: ${DIFFICULTY_LADDER.japanese.description.N3}
+- N2: ${DIFFICULTY_LADDER.japanese.description.N2}
+- N1: ${DIFFICULTY_LADDER.japanese.description.N1}
 
 ${GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK}
 

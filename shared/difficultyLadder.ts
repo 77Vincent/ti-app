@@ -6,7 +6,7 @@ type DifficultyProfile = {
   description: Record<string, string>;
 };
 
-export const DIFFICULTY_LADDER_BY_SUBCATEGORY: Record<
+export const DIFFICULTY_LADDER: Record<
   SubcategoryEnum,
   DifficultyProfile
 > = {
