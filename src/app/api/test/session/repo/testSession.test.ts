@@ -4,6 +4,7 @@ const {
   testSessionCreate,
   testSessionDeleteMany,
   testSessionFindFirst,
+  testSessionFindUnique,
   testSessionUpdate,
   testSessionUpsert,
   testSessionUpdateMany,
@@ -11,6 +12,7 @@ const {
   testSessionCreate: vi.fn(),
   testSessionDeleteMany: vi.fn(),
   testSessionFindFirst: vi.fn(),
+  testSessionFindUnique: vi.fn(),
   testSessionUpdate: vi.fn(),
   testSessionUpsert: vi.fn(),
   testSessionUpdateMany: vi.fn(),
@@ -22,6 +24,7 @@ vi.mock("@/lib/prisma", () => ({
       create: testSessionCreate,
       deleteMany: testSessionDeleteMany,
       findFirst: testSessionFindFirst,
+      findUnique: testSessionFindUnique,
       update: testSessionUpdate,
       upsert: testSessionUpsert,
       updateMany: testSessionUpdateMany,
@@ -46,6 +49,7 @@ describe("test session repo", () => {
     testSessionCreate.mockReset();
     testSessionDeleteMany.mockReset();
     testSessionFindFirst.mockReset();
+    testSessionFindUnique.mockReset();
     testSessionUpdate.mockReset();
     testSessionUpsert.mockReset();
     testSessionUpdateMany.mockReset();
@@ -513,7 +517,7 @@ describe("test session repo", () => {
   });
 
   it("reads test session question state by session id", async () => {
-    testSessionFindFirst.mockResolvedValueOnce({
+    testSessionFindUnique.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-3",
       recentQuestionResults: [
@@ -531,7 +535,7 @@ describe("test session repo", () => {
       ],
     });
 
-    expect(testSessionFindFirst).toHaveBeenCalledWith({
+    expect(testSessionFindUnique).toHaveBeenCalledWith({
       where: {
         id: "session-1",
       },

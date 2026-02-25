@@ -10,6 +10,13 @@ import {
   updateTestSessionCurrentQuestionId,
 } from "../../test/session/repo/testSession";
 
+function noQuestionFoundResponse() {
+  return NextResponse.json(
+    { error: "No question found for this context." },
+    { status: 404 },
+  );
+}
+
 export async function POST(request: Request) {
   let body: unknown;
 
@@ -54,10 +61,7 @@ export async function POST(request: Request) {
           excludeQuestionIds,
         });
         if (!nextQuestion) {
-          return NextResponse.json(
-            { error: "No question found for this context." },
-            { status: 404 },
-          );
+          return noQuestionFoundResponse();
         }
 
         await updateTestSessionCurrentQuestionId(session.id, nextQuestion.id);
@@ -67,10 +71,7 @@ export async function POST(request: Request) {
 
     const question = await readRandomQuestionFromPool(input);
     if (!question) {
-      return NextResponse.json(
-        { error: "No question found for this context." },
-        { status: 404 },
-      );
+      return noQuestionFoundResponse();
     }
 
     return NextResponse.json({ question });

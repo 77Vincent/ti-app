@@ -70,6 +70,21 @@ function appendRecentQuestionResult(
   return [...history, nextResult].slice(-MAX_RECENT_QUESTION_RESULT_COUNT);
 }
 
+function buildResetTestSessionData(id: string, params: TestParam) {
+  return {
+    id,
+    correctCount: 0,
+    submittedCount: 0,
+    subjectId: params.subjectId,
+    subcategoryId: params.subcategoryId,
+    difficulty: params.difficulty,
+    difficultyCooldownRemaining: 0,
+    recentOutcomes: [],
+    recentQuestionResults: [],
+    currentQuestionId: null,
+  };
+}
+
 function isAuthTestSessionWhere(
   where:
     | TestSessionIdentityWhere
@@ -126,16 +141,7 @@ export async function upsertTestSession(
     try {
       return await prisma.testSession.create({
         data: {
-          id,
-          correctCount: 0,
-          submittedCount: 0,
-          subjectId: params.subjectId,
-          subcategoryId: params.subcategoryId,
-          difficulty: params.difficulty,
-          difficultyCooldownRemaining: 0,
-          recentOutcomes: [],
-          recentQuestionResults: [],
-          currentQuestionId: null,
+          ...buildResetTestSessionData(id, params),
           userId: where.userId,
         },
         select: TEST_RUN_PARAMS_SELECT,
@@ -167,30 +173,10 @@ export async function upsertTestSession(
       anonymousSessionId: where.anonymousSessionId,
     },
     create: {
-      id,
+      ...buildResetTestSessionData(id, params),
       anonymousSessionId: where.anonymousSessionId,
-      correctCount: 0,
-      submittedCount: 0,
-      subjectId: params.subjectId,
-      subcategoryId: params.subcategoryId,
-      difficulty: params.difficulty,
-      difficultyCooldownRemaining: 0,
-      recentOutcomes: [],
-      recentQuestionResults: [],
-      currentQuestionId: null,
     },
-    update: {
-      id,
-      correctCount: 0,
-      submittedCount: 0,
-      subjectId: params.subjectId,
-      subcategoryId: params.subcategoryId,
-      difficulty: params.difficulty,
-      difficultyCooldownRemaining: 0,
-      recentOutcomes: [],
-      recentQuestionResults: [],
-      currentQuestionId: null,
-    },
+    update: buildResetTestSessionData(id, params),
     select: TEST_RUN_PARAMS_SELECT,
   });
 }
@@ -277,7 +263,7 @@ export async function updateTestSessionDifficultyByRecentAccuracy(
 }
 
 export async function readTestSessionQuestionState(sessionId: string) {
-  const session = await prisma.testSession.findFirst({
+  const session = await prisma.testSession.findUnique({
     where: {
       id: sessionId,
     },
