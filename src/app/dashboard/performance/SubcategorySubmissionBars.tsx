@@ -35,11 +35,7 @@ export default function SubcategorySubmissionBars({
           Top 5 subcategories by submitted questions
         </p>
 
-        {totalSubmittedCount === 0 ? (
-          <p className="text-sm text-default-500">
-            No submitted questions yet.
-          </p>
-        ) : (
+        {totalSubmittedCount === 0 ? null : (
           <div className="space-y-3">
             <div className="flex h-5 overflow-hidden rounded bg-default-200">
               {items.map((item, index) => (

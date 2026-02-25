@@ -27,11 +27,7 @@ export default function SubcategoryAccuracyBars({
           Top 5 subcategories by accuracy
         </p>
 
-        {items.length === 0 ? (
-          <p className="text-sm text-default-500">
-            No submitted questions yet.
-          </p>
-        ) : (
+        {items.length === 0 ? null : (
           <div className="space-y-3">
             {items.map((item) => {
               const SubjectIcon = getSubjectIcon(item.subjectId);
