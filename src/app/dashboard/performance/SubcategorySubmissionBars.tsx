@@ -32,7 +32,7 @@ export default function SubcategorySubmissionBars({
     <Card shadow="sm" className="border border-2 border-primary">
       <CardBody className="gap-3 px-4 py-3">
         <p className="text-sm text-default-500">
-          Top 5 subcategories by submitted questions
+          Top 5 submitted
         </p>
 
         {totalSubmittedCount === 0 ? null : (
@@ -60,7 +60,7 @@ export default function SubcategorySubmissionBars({
                     className={`h-2.5 w-2.5 rounded-full ${SEGMENT_COLORS[index % SEGMENT_COLORS.length]}`}
                   />
                   <span className="inline-flex items-center gap-2">
-                    <SubjectIcon aria-hidden size={14} />
+                    <SubjectIcon aria-hidden size={15} />
                     <span>{item.label}</span>
                   </span>
                 </div>

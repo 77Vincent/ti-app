@@ -24,7 +24,7 @@ export default function SubcategoryAccuracyBars({
     <Card shadow="sm" className="border border-2 border-primary">
       <CardBody className="gap-3 px-4 py-3">
         <p className="text-sm text-default-500">
-          Top 5 subcategories by accuracy
+          Top 5 accuracy
         </p>
 
         {items.length === 0 ? null : (
@@ -37,7 +37,7 @@ export default function SubcategoryAccuracyBars({
                   className="flex items-center justify-between gap-3 text-sm"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <SubjectIcon aria-hidden size={14} />
+                    <SubjectIcon aria-hidden size={15} />
                     <span>{item.label}</span>
                   </span>
                   <span className="text-default-500">
