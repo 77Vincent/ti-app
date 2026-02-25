@@ -1,22 +1,10 @@
 #!/usr/bin/env node
 
-import { config as loadDotenv } from "dotenv";
-import { fileURLToPath } from "node:url";
 import { resolveNextQuestionFromRawWithAI } from "./resolve";
-
-const TOOL_ENV_PATH = fileURLToPath(new URL("../.env", import.meta.url));
+import { loadToolsEnv } from "../utils/env";
 
 async function main(): Promise<void> {
-  const dotenvResult = loadDotenv({
-    override: false,
-    path: TOOL_ENV_PATH,
-  });
-  if (
-    dotenvResult.error &&
-    (dotenvResult.error as NodeJS.ErrnoException).code !== "ENOENT"
-  ) {
-    throw dotenvResult.error;
-  }
+  loadToolsEnv(import.meta.url);
 
   let processedCount = 0;
 

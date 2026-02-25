@@ -19,7 +19,6 @@ export async function createQuestionCandidatesWithAI(
   input: GenerateQuestionRequest,
 ): Promise<Question[]> {
   const content = await requestDeepSeekGeneratorContent(input);
-  console.log(content)
   const parsedQuestions = parseAIQuestionPayload(content);
   return parsedQuestions.map((question) => ({
     id: createQuestionId(question.prompt),

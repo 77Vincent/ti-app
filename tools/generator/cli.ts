@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 
 import { Command, InvalidArgumentError } from "commander";
-import { config as loadDotenv } from "dotenv";
-import { fileURLToPath } from "node:url";
 import { createQuestionCandidatesWithAI } from "./generate";
 import type { GenerateQuestionRequest } from "../types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
 import { persistQuestionsToRaw } from "../repo";
-
-const TOOL_ENV_PATH = fileURLToPath(new URL("../.env", import.meta.url));
+import { loadToolsEnv } from "../utils/env";
 
 function parseSubcategory(
   value: string,
@@ -33,21 +30,12 @@ function parseDifficulty(value: string): GenerateQuestionRequest["difficulty"] {
 }
 
 async function main(): Promise<void> {
-  const dotenvResult = loadDotenv({
-    override: false,
-    path: TOOL_ENV_PATH,
-  });
-  if (
-    dotenvResult.error &&
-    (dotenvResult.error as NodeJS.ErrnoException).code !== "ENOENT"
-  ) {
-    throw dotenvResult.error;
-  }
+  loadToolsEnv(import.meta.url);
 
   const program = new Command();
 
   program
-    .name("question-ai")
+    .name("question-generate")
     .description("Generate subcategory questions via local tool")
     .requiredOption(
       "-s, --subcategory <subcategory>",
