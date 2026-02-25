@@ -5,7 +5,6 @@ import {
   QUESTION_ID_HASH_ENCODING,
 } from "./config/constants";
 import {
-  DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY,
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
 } from "../../shared/difficultyLadder";
 import {
@@ -34,8 +33,7 @@ export async function createQuestionCandidatesWithAI(
   const difficultyProfile = DIFFICULTY_LADDER_BY_SUBCATEGORY[input.subcategory];
   const difficultyFramework = difficultyProfile.framework;
   const difficultyLadder = difficultyProfile.ladder;
-  const difficultyDescriptions =
-    DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY[input.subcategory];
+  const difficultyDescriptions = difficultyProfile.description;
 
   const resolutionResults = await Promise.all(
     questions.map(async (question) => {
