@@ -1,43 +1,70 @@
-"use client";
-
-import { getSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { LabeledValue } from "@/app/components";
+import { isProSubscriptionStatus } from "@/lib/billing/pro";
+import { syncUserSubscriptionFromStripe } from "@/lib/billing/sync";
+import CancelProButton from "./CancelProButton";
+import { readAccountUserById } from "./repo";
+import UpgradeToProButton from "./UpgradeToProButton";
 
 type AccountProfile = {
   name: string;
   email: string;
+  plan: string;
 };
 
-export default function DashboardAccountPage() {
-  const [profile, setProfile] = useState<AccountProfile>({
-    name: "",
-    email: "",
-  });
+export default async function DashboardAccountPage() {
+  const userId = await readAuthenticatedUserId();
+  let user = userId ? await readAccountUserById(userId) : null;
+  const isLocalPro =
+    user?.subscription &&
+    isProSubscriptionStatus(user.subscription.status);
 
-  useEffect(() => {
-    let active = true;
-
-    void getSession().then((session) => {
-      if (!active) {
-        return;
-      }
-
-      setProfile({
-        name: session?.user?.name?.trim() || "Unknown",
-        email: session?.user?.email?.trim() || "Unknown",
+  if (userId && user?.stripeCustomerId && !isLocalPro) {
+    try {
+      await syncUserSubscriptionFromStripe({
+        userId,
+        stripeCustomerId: user.stripeCustomerId,
       });
-    });
+      user = await readAccountUserById(userId);
+    } catch {
+      // Keep account page available even when Stripe sync fails.
+    }
+  }
 
-    return () => {
-      active = false;
-    };
-  }, []);
+  const isPro =
+    user?.subscription &&
+    isProSubscriptionStatus(user.subscription.status);
+  const isCancellationScheduled = user?.subscription?.cancelAtPeriodEnd ?? false;
+  const currentPeriodEnd = user?.subscription?.currentPeriodEnd ?? null;
+  const periodLabelDate = currentPeriodEnd
+    ? currentPeriodEnd.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : null;
+
+  const profile: AccountProfile = {
+    name: user?.name?.trim() || "Unknown",
+    email: user?.email?.trim() || "Unknown",
+    plan: !isPro
+      ? "Free"
+      : periodLabelDate
+        ? isCancellationScheduled
+          ? `Pro (Ends on ${periodLabelDate})`
+          : `Pro (Renews on ${periodLabelDate})`
+        : "Pro",
+  };
 
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <LabeledValue label="Name" value={profile.name} />
       <LabeledValue label="Email" value={profile.email} />
+      <LabeledValue label="Plan" value={profile.plan} />
+      {isPro ? (
+        <CancelProButton isCancellationScheduled={isCancellationScheduled} />
+      ) : null}
+      {!isPro ? <UpgradeToProButton /> : null}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function SubcategorySubmissionBars({
     <Card shadow="sm" className="border border-2 border-primary">
       <CardBody className="gap-3 px-4 py-3">
         <p className="text-sm text-default-500">
-          Number of submitted questions 
+          Top 5 subcategories by submitted questions
         </p>
 
         {totalSubmittedCount === 0 ? (
