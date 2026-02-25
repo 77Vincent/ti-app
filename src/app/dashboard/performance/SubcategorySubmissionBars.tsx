@@ -1,10 +1,12 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/react";
+import { getSubjectIcon, type SubjectEnum } from "@/lib/meta";
 import { formatPercent } from "./format";
 
 type SubcategorySubmissionItem = {
   label: string;
+  subjectId: SubjectEnum;
   proportionPercent: number;
   submittedCount: number;
 };
@@ -50,23 +52,29 @@ export default function SubcategorySubmissionBars({
               ))}
             </div>
 
-            {items.map((item, index) => (
+            {items.map((item, index) => {
+              const SubjectIcon = getSubjectIcon(item.subjectId);
+              return (
               <div
-                key={item.label}
+                key={`${item.subjectId}:${item.label}`}
                 className="flex items-center justify-between gap-3 text-sm"
               >
                 <div className="flex items-center gap-2">
                   <span
                     className={`h-2.5 w-2.5 rounded-full ${SEGMENT_COLORS[index % SEGMENT_COLORS.length]}`}
                   />
-                  <span>{item.label}</span>
+                  <span className="inline-flex items-center gap-2">
+                    <SubjectIcon aria-hidden size={14} />
+                    <span>{item.label}</span>
+                  </span>
                 </div>
                 <span className="text-default-500">
                   {item.submittedCount.toLocaleString()} (
                   {formatPercent(item.proportionPercent)})
                 </span>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardBody>

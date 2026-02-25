@@ -13,6 +13,7 @@ export type DashboardStats = {
 
 export type SubcategorySubmissionStat = {
   label: string;
+  subjectId: SubjectEnum;
   proportionPercent: number;
   submittedCount: number;
 };
@@ -50,6 +51,7 @@ function buildSubcategorySubmissionStats(
 
     return {
       label: subcategory.label,
+      subjectId: subcategory.subjectId,
       proportionPercent,
       submittedCount,
       order: subcategory.order,
@@ -61,8 +63,9 @@ function buildSubcategorySubmissionStats(
         second.submittedCount - first.submittedCount || first.order - second.order,
     )
     .slice(0, TOP_SUBCATEGORY_LIMIT)
-    .map(({ label, proportionPercent, submittedCount }) => ({
+    .map(({ label, subjectId, proportionPercent, submittedCount }) => ({
       label,
+      subjectId,
       proportionPercent,
       submittedCount,
     }));
