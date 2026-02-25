@@ -20,42 +20,33 @@ export type DashboardStatsPayload = {
   subcategorySubmissionStats: SubcategorySubmissionStat[];
 };
 
-const EMPTY_DASHBOARD_STATS: DashboardStats = {
-  submittedCount: 0,
-  correctCount: 0,
-  wrongCount: 0,
-  accuracyRatePercent: 0,
-};
+const ORDERED_SUBCATEGORIES = [...SUBCATEGORIES].sort(
+  (first, second) => first.order - second.order,
+);
 
 function buildSubcategorySubmissionStats(
   submittedCountBySubcategoryId: Map<string, number>,
   totalSubmittedCount: number,
 ): SubcategorySubmissionStat[] {
-  return [...SUBCATEGORIES]
-    .sort((first, second) => first.order - second.order)
-    .map((subcategory) => {
-      const submittedCount =
-        submittedCountBySubcategoryId.get(subcategory.id) ?? 0;
-      const proportionPercent =
-        totalSubmittedCount === 0
-          ? 0
-          : Math.round((submittedCount / totalSubmittedCount) * 1000) / 10;
+  return ORDERED_SUBCATEGORIES.map((subcategory) => {
+    const submittedCount = submittedCountBySubcategoryId.get(subcategory.id) ?? 0;
+    const proportionPercent =
+      totalSubmittedCount === 0
+        ? 0
+        : Math.round((submittedCount / totalSubmittedCount) * 1000) / 10;
 
-      return {
-        label: subcategory.label,
-        proportionPercent,
-        submittedCount,
-      };
-    });
+    return {
+      label: subcategory.label,
+      proportionPercent,
+      submittedCount,
+    };
+  });
 }
 
 export async function readDashboardStats(): Promise<DashboardStatsPayload> {
   const userId = await readAuthenticatedUserId();
   if (!userId) {
-    return {
-      stats: EMPTY_DASHBOARD_STATS,
-      subcategorySubmissionStats: buildSubcategorySubmissionStats(new Map(), 0),
-    };
+    throw new Error("Expected authenticated user in dashboard stats");
   }
 
   const sessions = await prisma.testSession.findMany({
@@ -81,7 +72,7 @@ export async function readDashboardStats(): Promise<DashboardStatsPayload> {
     acc.set(session.subcategoryId, current + session.submittedCount);
     return acc;
   }, new Map<string, number>());
-  const wrongCount = Math.max(submittedCount - correctCount, 0);
+  const wrongCount = submittedCount - correctCount;
   const accuracyRatePercent =
     submittedCount === 0
       ? 0
