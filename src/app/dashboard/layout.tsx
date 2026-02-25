@@ -3,6 +3,7 @@
 import { Link } from "@heroui/react";
 import {
   BarChart3,
+  Heart,
   LayoutDashboard,
   LogOut,
   Settings as SettingsIcon,
@@ -28,6 +29,11 @@ const DASHBOARD_NAV_ITEMS = [
     label: "Performance",
     href: PAGE_PATHS.DASHBOARD_PERFORMANCE,
     icon: BarChart3,
+  },
+  {
+    label: "Favorites",
+    href: PAGE_PATHS.DASHBOARD_FAVORITES,
+    icon: Heart,
   },
   {
     label: "Settings",

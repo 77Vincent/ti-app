@@ -7,6 +7,7 @@ describe("PAGE_PATHS", () => {
       HOME: "/",
       TEST: "/test",
       DASHBOARD: "/dashboard",
+      DASHBOARD_FAVORITES: "/dashboard/favorites",
       DASHBOARD_PERFORMANCE: "/dashboard/performance",
       DASHBOARD_ACCOUNT: "/dashboard/account",
       DASHBOARD_SETTINGS: "/dashboard/settings",
