@@ -1,7 +1,11 @@
 import type { QuestionOption } from "../types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
 import { resolveQuestionWithAI } from "./index";
-import { persistQuestionToCandidate, takeNextQuestionRaw } from "../repo";
+import {
+  deleteQuestionRawById,
+  persistQuestionToCandidate,
+  takeNextQuestionRaw,
+} from "../repo";
 
 export type ResolveNextRawQuestionResult =
   | { status: "empty" }
@@ -55,6 +59,8 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
   if (isPassed) {
     await persistQuestionToCandidate(rawQuestion);
   }
+
+  await deleteQuestionRawById(rawQuestion.id);
 
   return {
     status: isPassed ? "passed" : "rejected",

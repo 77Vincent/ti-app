@@ -49,19 +49,20 @@ export async function takeNextQuestionRaw(): Promise<QuestionRaw | null> {
   const prisma = new PrismaClient();
 
   try {
-    return await prisma.$transaction(async (tx) => {
-      const nextQuestion = await tx.questionRaw.findFirst({
-        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
-      });
-      if (!nextQuestion) {
-        return null;
-      }
+    return await prisma.questionRaw.findFirst({
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
 
-      await tx.questionRaw.delete({
-        where: { id: nextQuestion.id },
-      });
+export async function deleteQuestionRawById(id: string): Promise<void> {
+  const prisma = new PrismaClient();
 
-      return nextQuestion;
+  try {
+    await prisma.questionRaw.delete({
+      where: { id },
     });
   } finally {
     await prisma.$disconnect();
