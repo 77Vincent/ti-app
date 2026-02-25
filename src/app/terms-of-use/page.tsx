@@ -16,6 +16,16 @@ export default function TermsOfUsePage() {
         access when needed to protect system integrity or comply with legal
         requirements.
       </p>
+      <p className="text-default-600">
+        Some features are available only through the Pro subscription plan.
+        Pricing, billing cycle, and included features are shown at checkout and
+        may be updated in the future.
+      </p>
+      <p className="text-default-600">
+        Pro access remains active through the paid billing period. If canceled,
+        renewal stops at the end of the current billing cycle unless otherwise
+        stated.
+      </p>
     </section>
   );
 }

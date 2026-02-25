@@ -15,6 +15,16 @@ export default function PrivacyPolicyPage() {
         operations required to run the product.
       </p>
       <p className="text-default-600">
+        For Pro subscriptions, we process billing-related metadata such as plan
+        status, transaction identifiers, and renewal/cancelation events to
+        manage access and support requests.
+      </p>
+      <p className="text-default-600">
+        Payment details are handled by the payment provider used at checkout.
+        We only retain the minimum billing information needed for records,
+        account access, and fraud prevention.
+      </p>
+      <p className="text-default-600">
         If you have a privacy request, contact the product operator and include
         enough account detail for verification.
       </p>
