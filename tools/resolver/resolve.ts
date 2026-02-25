@@ -15,7 +15,7 @@ export type ResolveNextRawQuestionResult =
       expectedDifficulty: string;
       resolvedDifficulty: string;
       resolvedCorrectOptionIndex: number;
-      isDifficultyMatch: boolean;
+      isDifficultyAccepted: boolean;
       isCorrectOptionIndexMatch: boolean;
     };
 
@@ -29,6 +29,20 @@ function getDifficultyProfile(subcategory: string) {
   }
 
   return profile;
+}
+
+function isDifficultyAccepted(
+  expectedDifficulty: string,
+  resolvedDifficulty: string,
+  difficultyLadder: readonly string[],
+): boolean {
+  const expectedIndex = difficultyLadder.indexOf(expectedDifficulty);
+  const resolvedIndex = difficultyLadder.indexOf(resolvedDifficulty);
+  if (expectedIndex < 0 || resolvedIndex < 0) {
+    return false;
+  }
+
+  return resolvedIndex >= expectedIndex;
 }
 
 export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRawQuestionResult> {
@@ -52,9 +66,13 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
   const resolvedDifficulty = resolution.difficulty;
   const resolvedCorrectOptionIndex = resolution.correctOptionIndex;
 
-  const isDifficultyMatch = resolvedDifficulty === expectedDifficulty;
+  const difficultyAccepted = isDifficultyAccepted(
+    expectedDifficulty,
+    resolvedDifficulty,
+    profile.ladder,
+  );
   const isCorrectOptionIndexMatch = resolvedCorrectOptionIndex === 0;
-  const isPassed = isDifficultyMatch && isCorrectOptionIndexMatch;
+  const isPassed = difficultyAccepted && isCorrectOptionIndexMatch;
 
   if (isPassed) {
     await persistQuestionToCandidate(rawQuestion);
@@ -68,7 +86,7 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
     expectedDifficulty,
     resolvedDifficulty,
     resolvedCorrectOptionIndex,
-    isDifficultyMatch,
+    isDifficultyAccepted: difficultyAccepted,
     isCorrectOptionIndexMatch,
   };
 }

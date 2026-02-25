@@ -18,22 +18,30 @@ async function main(): Promise<void> {
     throw dotenvResult.error;
   }
 
-  const result = await resolveNextQuestionFromRawWithAI();
-  if (result.status === "empty") {
-    process.stdout.write("No QuestionRaw rows left to resolve.\n");
-    return;
-  }
+  let processedCount = 0;
 
-  if (result.status === "passed") {
+  while (true) {
+    const result = await resolveNextQuestionFromRawWithAI();
+    if (result.status === "empty") {
+      process.stdout.write(
+        `No QuestionRaw rows left to resolve. Processed ${processedCount} question(s).\n`,
+      );
+      return;
+    }
+
+    processedCount += 1;
+
+    if (result.status === "passed") {
+      process.stdout.write(
+        `Resolved ${result.questionId}: PASSED (difficulty: ${result.resolvedDifficulty}, answer index: ${result.resolvedCorrectOptionIndex}). Moved to QuestionCandidate.\n`,
+      );
+      continue;
+    }
+
     process.stdout.write(
-      `Resolved ${result.questionId}: PASSED (difficulty: ${result.resolvedDifficulty}, answer index: ${result.resolvedCorrectOptionIndex}). Moved to QuestionCandidate.\n`,
+      `Resolved ${result.questionId}: REJECTED (expected difficulty: ${result.expectedDifficulty}, resolved difficulty: ${result.resolvedDifficulty}, resolved answer index: ${result.resolvedCorrectOptionIndex}).\n`,
     );
-    return;
   }
-
-  process.stdout.write(
-    `Resolved ${result.questionId}: REJECTED (expected difficulty: ${result.expectedDifficulty}, resolved difficulty: ${result.resolvedDifficulty}, resolved answer index: ${result.resolvedCorrectOptionIndex}).\n`,
-  );
 }
 
 main().catch((error: unknown) => {

@@ -8,7 +8,7 @@ Runtime test flows must read questions from the database only.
 Flow:
 - Generator model creates question payloads and writes them into `QuestionRaw`.
 - Resolver model consumes one `QuestionRaw` row at a time, predicts difficulty + correct option index, and validates:
-  - predicted difficulty must match original stored difficulty
+  - predicted difficulty must be the same level or harder than the original stored difficulty
   - predicted correct option index must be `0`
 - If validation passes, the row is inserted into `QuestionCandidate`.
 
@@ -24,7 +24,7 @@ Fixed models (not configurable):
 
 CLI usage:
 - `npm run tool:question-generate -- --subcategory english --difficulty A1`
-- `npm run tool:question-resolve` (processes one `QuestionRaw` row)
+- `npm run tool:question-resolve` (processes `QuestionRaw` rows until empty)
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`
