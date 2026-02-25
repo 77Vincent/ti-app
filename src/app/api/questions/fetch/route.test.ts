@@ -84,7 +84,6 @@ describe("fetch question route", () => {
     readTestSessionQuestionState.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-current",
-      recentQuestionResults: [],
     });
     readQuestionFromPoolById.mockResolvedValueOnce(VALID_QUESTION);
     const route = await import("./route");
@@ -115,10 +114,6 @@ describe("fetch question route", () => {
     readTestSessionQuestionState.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-current",
-      recentQuestionResults: [
-        { questionId: "question-a", isCorrect: true },
-        { questionId: "question-b", isCorrect: false },
-      ],
     });
     const route = await import("./route");
 
@@ -137,9 +132,7 @@ describe("fetch question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
-    expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT, {
-      excludeQuestionIds: ["question-a", "question-b", "question-current"],
-    });
+    expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
     expect(updateTestSessionCurrentQuestionId).toHaveBeenCalledWith(
       "session-1",
       VALID_QUESTION.id,

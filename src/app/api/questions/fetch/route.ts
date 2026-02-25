@@ -53,13 +53,7 @@ export async function POST(request: Request) {
           }
         }
 
-        const excludeQuestionIds = [
-          ...session.recentQuestionResults.map((item) => item.questionId),
-          ...(session.currentQuestionId ? [session.currentQuestionId] : []),
-        ];
-        const nextQuestion = await readRandomQuestionFromPool(input, {
-          excludeQuestionIds,
-        });
+        const nextQuestion = await readRandomQuestionFromPool(input);
         if (!nextQuestion) {
           return noQuestionFoundResponse();
         }
