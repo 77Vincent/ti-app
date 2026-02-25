@@ -123,10 +123,11 @@ export async function clearTestSession(): Promise<void> {
 
 export async function recordQuestionResult(
   sessionId: string,
+  questionId: string,
   isCorrect: boolean,
 ): Promise<TestSession | null> {
   const payload = await requestSession({
-    body: JSON.stringify({ isCorrect, sessionId }),
+    body: JSON.stringify({ isCorrect, questionId, sessionId }),
     method: "PATCH",
   });
 

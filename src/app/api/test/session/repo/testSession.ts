@@ -2,6 +2,7 @@ import type { TestParam } from "@/lib/testSession/validation";
 import { prisma } from "@/lib/prisma";
 import { getNextDifficultyByRecentAccuracy } from "@/lib/difficulty";
 import type { SubcategoryEnum } from "@/lib/meta";
+import { MAX_RECENT_QUESTION_RESULT_COUNT } from "@/lib/config/testPolicy";
 
 export type AuthTestSessionWhere = {
   userId: string;
@@ -48,7 +49,20 @@ const TEST_SESSION_ADAPTIVE_SELECT = {
   difficulty: true,
   difficultyCooldownRemaining: true,
   recentOutcomes: true,
+  recentQuestionResults: true,
 } as const;
+
+type RecentQuestionResult = {
+  questionId: string;
+  isCorrect: boolean;
+};
+
+function appendRecentQuestionResult(
+  history: RecentQuestionResult[],
+  nextResult: RecentQuestionResult,
+): RecentQuestionResult[] {
+  return [...history, nextResult].slice(-MAX_RECENT_QUESTION_RESULT_COUNT);
+}
 
 function isAuthTestSessionWhere(
   where:
@@ -114,6 +128,7 @@ export async function upsertTestSession(
           difficulty: params.difficulty,
           difficultyCooldownRemaining: 0,
           recentOutcomes: [],
+          recentQuestionResults: [],
           userId: where.userId,
         },
         select: TEST_RUN_PARAMS_SELECT,
@@ -154,6 +169,7 @@ export async function upsertTestSession(
       difficulty: params.difficulty,
       difficultyCooldownRemaining: 0,
       recentOutcomes: [],
+      recentQuestionResults: [],
     },
     update: {
       id,
@@ -164,6 +180,7 @@ export async function upsertTestSession(
       difficulty: params.difficulty,
       difficultyCooldownRemaining: 0,
       recentOutcomes: [],
+      recentQuestionResults: [],
     },
     select: TEST_RUN_PARAMS_SELECT,
   });
@@ -208,6 +225,7 @@ export async function incrementTestSessionProgress(
 export async function updateTestSessionDifficultyByRecentAccuracy(
   where: TestSessionReadWhere,
   isCorrect: boolean,
+  questionId: string,
 ) {
   const session = await prisma.testSession.findFirst({
     where: {
@@ -227,6 +245,13 @@ export async function updateTestSessionDifficultyByRecentAccuracy(
     difficultyCooldownRemaining: session.difficultyCooldownRemaining,
     isCorrect,
   });
+  const recentQuestionResults = appendRecentQuestionResult(
+    session.recentQuestionResults as RecentQuestionResult[],
+    {
+      questionId,
+      isCorrect,
+    },
+  );
 
   return prisma.testSession.update({
     where: {
@@ -236,6 +261,7 @@ export async function updateTestSessionDifficultyByRecentAccuracy(
       difficulty: adaptiveResult.difficulty,
       difficultyCooldownRemaining: adaptiveResult.difficultyCooldownRemaining,
       recentOutcomes: adaptiveResult.recentOutcomes,
+      recentQuestionResults,
     },
     select: TEST_RUN_PARAMS_SELECT,
   });

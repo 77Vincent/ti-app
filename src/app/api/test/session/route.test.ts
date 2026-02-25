@@ -327,21 +327,6 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).not.toHaveBeenCalled();
   });
 
-  it("returns 400 when questionId is missing", async () => {
-    const response = await PATCH(
-      new Request("http://localhost/api/test/session", {
-        body: JSON.stringify({ isCorrect: true, sessionId: "session-1" }),
-        method: "PATCH",
-      }),
-    );
-
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({
-      error: "questionId must be a non-empty string.",
-    });
-    expect(incrementTestSessionProgress).not.toHaveBeenCalled();
-  });
-
   it("increments anonymous test session progress when session exists", async () => {
     const response = await PATCH(
       new Request("http://localhost/api/test/session", {

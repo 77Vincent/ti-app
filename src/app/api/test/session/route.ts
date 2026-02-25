@@ -215,6 +215,8 @@ export async function PATCH(request: Request) {
     );
   }
 
+  const questionId = (body as { questionId: string }).questionId;
+
   const userId = await readAuthenticatedUserId();
 
   if (userId) {
@@ -227,6 +229,7 @@ export async function PATCH(request: Request) {
         await updateTestSessionDifficultyByRecentAccuracy(
           { id: sessionId, userId },
           isCorrect,
+          questionId,
         ),
       );
       if (!session) {
@@ -269,6 +272,7 @@ export async function PATCH(request: Request) {
       await updateTestSessionDifficultyByRecentAccuracy(
         { id: sessionId, anonymousSessionId },
         isCorrect,
+        questionId,
       ),
     );
     if (!session) {

@@ -82,7 +82,7 @@ describe("session storage", () => {
     );
   });
 
-  it("recordQuestionResult sends sessionId and isCorrect payload to session PATCH", async () => {
+  it("recordQuestionResult sends sessionId, questionId and isCorrect payload to session PATCH", async () => {
     const updatedSession = {
       ...REMOTE_SESSION_PAYLOAD.session,
       difficulty: "A2",
@@ -91,13 +91,19 @@ describe("session storage", () => {
       new Response(JSON.stringify({ ok: true, session: updatedSession }), { status: 200 }),
     );
 
-    await expect(recordQuestionResult("session-1", true)).resolves.toEqual(updatedSession);
+    await expect(
+      recordQuestionResult("session-1", "question-1", true),
+    ).resolves.toEqual(updatedSession);
 
     expect(fetchSpy).toHaveBeenCalledWith(
       API_PATHS.TEST_SESSION,
       expect.objectContaining({
         method: "PATCH",
-        body: JSON.stringify({ isCorrect: true, sessionId: "session-1" }),
+        body: JSON.stringify({
+          isCorrect: true,
+          questionId: "question-1",
+          sessionId: "session-1",
+        }),
         headers: { "content-type": "application/json" },
       }),
     );

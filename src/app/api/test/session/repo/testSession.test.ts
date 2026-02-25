@@ -204,6 +204,7 @@ describe("test session repo", () => {
         difficulty: "A1",
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
+        recentQuestionResults: [],
       },
       select: {
         id: true,
@@ -299,6 +300,7 @@ describe("test session repo", () => {
         difficulty: "A1",
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
+        recentQuestionResults: [],
       },
       update: {
         id: "anon-session-1",
@@ -309,6 +311,7 @@ describe("test session repo", () => {
         difficulty: "A1",
         difficultyCooldownRemaining: 0,
         recentOutcomes: [],
+        recentQuestionResults: [],
       },
       select: {
         id: true,
@@ -423,12 +426,18 @@ describe("test session repo", () => {
   });
 
   it("updates adaptive difficulty after submission based on recent outcomes", async () => {
+    const recentQuestionResults = Array.from({ length: 10 }, (_, index) => ({
+      questionId: `question-${index + 1}`,
+      isCorrect: index % 2 === 0,
+    }));
+
     testSessionFindFirst.mockResolvedValueOnce({
       id: "session-1",
       subcategoryId: "english",
       difficulty: "A1",
       difficultyCooldownRemaining: 0,
       recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+      recentQuestionResults,
     });
     testSessionUpdate.mockResolvedValueOnce({
       id: "session-1",
@@ -443,6 +452,7 @@ describe("test session repo", () => {
       updateTestSessionDifficultyByRecentAccuracy(
         { id: "session-1", userId: "user-1" },
         true,
+        "question-11",
       ),
     ).resolves.toEqual({
       id: "session-1",
@@ -464,6 +474,7 @@ describe("test session repo", () => {
         difficulty: true,
         difficultyCooldownRemaining: true,
         recentOutcomes: true,
+        recentQuestionResults: true,
       },
     });
     expect(testSessionUpdate).toHaveBeenCalledWith({
@@ -476,6 +487,13 @@ describe("test session repo", () => {
           DIFFICULTY_LEVEL_CHANGE_COOLDOWN_SUBMISSIONS,
         recentOutcomes: [
           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+        ],
+        recentQuestionResults: [
+          ...recentQuestionResults.slice(1),
+          {
+            questionId: "question-11",
+            isCorrect: true,
+          },
         ],
       },
       select: {

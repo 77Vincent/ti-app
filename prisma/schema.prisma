@@ -60,6 +60,7 @@ model TestSession {
   correctCount       Int      @default(0)
   submittedCount     Int      @default(0)
   recentOutcomes     Int[]    @default([])
+  recentQuestionResults Json  @default("[]")
   startedAt          DateTime @default(now())
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
