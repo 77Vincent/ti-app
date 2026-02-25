@@ -41,9 +41,9 @@ export default function SubcategoryAccuracyBars({
                     <span>{item.label}</span>
                   </span>
                   <span className="text-default-500">
-                    {formatPercent(item.accuracyRatePercent)} (
                     {item.correctCount.toLocaleString()}/
-                    {item.submittedCount.toLocaleString()})
+                    {item.submittedCount.toLocaleString()} (
+                    {formatPercent(item.accuracyRatePercent)})
                   </span>
                 </div>
               );
