@@ -4,7 +4,10 @@ import {
   QUESTION_ID_HASH_ALGORITHM,
   QUESTION_ID_HASH_ENCODING,
 } from "./config/constants";
-import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
+import {
+  DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY,
+  DIFFICULTY_LADDER_BY_SUBCATEGORY,
+} from "../../shared/difficultyLadder";
 import {
   requestDeepSeekGeneratorContent,
   parseAIQuestionPayload,
@@ -31,6 +34,8 @@ export async function createQuestionCandidatesWithAI(
   const difficultyProfile = DIFFICULTY_LADDER_BY_SUBCATEGORY[input.subcategory];
   const difficultyFramework = difficultyProfile.framework;
   const difficultyLadder = difficultyProfile.ladder;
+  const difficultyDescriptions =
+    DIFFICULTY_DESCRIPTION_BY_SUBCATEGORY[input.subcategory];
 
   const resolutionResults = await Promise.all(
     questions.map(async (question) => {
@@ -41,6 +46,7 @@ export async function createQuestionCandidatesWithAI(
         },
         difficultyFramework,
         difficultyLadder,
+        difficultyDescriptions,
       );
       console.log("Resolved question:", resolved);
 

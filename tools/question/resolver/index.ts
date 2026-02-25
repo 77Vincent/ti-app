@@ -9,11 +9,13 @@ export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
   difficultyFramework: string,
   difficultyLadder: readonly string[],
+  difficultyDescriptions: Record<string, string>,
 ): Promise<ResolveQuestionResult> {
   const content = await requestDeepSeekResolverContent(
     input,
     difficultyFramework,
     difficultyLadder,
+    difficultyDescriptions,
   );
 
   let payload: unknown;

@@ -4,7 +4,7 @@ import {
   requestDeepSeekContent,
 } from "../provider/deepseek";
 import {
-  GENERATOR_MODEL,
+  RESOLVER_MODEL,
   RESOLVER_TEMPERATURE,
 } from "../config/constants";
 import {
@@ -16,16 +16,18 @@ export async function requestDeepSeekResolverContent(
   input: ResolveQuestionRequest,
   difficultyFramework: string,
   difficultyLadder: readonly string[],
+  difficultyDescriptions: Record<string, string>,
 ): Promise<string> {
   return requestDeepSeekContent(
     getDeepSeekApiKey(),
-    GENERATOR_MODEL,
+    RESOLVER_MODEL,
     [
       {
         role: "system",
         content: buildResolverSystemPrompt(
           difficultyFramework,
           difficultyLadder,
+          difficultyDescriptions,
         ),
       },
       { role: "user", content: buildResolverUserPrompt(input) },

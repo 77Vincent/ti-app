@@ -3,11 +3,21 @@ import type { ResolveQuestionRequest } from "../types";
 export function buildResolverSystemPrompt(
   difficultyFramework: string,
   difficultyLadder: readonly string[],
+  difficultyDescriptions: Record<string, string>,
 ): string {
+  const difficultyRubric = difficultyLadder
+    .map(
+      (level) =>
+        `- ${level}: ${difficultyDescriptions[level] ?? "No description provided."}`,
+    )
+    .join("\n");
+
   return `
 You are solving one multiple-choice question.
-You must also evaluate the question difficulty using the provided ladder.
+You must also evaluate the question difficulty using the provided ladder and rubric descriptions.
 Difficulty ladder: ${difficultyFramework}: ${difficultyLadder.join(", ")}.
+Difficulty rubric:
+${difficultyRubric}
 
 Return raw JSON only with this exact shape:
 {"a": number, "d": string}
@@ -19,7 +29,9 @@ Rules:
 - d must be one raw difficulty ID from this ladder: ${difficultyLadder.join(", ")}.
 - do not include "${difficultyFramework}: " prefix in d.
 - d must reflect your own judgment of the question difficulty.
-- the difficulty ladder is based on real world framework and standards.
+- d must be chosen by comparing the question against every rubric level above.
+- avoid defaulting to middle levels; choose the closest rubric match.
+- if two levels are equally close, choose the harder level.
 `.trim();
 }
 
