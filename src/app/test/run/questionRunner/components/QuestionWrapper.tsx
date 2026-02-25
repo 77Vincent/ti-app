@@ -149,6 +149,15 @@ export default function QuestionWrapper({
       />
 
       <div className="flex items-center justify-between gap-2">
+        <Tooltip content="Accuracy" placement="right">
+          <span>
+            <SessionAccuracy
+              correctCount={correctCount}
+              submittedCount={submittedCount}
+            />
+          </span>
+        </Tooltip>
+
         <div className="flex items-center gap-1">
           <Button
             aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
@@ -167,15 +176,6 @@ export default function QuestionWrapper({
               size={19}
             />
           </Button>
-
-          <Tooltip content="Accuracy" placement="right">
-            <span>
-              <SessionAccuracy
-                correctCount={correctCount}
-                submittedCount={submittedCount}
-              />
-            </span>
-          </Tooltip>
         </div>
 
         {hasSubmitted ? (

@@ -37,6 +37,7 @@ import {
   updateTestSessionDifficultyByRecentAccuracy,
   upsertTestSession,
 } from "./testSession";
+import { DIFFICULTY_LEVEL_CHANGE_COOLDOWN_SUBMISSIONS } from "@/lib/difficulty/config";
 
 describe("test session repo", () => {
   beforeEach(() => {
@@ -427,7 +428,7 @@ describe("test session repo", () => {
       subcategoryId: "english",
       difficulty: "A1",
       difficultyCooldownRemaining: 0,
-      recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
     });
     testSessionUpdate.mockResolvedValueOnce({
       id: "session-1",
@@ -471,8 +472,11 @@ describe("test session repo", () => {
       },
       data: {
         difficulty: "A2",
-        difficultyCooldownRemaining: 15,
-        recentOutcomes: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
+        difficultyCooldownRemaining:
+          DIFFICULTY_LEVEL_CHANGE_COOLDOWN_SUBMISSIONS,
+        recentOutcomes: [
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+        ],
       },
       select: {
         id: true,

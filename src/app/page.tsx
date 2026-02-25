@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-1 items-center justify-center">
       <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8 px-4 text-center">
         <div className="space-y-3">
           <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
