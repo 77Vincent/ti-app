@@ -101,33 +101,27 @@ export const DIFFICULTY_LADDER_BY_SUBCATEGORY: Record<
     description: {
       HSK1: {
         summary: "Beginner",
-        details:
-          "Can understand and use very basic Chinese words and short fixed expressions for simple daily needs.",
+        details: "Designed for learners who can understand and use some simple Chinese characters and sentences to communicate, and prepares them for continuing their Chinese studies. In HSK 1 all characters are provided along with pinyin. Words: 150, Characters: 150+.",
       },
       HSK2: {
         summary: "Elementary",
-        details:
-          "Can handle routine communication on familiar topics with simple sentence patterns and basic vocabulary.",
+        details: "Designed for learners who can use Chinese in a simple and direct manner, applying it in a basic fashion to their daily lives. In HSK 2 all characters are provided along with pinyin. Words: 300, Characters: 300+.",
       },
       HSK3: {
         summary: "Lower-Intermediate",
-        details:
-          "Can communicate in common daily, study, and work situations using connected sentences and practical language.",
+        details: "Designed for learners who can use Chinese to serve the demands of their personal lives, studies and work, and are capable of completing most of the communicative tasks they experience during their Chinese tour. Words: 600, Characters: 600+.",
       },
       HSK4: {
         summary: "Intermediate",
-        details:
-          "Can discuss a broad range of topics with more complex grammar and can read/write medium-length texts.",
+        details: "Designed for learners who can discuss a relatively wide range of topics in Chinese and are capable of communicating with Chinese speakers at a high standard. Words: 1200, Characters: 1200+.",
       },
       HSK5: {
         summary: "Upper-Intermediate",
-        details:
-          "Can understand newspapers, magazines, and longer discourse, and express ideas with nuance in writing and speech.",
+        details: "Designed for learners who can read Chinese newspapers and magazines, watch Chinese films and are capable of writing and delivering a lengthy speech in Chinese. Words: 2500, Characters: 2500+.",
       },
       HSK6: {
         summary: "Advanced",
-        details:
-          "Can comprehend and produce complex Chinese across academic and professional contexts with high fluency and precision.",
+        details: "Designed for learners who can easily understand any information communicated in Chinese and are capable of smoothly expressing themselves in written or oral form. Words: 5000, Characters: 5000+.",
       },
     },
   },
