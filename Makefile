@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
 NPM := npm
+QUESTION_ALL_REPEAT_COUNT := 10
 
 .PHONY: help install dev build start lint test check clean clean-deps question question-prod question-english question-chinese question-japanese question-all question-english-prod question-chinese-prod question-japanese-prod question-all-prod
 
@@ -20,7 +21,7 @@ help:
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
-	@echo "  make question-all      Generate English, Chinese, and Japanese questions"
+	@echo "  make question-all      Generate English, Chinese, and Japanese questions (10 passes)"
 	@echo "  make question-english-prod  Generate English questions for A1..C2 to prod DB"
 	@echo "  make question-chinese-prod  Generate Chinese questions for HSK1..HSK6 to prod DB"
 	@echo "  make question-japanese-prod Generate Japanese questions for N5..N1 to prod DB"
@@ -92,9 +93,11 @@ question-japanese:
 	done
 
 question-all:
-	$(MAKE) question-english
-	$(MAKE) question-chinese
-	$(MAKE) question-japanese
+	for i in $$(seq 1 $(QUESTION_ALL_REPEAT_COUNT)); do \
+		$(MAKE) question-english || exit 1; \
+		$(MAKE) question-chinese || exit 1; \
+		$(MAKE) question-japanese || exit 1; \
+	done
 
 question-japanese-prod:
 	for d in N5 N4 N3 N2 N1; do \

@@ -43,7 +43,7 @@ Rules:
 
 export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `
 Question styles:
-1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank by any means, users will know what to do once they see the prompt.
+1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank, showing the blank is sufficient.
 2. selecting the correct interpretation of the prompt.
 `.trim();
 
