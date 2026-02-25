@@ -125,38 +125,26 @@ export default function DashboardFavoritesPage() {
 
             return (
               <Card key={question.id} shadow="sm" className="border border-2 border-primary">
-                <CardBody className="space-y-3">
-                  <div className="flex items-start gap-2">
-                    <button
-                      type="button"
-                      aria-expanded={isExpanded}
-                      onClick={() => toggleExpandedQuestion(question.id)}
-                      className="flex-1 text-left"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <p>{question.prompt}</p>
-                        <Chip color="primary" size="sm">
-                          {question.difficulty}
-                        </Chip>
-                      </div>
-                    </button>
-
-                    <Button
-                      aria-label="Remove favorite question"
-                      color="warning"
-                      isIconOnly
-                      isLoading={removingQuestionIds.has(question.id)}
-                      onPress={() => handleUnfavoriteQuestion(question.id)}
-                      radius="full"
-                      size="sm"
-                      variant="light"
-                    >
-                      <Star aria-hidden className="fill-current" size={18} />
-                    </Button>
-                  </div>
+                <CardBody
+                  aria-expanded={isExpanded}
+                  className="space-y-3 cursor-pointer"
+                  onClick={() => toggleExpandedQuestion(question.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      toggleExpandedQuestion(question.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <p>{question.prompt}</p>
 
                   {isExpanded ? (
-                    <div className="space-y-3">
+                    <div
+                      className="space-y-3"
+                      onClick={(event) => event.stopPropagation()}
+                    >
                       {question.options.map((option, index) => (
                         <Card
                           key={`${question.id}:${index}`}
@@ -170,6 +158,30 @@ export default function DashboardFavoritesPage() {
                       ))}
                     </div>
                   ) : null}
+
+                  <div className="flex items-center justify-end gap-2">
+                    <Chip color="primary" size="sm">
+                      {question.difficulty}
+                    </Chip>
+
+                    <div
+                      onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => event.stopPropagation()}
+                    >
+                      <Button
+                        aria-label="Remove favorite question"
+                        color="warning"
+                        isIconOnly
+                        isLoading={removingQuestionIds.has(question.id)}
+                        onPress={() => handleUnfavoriteQuestion(question.id)}
+                        radius="full"
+                        size="sm"
+                        variant="light"
+                      >
+                        <Star aria-hidden className="fill-current" size={18} />
+                      </Button>
+                    </div>
+                  </div>
                 </CardBody>
               </Card>
             );
