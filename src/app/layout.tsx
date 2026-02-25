@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { AppBar } from "./components";
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
+          <NextTopLoader color="#2B54B6" showSpinner={false} />
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
             <main className="flex flex-1 flex-col p-4">{main}</main>
