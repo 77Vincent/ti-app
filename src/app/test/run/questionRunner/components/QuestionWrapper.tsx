@@ -158,7 +158,7 @@ export default function QuestionWrapper({
           </span>
         </Tooltip>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
           <Button
             aria-label={isFavorite ? "Remove favorite question" : "Favorite question"}
             color={isFavorite ? "warning" : "default"}
@@ -176,22 +176,21 @@ export default function QuestionWrapper({
               size={19}
             />
           </Button>
-        </div>
-
-        {hasSubmitted ? (
           <Button
             aria-label="Next question"
             color="primary"
             isIconOnly
+            variant={hasSubmitted ? "solid" : "light"}
             isDisabled={!canTriggerNext}
             isLoading={isSubmitting}
             onPress={handleNextPress}
             radius="full"
             size="sm"
           >
-            {isSubmitting ? null : <ChevronRight aria-hidden size={18} />}
+            {isSubmitting ? null : <ChevronRight aria-hidden size={20} />}
           </Button>
-        ) : null}
+        </div>
+
       </div>
 
       <Card shadow="sm" className="border border-2 border-primary">

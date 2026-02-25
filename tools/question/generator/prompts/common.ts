@@ -37,7 +37,7 @@ Rules:
 - in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
-- there should be no ambiguiy, the correct answer must be clearly correct.
+- there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.
 - low difficulty questions should not be lengthy.
 `.trim();
 
