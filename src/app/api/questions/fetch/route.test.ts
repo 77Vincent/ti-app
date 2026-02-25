@@ -60,7 +60,7 @@ describe("fetch question route", () => {
     readQuestionFromPoolById.mockResolvedValue(null);
     readRandomQuestionFromPool.mockResolvedValue(VALID_QUESTION);
     readTestSessionQuestionState.mockResolvedValue(null);
-    updateTestSessionCurrentQuestionId.mockResolvedValue(1);
+    updateTestSessionCurrentQuestionId.mockResolvedValue(undefined);
   });
 
   it("returns a random pooled question", async () => {

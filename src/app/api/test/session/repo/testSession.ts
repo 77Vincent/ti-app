@@ -297,8 +297,8 @@ export async function readTestSessionQuestionState(sessionId: string) {
 export async function updateTestSessionCurrentQuestionId(
   sessionId: string,
   questionId: string,
-): Promise<number> {
-  const result = await prisma.testSession.updateMany({
+): Promise<void> {
+  await prisma.testSession.update({
     where: {
       id: sessionId,
     },
@@ -306,8 +306,6 @@ export async function updateTestSessionCurrentQuestionId(
       currentQuestionId: questionId,
     },
   });
-
-  return result.count;
 }
 
 export async function deleteTestSession(

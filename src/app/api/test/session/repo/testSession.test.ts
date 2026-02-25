@@ -544,13 +544,15 @@ describe("test session repo", () => {
   });
 
   it("updates current question id by session id", async () => {
-    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+    testSessionUpdate.mockResolvedValueOnce({
+      id: "session-1",
+    });
 
     await expect(
       updateTestSessionCurrentQuestionId("session-1", "question-9"),
-    ).resolves.toBe(1);
+    ).resolves.toBeUndefined();
 
-    expect(testSessionUpdateMany).toHaveBeenCalledWith({
+    expect(testSessionUpdate).toHaveBeenCalledWith({
       where: {
         id: "session-1",
       },
