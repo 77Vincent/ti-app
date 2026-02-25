@@ -14,13 +14,14 @@ import { getSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { API_PATHS, PAGE_PATHS } from "@/lib/config/paths";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import { readUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
 import {
   hasAuthenticatedUser,
 } from "../../auth/sessionState";
 import { clearTestSession } from "../../test/run/questionRunner/session/storage";
+import { readUserPlan } from "./api";
 
 const ThemeToggleButton = dynamic(
   () =>
@@ -29,20 +30,6 @@ const ThemeToggleButton = dynamic(
     ),
   { ssr: false },
 );
-
-async function readUserPlan(): Promise<boolean> {
-  const response = await fetch(API_PATHS.USER_PLAN, {
-    cache: "no-store",
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    return false;
-  }
-
-  const payload = (await response.json()) as { isPro?: unknown };
-  return payload.isPro === true;
-}
 
 export default function AppBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
