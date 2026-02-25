@@ -194,7 +194,7 @@ export default function QuestionWrapper({
         ) : null}
       </div>
 
-      <Card shadow="sm">
+      <Card shadow="sm" className="border border-2 border-primary">
         <CardBody className="p-4">
           <QuestionRunner
             hasSubmitted={hasSubmitted}

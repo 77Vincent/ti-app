@@ -1,6 +1,6 @@
 export {
   DIFFICULTY_LADDER_BY_SUBCATEGORY,
-} from "./config";
+} from "../../../shared/difficultyLadder";
 export {
   getInitialDifficultyForSubcategory,
   getNextDifficultyByRecentAccuracy,
