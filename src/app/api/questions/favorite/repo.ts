@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
 
+export type FavoriteQuestionPreview = {
+  id: string;
+  prompt: string;
+};
+
 export async function upsertFavoriteQuestion(
   userId: string,
   questionId: string,
@@ -48,4 +53,37 @@ export async function isQuestionFavorited(
   });
 
   return Boolean(favorite);
+}
+
+export async function readFavoriteQuestions(
+  userId: string,
+  subjectId: string,
+  subcategoryId?: string,
+): Promise<FavoriteQuestionPreview[]> {
+  const favorites = await prisma.favoriteQuestion.findMany({
+    where: {
+      userId,
+      question: {
+        subjectId,
+        ...(subcategoryId
+          ? {
+              subcategoryId,
+            }
+          : {}),
+      },
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+    select: {
+      question: {
+        select: {
+          id: true,
+          prompt: true,
+        },
+      },
+    },
+  });
+
+  return favorites.map((favorite) => favorite.question);
 }

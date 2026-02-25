@@ -4,6 +4,7 @@ import { isNonEmptyString } from "@/lib/string";
 import {
   deleteFavoriteQuestion,
   isQuestionFavorited,
+  readFavoriteQuestions,
   upsertFavoriteQuestion,
 } from "./repo";
 
@@ -35,12 +36,38 @@ function parseQuestionIdFromRequest(
   return { questionId };
 }
 
-export async function GET(request: Request) {
-  const payload = parseQuestionIdFromRequest(request);
+function parseFavoriteListFromRequest(
+  request: Request,
+): { subjectId: string; subcategoryId?: string } | null {
+  const url = new URL(request.url);
+  const subjectId = url.searchParams.get("subjectId");
 
-  if (!payload) {
+  if (!isNonEmptyString(subjectId)) {
+    return null;
+  }
+
+  const subcategoryId = url.searchParams.get("subcategoryId");
+  if (subcategoryId !== null && !isNonEmptyString(subcategoryId)) {
+    return null;
+  }
+
+  return {
+    subjectId,
+    ...(subcategoryId
+      ? {
+          subcategoryId,
+        }
+      : {}),
+  };
+}
+
+export async function GET(request: Request) {
+  const questionPayload = parseQuestionIdFromRequest(request);
+  const listPayload = parseFavoriteListFromRequest(request);
+
+  if (!questionPayload && !listPayload) {
     return NextResponse.json(
-      { error: "questionId is required." },
+      { error: "questionId or subjectId is required." },
       { status: 400 },
     );
   }
@@ -48,12 +75,32 @@ export async function GET(request: Request) {
   const userId = await readAuthenticatedUserId();
 
   if (!userId) {
-    return NextResponse.json({ isFavorite: false });
+    if (questionPayload) {
+      return NextResponse.json({ isFavorite: false });
+    }
+
+    return NextResponse.json({ questions: [] });
   }
 
-  const isFavorite = await isQuestionFavorited(userId, payload.questionId);
+  if (questionPayload) {
+    const isFavorite = await isQuestionFavorited(userId, questionPayload.questionId);
+    return NextResponse.json({ isFavorite });
+  }
 
-  return NextResponse.json({ isFavorite });
+  if (!listPayload) {
+    return NextResponse.json(
+      { error: "questionId or subjectId is required." },
+      { status: 400 },
+    );
+  }
+
+  const questions = await readFavoriteQuestions(
+    userId,
+    listPayload.subjectId,
+    listPayload.subcategoryId,
+  );
+
+  return NextResponse.json({ questions });
 }
 
 export async function POST(request: Request) {

@@ -93,7 +93,7 @@ export default function SessionDifficultyMilestone({
             {ladder.map((level, index) => {
               const isReached = index <= activeIndex;
               const isCurrent = index === activeIndex;
-              const description =
+              const explanation =
                 descriptions[level as keyof typeof descriptions];
 
               return (
@@ -113,7 +113,9 @@ export default function SessionDifficultyMilestone({
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="p-3">
-                      <p className="max-w-3xs text-sm">{description}</p>
+                      <div className="max-w-3xs text-sm">
+                        <p className="font-medium">{explanation.summary}</p>
+                      </div>
                     </PopoverContent>
                   </Popover>
                   {index < ladder.length - 1 ? (

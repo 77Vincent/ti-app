@@ -1,6 +1,7 @@
 import type { GenerateQuestionRequest } from "../../types";
-import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../../../shared/difficultyLadder";
 import {
+  buildDifficultyDescriptionBlock,
+  buildDifficultyTargetPrompt,
   GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK,
   GENERATOR_COMMON_RULES_BLOCK,
   GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK,
@@ -13,12 +14,7 @@ You generate two high-quality assessment questions:
 
 ${GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK}
 
-Difficulty levels: JLPT - N5, N4, N3, N2, N1
-- N5: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N5}
-- N4: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N4}
-- N3: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N3}
-- N2: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N2}
-- N1: ${DIFFICULTY_LADDER_BY_SUBCATEGORY.japanese.description.N1}
+${buildDifficultyDescriptionBlock("japanese")}
 
 ${GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK}
 
@@ -30,5 +26,5 @@ ${GENERATOR_COMMON_RULES_BLOCK}
 export function buildJapaneseGeneratorUserPrompt(
   input: GenerateQuestionRequest,
 ): string {
-  return `difficulty: JLPT - ${input.difficulty}`;
+  return buildDifficultyTargetPrompt("japanese", input.difficulty);
 }

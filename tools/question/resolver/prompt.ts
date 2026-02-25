@@ -1,21 +1,24 @@
 import type { ResolveQuestionRequest } from "../types";
+import {
+  buildDifficultyDescriptionBlockByLadder,
+  type DifficultyDescriptions,
+} from "../../../shared/difficultyLadder";
+
+export type { DifficultyDescriptions };
 
 export function buildResolverSystemPrompt(
   difficultyFramework: string,
   difficultyLadder: readonly string[],
-  difficultyDescriptions: Record<string, string>,
+  difficultyDescriptions: DifficultyDescriptions,
 ): string {
-  const difficultyRubric = difficultyLadder
-    .map(
-      (level) =>
-        `- ${level}: ${difficultyDescriptions[level] ?? "No description provided."}`,
-    )
-    .join("\n");
+  const difficultyRubric = buildDifficultyDescriptionBlockByLadder(
+    difficultyLadder,
+    difficultyDescriptions,
+  );
 
   return `
 You are solving one multiple-choice question.
 You must also evaluate the question difficulty using the provided ladder and rubric descriptions.
-Difficulty ladder: ${difficultyFramework}: ${difficultyLadder.join(", ")}.
 Difficulty rubric:
 ${difficultyRubric}
 

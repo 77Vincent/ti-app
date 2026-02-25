@@ -5,12 +5,13 @@ import type {
 import { QUESTION_OPTION_COUNT } from "../../../src/lib/config/question";
 import { requestDeepSeekResolverContent } from "./client";
 import { parseAIJson } from "../json";
+import type { DifficultyDescriptions } from "./prompt";
 
 export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
   difficultyFramework: string,
   difficultyLadder: readonly string[],
-  difficultyDescriptions: Record<string, string>,
+  difficultyDescriptions: DifficultyDescriptions,
 ): Promise<ResolveQuestionResult> {
   const content = await requestDeepSeekResolverContent(
     input,

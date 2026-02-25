@@ -1,4 +1,8 @@
 import { QUESTION_OPTION_COUNT } from "../../../../src/lib/config/question";
+import {
+  buildDifficultyDescriptionBlockByLadder,
+  DIFFICULTY_LADDER_BY_SUBCATEGORY,
+} from "../../../../shared/difficultyLadder";
 
 export const GENERATOR_COMMON_OUTPUT_SHAPE_BLOCK = `
 Return only valid JSON with this exact shape:
@@ -43,3 +47,21 @@ Question styles:
 1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank by any means, users will know what to do once they see the prompt.
 2. selecting the correct interpretation of the prompt.
 `.trim();
+
+export function buildDifficultyDescriptionBlock(
+  subcategory: keyof typeof DIFFICULTY_LADDER_BY_SUBCATEGORY,
+): string {
+  const profile = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategory];
+  return buildDifficultyDescriptionBlockByLadder(
+    profile.ladder,
+    profile.description,
+  );
+}
+
+export function buildDifficultyTargetPrompt(
+  subcategory: keyof typeof DIFFICULTY_LADDER_BY_SUBCATEGORY,
+  difficulty: string,
+): string {
+  const profile = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategory];
+  return `difficulty: ${profile.framework} - ${difficulty}`;
+}
