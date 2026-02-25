@@ -1,14 +1,23 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import { prisma } from "@/lib/prisma";
-import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
-import StatsCards from "./StatsCards";
 
-type DashboardStats = {
+export type DashboardStats = {
   submittedCount: number;
   correctCount: number;
   wrongCount: number;
   accuracyRatePercent: number;
+};
+
+export type SubcategorySubmissionStat = {
+  label: string;
+  proportionPercent: number;
+  submittedCount: number;
+};
+
+export type DashboardStatsPayload = {
+  stats: DashboardStats;
+  subcategorySubmissionStats: SubcategorySubmissionStat[];
 };
 
 const EMPTY_DASHBOARD_STATS: DashboardStats = {
@@ -17,25 +26,6 @@ const EMPTY_DASHBOARD_STATS: DashboardStats = {
   wrongCount: 0,
   accuracyRatePercent: 0,
 };
-
-type SubcategorySubmissionStat = {
-  label: string;
-  proportionPercent: number;
-  submittedCount: number;
-};
-
-type DashboardStatsPayload = {
-  stats: DashboardStats;
-  subcategorySubmissionStats: SubcategorySubmissionStat[];
-};
-
-function formatAccuracy(accuracyRatePercent: number): string {
-  if (Number.isInteger(accuracyRatePercent)) {
-    return `${accuracyRatePercent}%`;
-  }
-
-  return `${accuracyRatePercent.toFixed(1)}%`;
-}
 
 function buildSubcategorySubmissionStats(
   submittedCountBySubcategoryId: Map<string, number>,
@@ -59,7 +49,7 @@ function buildSubcategorySubmissionStats(
     });
 }
 
-async function readDashboardStats(): Promise<DashboardStatsPayload> {
+export async function readDashboardStats(): Promise<DashboardStatsPayload> {
   const userId = await readAuthenticatedUserId();
   if (!userId) {
     return {
@@ -109,37 +99,4 @@ async function readDashboardStats(): Promise<DashboardStatsPayload> {
       submittedCount,
     ),
   };
-}
-
-export default async function Stats() {
-  const { stats, subcategorySubmissionStats } = await readDashboardStats();
-
-  const statItems = [
-    {
-      label: "Total submitted questions",
-      value: stats.submittedCount.toLocaleString(),
-    },
-    {
-      label: "Total correct answer",
-      value: stats.correctCount.toLocaleString(),
-    },
-    {
-      label: "Total wrong answer",
-      value: stats.wrongCount.toLocaleString(),
-    },
-    {
-      label: "Average accuracy",
-      value: formatAccuracy(stats.accuracyRatePercent),
-    },
-  ] as const;
-
-  return (
-    <section className="space-y-4">
-      <StatsCards items={statItems} />
-      <SubcategorySubmissionBars
-        items={subcategorySubmissionStats}
-        totalSubmittedCount={stats.submittedCount}
-      />
-    </section>
-  );
 }
