@@ -34,6 +34,7 @@ Rules:
 - answers should not simply repeat the prompt.
 - there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.
 - low difficulty questions should not be lengthy, wordy.
+- be creative on the question content, try to cover different knowledge points and scenarios, avoid being repetitive across questions.
 `.trim();
 
 export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `

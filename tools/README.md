@@ -23,8 +23,8 @@ Fixed models (not configurable):
 - Resolver: `deepseek-reasoner`
 
 CLI usage:
-- `npm run tool:question-ai -- --subcategory english --difficulty A1`
-- `npm run tool:question-resolver` (processes one `QuestionRaw` row)
+- `npm run tool:question-generate -- --subcategory english --difficulty A1`
+- `npm run tool:question-resolve` (processes one `QuestionRaw` row)
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`

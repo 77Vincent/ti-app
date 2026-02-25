@@ -60,24 +60,24 @@ clean-deps:
 	rm -rf node_modules
 
 question:
-	$(NPM) run tool:question-ai -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
+	$(NPM) run tool:question-generate -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
 
 question-prod:
 	@set -a; \
 	. ./.env.prod; \
 	. ./tools/.env.prod; \
 	set +a; \
-	NODE_ENV=production $(NPM) run tool:question-ai -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
+	NODE_ENV=production $(NPM) run tool:question-generate -- --subcategory "$(subcategory)" --difficulty "$(difficulty)"
 
 question-resolve:
-	$(NPM) run tool:question-resolver
+	$(NPM) run tool:question-resolve
 
 question-resolve-prod:
 	@set -a; \
 	. ./.env.prod; \
 	. ./tools/.env.prod; \
 	set +a; \
-	NODE_ENV=production $(NPM) run tool:question-resolver
+	NODE_ENV=production $(NPM) run tool:question-resolve
 
 question-english:
 	for d in A1 A2 B1 B2 C1 C2; do \
