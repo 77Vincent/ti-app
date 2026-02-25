@@ -1,6 +1,6 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
-import { prisma } from "@/lib/prisma";
+import { readDashboardSessions } from "./repo";
 
 export type DashboardStats = {
   submittedCount: number;
@@ -49,16 +49,7 @@ export async function readDashboardStats(): Promise<DashboardStatsPayload> {
     throw new Error("Expected authenticated user in dashboard stats");
   }
 
-  const sessions = await prisma.testSession.findMany({
-    where: {
-      userId,
-    },
-    select: {
-      correctCount: true,
-      submittedCount: true,
-      subcategoryId: true,
-    },
-  });
+  const sessions = await readDashboardSessions(userId);
   const submittedCount = sessions.reduce(
     (sum, session) => sum + session.submittedCount,
     0,
