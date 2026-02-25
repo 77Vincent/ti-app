@@ -1,61 +1,13 @@
-import { API_PATHS } from "@/lib/config/paths";
 import type {
   SubcategoryEnum,
   SubjectEnum,
 } from "@/lib/meta";
-import { useEffect, useState } from "react";
-
-type FavoriteQuestionPreview = {
-  id: string;
-  prompt: string;
-  difficulty: string;
-  options: string[];
-};
-
-type FavoriteQuestionsResponse = {
-  questions?: Array<{
-    id?: unknown;
-    prompt?: unknown;
-    difficulty?: unknown;
-    options?: unknown;
-  }>;
-};
-
-function parseFavoriteQuestionsResponse(
-  payload: unknown,
-): FavoriteQuestionPreview[] {
-  if (!payload || typeof payload !== "object") {
-    return [];
-  }
-
-  const questions = (payload as FavoriteQuestionsResponse).questions;
-  if (!Array.isArray(questions)) {
-    return [];
-  }
-
-  return questions.flatMap((question) => {
-    if (
-      !question ||
-      typeof question !== "object" ||
-      typeof question.id !== "string" ||
-      typeof question.prompt !== "string" ||
-      typeof question.difficulty !== "string" ||
-      !Array.isArray(question.options) ||
-      question.options.some((option) => typeof option !== "string")
-    ) {
-      return [];
-    }
-
-    return [
-      {
-        id: question.id,
-        prompt: question.prompt,
-        difficulty: question.difficulty,
-        options: question.options as string[],
-      },
-    ];
-  });
-}
+import { useCallback, useEffect, useState } from "react";
+import {
+  readFavoriteQuestions,
+  removeFavoriteQuestion as removeFavoriteQuestionRequest,
+  type FavoriteQuestionPreview,
+} from "./api";
 
 type UseFavoriteQuestionsInput = {
   subjectId: SubjectEnum;
@@ -71,37 +23,21 @@ export function useFavoriteQuestions({
   const [questionsByRequestKey, setQuestionsByRequestKey] = useState<
     Record<string, FavoriteQuestionPreview[]>
   >({});
+  const [removingQuestionIds, setRemovingQuestionIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   useEffect(() => {
     let active = true;
-
-    const searchParams = new URLSearchParams({
-      subjectId,
-    });
-
-    if (subcategoryId) {
-      searchParams.set("subcategoryId", subcategoryId);
-    }
-
-    void fetch(`${API_PATHS.QUESTIONS_FAVORITE}?${searchParams.toString()}`, {
-      method: "GET",
-      cache: "no-store",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to load favorite questions.");
-        }
-
-        return response.json();
-      })
-      .then((payload: unknown) => {
+    void readFavoriteQuestions(subjectId, subcategoryId)
+      .then((questions) => {
         if (!active) {
           return;
         }
 
         setQuestionsByRequestKey((previous) => ({
           ...previous,
-          [requestKey]: parseFavoriteQuestionsResponse(payload),
+          [requestKey]: questions,
         }));
         setLoadedRequestKey(requestKey);
       })
@@ -125,8 +61,38 @@ export function useFavoriteQuestions({
   const isLoading = loadedRequestKey !== requestKey;
   const questions = questionsByRequestKey[requestKey] ?? [];
 
+  const removeFavoriteQuestion = useCallback(
+    async (questionId: string) => {
+      setRemovingQuestionIds((previous) => {
+        const next = new Set(previous);
+        next.add(questionId);
+        return next;
+      });
+
+      try {
+        await removeFavoriteQuestionRequest(questionId);
+
+        setQuestionsByRequestKey((previous) => ({
+          ...previous,
+          [requestKey]: (previous[requestKey] ?? []).filter(
+            (question) => question.id !== questionId,
+          ),
+        }));
+      } finally {
+        setRemovingQuestionIds((previous) => {
+          const next = new Set(previous);
+          next.delete(questionId);
+          return next;
+        });
+      }
+    },
+    [requestKey],
+  );
+
   return {
     isLoading,
     questions,
+    removingQuestionIds,
+    removeFavoriteQuestion,
   };
 }

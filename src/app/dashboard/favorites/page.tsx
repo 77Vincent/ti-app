@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   Card,
   CardBody,
   Chip,
@@ -8,6 +9,8 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { getSubjectIcon } from "@/lib/meta";
+import { Star } from "lucide-react";
+import { toast } from "@/lib/toast";
 import { useState } from "react";
 import { useFavoritesFilters } from "./useFavoritesFilters";
 import { useFavoriteQuestions } from "./useFavoriteQuestions";
@@ -22,7 +25,12 @@ export default function DashboardFavoritesPage() {
     handleSubjectSelectionChange,
     handleSubcategorySelectionChange,
   } = useFavoritesFilters();
-  const { isLoading, questions } = useFavoriteQuestions({
+  const {
+    isLoading,
+    questions,
+    removingQuestionIds,
+    removeFavoriteQuestion,
+  } = useFavoriteQuestions({
     subjectId: subjectFilter,
     subcategoryId: selectedSubcategoryId,
   });
@@ -41,6 +49,21 @@ export default function DashboardFavoritesPage() {
 
       return next;
     });
+  }
+
+  async function handleUnfavoriteQuestion(questionId: string) {
+    try {
+      await removeFavoriteQuestion(questionId);
+      setExpandedQuestionIds((previous) => {
+        const next = new Set(previous);
+        next.delete(questionId);
+        return next;
+      });
+    } catch (error) {
+      toast.error(error, {
+        fallbackDescription: "Failed to remove favorite question.",
+      });
+    }
   }
 
   return (
@@ -103,21 +126,34 @@ export default function DashboardFavoritesPage() {
             return (
               <Card key={question.id} shadow="sm" className="border border-2 border-primary">
                 <CardBody className="space-y-3">
-                  <button
-                    type="button"
-                    aria-expanded={isExpanded}
-                    onClick={() => toggleExpandedQuestion(question.id)}
-                  >
-                    <div className="flex text-left items-start justify-between gap-3">
-                      <p>{question.prompt}</p>
-                      <Chip
-                        color="danger"
-                        size="sm"
-                      >
-                        {question.difficulty}
-                      </Chip>
-                    </div>
-                  </button>
+                  <div className="flex items-start gap-2">
+                    <button
+                      type="button"
+                      aria-expanded={isExpanded}
+                      onClick={() => toggleExpandedQuestion(question.id)}
+                      className="flex-1 text-left"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p>{question.prompt}</p>
+                        <Chip color="primary" size="sm">
+                          {question.difficulty}
+                        </Chip>
+                      </div>
+                    </button>
+
+                    <Button
+                      aria-label="Remove favorite question"
+                      color="warning"
+                      isIconOnly
+                      isLoading={removingQuestionIds.has(question.id)}
+                      onPress={() => handleUnfavoriteQuestion(question.id)}
+                      radius="full"
+                      size="sm"
+                      variant="light"
+                    >
+                      <Star aria-hidden className="fill-current" size={18} />
+                    </Button>
+                  </div>
 
                   {isExpanded ? (
                     <div className="space-y-3">
