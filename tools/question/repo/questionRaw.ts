@@ -27,30 +27,19 @@ export async function persistQuestionsToRaw(
   const subjectId = getSubjectId(input.subcategory);
 
   try {
-    for (const question of input.questions) {
-      await prisma.questionRaw.upsert({
-        where: { id: question.id },
-        create: {
-          id: question.id,
-          subjectId,
-          subcategoryId: input.subcategory,
-          prompt: question.prompt,
-          difficulty: question.difficulty,
-          options: question.options as unknown as Prisma.InputJsonValue,
-          correctOptionIndexes:
-            question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
-        },
-        update: {
-          subjectId,
-          subcategoryId: input.subcategory,
-          prompt: question.prompt,
-          difficulty: question.difficulty,
-          options: question.options as unknown as Prisma.InputJsonValue,
-          correctOptionIndexes:
-            question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
-        },
-      });
-    }
+    await prisma.questionRaw.createMany({
+      data: input.questions.map((question) => ({
+        id: question.id,
+        subjectId,
+        subcategoryId: input.subcategory,
+        prompt: question.prompt,
+        difficulty: question.difficulty,
+        options: question.options as unknown as Prisma.InputJsonValue,
+        correctOptionIndexes:
+          question.correctOptionIndexes as unknown as Prisma.InputJsonValue,
+      })),
+      skipDuplicates: true,
+    });
   } finally {
     await prisma.$disconnect();
   }
