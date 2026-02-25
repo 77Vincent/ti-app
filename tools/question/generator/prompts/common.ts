@@ -20,16 +20,17 @@ Rules:
 - first character must be "[" and last character must be "]".
 - no trailing commas and no comments.
 - p is the question prompt containing only prompting content.
-- p and every o[i][0], o[i][1] must be non-empty strings.
+- p and every o[i][0] must be non-empty strings.
 - o is options as [text, explanation] tuples.
 - options count must be ${QUESTION_OPTION_COUNT}.
 - option text values in o must be unique within the same question.
 - a is a single zero-based index of the correct option in o.
 - a must be an integer within [0, ${QUESTION_OPTION_COUNT - 1}].
 - the index of a must evenly spread across the options in o.
-- explanations in o must be clear and consistent with correctness.
-- the correct option explanation must clearly state why it is correct.
-- each incorrect option explanation must clearly state why it is incorrect.
+- explanations in o should be clear and consistent with correctness.
+- the correct option explanation should clearly state why it is correct.
+- each incorrect option explanation should clearly state why it is incorrect.
+- for pronunciation-only beginner questions, explanations may be empty strings.
 - in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.

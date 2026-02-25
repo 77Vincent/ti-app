@@ -22,6 +22,7 @@ Difficulty levels: HSK - HSK1, HSK2, HSK3, HSK4, HSK5, HSK6
 
 ${GENERATOR_COMMON_RULES_BLOCK}
 - question and option text should be in Simplified Chinese.
+- HSK1 level questions also test Chinese character pronunciation where the prompt is only the character to be tested, and options are the pronunciation in pinyin, no explanation needed.
 `.trim();
 
 export function buildChineseGeneratorUserPrompt(

@@ -5,8 +5,6 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button } from "@heroui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { HeroBanner } from "./components";
-import GlobalStatistics from "./components/statistics/GlobalStatistics";
 
 export default function Home() {
   const router = useRouter();
@@ -24,7 +22,6 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      <HeroBanner />
       <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8 px-4 text-center">
         <div className="space-y-3">
           <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
@@ -39,8 +36,6 @@ export default function Home() {
           Start
         </Button>
       </section>
-
-      <GlobalStatistics />
     </div>
   );
 }

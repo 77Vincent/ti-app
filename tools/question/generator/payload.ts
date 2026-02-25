@@ -28,7 +28,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
       !Array.isArray(item) ||
       item.length !== 2 ||
       !isNonEmptyString(item[0]) ||
-      !isNonEmptyString(item[1])
+      typeof item[1] !== "string"
     ) {
       throw new Error("AI options are invalid.");
     }
