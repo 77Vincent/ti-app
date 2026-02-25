@@ -1,5 +1,7 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
+import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import { prisma } from "@/lib/prisma";
+import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
 import StatsCards from "./StatsCards";
 
 type DashboardStats = {
@@ -16,6 +18,17 @@ const EMPTY_DASHBOARD_STATS: DashboardStats = {
   accuracyRatePercent: 0,
 };
 
+type SubcategorySubmissionStat = {
+  label: string;
+  proportionPercent: number;
+  submittedCount: number;
+};
+
+type DashboardStatsPayload = {
+  stats: DashboardStats;
+  subcategorySubmissionStats: SubcategorySubmissionStat[];
+};
+
 function formatAccuracy(accuracyRatePercent: number): string {
   if (Number.isInteger(accuracyRatePercent)) {
     return `${accuracyRatePercent}%`;
@@ -24,23 +37,60 @@ function formatAccuracy(accuracyRatePercent: number): string {
   return `${accuracyRatePercent.toFixed(1)}%`;
 }
 
-async function readDashboardStats(): Promise<DashboardStats> {
+function buildSubcategorySubmissionStats(
+  submittedCountBySubcategoryId: Map<string, number>,
+  totalSubmittedCount: number,
+): SubcategorySubmissionStat[] {
+  return [...SUBCATEGORIES]
+    .sort((first, second) => first.order - second.order)
+    .map((subcategory) => {
+      const submittedCount =
+        submittedCountBySubcategoryId.get(subcategory.id) ?? 0;
+      const proportionPercent =
+        totalSubmittedCount === 0
+          ? 0
+          : Math.round((submittedCount / totalSubmittedCount) * 1000) / 10;
+
+      return {
+        label: subcategory.label,
+        proportionPercent,
+        submittedCount,
+      };
+    });
+}
+
+async function readDashboardStats(): Promise<DashboardStatsPayload> {
   const userId = await readAuthenticatedUserId();
   if (!userId) {
-    return EMPTY_DASHBOARD_STATS;
+    return {
+      stats: EMPTY_DASHBOARD_STATS,
+      subcategorySubmissionStats: buildSubcategorySubmissionStats(new Map(), 0),
+    };
   }
 
-  const aggregate = await prisma.testSession.aggregate({
+  const sessions = await prisma.testSession.findMany({
     where: {
       userId,
     },
-    _sum: {
-      submittedCount: true,
+    select: {
       correctCount: true,
+      submittedCount: true,
+      subcategoryId: true,
     },
   });
-  const submittedCount = aggregate._sum.submittedCount ?? 0;
-  const correctCount = aggregate._sum.correctCount ?? 0;
+  const submittedCount = sessions.reduce(
+    (sum, session) => sum + session.submittedCount,
+    0,
+  );
+  const correctCount = sessions.reduce(
+    (sum, session) => sum + session.correctCount,
+    0,
+  );
+  const submittedCountBySubcategoryId = sessions.reduce((acc, session) => {
+    const current = acc.get(session.subcategoryId) ?? 0;
+    acc.set(session.subcategoryId, current + session.submittedCount);
+    return acc;
+  }, new Map<string, number>());
   const wrongCount = Math.max(submittedCount - correctCount, 0);
   const accuracyRatePercent =
     submittedCount === 0
@@ -48,15 +98,21 @@ async function readDashboardStats(): Promise<DashboardStats> {
       : Math.round((correctCount / submittedCount) * 1000) / 10;
 
   return {
-    submittedCount,
-    correctCount,
-    wrongCount,
-    accuracyRatePercent,
+    stats: {
+      submittedCount,
+      correctCount,
+      wrongCount,
+      accuracyRatePercent,
+    },
+    subcategorySubmissionStats: buildSubcategorySubmissionStats(
+      submittedCountBySubcategoryId,
+      submittedCount,
+    ),
   };
 }
 
 export default async function Stats() {
-  const stats = await readDashboardStats();
+  const { stats, subcategorySubmissionStats } = await readDashboardStats();
 
   const statItems = [
     {
@@ -77,5 +133,13 @@ export default async function Stats() {
     },
   ] as const;
 
-  return <StatsCards items={statItems} />;
+  return (
+    <section className="space-y-4">
+      <StatsCards items={statItems} />
+      <SubcategorySubmissionBars
+        items={subcategorySubmissionStats}
+        totalSubmittedCount={stats.submittedCount}
+      />
+    </section>
+  );
 }
