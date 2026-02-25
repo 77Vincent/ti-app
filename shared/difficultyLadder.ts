@@ -25,6 +25,16 @@ export function buildDifficultyDescriptionBlockByLadder(
     .join("\n");
 }
 
+export function buildDifficultyDescriptionBlock(
+  subcategory: SubcategoryEnum,
+): string {
+  const profile = DIFFICULTY_LADDER_BY_SUBCATEGORY[subcategory];
+  return buildDifficultyDescriptionBlockByLadder(
+    profile.ladder,
+    profile.description,
+  );
+}
+
 export const DIFFICULTY_LADDER_BY_SUBCATEGORY: Record<
   SubcategoryEnum,
   DifficultyProfile
