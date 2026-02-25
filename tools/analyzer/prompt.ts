@@ -12,11 +12,11 @@ Rules:
 - output must be raw JSON only.
 - no markdown, no code fences, no extra text.
 - ok must be 1 only if all checks pass, else 0.
-- checks:
-  1) the question matches the requested subcategory.
-  2) the question and options are logically coherent and unambigous.
-  3) exactly one best answer.
-  4) option index 0 is the correct choice.
+- the question matches the requested subcategory.
+- the question and options are logically coherent and unambigous.
+- option index 0 is the correct choice.
+- exactly one best answer is defensible; distractors are clearly less correct.
+- No harmful, offensive, or unsafe content.
 `.trim();
 }
 
