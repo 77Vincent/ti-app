@@ -31,14 +31,12 @@ Rules:
 - a must be an integer within [0, ${QUESTION_OPTION_COUNT - 1}].
 - the index of a must evenly spread across the options in o.
 - explanations in o should be clear and consistent with correctness.
-- the correct option explanation should clearly state why it is correct.
-- each incorrect option explanation should clearly state why it is incorrect.
+- the option explanation should clearly and concise explain the reason.
 - for pronunciation-only beginner questions, explanations may be empty strings.
-- in general, the higher the difficulty, the longer and richer context the prompt should have.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
 - there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.
-- low difficulty questions should not be lengthy.
+- low difficulty questions should not be lengthy, wordy.
 `.trim();
 
 export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `

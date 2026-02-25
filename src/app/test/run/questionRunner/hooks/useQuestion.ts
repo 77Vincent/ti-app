@@ -3,13 +3,9 @@
 import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useReducer, useState } from "react";
-import {
-  fetchQuestion,
-} from "../api";
+import { fetchQuestion } from "../api";
 import { QuestionRunnerApiError } from "../api/error";
-import {
-  recordQuestionResult,
-} from "../session/storage";
+import { recordQuestionResult } from "../session/storage";
 import type {
   Question as QuestionType,
   QuestionOptionIndex,
@@ -82,18 +78,18 @@ export function useQuestion({
     });
   }, []);
 
-  const loadQuestion = useCallback((
-    difficultyToLoad: string = sessionDifficulty,
-    next = false,
-  ) => {
-    return fetchQuestion({
-      sessionId,
-      subjectId,
-      subcategoryId,
-      difficulty: difficultyToLoad,
-      next,
-    });
-  }, [sessionDifficulty, sessionId, subcategoryId, subjectId]);
+  const loadQuestion = useCallback(
+    (difficultyToLoad: string, next = false) => {
+      return fetchQuestion({
+        sessionId,
+        subjectId,
+        subcategoryId,
+        difficulty: difficultyToLoad,
+        next,
+      });
+    },
+    [sessionId, subcategoryId, subjectId],
+  );
 
   const applyLoadedQuestion = useCallback((nextQuestion: QuestionType): void => {
     setSignInDemand(null);
