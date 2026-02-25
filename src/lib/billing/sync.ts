@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getStripeClient } from "./stripe";
-
-function toDateFromUnixTimestamp(seconds: number): Date {
-  return new Date(seconds * 1000);
-}
+import { upsertUserSubscriptionFromStripe } from "./subscription";
 
 type SyncUserSubscriptionInput = {
   userId: string;
@@ -30,29 +27,5 @@ export async function syncUserSubscriptionFromStripe(
     return;
   }
 
-  const firstItem = latestSubscription.items.data[0];
-  if (!firstItem?.price?.id) {
-    throw new Error("Stripe subscription price id is missing.");
-  }
-
-  await prisma.subscription.upsert({
-    where: {
-      userId: input.userId,
-    },
-    create: {
-      userId: input.userId,
-      stripeSubscriptionId: latestSubscription.id,
-      stripePriceId: firstItem.price.id,
-      status: latestSubscription.status,
-      currentPeriodEnd: toDateFromUnixTimestamp(firstItem.current_period_end),
-      cancelAtPeriodEnd: latestSubscription.cancel_at_period_end,
-    },
-    update: {
-      stripeSubscriptionId: latestSubscription.id,
-      stripePriceId: firstItem.price.id,
-      status: latestSubscription.status,
-      currentPeriodEnd: toDateFromUnixTimestamp(firstItem.current_period_end),
-      cancelAtPeriodEnd: latestSubscription.cancel_at_period_end,
-    },
-  });
+  await upsertUserSubscriptionFromStripe(input.userId, latestSubscription);
 }

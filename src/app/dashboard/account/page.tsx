@@ -15,6 +15,7 @@ type AccountProfile = {
 export default async function DashboardAccountPage() {
   const userId = await readAuthenticatedUserId();
   let user = userId ? await readAccountUserById(userId) : null;
+  let didSyncFail = false;
   const isLocalPro =
     user?.subscription &&
     isProSubscriptionStatus(user.subscription.status);
@@ -26,8 +27,9 @@ export default async function DashboardAccountPage() {
         stripeCustomerId: user.stripeCustomerId,
       });
       user = await readAccountUserById(userId);
-    } catch {
-      // Keep account page available even when Stripe sync fails.
+    } catch (error) {
+      didSyncFail = true;
+      console.error("Failed to sync Pro plan status from Stripe.", error);
     }
   }
 
@@ -61,6 +63,11 @@ export default async function DashboardAccountPage() {
       <LabeledValue label="Name" value={profile.name} />
       <LabeledValue label="Email" value={profile.email} />
       <LabeledValue label="Plan" value={profile.plan} />
+      {didSyncFail ? (
+        <p className="text-sm text-warning">
+          Plan sync is temporarily unavailable. Please refresh later.
+        </p>
+      ) : null}
       {isPro ? (
         <CancelProButton isCancellationScheduled={isCancellationScheduled} />
       ) : null}
