@@ -13,6 +13,8 @@ describe("PAGE_PATHS", () => {
       DASHBOARD_SETTINGS: "/dashboard/settings",
       SIGN_IN: "/signin",
       TEST_RUN: "/test/run",
+      TERMS_OF_USE: "/terms-of-use",
+      PRIVACY_POLICY: "/privacy-policy",
     });
   });
 });

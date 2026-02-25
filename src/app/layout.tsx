@@ -4,7 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import { AppBar } from "./components";
+import { AppBar, Footer } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
 
@@ -28,6 +28,7 @@ export default function RootLayout({
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
             <main className="flex flex-1 flex-col p-4">{main}</main>
+            <Footer />
           </div>
         </Providers>
         <Analytics />
