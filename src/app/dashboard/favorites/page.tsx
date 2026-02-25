@@ -11,7 +11,7 @@ import { FavoriteIconButton } from "@/app/components";
 import { getSubjectIcon } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useState } from "react";
-import QuestionChoice from "@/app/test/run/questionRunner/components/QuestionChoice";
+import QuestionBody from "@/app/test/run/questionRunner/components/QuestionBody";
 import QuestionPrompt from "@/app/test/run/questionRunner/components/QuestionPrompt";
 import { useFavoritesFilters } from "./useFavoritesFilters";
 import { useFavoriteQuestions } from "./useFavoriteQuestions";
@@ -146,20 +146,14 @@ export default function DashboardFavoritesPage() {
                       className="space-y-3"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      {question.options.map((option, index) => {
-                        const isCorrect = question.correctOptionIndexes.includes(index);
-                        return (
-                          <QuestionChoice
-                            key={`${question.id}:${index}`}
-                            option={option}
-                            hasSubmitted
-                            isSelected={false}
-                            isCorrect={isCorrect}
-                            isWrongSelection={!isCorrect}
-                            onSelect={() => {}}
-                          />
-                        );
-                      })}
+                      <QuestionBody
+                        hasSubmitted
+                        markAllIncorrectAsWrong
+                        onSelectOption={() => {}}
+                        question={question}
+                        selectedOptionIndexes={[]}
+                        showPrompt={false}
+                      />
                     </div>
                   ) : null}
 

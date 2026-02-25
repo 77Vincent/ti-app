@@ -163,7 +163,11 @@ export function useQuestion({
       hasSubmitted,
       isCurrentAnswerCorrect,
       recordQuestionResult: async (isCorrect) => {
-        const updatedSession = await recordQuestionResult(sessionId, isCorrect);
+        const updatedSession = await recordQuestionResult(
+          sessionId,
+          question.id,
+          isCorrect,
+        );
         if (updatedSession?.difficulty) {
           nextDifficulty = updatedSession.difficulty;
         }

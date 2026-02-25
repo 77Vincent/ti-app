@@ -12,3 +12,8 @@ export type Question = {
   options: QuestionOption[];
   correctOptionIndexes: QuestionOptionIndex[];
 };
+
+export type QuestionPreview = Pick<
+  Question,
+  "id" | "prompt" | "difficulty" | "options" | "correctOptionIndexes"
+>;

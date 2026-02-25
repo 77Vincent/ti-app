@@ -4,12 +4,7 @@ import QuestionSkeleton from "./QuestionSkeleton";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { Button } from "@heroui/react";
 import Link from "next/link";
-import QuestionPrompt from "./QuestionPrompt";
-import QuestionChoice from "./QuestionChoice";
-import {
-  isOptionCorrect,
-  isOptionWrongSelection,
-} from "../utils/evaluation";
+import QuestionBody from "./QuestionBody";
 import type { Question, QuestionOptionIndex, SignInDemand } from "../types";
 
 type QuestionProps = {
@@ -54,27 +49,12 @@ export default function QuestionRunner({
         {isLoading ? (
           <QuestionSkeleton />
         ) : (
-          <div className="space-y-5">
-            <QuestionPrompt markdown={question.prompt} />
-
-            <div className="space-y-4">
-              {question.options.map((option, optionIndex) => (
-                <QuestionChoice
-                  hasSubmitted={hasSubmitted}
-                  isCorrect={isOptionCorrect(question, optionIndex)}
-                  isSelected={selectedOptionIndexes.includes(optionIndex)}
-                  isWrongSelection={isOptionWrongSelection(
-                    question,
-                    selectedOptionIndexes,
-                    optionIndex,
-                  )}
-                  key={optionIndex}
-                  onSelect={() => selectOption(optionIndex)}
-                  option={option}
-                />
-              ))}
-            </div>
-          </div>
+          <QuestionBody
+            hasSubmitted={hasSubmitted}
+            onSelectOption={selectOption}
+            question={question}
+            selectedOptionIndexes={selectedOptionIndexes}
+          />
         )}
       </div>
     </div>

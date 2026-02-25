@@ -1,15 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import type { QuestionPreview } from "@/lib/question/model";
 
-export type FavoriteQuestionPreview = {
-  id: string;
-  prompt: string;
-  difficulty: string;
-  correctOptionIndexes: number[];
-  options: Array<{
-    text: string;
-    explanation: string;
-  }>;
-};
+export type FavoriteQuestionPreview = QuestionPreview;
 
 export async function upsertFavoriteQuestion(
   userId: string,

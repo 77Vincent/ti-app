@@ -1,20 +1,14 @@
-import { API_PATHS } from "@/lib/config/paths";
+import {
+  requestAddFavoriteQuestion,
+  requestReadFavoriteQuestionState,
+  requestRemoveFavoriteQuestion,
+  type FavoriteQuestionStateResponse,
+} from "@/lib/favorite/api";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { QuestionRunnerApiError } from "./error";
 
-type FavoriteQuestionStateResponse = {
-  isFavorite?: boolean;
-  error?: string;
-};
-
 export async function addFavoriteQuestion(questionId: string): Promise<void> {
-  const response = await fetch(API_PATHS.QUESTIONS_FAVORITE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      questionId,
-    }),
-  });
+  const response = await requestAddFavoriteQuestion(questionId);
 
   if (!response.ok) {
     throw new QuestionRunnerApiError(
@@ -25,11 +19,7 @@ export async function addFavoriteQuestion(questionId: string): Promise<void> {
 }
 
 export async function removeFavoriteQuestion(questionId: string): Promise<void> {
-  const response = await fetch(API_PATHS.QUESTIONS_FAVORITE, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ questionId }),
-  });
+  const response = await requestRemoveFavoriteQuestion(questionId);
 
   if (!response.ok) {
     throw new QuestionRunnerApiError(
@@ -42,13 +32,7 @@ export async function removeFavoriteQuestion(questionId: string): Promise<void> 
 export async function readFavoriteQuestionState(
   questionId: string,
 ): Promise<boolean> {
-  const response = await fetch(
-    `${API_PATHS.QUESTIONS_FAVORITE}?questionId=${encodeURIComponent(questionId)}`,
-    {
-      cache: "no-store",
-      method: "GET",
-    },
-  );
+  const response = await requestReadFavoriteQuestionState(questionId);
 
   if (!response.ok) {
     throw new QuestionRunnerApiError(

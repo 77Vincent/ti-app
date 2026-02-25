@@ -232,6 +232,7 @@ describe("test session route POST", () => {
 describe("test session route PATCH", () => {
   const body = {
     isCorrect: true,
+    questionId: "question-1",
     sessionId: "session-1",
   };
 
@@ -271,6 +272,7 @@ describe("test session route PATCH", () => {
     expect(updateTestSessionDifficultyByRecentAccuracy).toHaveBeenCalledWith(
       { id: "session-1", userId: "user-1" },
       true,
+      "question-1",
     );
     expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
     expect(readTestSession).not.toHaveBeenCalled();
@@ -325,10 +327,29 @@ describe("test session route PATCH", () => {
     expect(incrementTestSessionProgress).not.toHaveBeenCalled();
   });
 
+  it("returns 400 when questionId is missing", async () => {
+    const response = await PATCH(
+      new Request("http://localhost/api/test/session", {
+        body: JSON.stringify({ isCorrect: true, sessionId: "session-1" }),
+        method: "PATCH",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "questionId must be a non-empty string.",
+    });
+    expect(incrementTestSessionProgress).not.toHaveBeenCalled();
+  });
+
   it("increments anonymous test session progress when session exists", async () => {
     const response = await PATCH(
       new Request("http://localhost/api/test/session", {
-        body: JSON.stringify({ isCorrect: false, sessionId: "session-1" }),
+        body: JSON.stringify({
+          isCorrect: false,
+          questionId: "question-1",
+          sessionId: "session-1",
+        }),
         method: "PATCH",
       }),
     );
@@ -346,6 +367,7 @@ describe("test session route PATCH", () => {
     expect(updateTestSessionDifficultyByRecentAccuracy).toHaveBeenCalledWith(
       { anonymousSessionId: "anon-1", id: "session-1" },
       false,
+      "question-1",
     );
     expect(readTestSession).not.toHaveBeenCalled();
   });
