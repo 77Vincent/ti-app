@@ -1,4 +1,9 @@
-export { persistQuestionToCandidate } from "./candidate";
+export {
+  deleteQuestionCandidateById,
+  persistQuestionToCandidate,
+  takeNextQuestionCandidate,
+} from "./candidate";
+export { persistQuestionCandidateToPool } from "./pool";
 export {
   deleteQuestionRawById,
   persistQuestionsToRaw,

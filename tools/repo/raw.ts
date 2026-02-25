@@ -50,7 +50,7 @@ export async function takeNextQuestionRaw(): Promise<QuestionRaw | null> {
 
   try {
     return await prisma.questionRaw.findFirst({
-      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      orderBy: { id: "asc" },
     });
   } finally {
     await prisma.$disconnect();

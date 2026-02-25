@@ -29,3 +29,14 @@ export type ResolveQuestionResult = {
   correctOptionIndex: number;
   difficulty: QuestionDifficulty;
 };
+
+export type AnalyzeQuestionRequest = Pick<
+  Question,
+  "prompt" | "options"
+> & {
+  subcategory: QuestionSubcategory;
+};
+
+export type AnalyzeQuestionResult = {
+  isAccepted: boolean;
+};

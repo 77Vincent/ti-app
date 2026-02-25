@@ -11,6 +11,8 @@ Flow:
   - predicted difficulty must be the same level or harder than the original stored difficulty
   - predicted correct option index must be `0`
 - If validation passes, the row is inserted into `QuestionCandidate`.
+- Analyzer model consumes one `QuestionCandidate` row at a time and quality-checks the question.
+- If analyzer passes, the row is inserted into `QuestionPool`.
 
 Environment variables:
 - `AI_API_KEY` (required)
@@ -21,10 +23,12 @@ Environment variables:
 Fixed models (not configurable):
 - Generator: `deepseek-chat`
 - Resolver: `deepseek-reasoner`
+- Analyzer: `deepseek-reasoner`
 
 CLI usage:
 - `npm run tool:question-generate -- --subcategory english --difficulty A1`
 - `npm run tool:question-resolve` (processes `QuestionRaw` rows until empty)
+- `npm run tool:question-analyze` (processes `QuestionCandidate` rows until empty)
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`
