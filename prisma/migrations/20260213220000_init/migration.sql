@@ -29,7 +29,8 @@ CREATE TABLE "Account" (
     "id_token" TEXT,
     "session_state" TEXT,
 
-    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -39,7 +40,8 @@ CREATE TABLE "Session" (
     "userId" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -54,11 +56,18 @@ CREATE TABLE "TestSession" (
     "correctCount" INTEGER NOT NULL DEFAULT 0,
     "submittedCount" INTEGER NOT NULL DEFAULT 0,
     "recentOutcomes" INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
+    "recentQuestionResults" JSONB NOT NULL DEFAULT '[]',
+    "currentQuestionId" TEXT,
     "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "TestSession_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TestSession_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "TestSession_identity_check" CHECK (
+        ("userId" IS NOT NULL AND "anonymousSessionId" IS NULL) OR
+        ("userId" IS NULL AND "anonymousSessionId" IS NOT NULL)
+    ),
+    CONSTRAINT "TestSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -84,7 +93,9 @@ CREATE TABLE "FavoriteQuestion" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "FavoriteQuestion_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "FavoriteQuestion_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "FavoriteQuestion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "FavoriteQuestion_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "QuestionPool"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -127,23 +138,29 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
--- AddCheckConstraint
-ALTER TABLE "TestSession" ADD CONSTRAINT "TestSession_identity_check" CHECK (
-    ("userId" IS NOT NULL AND "anonymousSessionId" IS NULL) OR
-    ("userId" IS NULL AND "anonymousSessionId" IS NOT NULL)
+-- Merged from prisma/migrations/20260225183000_add_question_raw_and_candidate_tables/migration.sql
+CREATE TABLE "QuestionRaw" (
+    "id" TEXT NOT NULL,
+    "subjectId" TEXT NOT NULL,
+    "subcategoryId" TEXT NOT NULL,
+    "prompt" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
+    "options" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "QuestionRaw_pkey" PRIMARY KEY ("id")
 );
 
--- AddForeignKey
-ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+CREATE TABLE "QuestionCandidate" (
+    "id" TEXT NOT NULL,
+    "subjectId" TEXT NOT NULL,
+    "subcategoryId" TEXT NOT NULL,
+    "prompt" TEXT NOT NULL,
+    "difficulty" TEXT NOT NULL,
+    "options" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- AddForeignKey
-ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TestSession" ADD CONSTRAINT "TestSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FavoriteQuestion" ADD CONSTRAINT "FavoriteQuestion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FavoriteQuestion" ADD CONSTRAINT "FavoriteQuestion_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "QuestionPool"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    CONSTRAINT "QuestionCandidate_pkey" PRIMARY KEY ("id")
+);
