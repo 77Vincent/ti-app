@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 NPM := npm
-QUESTION_ALL_REPEAT_COUNT := 10
+QUESTION_ALL_REPEAT_COUNT := 50
 
 .PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-analyze question-english question-chinese question-japanese question-all
 
