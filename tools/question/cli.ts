@@ -3,10 +3,10 @@
 import { Command, InvalidArgumentError } from "commander";
 import { config as loadDotenv } from "dotenv";
 import { fileURLToPath } from "node:url";
-import { createQuestionCandidatesWithAI } from "./createCandidates";
+import { createQuestionCandidatesWithAI } from "./create";
 import type { GenerateQuestionRequest } from "./types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
-import { persistQuestionsToPool } from "./pool";
+import { persistQuestionsToRaw } from "./repo";
 
 const TOOL_ENV_PATH = fileURLToPath(new URL("./.env", import.meta.url));
 
@@ -80,13 +80,13 @@ async function main(): Promise<void> {
     subcategory: options.subcategory,
     difficulty: options.difficulty,
   });
-  await persistQuestionsToPool({
+  await persistQuestionsToRaw({
     subcategory: options.subcategory,
     questions,
   });
 
   process.stdout.write(
-    `Successfully persisted ${questions.length} ${options.difficulty} ${options.subcategory} question(s) to QuestionPool.\n`,
+    `Successfully persisted ${questions.length} ${options.difficulty} ${options.subcategory} question(s) to QuestionRaw.\n`,
   );
 }
 

@@ -8,8 +8,7 @@ Return only valid JSON with this exact shape:
 [
   {
     "p": string,
-    "o": [[string, string]],
-    "a": number
+    "o": [[string, string]]
   }
 ]
 `.trim();
@@ -27,9 +26,7 @@ Rules:
 - o is options as [text, explanation] tuples.
 - options count must be ${QUESTION_OPTION_COUNT}.
 - option text values in o must be unique within the same question.
-- a is a single zero-based index of the correct option in o.
-- a must be an integer within [0, ${QUESTION_OPTION_COUNT - 1}].
-- the index of a must evenly spread across the options in o.
+- the correct answer must always be o[0].
 - explanations in o should be clear and consistent with correctness.
 - the option explanation should clearly and concise explain the reason.
 - for pronunciation-only beginner questions, explanations may be empty strings.

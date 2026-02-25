@@ -16,7 +16,7 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     throw new Error("AI response shape is invalid.");
   }
 
-  const { p, o, a } = value as Record<string, unknown>;
+  const { p, o } = value as Record<string, unknown>;
   if (!isNonEmptyString(p)) {
     throw new Error("AI response shape is invalid.");
   }
@@ -40,20 +40,10 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
     };
   });
 
-  const answerIndex = a;
-  if (
-    typeof answerIndex !== "number" ||
-    !Number.isInteger(answerIndex) ||
-    answerIndex < 0 ||
-    answerIndex >= QUESTION_OPTION_COUNT
-  ) {
-    throw new Error("AI correct options are invalid.");
-  }
-
   return {
     prompt: p.trim(),
     options,
-    correctOptionIndexes: [answerIndex],
+    correctOptionIndexes: [0],
   };
 }
 
