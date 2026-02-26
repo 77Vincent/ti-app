@@ -26,6 +26,8 @@ export function TestsPanel() {
   const router = useRouter();
   const [ongoingDifficultyBySubcategory, setOngoingDifficultyBySubcategory] =
     useState<Map<SubcategoryEnum, string>>(new Map());
+  const [pendingSubcategoryId, setPendingSubcategoryId] =
+    useState<SubcategoryEnum | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -79,9 +81,14 @@ export function TestsPanel() {
     subjectId: SubjectEnum,
     subcategoryId: SubcategoryEnum,
   ) {
+    if (pendingSubcategoryId !== null) {
+      return;
+    }
+
     const difficulty =
       ongoingDifficultyBySubcategory.get(subcategoryId) ??
       getInitialDifficultyForSubcategory(subcategoryId);
+    setPendingSubcategoryId(subcategoryId);
 
     void writeTestSession({
       subjectId,
@@ -104,6 +111,11 @@ export function TestsPanel() {
         toast.error(error, {
           fallbackDescription: "Failed to start test session.",
         });
+      })
+      .finally(() => {
+        setPendingSubcategoryId((current) =>
+          current === subcategoryId ? null : current
+        );
       });
   }
 
@@ -123,9 +135,12 @@ export function TestsPanel() {
               {subjectGroup.subcategories.map((subcategory) => {
                 const ongoingDifficulty =
                   ongoingDifficultyBySubcategory.get(subcategory.id);
+                const isPending = pendingSubcategoryId === subcategory.id;
                 const button = (
                   <Button
                     color="primary"
+                    isDisabled={pendingSubcategoryId !== null}
+                    isLoading={isPending}
                     onPress={() =>
                       handleSelectSubcategory(
                         subjectGroup.id,
@@ -134,7 +149,7 @@ export function TestsPanel() {
                     }
                     variant="bordered"
                   >
-                    {subcategory.label}
+                    {isPending ? null : subcategory.label}
                   </Button>
                 );
 
