@@ -4,12 +4,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+import { readSiteUrl } from "@/lib/config/siteUrl";
 import { AppBar } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
 import UserSettingsBootstrap from "./components/UserSettingsBootstrap";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(readSiteUrl()),
   title: "It",
   description: "Learning through testing",
   manifest: "/manifest.webmanifest",
