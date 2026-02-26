@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import type { Question } from "@/lib/question/model";
 import { parseQuestionParam } from "@/lib/testSession/validation";
+import { MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT } from "@/lib/config/testPolicy";
+import { isUserPro } from "@/lib/billing/pro";
+import { readAuthenticatedUserId } from "../../test/session/auth";
+import { readUserDailySubmittedCount } from "../../test/session/repo/user";
 import { isNonEmptyString } from "@/lib/string";
 import { shuffleQuestionOptions } from "@/lib/question/shuffle";
 import {
@@ -27,6 +31,35 @@ function withShuffledOptions(
   return shuffleQuestionOptions(question, seedKey);
 }
 
+async function readDailyLimitResponse(
+  isNext: boolean,
+): Promise<NextResponse | null> {
+  if (!isNext) {
+    return null;
+  }
+
+  const userId = await readAuthenticatedUserId();
+  if (!userId) {
+    return null;
+  }
+
+  const dailySubmittedCount = await readUserDailySubmittedCount(userId);
+  if (await isUserPro(userId)) {
+    return null;
+  }
+
+  if (dailySubmittedCount < MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT) {
+    return null;
+  }
+
+  return NextResponse.json(
+    {
+      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited questions.`,
+    },
+    { status: 429 },
+  );
+}
+
 export async function POST(request: Request) {
   let body: unknown;
 
@@ -49,6 +82,11 @@ export async function POST(request: Request) {
     const sessionId = (body as { sessionId?: unknown } | null)?.sessionId;
     const next = (body as { next?: unknown } | null)?.next;
     const isNext = next === true;
+
+    const dailyLimitResponse = await readDailyLimitResponse(isNext);
+    if (dailyLimitResponse) {
+      return dailyLimitResponse;
+    }
 
     if (isNonEmptyString(sessionId)) {
       const session = await readTestSessionQuestionState(sessionId);

@@ -5,6 +5,7 @@ const {
   clearAnonymousTestSessionCookie,
   deleteTestSession,
   incrementTestSessionProgress,
+  incrementUserDailySubmittedCount,
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
   readAuthenticatedUserId,
@@ -16,6 +17,7 @@ const {
   clearAnonymousTestSessionCookie: vi.fn((response: Response) => response),
   deleteTestSession: vi.fn(),
   incrementTestSessionProgress: vi.fn(),
+  incrementUserDailySubmittedCount: vi.fn(),
   persistAnonymousTestSessionCookie: vi.fn((response: Response) => response),
   readAnonymousTestSessionCookie: vi.fn(),
   readAuthenticatedUserId: vi.fn(),
@@ -33,6 +35,10 @@ vi.mock("./cookie/anonymous", () => ({
   clearAnonymousTestSessionCookie,
   persistAnonymousTestSessionCookie,
   readAnonymousTestSessionCookie,
+}));
+
+vi.mock("./repo/user", () => ({
+  incrementUserDailySubmittedCount,
 }));
 
 vi.mock("./repo/testSession", () => ({
@@ -238,12 +244,14 @@ describe("test session route PATCH", () => {
 
   beforeEach(() => {
     incrementTestSessionProgress.mockReset();
+    incrementUserDailySubmittedCount.mockReset();
     readAnonymousTestSessionCookie.mockReset();
     readAuthenticatedUserId.mockReset();
     readTestSession.mockReset();
     updateTestSessionDifficultyByRecentAccuracy.mockReset();
 
     incrementTestSessionProgress.mockResolvedValue(1);
+    incrementUserDailySubmittedCount.mockResolvedValue(1);
     readAuthenticatedUserId.mockResolvedValue(null);
     readAnonymousTestSessionCookie.mockResolvedValue("anon-1");
     readTestSession.mockResolvedValue(STORED_SESSION);
@@ -274,6 +282,7 @@ describe("test session route PATCH", () => {
       true,
       "question-1",
     );
+    expect(incrementUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
     expect(readAnonymousTestSessionCookie).not.toHaveBeenCalled();
     expect(readTestSession).not.toHaveBeenCalled();
   });
@@ -293,6 +302,7 @@ describe("test session route PATCH", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Test session not found.",
     });
+    expect(incrementUserDailySubmittedCount).not.toHaveBeenCalled();
   });
 
   it("returns 400 for authenticated requests without boolean isCorrect", async () => {
@@ -310,6 +320,7 @@ describe("test session route PATCH", () => {
       error: "isCorrect must be a boolean.",
     });
     expect(incrementTestSessionProgress).not.toHaveBeenCalled();
+    expect(incrementUserDailySubmittedCount).not.toHaveBeenCalled();
   });
 
   it("returns 400 when sessionId is missing", async () => {
@@ -325,6 +336,7 @@ describe("test session route PATCH", () => {
       error: "sessionId must be a non-empty string.",
     });
     expect(incrementTestSessionProgress).not.toHaveBeenCalled();
+    expect(incrementUserDailySubmittedCount).not.toHaveBeenCalled();
   });
 
   it("increments anonymous test session progress when session exists", async () => {
@@ -355,6 +367,7 @@ describe("test session route PATCH", () => {
       "question-1",
     );
     expect(readTestSession).not.toHaveBeenCalled();
+    expect(incrementUserDailySubmittedCount).not.toHaveBeenCalled();
   });
 
   it("returns 404 when anonymous session is missing", async () => {

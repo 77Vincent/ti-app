@@ -11,7 +11,6 @@ import type {
   QuestionOptionIndex,
   QuestionSignInDemand,
 } from "../types";
-import { submitQuestion } from "@/lib/testSession/service/questionSubmit";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
   questionSessionUiReducer,
@@ -72,6 +71,12 @@ export function useQuestion({
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIndexes, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
+  const isQuestionLimitError = useCallback(
+    (error: unknown) =>
+      error instanceof QuestionRunnerApiError &&
+      (error.status === 403 || error.status === 429),
+    [],
+  );
   const showLoadError = useCallback((error: unknown) => {
     toast.error(error, {
       fallbackDescription: "Failed to load question.",
@@ -157,67 +162,62 @@ export function useQuestion({
     const isCurrentAnswerCorrect = isAnswerCorrect(question, currentSelection);
     let nextDifficulty = sessionDifficulty;
 
-    await submitQuestion({
-      hasSubmitted,
-      isCurrentAnswerCorrect,
-      recordQuestionResult: async (isCorrect) => {
+    if (!hasSubmitted) {
+      dispatchUiState({ type: "submissionMarked" });
+      dispatchUiState({ type: "submitFetchStarted" });
+      try {
         const updatedSession = await recordQuestionResult(
           sessionId,
           question.id,
-          isCorrect,
+          isCurrentAnswerCorrect,
         );
         if (updatedSession?.difficulty) {
           nextDifficulty = updatedSession.difficulty;
         }
-      },
-      onSubmitRequestStarted: () => {
-        dispatchUiState({ type: "submitFetchStarted" });
-      },
-      onSubmitRequestFinished: () => {
-        dispatchUiState({ type: "submitFetchFinished" });
-      },
-      isQuestionLimitError: (error) =>
-        error instanceof QuestionRunnerApiError && error.status === 403,
-      onQuestionLimitReached: () => {
-        setSignInDemand("more_questions");
-      },
-      onError: (error) => {
+      } catch (error) {
+        if (isQuestionLimitError(error)) {
+          setSignInDemand("more_questions");
+          return;
+        }
+
         toast.error(error, {
           fallbackDescription: "Failed to submit answer.",
         });
-      },
-      onSubmissionMarked: () => {
-        dispatchUiState({ type: "submissionMarked" });
-      },
-      persistSubmission: () => {
-        setSessionProgress((prev) => ({
-          ...prev,
-          submittedCount: prev.submittedCount + 1,
-          correctCount:
-            prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
-        }));
-        setPendingDifficulty(nextDifficulty);
-      },
-      advanceToNextQuestion: async () => {
-        const targetDifficulty = pendingDifficulty ?? sessionDifficulty;
-        try {
-          const loadedQuestion = await loadQuestion(targetDifficulty, true);
-          if (targetDifficulty !== sessionDifficulty) {
-            setSessionDifficulty(targetDifficulty);
-          }
-          setPendingDifficulty(null);
-          applyLoadedQuestion(loadedQuestion);
-        } catch (error) {
-          showLoadError(error);
-        }
-      },
-      onNextQuestionLoadStarted: () => {
-        dispatchUiState({ type: "submitFetchStarted" });
-      },
-      onNextQuestionLoadFinished: () => {
+        return;
+      } finally {
         dispatchUiState({ type: "submitFetchFinished" });
-      },
-    });
+      }
+
+      setSessionProgress((prev) => ({
+        ...prev,
+        submittedCount: prev.submittedCount + 1,
+        correctCount: prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
+      }));
+      setPendingDifficulty(nextDifficulty);
+      return;
+    }
+
+    dispatchUiState({ type: "submitFetchStarted" });
+    try {
+      const targetDifficulty = pendingDifficulty ?? sessionDifficulty;
+      try {
+        const loadedQuestion = await loadQuestion(targetDifficulty, true);
+        if (targetDifficulty !== sessionDifficulty) {
+          setSessionDifficulty(targetDifficulty);
+        }
+        setPendingDifficulty(null);
+        applyLoadedQuestion(loadedQuestion);
+      } catch (error) {
+        if (isQuestionLimitError(error)) {
+          setSignInDemand("more_questions");
+          return;
+        }
+
+        showLoadError(error);
+      }
+    } finally {
+      dispatchUiState({ type: "submitFetchFinished" });
+    }
   }
 
   const isSignInRequired = signInDemand !== null;

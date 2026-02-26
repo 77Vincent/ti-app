@@ -11,6 +11,7 @@ import {
   readAnonymousTestSessionCookie,
 } from "./cookie/anonymous";
 import { readAuthenticatedUserId } from "./auth";
+import { incrementUserDailySubmittedCount } from "./repo/user";
 import {
   deleteTestSession,
   incrementTestSessionProgress,
@@ -241,6 +242,7 @@ export async function PATCH(request: Request) {
         );
       }
 
+      await incrementUserDailySubmittedCount(userId);
       return NextResponse.json({ ok: true, session });
     }
 
