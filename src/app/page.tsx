@@ -15,16 +15,19 @@ function readSiteUrl(): string {
   return raw.endsWith("/") ? raw.slice(0, -1) : raw;
 }
 
+const SITE_URL = readSiteUrl();
+const HOME_URL = `${SITE_URL}${HOME_CANONICAL_PATH}`;
+
 export const metadata: Metadata = {
   title: HOME_TITLE,
   description: HOME_DESCRIPTION,
   alternates: {
-    canonical: HOME_CANONICAL_PATH,
+    canonical: HOME_URL,
   },
   openGraph: {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-    url: HOME_CANONICAL_PATH,
+    url: HOME_URL,
     siteName: SITE_NAME,
     type: "website",
   },
@@ -38,7 +41,6 @@ export const metadata: Metadata = {
 export default async function Home() {
   const userId = await readAuthenticatedUserId();
   const startHref = userId ? PAGE_PATHS.DASHBOARD : PAGE_PATHS.TEST;
-  const siteUrl = readSiteUrl();
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -46,7 +48,7 @@ export default async function Home() {
     applicationCategory: "EducationalApplication",
     operatingSystem: "Any",
     description: HOME_DESCRIPTION,
-    url: `${siteUrl}${HOME_CANONICAL_PATH}`,
+    url: HOME_URL,
   };
 
   return (
