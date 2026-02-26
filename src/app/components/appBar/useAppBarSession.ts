@@ -3,8 +3,6 @@
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { USER_PLAN_REFRESH_EVENT } from "@/lib/events/userPlan";
-import { readUserSettings } from "@/lib/settings/api";
-import { useSettingsStore } from "@/lib/settings/store";
 import { hasAuthenticatedUser } from "../../auth/sessionState";
 import { readUserPlan, type UserPlan } from "./api";
 
@@ -18,7 +16,6 @@ export function useAppBarSession(): UseAppBarSessionResult {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [plan, setPlan] = useState<UserPlan | null>(null);
   const [userDisplayName, setUserDisplayName] = useState("");
-  const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
 
   useEffect(() => {
     let active = true;
@@ -37,14 +34,6 @@ export function useAppBarSession(): UseAppBarSessionResult {
         return;
       }
 
-      void readUserSettings()
-        .then((settings) => {
-          if (active) {
-            applyUserSettings(settings);
-          }
-        })
-        .catch(() => undefined);
-
       void readUserPlan()
         .then((nextPlan) => {
           if (active) {
@@ -57,7 +46,7 @@ export function useAppBarSession(): UseAppBarSessionResult {
     return () => {
       active = false;
     };
-  }, [applyUserSettings]);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {

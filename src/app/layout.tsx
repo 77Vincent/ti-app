@@ -7,6 +7,7 @@ import "./globals.css";
 import { AppBar, Footer } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
+import UserSettingsBootstrap from "./UserSettingsBootstrap";
 
 export const metadata: Metadata = {
   title: "It",
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
+          <UserSettingsBootstrap />
           <PwaServiceWorker />
           <NextTopLoader color="#2B54B6" showSpinner={false} />
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
