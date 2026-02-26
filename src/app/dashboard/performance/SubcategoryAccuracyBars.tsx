@@ -31,20 +31,35 @@ export default function SubcategoryAccuracyBars({
           <div className="space-y-3">
             {items.map((item) => {
               const SubjectIcon = getSubjectIcon(item.subjectId);
+              const correctPercent =
+                item.submittedCount === 0
+                  ? 0
+                  : (item.correctCount / item.submittedCount) * 100;
+              const wrongPercent = Math.max(0, 100 - correctPercent);
               return (
                 <div
                   key={`${item.subjectId}:${item.label}`}
-                  className="flex items-center justify-between gap-3 text-sm"
+                  className="grid grid-cols-[minmax(0,auto)_minmax(160px,1fr)] items-center gap-3"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <SubjectIcon aria-hidden size={15} />
+                    <SubjectIcon aria-hidden size={16} />
                     <span>{item.label}</span>
                   </span>
-                  <span className="text-default-500">
-                    {item.correctCount.toLocaleString()}/
-                    {item.submittedCount.toLocaleString()} (
-                    {formatPercent(item.accuracyRatePercent)})
-                  </span>
+                  <div className="relative flex h-4.5 w-full overflow-hidden rounded-xs bg-default-200">
+                    <div
+                      className="bg-primary"
+                      style={{ width: `${correctPercent}%` }}
+                    />
+                    <div
+                      className="bg-danger"
+                      style={{ width: `${wrongPercent}%` }}
+                    />
+                    <span className="text-background absolute inset-0 flex items-center justify-center text-[13px] font-medium tabular-nums">
+                      {item.correctCount.toLocaleString()}/
+                      {item.submittedCount.toLocaleString()} (
+                      {formatPercent(item.accuracyRatePercent)})
+                    </span>
+                  </div>
                 </div>
               );
             })}

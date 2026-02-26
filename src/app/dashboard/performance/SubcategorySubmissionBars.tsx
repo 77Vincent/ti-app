@@ -37,7 +37,7 @@ export default function SubcategorySubmissionBars({
 
         {totalSubmittedCount === 0 ? null : (
           <div className="space-y-3">
-            <div className="flex h-5 overflow-hidden rounded bg-default-200">
+            <div className="flex h-4.5 overflow-hidden rounded-xs bg-default-200">
               {items.map((item, index) => (
                 <div
                   className={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
@@ -53,18 +53,18 @@ export default function SubcategorySubmissionBars({
               return (
               <div
                 key={`${item.subjectId}:${item.label}`}
-                className="flex items-center justify-between gap-3 text-sm"
+                className="flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`h-2.5 w-2.5 rounded-full ${SEGMENT_COLORS[index % SEGMENT_COLORS.length]}`}
+                    className={`h-2.5 w-2.5 rounded-xs ${SEGMENT_COLORS[index % SEGMENT_COLORS.length]}`}
                   />
                   <span className="inline-flex items-center gap-2">
-                    <SubjectIcon aria-hidden size={15} />
+                    <SubjectIcon aria-hidden size={16} />
                     <span>{item.label}</span>
                   </span>
                 </div>
-                <span className="text-default-500">
+                <span className="tabular-nums text-sm font-medium">
                   {item.submittedCount.toLocaleString()} (
                   {formatPercent(item.proportionPercent)})
                 </span>
