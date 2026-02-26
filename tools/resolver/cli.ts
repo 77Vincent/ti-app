@@ -21,7 +21,7 @@ async function main(): Promise<void> {
 
     if (result.status === "passed") {
       process.stdout.write(
-        `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Moved to QuestionCandidate.\n`,
+        `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Moved to QuestionPool.\n`,
       );
       continue;
     }

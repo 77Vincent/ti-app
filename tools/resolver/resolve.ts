@@ -2,7 +2,7 @@ import type { QuestionOption } from "../types";
 import { resolveQuestionWithAI } from "./index";
 import {
   deleteQuestionRawById,
-  persistQuestionToCandidate,
+  persistQuestionRawToPool,
   takeNextQuestionRaw,
 } from "../repo";
 
@@ -41,7 +41,7 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
   const isPassed = !hasTechnicalIssue && isCorrectOptionIndexMatch;
 
   if (isPassed) {
-    await persistQuestionToCandidate(rawQuestion);
+    await persistQuestionRawToPool(rawQuestion);
   }
 
   await deleteQuestionRawById(rawQuestion.id);

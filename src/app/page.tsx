@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
-import { BRAND_TITLE } from "@/lib/config/brand";
+import {
+  BRAND_TAGLINE_HIGHLIGHT,
+  BRAND_TAGLINE_PREFIX,
+  BRAND_TAGLINE_TITLE_CASE,
+  BRAND_TITLE,
+} from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
 import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = BRAND_TITLE;
-const HOME_TITLE = `${BRAND_TITLE} | Learning Through Testing`;
+const HOME_TITLE = `${BRAND_TITLE} | ${BRAND_TAGLINE_TITLE_CASE}`;
 const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
 const HOME_CANONICAL_PATH = "/";
 
@@ -69,7 +74,8 @@ export default async function Home() {
         <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8 px-4 text-center">
           <div className="space-y-3">
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-              Learning through <span className="text-primary-500">testing</span>
+              {BRAND_TAGLINE_PREFIX}{" "}
+              <span className="text-primary-500">{BRAND_TAGLINE_HIGHLIGHT}</span>
             </h1>
             <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
               {HOME_DESCRIPTION}

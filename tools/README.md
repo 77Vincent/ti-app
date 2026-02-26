@@ -10,7 +10,7 @@ Flow:
 - Resolver model consumes one `QuestionRaw` row at a time, predicts all correct option indexes (raw text like `0`, `03`, `012`), and validates:
   - resolver can return `-1` for technical issues (question rejected)
   - predicted correct option indexes must be exactly `[0]`
-- If validation passes, the row is inserted into `QuestionCandidate`.
+- If validation passes, the row is inserted into `QuestionPool`.
 - Analyzer model consumes one `QuestionCandidate` row at a time and quality-checks the question.
 - If analyzer passes, the row is inserted into `QuestionPool`.
 
