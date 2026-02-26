@@ -5,8 +5,8 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
 import HomeStartButton from "./components/HomeStartButton";
 
-const SITE_NAME = "It";
-const HOME_TITLE = "It | Learning Through Testing";
+const SITE_NAME = "Ti";
+const HOME_TITLE = "Ti | Learning Through Testing";
 const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
 const HOME_CANONICAL_PATH = "/";
 

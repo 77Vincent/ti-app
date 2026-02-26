@@ -1,5 +1,7 @@
-export const metadata = {
-  title: "Privacy Policy | It",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Ti",
 };
 
 export default function PrivacyPolicyPage() {

@@ -12,7 +12,7 @@ import UserSettingsBootstrap from "./components/UserSettingsBootstrap";
 
 export const metadata: Metadata = {
   metadataBase: new URL(readSiteUrl()),
-  title: "It",
+  title: "Ti",
   description: "Learning through testing",
   manifest: "/manifest.webmanifest",
 };

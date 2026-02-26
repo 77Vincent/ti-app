@@ -1,5 +1,7 @@
-export const metadata = {
-  title: "Terms of Use | It",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Use | Ti",
 };
 
 export default function TermsOfUsePage() {

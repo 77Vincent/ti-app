@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer>
       <div className="flex w-full items-center justify-center gap-4 text-sm opacity-70">
-        <p>&copy; {new Date().getFullYear()} It</p>
+        <p>&copy; {new Date().getFullYear()} Ti</p>
         <Divider orientation="vertical" className="h-3" />
         <nav aria-label="Legal" className="flex items-center gap-4">
           <Link
