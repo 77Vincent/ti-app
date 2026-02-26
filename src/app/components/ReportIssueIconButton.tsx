@@ -8,13 +8,16 @@ type ReportIssueIconButtonProps = {
   onPress: ButtonProps["onPress"];
 };
 
+const BUTTON_LABEL = "Report an issue with this question";
+
 export default function ReportIssueIconButton({
   isDisabled = false,
   onPress,
 }: ReportIssueIconButtonProps) {
   return (
     <Button
-      aria-label="Report question issue"
+      aria-label={BUTTON_LABEL}
+      title={BUTTON_LABEL}
       isIconOnly
       isDisabled={isDisabled}
       onPress={onPress}
