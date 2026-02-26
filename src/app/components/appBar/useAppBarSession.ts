@@ -7,12 +7,14 @@ import { hasAuthenticatedUser } from "../../auth/sessionState";
 import { readUserPlan, type UserPlan } from "./api";
 
 type UseAppBarSessionResult = {
+  isAuthLoading: boolean;
   isAuthenticated: boolean;
   plan: UserPlan | null;
   userDisplayName: string;
 };
 
 export function useAppBarSession(): UseAppBarSessionResult {
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [plan, setPlan] = useState<UserPlan | null>(null);
   const [userDisplayName, setUserDisplayName] = useState("");
@@ -20,28 +22,34 @@ export function useAppBarSession(): UseAppBarSessionResult {
   useEffect(() => {
     let active = true;
 
-    void getSession().then((session) => {
-      if (!active) {
-        return;
-      }
+    void getSession()
+      .then((session) => {
+        if (!active) {
+          return;
+        }
 
-      const authenticated = hasAuthenticatedUser(session);
-      setIsAuthenticated(authenticated);
-      setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
+        const authenticated = hasAuthenticatedUser(session);
+        setIsAuthenticated(authenticated);
+        setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
 
-      if (!authenticated) {
-        setPlan(null);
-        return;
-      }
+        if (!authenticated) {
+          setPlan(null);
+          return;
+        }
 
-      void readUserPlan()
-        .then((nextPlan) => {
-          if (active) {
-            setPlan(nextPlan);
-          }
-        })
-        .catch(() => undefined);
-    });
+        void readUserPlan()
+          .then((nextPlan) => {
+            if (active) {
+              setPlan(nextPlan);
+            }
+          })
+          .catch(() => undefined);
+      })
+      .finally(() => {
+        if (active) {
+          setIsAuthLoading(false);
+        }
+      });
 
     return () => {
       active = false;
@@ -68,6 +76,7 @@ export function useAppBarSession(): UseAppBarSessionResult {
   }, [isAuthenticated]);
 
   return {
+    isAuthLoading,
     isAuthenticated,
     plan,
     userDisplayName,

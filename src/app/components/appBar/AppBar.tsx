@@ -9,7 +9,7 @@ import {
   NavbarItem,
 } from "@heroui/react";
 import dynamic from "next/dynamic";
-import { User, User2 } from "lucide-react";
+import { LoaderCircle, User, User2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import QuotaBattery from "./QuotaBattery";
@@ -26,7 +26,7 @@ const ThemeToggleButton = dynamic(
 );
 
 export default function AppBar() {
-  const { isAuthenticated, plan, userDisplayName } = useAppBarSession();
+  const { isAuthLoading, isAuthenticated, plan, userDisplayName } = useAppBarSession();
   const handleSignIn = useSignInNavigation();
   const SIGN_IN_LABEL = "Sign in";
   const DASHBOARD_LABEL = "Dashboard";
@@ -68,7 +68,13 @@ export default function AppBar() {
           </NavbarItem>
         ) : null}
         <NavbarItem>
-          {isAuthenticated ? (
+          {isAuthLoading ? (
+            <Avatar
+              color="primary"
+              icon={<LoaderCircle aria-hidden="true" className="animate-spin" strokeWidth={2.5} size={18} />}
+              size="sm"
+            />
+          ) : isAuthenticated ? (
             <Link
               aria-label={DASHBOARD_LABEL}
               href={PAGE_PATHS.DASHBOARD}
