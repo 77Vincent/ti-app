@@ -5,9 +5,8 @@ import type {
   QuestionRunnerProps,
   AccessDemand,
 } from "../types";
-import { Button, Card, CardBody, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody, Textarea, Tooltip } from "@heroui/react";
 import { FavoriteIconButton, ReportIssueIconButton } from "@/app/components";
-import { toast } from "@/lib/toast";
 import Mousetrap from "mousetrap";
 import { ChevronRight } from "lucide-react";
 import {
@@ -34,6 +33,15 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
+  const [reportIssueDraft, setReportIssueDraft] = useState<{
+    questionId: string | null;
+    text: string;
+    isOpen: boolean;
+  }>({
+    questionId: null,
+    text: "",
+    isOpen: false,
+  });
   const submitCorrectMidiSfxRef = useRef<MidiSfxHandle | null>(null);
   const submitWrongMidiSfxRef = useRef<MidiSfxHandle | null>(null);
   const nextActionMidiSfxRef = useRef<MidiSfxHandle | null>(null);
@@ -126,8 +134,28 @@ export default function QuestionWrapper({
       return;
     }
 
-    toast.info("Issue reporting will be available soon.");
+    setReportIssueDraft((previousDraft) => (
+      previousDraft.questionId === question.id
+        ? {
+          ...previousDraft,
+          isOpen: true,
+        }
+        : {
+          isOpen: true,
+          questionId: question.id,
+          text: "",
+        }
+    ));
   }, [isAccessBlocked, question]);
+  const currentQuestionId = question?.id ?? null;
+  const isCurrentQuestionReportOpen =
+    currentQuestionId !== null &&
+    reportIssueDraft.isOpen &&
+    reportIssueDraft.questionId === currentQuestionId;
+  const currentReportIssueText =
+    currentQuestionId !== null && reportIssueDraft.questionId === currentQuestionId
+      ? reportIssueDraft.text
+      : "";
 
   useEffect(() => {
     Mousetrap.bind("enter", (event) => {
@@ -214,6 +242,26 @@ export default function QuestionWrapper({
         difficulty={sessionDifficulty}
         subcategoryId={subcategoryId}
       />
+
+      {isCurrentQuestionReportOpen ? (
+        <Textarea
+          aria-label="Report issue details"
+          minRows={3}
+          onValueChange={(value) => {
+            if (!question) {
+              return;
+            }
+
+            setReportIssueDraft({
+              isOpen: true,
+              questionId: question.id,
+              text: value,
+            });
+          }}
+          placeholder="Describe the issue with this question..."
+          value={currentReportIssueText}
+        />
+      ) : null}
     </div>
   );
 }
