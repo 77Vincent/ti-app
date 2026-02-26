@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { clearTestSession } from "../../test/run/questionRunner/session/storage";
+import { clearTestSession } from "../../run/questionRunner/session/storage";
 
 export function useSignInNavigation(): () => void {
   return useCallback(() => {

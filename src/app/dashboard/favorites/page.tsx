@@ -11,8 +11,8 @@ import { FavoriteIconButton } from "@/app/components";
 import { getSubjectIcon } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { useState } from "react";
-import QuestionBody from "@/app/test/run/questionRunner/components/QuestionBody";
-import QuestionPrompt from "@/app/test/run/questionRunner/components/QuestionPrompt";
+import QuestionBody from "@/app/run/questionRunner/components/QuestionBody";
+import QuestionPrompt from "@/app/run/questionRunner/components/QuestionPrompt";
 import { useFavoritesFilters } from "./useFavoritesFilters";
 import { useFavoriteQuestions } from "./useFavoriteQuestions";
 

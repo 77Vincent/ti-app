@@ -2,8 +2,8 @@
 
 import {
   readTestSession,
-} from "@/app/test/run/questionRunner/session/storage";
-import { QuestionRunner } from "@/app/test/run/questionRunner";
+} from "@/app/run/questionRunner/session/storage";
+import { QuestionRunner } from "@/app/run/questionRunner";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import {
   SUBCATEGORIES,

@@ -3,7 +3,7 @@
 import {
   readTestSession,
   writeTestSession,
-} from "@/app/test/run/questionRunner/session/storage";
+} from "@/app/run/questionRunner/session/storage";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { getInitialDifficultyForSubcategory } from "@/lib/difficulty";
 import {
