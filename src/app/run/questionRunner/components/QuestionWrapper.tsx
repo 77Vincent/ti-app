@@ -5,8 +5,8 @@ import type {
   QuestionRunnerProps,
   AccessDemand,
 } from "../types";
-import { Button, Card, CardBody, Textarea, Tooltip } from "@heroui/react";
-import { FavoriteIconButton, ReportIssueIconButton } from "@/app/components";
+import { Button, Card, CardBody, Tooltip } from "@heroui/react";
+import { FavoriteIconButton } from "@/app/components";
 import { ChevronRight } from "lucide-react";
 import {
   useCallback,
@@ -19,7 +19,6 @@ import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useEnterToNext } from "../hooks/useEnterToNext";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
-import { useReportIssueDraft } from "../hooks/useReportIssueDraft";
 import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
@@ -93,10 +92,6 @@ export default function QuestionWrapper({
     Boolean(question) &&
     hasSubmitted &&
     !isSubmitting;
-  const reportIssueDraft = useReportIssueDraft({
-    questionId: question?.id ?? null,
-    isAccessBlocked,
-  });
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
     if (!question || isFavoriteSubmitting || isAccessBlocked) {
@@ -159,10 +154,6 @@ export default function QuestionWrapper({
             isLoading={isFavoriteSubmitting || isFavoriteSyncing}
             onPress={() => toggleFavorite(question)}
           />
-          <ReportIssueIconButton
-            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
-            onPress={reportIssueDraft.open}
-          />
           <Button
             aria-label="Next question"
             color="primary"
@@ -198,39 +189,6 @@ export default function QuestionWrapper({
         difficulty={sessionDifficulty}
         subcategoryId={subcategoryId}
       />
-
-      {reportIssueDraft.isOpen ? (
-        <div className="space-y-3">
-          <Textarea
-            aria-label="Report issue details"
-            onValueChange={reportIssueDraft.setText}
-            placeholder="Describe the issue with this question..."
-            value={reportIssueDraft.text}
-            maxLength={200}
-          />
-
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              onPress={reportIssueDraft.cancel}
-              radius="full"
-              size="sm"
-              color="primary"
-              variant="bordered"
-            >
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              isDisabled={!reportIssueDraft.canSubmit}
-              onPress={reportIssueDraft.submit}
-              radius="full"
-              size="sm"
-            >
-              Submit
-            </Button>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
