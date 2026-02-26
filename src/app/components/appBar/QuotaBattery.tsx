@@ -1,18 +1,12 @@
 "use client";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@heroui/react";
-import {
   BatteryFull,
   BatteryLow,
   BatteryMedium,
   BatteryWarning,
   type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
 
 type QuotaBatteryProps = {
   used: number;
@@ -20,7 +14,6 @@ type QuotaBatteryProps = {
 };
 
 export default function QuotaBattery({ used, quota }: QuotaBatteryProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const remainingRatio = quota > 0
     ? Math.max(0, Math.min((quota - used) / quota, 1))
     : 0;
@@ -39,29 +32,15 @@ export default function QuotaBattery({ used, quota }: QuotaBatteryProps) {
   }
 
   return (
-    <Popover
-      isOpen={isOpen}
-      placement="left"
-      onOpenChange={setIsOpen}
+    <div
+      aria-label={`Daily quota ${used} out of ${quota}`}
+      className="text-foreground-700 inline-flex flex-col items-center leading-none"
+      title={`daily quota: ${used}/${quota}`}
     >
-      <PopoverTrigger>
-        <button
-          aria-label={`Daily quota ${used} out of ${quota}`}
-          className="block"
-          onBlur={() => setIsOpen(false)}
-          onFocus={() => setIsOpen(true)}
-          onMouseEnter={() => setIsOpen(true)}
-          onMouseLeave={() => setIsOpen(false)}
-          type="button"
-        >
-          <Icon className={iconClassName} size={20} strokeWidth={2.5} />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <span className="tabular-nums">
-          daily quota: {used}/{quota}
-        </span>
-      </PopoverContent>
-    </Popover>
+      <Icon className={iconClassName} size={20} strokeWidth={2.5} />
+      <span className="tabular-nums text-[10px]">
+        {used}/{quota}
+      </span>
+    </div>
   );
 }

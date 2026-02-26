@@ -20,9 +20,9 @@ export function ThemeToggleButton() {
       variant="light"
       startContent={
         isDark ? (
-          <Sun aria-hidden="true" size={20} />
+          <Sun aria-hidden="true" strokeWidth={2.5} size={20} />
         ) : (
-          <Moon aria-hidden="true" size={20} />
+          <Moon aria-hidden="true" strokeWidth={2.5} size={20} />
         )
       }
     />

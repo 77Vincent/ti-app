@@ -69,7 +69,7 @@ export default function AppBar() {
             >
               <Avatar
                 color="primary"
-                icon={<User aria-hidden="true" size={18} />}
+                icon={<User aria-hidden="true" strokeWidth={2.5} size={18} />}
                 size="sm"
               />
             </Link>
@@ -83,7 +83,7 @@ export default function AppBar() {
               size="sm"
               variant="light"
               startContent={
-                <User2 aria-hidden="true" size={20} />
+                <User2 aria-hidden="true" strokeWidth={2.5} size={20} />
               }
             />
           )}
