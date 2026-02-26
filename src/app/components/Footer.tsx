@@ -6,8 +6,8 @@ import { PAGE_PATHS } from "@/lib/config/paths";
 
 export default function Footer() {
   return (
-    <footer className="p-2">
-      <div className="flex w-full items-center justify-end gap-4 text-sm opacity-70">
+    <footer>
+      <div className="flex w-full items-center justify-center gap-4 text-sm opacity-70">
         <p>&copy; {new Date().getFullYear()} It</p>
         <nav aria-label="Legal" className="flex items-center gap-4">
           <Link
