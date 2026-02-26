@@ -200,13 +200,36 @@ export default function QuestionWrapper({
       />
 
       {reportIssueDraft.isOpen ? (
-        <Textarea
-          aria-label="Report issue details"
-          minRows={3}
-          onValueChange={reportIssueDraft.setText}
-          placeholder="Describe the issue with this question..."
-          value={reportIssueDraft.text}
-        />
+        <div className="space-y-3">
+          <Textarea
+            aria-label="Report issue details"
+            onValueChange={reportIssueDraft.setText}
+            placeholder="Describe the issue with this question..."
+            value={reportIssueDraft.text}
+            maxLength={200}
+          />
+
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              onPress={reportIssueDraft.cancel}
+              radius="full"
+              size="sm"
+              color="primary"
+              variant="bordered"
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              isDisabled={!reportIssueDraft.canSubmit}
+              onPress={reportIssueDraft.submit}
+              radius="full"
+              size="sm"
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
       ) : null}
     </div>
   );
