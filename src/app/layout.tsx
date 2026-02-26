@@ -7,7 +7,7 @@ import "./globals.css";
 import { AppBar } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
-import UserSettingsBootstrap from "./UserSettingsBootstrap";
+import UserSettingsBootstrap from "./components/UserSettingsBootstrap";
 
 export const metadata: Metadata = {
   title: "It",

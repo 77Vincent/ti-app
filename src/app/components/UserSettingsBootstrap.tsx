@@ -4,7 +4,7 @@ import { getSession } from "next-auth/react";
 import { useEffect } from "react";
 import { readUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
-import { hasAuthenticatedUser } from "./auth/sessionState";
+import { hasAuthenticatedUser } from "../auth/sessionState";
 
 export default function UserSettingsBootstrap() {
   const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);

@@ -1,7 +1,7 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import HomeStartButton from "./HomeStartButton";
+import HomeStartButton from "./components/HomeStartButton";
 
 export default async function Home() {
   const userId = await readAuthenticatedUserId();
