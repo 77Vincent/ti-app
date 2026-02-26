@@ -1,7 +1,32 @@
+import type { Metadata } from "next";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import HomeStartButton from "./components/HomeStartButton";
+
+const HOME_TITLE = "It | Learning Through Testing";
+const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
+const HOME_CANONICAL_PATH = "/";
+
+export const metadata: Metadata = {
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  alternates: {
+    canonical: HOME_CANONICAL_PATH,
+  },
+  openGraph: {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: HOME_CANONICAL_PATH,
+    siteName: "It",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  },
+};
 
 export default async function Home() {
   const userId = await readAuthenticatedUserId();
@@ -16,7 +41,7 @@ export default async function Home() {
               Learning through <span className="text-primary-500">testing</span>
             </h1>
             <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
-              Infinite high-quality questions for adaptive learning.
+              {HOME_DESCRIPTION}
             </p>
           </div>
 
