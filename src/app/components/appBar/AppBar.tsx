@@ -10,18 +10,11 @@ import {
 } from "@heroui/react";
 import dynamic from "next/dynamic";
 import { User, User2 } from "lucide-react";
-import { getSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useAppBarSession } from "./useAppBarSession";
+import { useSignInNavigation } from "./useSignInNavigation";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { readUserSettings } from "@/lib/settings/api";
-import { useSettingsStore } from "@/lib/settings/store";
-import {
-  hasAuthenticatedUser,
-} from "../../auth/sessionState";
-import { clearTestSession } from "../../test/run/questionRunner/session/storage";
-import { readUserPlan } from "./api";
 
 const ThemeToggleButton = dynamic(
   () =>
@@ -32,63 +25,16 @@ const ThemeToggleButton = dynamic(
 );
 
 export default function AppBar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isPro, setIsPro] = useState(false);
-  const [userDisplayName, setUserDisplayName] = useState("");
-  const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
+  const { isAuthenticated, plan, userDisplayName } = useAppBarSession();
+  const handleSignIn = useSignInNavigation();
   const SIGN_IN_LABEL = "Sign in";
   const DASHBOARD_LABEL = "Dashboard";
 
-  useEffect(() => {
-    let active = true;
-
-    void getSession().then((session) => {
-      if (!active) {
-        return;
-      }
-
-      const authenticated = hasAuthenticatedUser(session);
-      setIsAuthenticated(authenticated);
-      setUserDisplayName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
-
-      if (!authenticated) {
-        setIsPro(false);
-        return;
-      }
-
-      void readUserSettings()
-        .then((settings) => {
-          if (active) {
-            applyUserSettings(settings);
-          }
-        })
-        .catch(() => undefined);
-
-      void readUserPlan()
-        .then((planIsPro) => {
-          if (active) {
-            setIsPro(planIsPro);
-          }
-        })
-        .catch(() => undefined);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [applyUserSettings]);
-
-  function clearSessionThen(action: () => void) {
-    void clearTestSession()
-      .catch(() => undefined)
-      .finally(action);
-  }
-
-  function handleSignIn() {
-    clearSessionThen(() => {
-      window.location.assign(PAGE_PATHS.SIGN_IN);
-    });
-  }
+  const isPro = plan?.isPro === true;
+  const showNonProQuota = isAuthenticated
+    && plan !== null
+    && !plan.isPro
+    && plan.dailySubmittedQuota !== null;
 
   return (
     <Navbar shouldHideOnScroll height={52} maxWidth="full" position="sticky">
@@ -105,6 +51,13 @@ export default function AppBar() {
       </NavbarBrand>
 
       <NavbarContent justify="end">
+        {showNonProQuota ? (
+          <NavbarItem>
+            <span className="text-foreground-500 text-xs tabular-nums">
+              {plan.dailySubmittedCount}/{plan.dailySubmittedQuota}
+            </span>
+          </NavbarItem>
+        ) : null}
         <NavbarItem>
           {isAuthenticated ? (
             <Link

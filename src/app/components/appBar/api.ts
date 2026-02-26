@@ -1,26 +1,20 @@
 import { API_PATHS } from "@/lib/config/paths";
 
-type UserPlanResponse = {
-  isPro?: unknown;
+export type UserPlan = {
+  isPro: boolean;
+  dailySubmittedCount: number;
+  dailySubmittedQuota: number | null;
 };
 
-function parseUserPlanResponse(payload: unknown): boolean {
-  if (!payload || typeof payload !== "object") {
-    return false;
-  }
-
-  return (payload as UserPlanResponse).isPro === true;
-}
-
-export async function readUserPlan(): Promise<boolean> {
+export async function readUserPlan(): Promise<UserPlan | null> {
   const response = await fetch(API_PATHS.USER_PLAN, {
     cache: "no-store",
     method: "GET",
   });
 
   if (!response.ok) {
-    return false;
+    return null;
   }
 
-  return parseUserPlanResponse((await response.json()) as unknown);
+  return (await response.json()) as UserPlan;
 }

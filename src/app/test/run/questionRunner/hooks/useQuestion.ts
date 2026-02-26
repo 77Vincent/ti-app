@@ -2,6 +2,7 @@
 
 import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
+import { notifyUserPlanRefresh } from "@/lib/events/userPlan";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { fetchQuestion } from "../api";
 import { QuestionRunnerApiError } from "../api/error";
@@ -219,6 +220,7 @@ export function useQuestion({
         submittedCount: prev.submittedCount + 1,
         correctCount: prev.correctCount + (isCurrentAnswerCorrect ? 1 : 0),
       }));
+      notifyUserPlanRefresh();
       setPendingDifficulty(nextDifficulty);
       return;
     }

@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { readAuthenticatedUserId, isUserPro } = vi.hoisted(() => ({
+const { readAuthenticatedUserId, isUserPro, readUserDailySubmittedCount } = vi.hoisted(() => ({
   readAuthenticatedUserId: vi.fn(),
   isUserPro: vi.fn(),
+  readUserDailySubmittedCount: vi.fn(),
 }));
 
 vi.mock("@/app/api/test/session/auth", () => ({
@@ -13,12 +14,17 @@ vi.mock("@/lib/billing/pro", () => ({
   isUserPro,
 }));
 
+vi.mock("@/app/api/test/session/repo/user", () => ({
+  readUserDailySubmittedCount,
+}));
+
 import { GET } from "./route";
 
 describe("user plan route", () => {
   beforeEach(() => {
     readAuthenticatedUserId.mockReset();
     isUserPro.mockReset();
+    readUserDailySubmittedCount.mockReset();
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -31,18 +37,40 @@ describe("user plan route", () => {
       error: "Unauthorized.",
     });
     expect(isUserPro).not.toHaveBeenCalled();
+    expect(readUserDailySubmittedCount).not.toHaveBeenCalled();
   });
 
-  it("returns pro status for authenticated users", async () => {
+  it("returns plan payload for pro users", async () => {
     readAuthenticatedUserId.mockResolvedValueOnce("user-1");
     isUserPro.mockResolvedValueOnce(true);
+    readUserDailySubmittedCount.mockResolvedValueOnce(25);
 
     const response = await GET();
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       isPro: true,
+      dailySubmittedCount: 25,
+      dailySubmittedQuota: null,
     });
     expect(isUserPro).toHaveBeenCalledWith("user-1");
+    expect(readUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
+  });
+
+  it("returns plan payload for non-pro users", async () => {
+    readAuthenticatedUserId.mockResolvedValueOnce("user-1");
+    isUserPro.mockResolvedValueOnce(false);
+    readUserDailySubmittedCount.mockResolvedValueOnce(7);
+
+    const response = await GET();
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      isPro: false,
+      dailySubmittedCount: 7,
+      dailySubmittedQuota: 30,
+    });
+    expect(isUserPro).toHaveBeenCalledWith("user-1");
+    expect(readUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
   });
 });
