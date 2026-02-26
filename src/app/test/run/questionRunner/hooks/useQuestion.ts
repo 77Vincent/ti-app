@@ -9,7 +9,7 @@ import { recordQuestionResult } from "../session/storage";
 import type {
   Question as QuestionType,
   QuestionOptionIndex,
-  QuestionSignInDemand,
+  QuestionAccessDemand,
 } from "../types";
 import {
   INITIAL_QUESTION_SESSION_UI_STATE,
@@ -34,8 +34,8 @@ export type UseQuestionResult = {
   difficulty: string;
   submittedCount: number;
   correctCount: number;
-  isSignInRequired: boolean;
-  signInDemand: QuestionSignInDemand | null;
+  isAccessBlocked: boolean;
+  accessDemand: QuestionAccessDemand | null;
   hasSubmitted: boolean;
   selectedOptionIndexes: QuestionOptionIndex[];
   selectOption: (
@@ -62,8 +62,8 @@ export function useQuestion({
   );
   const [sessionDifficulty, setSessionDifficulty] = useState(difficulty);
   const [pendingDifficulty, setPendingDifficulty] = useState<string | null>(null);
-  const [signInDemand, setSignInDemand] =
-    useState<QuestionSignInDemand | null>(null);
+  const [accessDemand, setAccessDemand] =
+    useState<QuestionAccessDemand | null>(null);
   const [uiState, dispatchUiState] = useReducer(
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
@@ -72,7 +72,7 @@ export function useQuestion({
   const { selectedOptionIndexes, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
   const readQuestionLimitDemand = useCallback(
-    (error: unknown): QuestionSignInDemand | null => {
+    (error: unknown): QuestionAccessDemand | null => {
       if (!(error instanceof QuestionRunnerApiError)) {
         return null;
       }
@@ -87,6 +87,22 @@ export function useQuestion({
       return null;
     },
     [],
+  );
+  const handleDemandError = useCallback(
+    (
+      error: unknown,
+      onNonDemandError: (nextError: unknown) => void,
+    ): boolean => {
+      const questionLimitDemand = readQuestionLimitDemand(error);
+      if (!questionLimitDemand) {
+        onNonDemandError(error);
+        return false;
+      }
+
+      setAccessDemand(questionLimitDemand);
+      return true;
+    },
+    [readQuestionLimitDemand],
   );
   const showLoadError = useCallback((error: unknown) => {
     toast.error(error, {
@@ -108,7 +124,7 @@ export function useQuestion({
   );
 
   const applyLoadedQuestion = useCallback((nextQuestion: QuestionType): void => {
-    setSignInDemand(null);
+    setAccessDemand(null);
     setSelection([]);
     dispatchUiState({
       type: "questionApplied",
@@ -131,12 +147,7 @@ export function useQuestion({
         applyLoadedQuestion(loadedQuestion);
       } catch (error) {
         if (!cancelled) {
-          const questionLimitDemand = readQuestionLimitDemand(error);
-          if (questionLimitDemand) {
-            setSignInDemand(questionLimitDemand);
-          } else {
-            showLoadError(error);
-          }
+          handleDemandError(error, showLoadError);
         }
       } finally {
         if (!cancelled) {
@@ -153,8 +164,8 @@ export function useQuestion({
   }, [
     applyLoadedQuestion,
     difficulty,
+    handleDemandError,
     loadQuestion,
-    readQuestionLimitDemand,
     showLoadError,
   ]);
 
@@ -192,16 +203,13 @@ export function useQuestion({
           nextDifficulty = updatedSession.difficulty;
         }
       } catch (error) {
-        const questionLimitDemand = readQuestionLimitDemand(error);
-        if (questionLimitDemand) {
-          setSignInDemand(questionLimitDemand);
+        if (handleDemandError(error, (nextError) => {
+          toast.error(nextError, {
+            fallbackDescription: "Failed to submit answer.",
+          });
+        })) {
           return;
         }
-
-        toast.error(error, {
-          fallbackDescription: "Failed to submit answer.",
-        });
-        return;
       } finally {
         dispatchUiState({ type: "submitFetchFinished" });
       }
@@ -226,20 +234,16 @@ export function useQuestion({
         setPendingDifficulty(null);
         applyLoadedQuestion(loadedQuestion);
       } catch (error) {
-        const questionLimitDemand = readQuestionLimitDemand(error);
-        if (questionLimitDemand) {
-          setSignInDemand(questionLimitDemand);
+        if (handleDemandError(error, showLoadError)) {
           return;
         }
-
-        showLoadError(error);
       }
     } finally {
       dispatchUiState({ type: "submitFetchFinished" });
     }
   }
 
-  const isSignInRequired = signInDemand !== null;
+  const isAccessBlocked = accessDemand !== null;
   return {
     question,
     isLoadingQuestion,
@@ -247,8 +251,8 @@ export function useQuestion({
     difficulty: sessionDifficulty,
     submittedCount: sessionProgress.submittedCount,
     correctCount: sessionProgress.correctCount,
-    isSignInRequired,
-    signInDemand,
+    isAccessBlocked,
+    accessDemand,
     hasSubmitted,
     selectedOptionIndexes,
     selectOption,

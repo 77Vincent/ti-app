@@ -11,9 +11,9 @@ export type {
   QuestionOptionIndex,
 };
 
-export type SignInDemand = "favorite" | "more_questions" | "upgrade_pro";
-export type QuestionSignInDemand = Extract<
-  SignInDemand,
+export type AccessDemand = "favorite" | "more_questions" | "upgrade_pro";
+export type QuestionAccessDemand = Extract<
+  AccessDemand,
   "more_questions" | "upgrade_pro"
 >;
 

@@ -23,11 +23,11 @@ describe("QuestionRunner", () => {
       <QuestionRunner
         hasSubmitted={false}
         isLoadingQuestion={false}
-        isSignInRequired={false}
+        isAccessBlocked={false}
         question={MOCK_QUESTION}
         selectOption={() => {}}
         selectedOptionIndexes={[]}
-        signInDemand={null}
+        accessDemand={null}
       />,
     );
 
@@ -39,11 +39,11 @@ describe("QuestionRunner", () => {
       <QuestionRunner
         hasSubmitted={false}
         isLoadingQuestion={false}
-        isSignInRequired
+        isAccessBlocked
         question={MOCK_QUESTION}
         selectOption={() => {}}
         selectedOptionIndexes={[]}
-        signInDemand="more_questions"
+        accessDemand="more_questions"
       />,
     );
 
@@ -56,11 +56,11 @@ describe("QuestionRunner", () => {
       <QuestionRunner
         hasSubmitted={false}
         isLoadingQuestion={false}
-        isSignInRequired
+        isAccessBlocked
         question={MOCK_QUESTION}
         selectOption={() => {}}
         selectedOptionIndexes={[]}
-        signInDemand="upgrade_pro"
+        accessDemand="upgrade_pro"
       />,
     );
 

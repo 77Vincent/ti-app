@@ -3,7 +3,7 @@
 import type {
   QuestionOptionIndex,
   QuestionRunnerProps,
-  SignInDemand,
+  AccessDemand,
 } from "../types";
 import { Button, Card, CardBody, Tooltip } from "@heroui/react";
 import { FavoriteIconButton } from "@/app/components";
@@ -44,8 +44,8 @@ export default function QuestionWrapper({
     difficulty: sessionDifficulty,
     submittedCount,
     correctCount,
-    isSignInRequired: isQuestionSignInRequired,
-    signInDemand: questionSignInDemand,
+    isAccessBlocked: isQuestionAccessBlocked,
+    accessDemand: questionAccessDemand,
     hasSubmitted,
     selectedOptionIndexes,
     selectOption,
@@ -79,22 +79,22 @@ export default function QuestionWrapper({
     void syncFavoriteState(question);
   }, [question, syncFavoriteState]);
 
-  let signInDemand: SignInDemand | null = null;
-  if (isQuestionSignInRequired) {
-    signInDemand = questionSignInDemand;
+  let accessDemand: AccessDemand | null = null;
+  if (isQuestionAccessBlocked) {
+    accessDemand = questionAccessDemand;
   } else if (question && favoriteAuthRequiredQuestionId === question.id) {
-    signInDemand = "favorite";
+    accessDemand = "favorite";
   }
-  const isSignInRequired = signInDemand !== null;
+  const isAccessBlocked = accessDemand !== null;
   const canTriggerNext =
     !isFavoriteSubmitting &&
-    !isSignInRequired &&
+    !isAccessBlocked &&
     Boolean(question) &&
     hasSubmitted &&
     !isSubmitting;
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
-    if (!question || isFavoriteSubmitting || isSignInRequired) {
+    if (!question || isFavoriteSubmitting || isAccessBlocked) {
       return;
     }
 
@@ -109,7 +109,7 @@ export default function QuestionWrapper({
       submitWrongMidiSfxRef.current?.play();
     }
     void submit(nextSelection);
-  }, [isFavoriteSubmitting, isSignInRequired, question, selectOption, submit]);
+  }, [isAccessBlocked, isFavoriteSubmitting, question, selectOption, submit]);
 
   const handleNextPress = useCallback(() => {
     if (!canTriggerNext) {
@@ -162,7 +162,7 @@ export default function QuestionWrapper({
         <div className="flex items-center gap-3">
           <FavoriteIconButton
             isFavorite={isFavorite}
-            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isSignInRequired}
+            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
             isLoading={isFavoriteSubmitting || isFavoriteSyncing}
             onPress={() => toggleFavorite(question)}
             size="sm"
@@ -189,11 +189,11 @@ export default function QuestionWrapper({
           <QuestionRunner
             hasSubmitted={hasSubmitted}
             isLoadingQuestion={isLoadingQuestion}
-            isSignInRequired={isSignInRequired}
+            isAccessBlocked={isAccessBlocked}
             question={question}
             selectOption={handleOptionSelect}
             selectedOptionIndexes={selectedOptionIndexes}
-            signInDemand={signInDemand}
+            accessDemand={accessDemand}
           />
         </CardBody>
       </Card>
