@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
+import { BRAND_TITLE } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
 import HomeStartButton from "./components/HomeStartButton";
 
-const SITE_NAME = "Ti";
-const HOME_TITLE = "Ti | Learning Through Testing";
+const SITE_NAME = BRAND_TITLE;
+const HOME_TITLE = `${BRAND_TITLE} | Learning Through Testing`;
 const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
 const HOME_CANONICAL_PATH = "/";
 

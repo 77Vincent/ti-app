@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { LoaderCircle, User, User2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BRAND_TITLE } from "@/lib/config/brand";
 import QuotaBattery from "./QuotaBattery";
 import { useAppBarSession } from "./useAppBarSession";
 import { useSignInNavigation } from "./useSignInNavigation";
@@ -24,6 +25,7 @@ const ThemeToggleButton = dynamic(
     ),
   { ssr: false },
 );
+const LOGO_ALT = `${BRAND_TITLE} Logo`;
 
 export default function AppBar() {
   const { isAuthLoading, isAuthenticated, plan, userDisplayName } = useAppBarSession();
@@ -41,12 +43,12 @@ export default function AppBar() {
     <Navbar shouldHideOnScroll height={52} maxWidth="full" position="sticky">
       <NavbarBrand>
         <Link
-          title="Ti"
+          title={BRAND_TITLE}
           className="hover:brightness-125 flex items-center gap-2"
           href={PAGE_PATHS.HOME}
-          aria-label="Ti"
+          aria-label={BRAND_TITLE}
         >
-          <Image src="/logo.svg" alt="Ti Logo" width={44} height={40} />
+          <Image src="/logo.svg" alt={LOGO_ALT} width={44} height={40} />
           {isAuthenticated && isPro ? "Pro" : null}
         </Link>
       </NavbarBrand>

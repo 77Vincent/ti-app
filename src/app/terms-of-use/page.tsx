@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { withBrandTitle } from "@/lib/config/brand";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | Ti",
+  title: withBrandTitle("Terms of Use"),
 };
 
 export default function TermsOfUsePage() {

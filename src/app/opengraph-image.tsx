@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { BRAND_TITLE } from "@/lib/config/brand";
 import { readSiteUrl } from "@/lib/config/siteUrl";
 
 export const size = {
@@ -10,11 +11,12 @@ export const contentType = "image/png";
 
 export default function OpenGraphImage() {
   const logoUrl = `${readSiteUrl()}/logo.svg`;
+  const logoAlt = `${BRAND_TITLE} Logo`;
 
   return new ImageResponse(
     (
       <img
-        alt="Ti Logo"
+        alt={logoAlt}
         height={size.height}
         src={logoUrl}
         style={{
