@@ -79,7 +79,7 @@ export default function UpgradeToProButton() {
               isLoading={isLoading}
               onPress={handleUpgrade}
             >
-              Continue
+              Continue with 3 USD / month
             </Button>
           </ModalFooter>
         </ModalContent>
