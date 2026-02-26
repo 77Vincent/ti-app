@@ -28,14 +28,3 @@ export type ResolveQuestionResult = {
   correctOptionIndexes: number[];
   hasTechnicalIssue: boolean;
 };
-
-export type AnalyzeQuestionRequest = Pick<
-  Question,
-  "prompt" | "options"
-> & {
-  subcategory: QuestionSubcategory;
-};
-
-export type AnalyzeQuestionResult = {
-  isAccepted: boolean;
-};

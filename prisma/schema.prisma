@@ -101,17 +101,6 @@ model QuestionRaw {
   updatedAt     DateTime @updatedAt
 }
 
-model QuestionCandidate {
-  id            String   @id
-  subjectId     String
-  subcategoryId String
-  prompt        String   @db.Text
-  difficulty    String
-  options       Json
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
 model FavoriteQuestion {
   id         String   @id @default(cuid())
   userId     String
