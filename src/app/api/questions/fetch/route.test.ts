@@ -213,6 +213,34 @@ describe("fetch question route", () => {
     expect(updateTestSessionCurrentQuestionId).not.toHaveBeenCalled();
   });
 
+  it("returns 429 when authenticated non-pro reaches daily cap on initial question load", async () => {
+    readAuthenticatedUserId.mockResolvedValueOnce("user-1");
+    isUserPro.mockResolvedValueOnce(false);
+    readUserDailySubmittedCount.mockResolvedValueOnce(
+      MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT,
+    );
+    const route = await import("./route");
+
+    const response = await route.POST(
+      new Request("http://localhost/api/questions/fetch", {
+        body: JSON.stringify({
+          ...VALID_INPUT,
+          sessionId: "session-1",
+        }),
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toEqual({
+      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited questions.`,
+    });
+    expect(readTestSessionQuestionState).not.toHaveBeenCalled();
+    expect(readQuestionFromPoolById).not.toHaveBeenCalled();
+    expect(readRandomQuestionFromPool).not.toHaveBeenCalled();
+    expect(updateTestSessionCurrentQuestionId).not.toHaveBeenCalled();
+  });
+
   it("reads daily count for authenticated pro users and still returns next question", async () => {
     readAuthenticatedUserId.mockResolvedValueOnce("user-1");
     isUserPro.mockResolvedValueOnce(true);

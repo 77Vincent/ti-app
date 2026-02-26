@@ -71,10 +71,21 @@ export function useQuestion({
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIndexes, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
-  const isQuestionLimitError = useCallback(
-    (error: unknown) =>
-      error instanceof QuestionRunnerApiError &&
-      (error.status === 403 || error.status === 429),
+  const readQuestionLimitDemand = useCallback(
+    (error: unknown): QuestionSignInDemand | null => {
+      if (!(error instanceof QuestionRunnerApiError)) {
+        return null;
+      }
+
+      if (error.status === 403) {
+        return "more_questions";
+      }
+      if (error.status === 429) {
+        return "upgrade_pro";
+      }
+
+      return null;
+    },
     [],
   );
   const showLoadError = useCallback((error: unknown) => {
@@ -120,7 +131,12 @@ export function useQuestion({
         applyLoadedQuestion(loadedQuestion);
       } catch (error) {
         if (!cancelled) {
-          showLoadError(error);
+          const questionLimitDemand = readQuestionLimitDemand(error);
+          if (questionLimitDemand) {
+            setSignInDemand(questionLimitDemand);
+          } else {
+            showLoadError(error);
+          }
         }
       } finally {
         if (!cancelled) {
@@ -138,6 +154,7 @@ export function useQuestion({
     applyLoadedQuestion,
     difficulty,
     loadQuestion,
+    readQuestionLimitDemand,
     showLoadError,
   ]);
 
@@ -175,8 +192,9 @@ export function useQuestion({
           nextDifficulty = updatedSession.difficulty;
         }
       } catch (error) {
-        if (isQuestionLimitError(error)) {
-          setSignInDemand("more_questions");
+        const questionLimitDemand = readQuestionLimitDemand(error);
+        if (questionLimitDemand) {
+          setSignInDemand(questionLimitDemand);
           return;
         }
 
@@ -208,8 +226,9 @@ export function useQuestion({
         setPendingDifficulty(null);
         applyLoadedQuestion(loadedQuestion);
       } catch (error) {
-        if (isQuestionLimitError(error)) {
-          setSignInDemand("more_questions");
+        const questionLimitDemand = readQuestionLimitDemand(error);
+        if (questionLimitDemand) {
+          setSignInDemand(questionLimitDemand);
           return;
         }
 

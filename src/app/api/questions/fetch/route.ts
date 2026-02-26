@@ -31,13 +31,7 @@ function withShuffledOptions(
   return shuffleQuestionOptions(question, seedKey);
 }
 
-async function readDailyLimitResponse(
-  isNext: boolean,
-): Promise<NextResponse | null> {
-  if (!isNext) {
-    return null;
-  }
-
+async function readDailyLimitResponse(): Promise<NextResponse | null> {
   const userId = await readAuthenticatedUserId();
   if (!userId) {
     return null;
@@ -83,7 +77,7 @@ export async function POST(request: Request) {
     const next = (body as { next?: unknown } | null)?.next;
     const isNext = next === true;
 
-    const dailyLimitResponse = await readDailyLimitResponse(isNext);
+    const dailyLimitResponse = await readDailyLimitResponse();
     if (dailyLimitResponse) {
       return dailyLimitResponse;
     }

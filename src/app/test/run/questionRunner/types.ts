@@ -11,7 +11,10 @@ export type {
   QuestionOptionIndex,
 };
 
-export type SignInDemand = "favorite" | "more_questions";
-export type QuestionSignInDemand = Extract<SignInDemand, "more_questions">;
+export type SignInDemand = "favorite" | "more_questions" | "upgrade_pro";
+export type QuestionSignInDemand = Extract<
+  SignInDemand,
+  "more_questions" | "upgrade_pro"
+>;
 
 export type QuestionRunnerProps = TestSession;

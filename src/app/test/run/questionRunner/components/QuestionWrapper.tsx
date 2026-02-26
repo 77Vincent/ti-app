@@ -135,7 +135,7 @@ export default function QuestionWrapper({
   ]);
 
   return (
-    <div className="w-full max-w-2xl space-y-3">
+    <div className="w-full max-w-3xl space-y-3">
       <MidiSfx
         presetId="submitCorrect"
         ref={submitCorrectMidiSfxRef}

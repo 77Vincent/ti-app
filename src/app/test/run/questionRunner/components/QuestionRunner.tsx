@@ -17,9 +17,19 @@ type QuestionProps = {
   selectOption: (optionIndex: QuestionOptionIndex) => void;
 };
 
-const SIGN_IN_CTA_LABEL_BY_DEMAND: Record<SignInDemand, string> = {
-  favorite: "Sign in to save favorites",
-  more_questions: "Sign in for more questions",
+const CTA_BY_DEMAND: Record<SignInDemand, { label: string; href: string }> = {
+  favorite: {
+    label: "Sign in to save favorites",
+    href: PAGE_PATHS.SIGN_IN,
+  },
+  more_questions: {
+    label: "Sign in for more questions",
+    href: PAGE_PATHS.SIGN_IN,
+  },
+  upgrade_pro: {
+    label: "Upgrade to Pro for unlimited daily quota",
+    href: PAGE_PATHS.DASHBOARD_ACCOUNT,
+  },
 };
 
 export default function QuestionRunner({
@@ -32,15 +42,16 @@ export default function QuestionRunner({
   selectOption,
 }: QuestionProps) {
   const isLoading = isLoadingQuestion || !question;
+  const cta = signInDemand
+    ? CTA_BY_DEMAND[signInDemand]
+    : { label: "Sign in to continue", href: PAGE_PATHS.SIGN_IN };
 
   return (
     <div className="relative">
       {isSignInRequired ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <Button as={Link} color="primary" href={PAGE_PATHS.SIGN_IN} size="lg">
-            {signInDemand
-              ? SIGN_IN_CTA_LABEL_BY_DEMAND[signInDemand]
-              : "Sign in to continue"}
+          <Button className="shadow-md" as={Link} color="primary" href={cta.href} size="lg">
+            {cta.label}
           </Button>
         </div>
       ) : null}
