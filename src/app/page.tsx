@@ -1,25 +1,11 @@
-"use client";
-
-import { hasAuthenticatedUser } from "@/app/auth/sessionState";
+import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
 import { PAGE_PATHS } from "@/lib/config/paths";
-import { Button } from "@heroui/react";
-import { getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import HomeStartButton from "./HomeStartButton";
 
-export default function Home() {
-  const router = useRouter();
-
-  function handleStart() {
-    void getSession().then((session) => {
-      if (hasAuthenticatedUser(session)) {
-        router.push(PAGE_PATHS.DASHBOARD);
-        return;
-      }
-
-      router.push(PAGE_PATHS.TEST);
-    });
-  }
+export default async function Home() {
+  const userId = await readAuthenticatedUserId();
+  const startHref = userId ? PAGE_PATHS.DASHBOARD : PAGE_PATHS.TEST;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -34,9 +20,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Button color="primary" onPress={handleStart} radius="full" size="lg">
-            Start
-          </Button>
+          <HomeStartButton href={startHref} />
         </section>
       </div>
       <Footer />
