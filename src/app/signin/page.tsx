@@ -10,7 +10,7 @@ export default function SignInPage() {
   const GOOGLE_LABEL = "Sign in with Google";
 
   return (
-    <section className="flex min-h-[calc(100dvh-52px)] items-center justify-center">
+    <section className="flex justify-center">
       <Card shadow="sm" className="w-full max-w-md bg-content1/90 backdrop-blur">
         <CardBody className="gap-4 p-8 text-center">
           <h1 className="text-2xl font-semibold">Sign in to Ti</h1>
