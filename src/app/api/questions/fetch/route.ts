@@ -48,7 +48,7 @@ async function readDailyLimitResponse(): Promise<NextResponse | null> {
 
   return NextResponse.json(
     {
-      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited daily quota.`,
+      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited attempts.`,
     },
     { status: 429 },
   );

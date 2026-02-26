@@ -27,7 +27,7 @@ const CTA_BY_DEMAND: Record<AccessDemand, { label: string; href: string }> = {
     href: PAGE_PATHS.SIGN_IN,
   },
   upgrade_pro: {
-    label: "Upgrade to Pro for unlimited daily quota",
+    label: "Upgrade to Pro for unlimited attempts",
     href: PAGE_PATHS.DASHBOARD_ACCOUNT,
   },
 };

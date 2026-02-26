@@ -205,7 +205,7 @@ describe("fetch question route", () => {
 
     expect(response.status).toBe(429);
     await expect(response.json()).resolves.toEqual({
-      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited daily quota.`,
+      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited attempts.`,
     });
     expect(readUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
     expect(isUserPro).toHaveBeenCalledWith("user-1");
@@ -233,7 +233,7 @@ describe("fetch question route", () => {
 
     expect(response.status).toBe(429);
     await expect(response.json()).resolves.toEqual({
-      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited daily quota.`,
+      error: `You have reached the free plan daily limit of ${MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT} submitted questions. Upgrade to Pro for unlimited attempts.`,
     });
     expect(readTestSessionQuestionState).not.toHaveBeenCalled();
     expect(readQuestionFromPoolById).not.toHaveBeenCalled();

@@ -64,7 +64,7 @@ describe("QuestionRunner", () => {
       />,
     );
 
-    expect(markup).toContain("Upgrade to Pro for unlimited daily quota");
+    expect(markup).toContain("Upgrade to Pro for unlimited attempts");
     expect(markup).toContain(`href="${PAGE_PATHS.DASHBOARD_ACCOUNT}"`);
   });
 });
