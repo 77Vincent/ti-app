@@ -6,7 +6,8 @@ import type {
   AccessDemand,
 } from "../types";
 import { Button, Card, CardBody, Tooltip } from "@heroui/react";
-import { FavoriteIconButton } from "@/app/components";
+import { FavoriteIconButton, ReportIssueIconButton } from "@/app/components";
+import { toast } from "@/lib/toast";
 import Mousetrap from "mousetrap";
 import { ChevronRight } from "lucide-react";
 import {
@@ -120,6 +121,14 @@ export default function QuestionWrapper({
     void submit();
   }, [canTriggerNext, submit]);
 
+  const handleReportIssuePress = useCallback(() => {
+    if (!question || isAccessBlocked) {
+      return;
+    }
+
+    toast.info("Issue reporting will be available soon.");
+  }, [isAccessBlocked, question]);
+
   useEffect(() => {
     Mousetrap.bind("enter", (event) => {
       event.preventDefault();
@@ -165,7 +174,10 @@ export default function QuestionWrapper({
             isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
             isLoading={isFavoriteSubmitting || isFavoriteSyncing}
             onPress={() => toggleFavorite(question)}
-            size="sm"
+          />
+          <ReportIssueIconButton
+            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
+            onPress={handleReportIssuePress}
           />
           <Button
             aria-label="Next question"

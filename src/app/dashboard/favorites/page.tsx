@@ -170,7 +170,6 @@ export default function DashboardFavoritesPage() {
                         isFavorite
                         isLoading={removingQuestionIds.has(question.id)}
                         onPress={() => handleUnfavoriteQuestion(question.id)}
-                        size="sm"
                       />
                     </div>
                   </div>

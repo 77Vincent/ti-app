@@ -8,7 +8,6 @@ type FavoriteIconButtonProps = {
   isDisabled?: boolean;
   isLoading?: boolean;
   onPress: ButtonProps["onPress"];
-  size?: ButtonProps["size"];
 };
 
 export default function FavoriteIconButton({
@@ -16,7 +15,6 @@ export default function FavoriteIconButton({
   isDisabled = false,
   isLoading = false,
   onPress,
-  size = "sm",
 }: FavoriteIconButtonProps) {
   return (
     <Button
@@ -27,13 +25,14 @@ export default function FavoriteIconButton({
       isLoading={isLoading}
       onPress={onPress}
       radius="full"
-      size={size}
+      size="sm"
       variant="light"
     >
       <Star
         aria-hidden
         className={isFavorite ? "fill-current" : undefined}
         size={19}
+        strokeWidth={2.5}
       />
     </Button>
   );
