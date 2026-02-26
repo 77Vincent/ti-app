@@ -10,14 +10,10 @@ import {
 import {
   buildResolverSystemPrompt,
   buildResolverUserPrompt,
-  type DifficultyDescriptions,
 } from "./prompt";
 
 export async function requestDeepSeekResolverContent(
   input: ResolveQuestionRequest,
-  difficultyFramework: string,
-  difficultyLadder: readonly string[],
-  difficultyDescriptions: DifficultyDescriptions,
 ): Promise<string> {
   return requestDeepSeekContent(
     getDeepSeekApiKey(),
@@ -25,11 +21,7 @@ export async function requestDeepSeekResolverContent(
     [
       {
         role: "system",
-        content: buildResolverSystemPrompt(
-          difficultyFramework,
-          difficultyLadder,
-          difficultyDescriptions,
-        ),
+        content: buildResolverSystemPrompt(),
       },
       { role: "user", content: buildResolverUserPrompt(input) },
     ],

@@ -4,20 +4,11 @@ import type {
 } from "../types";
 import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 import { requestDeepSeekResolverContent } from "./client";
-import type { DifficultyDescriptions } from "./prompt";
 
 export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
-  difficultyFramework: string,
-  difficultyLadder: readonly string[],
-  difficultyDescriptions: DifficultyDescriptions,
 ): Promise<ResolveQuestionResult> {
-  const content = await requestDeepSeekResolverContent(
-    input,
-    difficultyFramework,
-    difficultyLadder,
-    difficultyDescriptions,
-  );
+  const content = await requestDeepSeekResolverContent(input);
 
   let payload: unknown;
   try {
@@ -40,16 +31,7 @@ export async function resolveQuestionWithAI(
     throw new Error("Resolver response answer index is invalid.");
   }
 
-  const resolvedDifficulty = (payload as Record<string, unknown>).d;
-  if (
-    typeof resolvedDifficulty !== "string" ||
-    !difficultyLadder.includes(resolvedDifficulty)
-  ) {
-    throw new Error("Resolver response difficulty is invalid.");
-  }
-
   return {
     correctOptionIndex: answerIndex,
-    difficulty: resolvedDifficulty,
   };
 }
