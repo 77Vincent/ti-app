@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@heroui/react";
+import { Divider, Link } from "@heroui/react";
 import NextLink from "next/link";
 import { PAGE_PATHS } from "@/lib/config/paths";
 
@@ -9,6 +9,7 @@ export default function Footer() {
     <footer>
       <div className="flex w-full items-center justify-center gap-4 text-sm opacity-70">
         <p>&copy; {new Date().getFullYear()} It</p>
+        <Divider orientation="vertical" className="h-3" />
         <nav aria-label="Legal" className="flex items-center gap-4">
           <Link
             size="sm"
@@ -18,6 +19,7 @@ export default function Footer() {
           >
             Terms of Use
           </Link>
+          <Divider orientation="vertical" className="h-3" />
           <Link
             size="sm"
             as={NextLink}
