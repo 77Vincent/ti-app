@@ -54,10 +54,17 @@ export default function AppBar() {
       <NavbarContent justify="end">
         {showNonProQuota ? (
           <NavbarItem>
-            <QuotaBattery
-              used={plan.dailySubmittedCount}
-              quota={plan.dailySubmittedQuota!}
-            />
+            <Link
+              aria-label="Open account to upgrade to Pro"
+              className="hover:opacity-80 transition-opacity"
+              href={PAGE_PATHS.DASHBOARD_ACCOUNT}
+              title="Open account to upgrade to Pro"
+            >
+              <QuotaBattery
+                used={plan.dailySubmittedCount}
+                quota={plan.dailySubmittedQuota!}
+              />
+            </Link>
           </NavbarItem>
         ) : null}
         <NavbarItem>
