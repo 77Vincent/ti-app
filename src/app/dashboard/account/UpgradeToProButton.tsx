@@ -1,6 +1,15 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@heroui/react";
+import { Infinity } from "lucide-react";
 import { useState } from "react";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { toast } from "@/lib/toast";
@@ -13,6 +22,7 @@ type CheckoutResponse = {
 
 export default function UpgradeToProButton() {
   const [isLoading, setIsLoading] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   async function handleUpgrade(): Promise<void> {
     if (isLoading) {
@@ -49,8 +59,31 @@ export default function UpgradeToProButton() {
   }
 
   return (
-    <Button color="primary" isLoading={isLoading} onPress={handleUpgrade}>
-      Upgrade to Pro
-    </Button>
+    <>
+      <Button color="primary" onPress={onOpen}>
+        Upgrade to Pro
+      </Button>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalHeader>Upgrade to Pro</ModalHeader>
+          <ModalBody>
+            <p className="inline-flex items-center gap-2">
+              <Infinity aria-hidden="true" strokeWidth={2.5} size={20} />
+              Unlimited attempts
+            </p>
+          </ModalBody>
+          <ModalFooter className="w-full">
+            <Button
+              className="w-full"
+              color="primary"
+              isLoading={isLoading}
+              onPress={handleUpgrade}
+            >
+              Continue
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
