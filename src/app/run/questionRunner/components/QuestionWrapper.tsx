@@ -7,7 +7,6 @@ import type {
 } from "../types";
 import { Button, Card, CardBody, Textarea, Tooltip } from "@heroui/react";
 import { FavoriteIconButton, ReportIssueIconButton } from "@/app/components";
-import Mousetrap from "mousetrap";
 import { ChevronRight } from "lucide-react";
 import {
   useCallback,
@@ -17,6 +16,7 @@ import {
 } from "react";
 import QuestionRunner from "./QuestionRunner";
 import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
+import { useEnterToNext } from "../hooks/useEnterToNext";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { isAnswerCorrect } from "../utils/evaluation";
@@ -157,19 +157,7 @@ export default function QuestionWrapper({
       ? reportIssueDraft.text
       : "";
 
-  useEffect(() => {
-    Mousetrap.bind("enter", (event) => {
-      event.preventDefault();
-      handleNextPress();
-      return false;
-    });
-
-    return () => {
-      Mousetrap.unbind("enter");
-    };
-  }, [
-    handleNextPress,
-  ]);
+  useEnterToNext(handleNextPress);
 
   return (
     <div className="w-full max-w-3xl space-y-3">
