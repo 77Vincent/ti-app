@@ -9,29 +9,43 @@ export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
 ): Promise<ResolveQuestionResult> {
   const content = await requestDeepSeekResolverContent(input);
-
-  let payload: unknown;
-  try {
-    payload = JSON.parse(content);
-  } catch {
-    throw new Error("Resolver response was not valid JSON.");
+  const rawOutput = content.trim();
+  if (rawOutput.length === 0) {
+    throw new Error("Resolver response answer indexes are invalid.");
   }
 
-  if (!payload || typeof payload !== "object") {
-    throw new Error("Resolver response shape is invalid.");
+  if (rawOutput === "-1") {
+    return {
+      correctOptionIndexes: [],
+      hasTechnicalIssue: true,
+    };
   }
 
-  const answerIndex = (payload as Record<string, unknown>).a;
-  if (
-    typeof answerIndex !== "number" ||
-    !Number.isInteger(answerIndex) ||
-    answerIndex < 0 ||
-    answerIndex >= QUESTION_OPTION_COUNT
-  ) {
-    throw new Error("Resolver response answer index is invalid.");
+  const answerIndexes = rawOutput.split("").map((char) => {
+    if (!/^\d$/.test(char)) {
+      throw new Error("Resolver response answer indexes are invalid.");
+    }
+
+    return Number.parseInt(char, 10);
+  });
+
+  if (answerIndexes.some((index) => index < 0 || index >= QUESTION_OPTION_COUNT)) {
+    throw new Error("Resolver response answer indexes are invalid.");
+  }
+
+  const uniqueAnswerIndexes = new Set(answerIndexes);
+  if (uniqueAnswerIndexes.size !== answerIndexes.length) {
+    throw new Error("Resolver response answer indexes are invalid.");
+  }
+
+  if (answerIndexes.some((index, position) => (
+    position > 0 && answerIndexes[position - 1] >= index
+  ))) {
+    throw new Error("Resolver response answer indexes are invalid.");
   }
 
   return {
-    correctOptionIndex: answerIndex,
+    correctOptionIndexes: answerIndexes,
+    hasTechnicalIssue: false,
   };
 }

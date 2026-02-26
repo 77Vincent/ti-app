@@ -25,7 +25,8 @@ export type Question = {
 export type ResolveQuestionRequest = Pick<Question, "prompt" | "options">;
 
 export type ResolveQuestionResult = {
-  correctOptionIndex: number;
+  correctOptionIndexes: number[];
+  hasTechnicalIssue: boolean;
 };
 
 export type AnalyzeQuestionRequest = Pick<

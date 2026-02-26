@@ -11,8 +11,10 @@ export type ResolveNextRawQuestionResult =
   | {
       status: "passed" | "rejected";
       questionId: string;
-      resolvedCorrectOptionIndex: number;
+      resolvedCorrectOptionIndexes: number[];
       isCorrectOptionIndexMatch: boolean;
+      hasMultipleCorrectOptions: boolean;
+      hasTechnicalIssue: boolean;
     };
 
 export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRawQuestionResult> {
@@ -28,9 +30,15 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
     },
   );
 
-  const resolvedCorrectOptionIndex = resolution.correctOptionIndex;
-  const isCorrectOptionIndexMatch = resolvedCorrectOptionIndex === 0;
-  const isPassed = isCorrectOptionIndexMatch;
+  const resolvedCorrectOptionIndexes = [...resolution.correctOptionIndexes]
+    .sort((a, b) => a - b);
+  const hasTechnicalIssue = resolution.hasTechnicalIssue;
+  const hasMultipleCorrectOptions = resolvedCorrectOptionIndexes.length > 1;
+  const isCorrectOptionIndexMatch =
+    !hasTechnicalIssue &&
+    resolvedCorrectOptionIndexes.length === 1 &&
+    resolvedCorrectOptionIndexes[0] === 0;
+  const isPassed = !hasTechnicalIssue && isCorrectOptionIndexMatch;
 
   if (isPassed) {
     await persistQuestionToCandidate(rawQuestion);
@@ -41,7 +49,9 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
   return {
     status: isPassed ? "passed" : "rejected",
     questionId: rawQuestion.id,
-    resolvedCorrectOptionIndex,
+    resolvedCorrectOptionIndexes,
     isCorrectOptionIndexMatch,
+    hasMultipleCorrectOptions,
+    hasTechnicalIssue,
   };
 }

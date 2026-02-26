@@ -21,13 +21,13 @@ async function main(): Promise<void> {
 
     if (result.status === "passed") {
       process.stdout.write(
-        `Resolved ${result.questionId}: PASSED (answer index: ${result.resolvedCorrectOptionIndex}). Moved to QuestionCandidate.\n`,
+        `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Moved to QuestionCandidate.\n`,
       );
       continue;
     }
 
     process.stdout.write(
-      `Resolved ${result.questionId}: REJECTED (resolved answer index: ${result.resolvedCorrectOptionIndex}).\n`,
+      `Resolved ${result.questionId}: REJECTED (resolved answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}], multiple correct options: ${result.hasMultipleCorrectOptions}, technical issue: ${result.hasTechnicalIssue}).\n`,
     );
   }
 }

@@ -7,8 +7,9 @@ Runtime test flows must read questions from the database only.
 
 Flow:
 - Generator model creates question payloads and writes them into `QuestionRaw`.
-- Resolver model consumes one `QuestionRaw` row at a time, predicts the correct option index, and validates:
-  - predicted correct option index must be `0`
+- Resolver model consumes one `QuestionRaw` row at a time, predicts all correct option indexes (raw text like `0`, `03`, `012`), and validates:
+  - resolver can return `-1` for technical issues (question rejected)
+  - predicted correct option indexes must be exactly `[0]`
 - If validation passes, the row is inserted into `QuestionCandidate`.
 - Analyzer model consumes one `QuestionCandidate` row at a time and quality-checks the question.
 - If analyzer passes, the row is inserted into `QuestionPool`.
