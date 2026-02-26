@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command, InvalidArgumentError } from "commander";
-import { createQuestionCandidatesWithAI } from "./generate";
+import { createQuestionsWithAI } from "./generate";
 import type { GenerateQuestionRequest } from "../types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
 import { persistQuestionsToRaw } from "../repo";
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     );
   }
 
-  const questions = await createQuestionCandidatesWithAI({
+  const questions = await createQuestionsWithAI({
     subcategory: options.subcategory,
     difficulty: options.difficulty,
   });

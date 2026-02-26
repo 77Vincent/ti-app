@@ -15,7 +15,7 @@ function createQuestionId(prompt: string): string {
     .digest(QUESTION_ID_HASH_ENCODING);
 }
 
-export async function createQuestionCandidatesWithAI(
+export async function createQuestionsWithAI(
   input: GenerateQuestionRequest,
 ): Promise<Question[]> {
   const content = await requestDeepSeekGeneratorContent(input);

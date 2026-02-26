@@ -138,7 +138,7 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
--- Merged from prisma/migrations/20260225183000_add_question_raw_and_candidate_tables/migration.sql
+-- Merged from prisma/migrations/20260225183000_add_question_raw_tables/migration.sql
 CREATE TABLE "QuestionRaw" (
     "id" TEXT NOT NULL,
     "subjectId" TEXT NOT NULL,
