@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import { readSiteUrl } from "@/lib/config/siteUrl";
 import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = "It";
@@ -9,14 +10,9 @@ const HOME_TITLE = "It | Learning Through Testing";
 const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
 const HOME_CANONICAL_PATH = "/";
 
-function readSiteUrl(): string {
-  const fallback = "http://localhost:3000";
-  const raw = process.env.NEXT_PUBLIC_APP_URL?.trim() || fallback;
-  return raw.endsWith("/") ? raw.slice(0, -1) : raw;
-}
-
 const SITE_URL = readSiteUrl();
 const HOME_URL = `${SITE_URL}${HOME_CANONICAL_PATH}`;
+const HOME_OG_IMAGE_URL = `${SITE_URL}/opengraph-image`;
 
 export const metadata: Metadata = {
   title: HOME_TITLE,
@@ -30,11 +26,20 @@ export const metadata: Metadata = {
     url: HOME_URL,
     siteName: SITE_NAME,
     type: "website",
+    images: [
+      {
+        url: HOME_OG_IMAGE_URL,
+        width: 1200,
+        height: 630,
+        alt: HOME_TITLE,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
+    images: [HOME_OG_IMAGE_URL],
   },
 };
 
