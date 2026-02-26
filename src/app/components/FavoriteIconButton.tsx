@@ -27,6 +27,7 @@ export default function FavoriteIconButton({
       radius="full"
       size="sm"
       variant="light"
+      title={isFavorite ? "Remove favorite question" : "Favorite question"}
     >
       <Star
         aria-hidden

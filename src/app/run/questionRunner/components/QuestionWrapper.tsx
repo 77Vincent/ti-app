@@ -19,6 +19,7 @@ import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useEnterToNext } from "../hooks/useEnterToNext";
 import { useQuestion } from "../hooks/useQuestion";
 import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
+import { useReportIssueDraft } from "../hooks/useReportIssueDraft";
 import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
@@ -33,15 +34,6 @@ export default function QuestionWrapper({
 }: QuestionRunnerProps) {
   const [favoriteAuthRequiredQuestionId, setFavoriteAuthRequiredQuestionId] =
     useState<string | null>(null);
-  const [reportIssueDraft, setReportIssueDraft] = useState<{
-    questionId: string | null;
-    text: string;
-    isOpen: boolean;
-  }>({
-    questionId: null,
-    text: "",
-    isOpen: false,
-  });
   const submitCorrectMidiSfxRef = useRef<MidiSfxHandle | null>(null);
   const submitWrongMidiSfxRef = useRef<MidiSfxHandle | null>(null);
   const nextActionMidiSfxRef = useRef<MidiSfxHandle | null>(null);
@@ -101,6 +93,10 @@ export default function QuestionWrapper({
     Boolean(question) &&
     hasSubmitted &&
     !isSubmitting;
+  const reportIssueDraft = useReportIssueDraft({
+    questionId: question?.id ?? null,
+    isAccessBlocked,
+  });
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
     if (!question || isFavoriteSubmitting || isAccessBlocked) {
@@ -128,34 +124,6 @@ export default function QuestionWrapper({
     nextActionMidiSfxRef.current?.play();
     void submit();
   }, [canTriggerNext, submit]);
-
-  const handleReportIssuePress = useCallback(() => {
-    if (!question || isAccessBlocked) {
-      return;
-    }
-
-    setReportIssueDraft((previousDraft) => (
-      previousDraft.questionId === question.id
-        ? {
-          ...previousDraft,
-          isOpen: true,
-        }
-        : {
-          isOpen: true,
-          questionId: question.id,
-          text: "",
-        }
-    ));
-  }, [isAccessBlocked, question]);
-  const currentQuestionId = question?.id ?? null;
-  const isCurrentQuestionReportOpen =
-    currentQuestionId !== null &&
-    reportIssueDraft.isOpen &&
-    reportIssueDraft.questionId === currentQuestionId;
-  const currentReportIssueText =
-    currentQuestionId !== null && reportIssueDraft.questionId === currentQuestionId
-      ? reportIssueDraft.text
-      : "";
 
   useEnterToNext(handleNextPress);
 
@@ -193,7 +161,7 @@ export default function QuestionWrapper({
           />
           <ReportIssueIconButton
             isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
-            onPress={handleReportIssuePress}
+            onPress={reportIssueDraft.open}
           />
           <Button
             aria-label="Next question"
@@ -231,23 +199,13 @@ export default function QuestionWrapper({
         subcategoryId={subcategoryId}
       />
 
-      {isCurrentQuestionReportOpen ? (
+      {reportIssueDraft.isOpen ? (
         <Textarea
           aria-label="Report issue details"
           minRows={3}
-          onValueChange={(value) => {
-            if (!question) {
-              return;
-            }
-
-            setReportIssueDraft({
-              isOpen: true,
-              questionId: question.id,
-              text: value,
-            });
-          }}
+          onValueChange={reportIssueDraft.setText}
           placeholder="Describe the issue with this question..."
-          value={currentReportIssueText}
+          value={reportIssueDraft.text}
         />
       ) : null}
     </div>
