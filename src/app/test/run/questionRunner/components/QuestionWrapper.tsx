@@ -178,7 +178,7 @@ export default function QuestionWrapper({
             radius="full"
             size="sm"
           >
-            {isSubmitting ? null : <ChevronRight aria-hidden size={20} />}
+            {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
           </Button>
         </div>
 

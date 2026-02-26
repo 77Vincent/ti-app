@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { User, User2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import QuotaBattery from "./QuotaBattery";
 import { useAppBarSession } from "./useAppBarSession";
 import { useSignInNavigation } from "./useSignInNavigation";
 import { PAGE_PATHS } from "@/lib/config/paths";
@@ -53,9 +54,10 @@ export default function AppBar() {
       <NavbarContent justify="end">
         {showNonProQuota ? (
           <NavbarItem>
-            <span className="text-foreground-500 text-xs tabular-nums">
-              {plan.dailySubmittedCount}/{plan.dailySubmittedQuota}
-            </span>
+            <QuotaBattery
+              used={plan.dailySubmittedCount}
+              quota={plan.dailySubmittedQuota!}
+            />
           </NavbarItem>
         ) : null}
         <NavbarItem>

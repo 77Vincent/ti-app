@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT } from "@/lib/config/testPolicy";
 
 const { readAuthenticatedUserId, isUserPro, readUserDailySubmittedCount } = vi.hoisted(() => ({
   readAuthenticatedUserId: vi.fn(),
@@ -68,7 +69,7 @@ describe("user plan route", () => {
     await expect(response.json()).resolves.toEqual({
       isPro: false,
       dailySubmittedCount: 7,
-      dailySubmittedQuota: 30,
+      dailySubmittedQuota: MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT,
     });
     expect(isUserPro).toHaveBeenCalledWith("user-1");
     expect(readUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
