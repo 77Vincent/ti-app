@@ -149,7 +149,7 @@ export default function DashboardFavoritesPage() {
                       <QuestionBody
                         hasSubmitted
                         markAllIncorrectAsWrong
-                        onSelectOption={() => {}}
+                        onSelectOption={() => { }}
                         question={question}
                         selectedOptionIndexes={[]}
                         showPrompt={false}
@@ -167,6 +167,7 @@ export default function DashboardFavoritesPage() {
                       onKeyDown={(event) => event.stopPropagation()}
                     >
                       <FavoriteIconButton
+                        size="sm"
                         isFavorite
                         isLoading={removingQuestionIds.has(question.id)}
                         onPress={() => handleUnfavoriteQuestion(question.id)}
