@@ -156,35 +156,35 @@ export default function QuestionWrapper({
         </CardBody>
       </Card>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <FavoriteIconButton
-            isFavorite={isFavorite}
-            isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
-            isLoading={isFavoriteSubmitting || isFavoriteSyncing}
-            onPress={() => toggleFavorite(question)}
-          />
+      <Card isBlurred shadow="md" className="border border-2 border-primary">
+        <CardBody className="p-2">
+          <div className="flex items-center justify-between gap-2">
+            <FavoriteIconButton
+              isFavorite={isFavorite}
+              isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
+              isLoading={isFavoriteSubmitting || isFavoriteSyncing}
+              onPress={() => toggleFavorite(question)}
+            />
 
-        </div>
+            <SessionAccuracy
+              correctCount={correctCount}
+              submittedCount={submittedCount}
+            />
 
-        <SessionAccuracy
-          correctCount={correctCount}
-          submittedCount={submittedCount}
-        />
-
-        <Button
-          aria-label="Next question"
-          color="primary"
-          isIconOnly
-          variant="solid"
-          isDisabled={!canTriggerNext}
-          isLoading={isSubmitting}
-          onPress={handleNextPress}
-        >
-          {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
-        </Button>
-      </div>
-
+            <Button
+              aria-label="Next question"
+              color="primary"
+              isIconOnly
+              variant="solid"
+              isDisabled={!canTriggerNext}
+              isLoading={isSubmitting}
+              onPress={handleNextPress}
+            >
+              {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }
