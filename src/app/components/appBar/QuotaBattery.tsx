@@ -14,8 +14,9 @@ type QuotaBatteryProps = {
 };
 
 export default function QuotaBattery({ used, quota }: QuotaBatteryProps) {
+  const remaining = Math.max(quota - used, 0);
   const remainingRatio = quota > 0
-    ? Math.max(0, Math.min((quota - used) / quota, 1))
+    ? Math.max(0, Math.min(remaining / quota, 1))
     : 0;
 
   let Icon: LucideIcon = BatteryWarning;
@@ -33,13 +34,13 @@ export default function QuotaBattery({ used, quota }: QuotaBatteryProps) {
 
   return (
     <div
-      aria-label={`Daily quota ${used} out of ${quota}`}
+      aria-label={`Daily quota ${remaining} left out of ${quota}`}
       className="text-foreground-700 inline-flex flex-col items-center leading-none"
-      title={`daily quota: ${used}/${quota}`}
+      title={`daily quota left: ${remaining}/${quota}`}
     >
       <Icon className={iconClassName} size={20} strokeWidth={2.5} />
       <span className="tabular-nums text-[10px]">
-        {used}/{quota}
+        {remaining}/{quota}
       </span>
     </div>
   );
