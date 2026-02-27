@@ -5,7 +5,7 @@ import type {
   QuestionRunnerProps,
   AccessDemand,
 } from "../types";
-import { Button, Card, CardBody, Tooltip } from "@heroui/react";
+import { Button, Card, CardBody } from "@heroui/react";
 import { FavoriteIconButton } from "@/app/components";
 import { ChevronRight } from "lucide-react";
 import {
@@ -165,29 +165,24 @@ export default function QuestionWrapper({
             onPress={() => toggleFavorite(question)}
           />
 
-          <Tooltip content="Accuracy" placement="right">
-            <span>
-              <SessionAccuracy
-                correctCount={correctCount}
-                submittedCount={submittedCount}
-              />
-            </span>
-          </Tooltip>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button
-            aria-label="Next question"
-            color="primary"
-            variant={hasSubmitted ? "solid" : "light"}
-            isDisabled={!canTriggerNext}
-            isLoading={isSubmitting}
-            onPress={handleNextPress}
-            size="sm"
-          >
-            {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
-          </Button>
-        </div>
+        <SessionAccuracy
+          correctCount={correctCount}
+          submittedCount={submittedCount}
+        />
+
+        <Button
+          aria-label="Next question"
+          color="primary"
+          isIconOnly
+          variant="solid"
+          isDisabled={!canTriggerNext}
+          isLoading={isSubmitting}
+          onPress={handleNextPress}
+        >
+          {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
+        </Button>
       </div>
 
     </div>
