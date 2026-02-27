@@ -10,11 +10,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: PRIVACY_POLICY_URL,
   },
-  openGraph: {
-    title: withBrandTitle("Privacy Policy"),
-    url: PRIVACY_POLICY_URL,
-    type: "website",
-  },
 };
 
 export default function PrivacyPolicyPage() {

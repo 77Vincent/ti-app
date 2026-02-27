@@ -10,11 +10,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: TERMS_OF_USE_URL,
   },
-  openGraph: {
-    title: withBrandTitle("Terms of Use"),
-    url: TERMS_OF_USE_URL,
-    type: "website",
-  },
 };
 
 export default function TermsOfUsePage() {
