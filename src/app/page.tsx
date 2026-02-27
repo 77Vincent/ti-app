@@ -82,7 +82,7 @@ export default async function Home() {
           <section className="space-y-6 text-center sm:space-y-10">
             <div className="space-y-3">
               <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-                {BRAND_TAGLINE}
+                Learning through <span className="text-primary">Testing</span>
               </h1>
               <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
                 {HOME_DESCRIPTION}
