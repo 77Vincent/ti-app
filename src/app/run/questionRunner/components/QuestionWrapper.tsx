@@ -157,15 +157,6 @@ export default function QuestionWrapper({
       </Card>
 
       <div className="flex items-center justify-between gap-2">
-        <Tooltip content="Accuracy" placement="right">
-          <span>
-            <SessionAccuracy
-              correctCount={correctCount}
-              submittedCount={submittedCount}
-            />
-          </span>
-        </Tooltip>
-
         <div className="flex items-center gap-3">
           <FavoriteIconButton
             isFavorite={isFavorite}
@@ -173,6 +164,18 @@ export default function QuestionWrapper({
             isLoading={isFavoriteSubmitting || isFavoriteSyncing}
             onPress={() => toggleFavorite(question)}
           />
+
+          <Tooltip content="Accuracy" placement="right">
+            <span>
+              <SessionAccuracy
+                correctCount={correctCount}
+                submittedCount={submittedCount}
+              />
+            </span>
+          </Tooltip>
+        </div>
+
+        <div className="flex items-center gap-3">
           <Button
             aria-label="Next question"
             color="primary"
@@ -181,7 +184,6 @@ export default function QuestionWrapper({
             isDisabled={!canTriggerNext}
             isLoading={isSubmitting}
             onPress={handleNextPress}
-            radius="full"
             size="sm"
           >
             {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
