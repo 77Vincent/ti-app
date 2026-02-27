@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import { withBrandTitle } from "@/lib/config/brand";
+import { PAGE_PATHS } from "@/lib/config/paths";
+import { readSiteUrl } from "@/lib/config/siteUrl";
+
+const PRIVACY_POLICY_URL = `${readSiteUrl()}${PAGE_PATHS.PRIVACY_POLICY}`;
 
 export const metadata: Metadata = {
   title: withBrandTitle("Privacy Policy"),
+  alternates: {
+    canonical: PRIVACY_POLICY_URL,
+  },
+  openGraph: {
+    title: withBrandTitle("Privacy Policy"),
+    url: PRIVACY_POLICY_URL,
+    type: "website",
+  },
 };
 
 export default function PrivacyPolicyPage() {

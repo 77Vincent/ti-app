@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import { withBrandTitle } from "@/lib/config/brand";
+import { PAGE_PATHS } from "@/lib/config/paths";
+import { readSiteUrl } from "@/lib/config/siteUrl";
+
+const TERMS_OF_USE_URL = `${readSiteUrl()}${PAGE_PATHS.TERMS_OF_USE}`;
 
 export const metadata: Metadata = {
   title: withBrandTitle("Terms of Use"),
+  alternates: {
+    canonical: TERMS_OF_USE_URL,
+  },
+  openGraph: {
+    title: withBrandTitle("Terms of Use"),
+    url: TERMS_OF_USE_URL,
+    type: "website",
+  },
 };
 
 export default function TermsOfUsePage() {
