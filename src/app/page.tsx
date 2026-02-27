@@ -8,6 +8,9 @@ import {
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
+import { formatPercent } from "@/app/dashboard/performance/format";
+import StatsCards from "@/app/dashboard/performance/StatsCards";
+import { readGlobalDashboardSummaryStats } from "@/app/dashboard/performance/statsData";
 import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = BRAND_TITLE;
@@ -54,6 +57,26 @@ export default async function Home() {
     redirect(PAGE_PATHS.DASHBOARD);
   }
 
+  const stats = await readGlobalDashboardSummaryStats();
+  const statItems = [
+    {
+      label: "Total submitted questions",
+      value: stats.submittedCount.toLocaleString(),
+    },
+    {
+      label: "Total correct answer",
+      value: stats.correctCount.toLocaleString(),
+    },
+    {
+      label: "Total wrong answer",
+      value: stats.wrongCount.toLocaleString(),
+    },
+    {
+      label: "Average accuracy",
+      value: formatPercent(stats.accuracyRatePercent),
+    },
+  ] as const;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -72,8 +95,8 @@ export default async function Home() {
         }}
         type="application/ld+json"
       />
-      <div className="flex flex-1 items-center justify-center">
-        <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8 px-4 text-center">
+      <div className="mx-auto w-full max-w-6xl flex-1 space-y-8 px-4 pb-8 pt-10 sm:space-y-10 sm:pt-14">
+        <section className="space-y-6 text-center sm:space-y-8">
           <div className="space-y-3">
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
               {BRAND_TAGLINE}
@@ -84,6 +107,10 @@ export default async function Home() {
           </div>
 
           <HomeStartButton href={PAGE_PATHS.TEST} />
+        </section>
+
+        <section className="space-y-4">
+          <StatsCards items={statItems} />
         </section>
       </div>
       <Footer />

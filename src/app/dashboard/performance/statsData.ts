@@ -2,7 +2,12 @@ import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import type { SubjectEnum } from "@/lib/meta";
 import { roundToOneDecimalPercent } from "./format";
-import { readDashboardSessions } from "./repo";
+import {
+  readDashboardAggregates,
+  readDashboardTotals,
+  type DashboardAggregates,
+  type DashboardTotals,
+} from "./repo";
 
 export type DashboardStats = {
   submittedCount: number;
@@ -135,39 +140,23 @@ export async function readDashboardStats(): Promise<DashboardStatsPayload> {
     throw new Error("Expected authenticated user in dashboard stats");
   }
 
-  const sessions = await readDashboardSessions(userId);
-  const {
-    submittedCount,
-    correctCount,
-    submittedCountBySubcategoryId,
-    correctCountBySubcategoryId,
-  } =
-    sessions.reduce(
-      (acc, session) => {
-        acc.submittedCount += session.submittedCount;
-        acc.correctCount += session.correctCount;
+  const aggregates = await readDashboardAggregates({ userId });
+  return buildDashboardStatsPayload(aggregates);
+}
 
-        const current = acc.submittedCountBySubcategoryId.get(session.subcategoryId) ?? 0;
-        acc.submittedCountBySubcategoryId.set(
-          session.subcategoryId,
-          current + session.submittedCount,
-        );
-        const currentCorrectCount =
-          acc.correctCountBySubcategoryId.get(session.subcategoryId) ?? 0;
-        acc.correctCountBySubcategoryId.set(
-          session.subcategoryId,
-          currentCorrectCount + session.correctCount,
-        );
+export async function readGlobalDashboardStats(): Promise<DashboardStatsPayload> {
+  const aggregates = await readDashboardAggregates();
+  return buildDashboardStatsPayload(aggregates);
+}
 
-        return acc;
-      },
-      {
-        submittedCount: 0,
-        correctCount: 0,
-        submittedCountBySubcategoryId: new Map<string, number>(),
-        correctCountBySubcategoryId: new Map<string, number>(),
-      },
-    );
+export async function readGlobalDashboardSummaryStats(): Promise<DashboardStats> {
+  const totals = await readDashboardTotals();
+  return buildDashboardStats(totals);
+}
+
+function buildDashboardStats(totals: DashboardTotals): DashboardStats {
+  const submittedCount = totals.submittedCount;
+  const correctCount = totals.correctCount;
   const wrongCount = submittedCount - correctCount;
   const accuracyRatePercent =
     submittedCount === 0
@@ -175,15 +164,38 @@ export async function readDashboardStats(): Promise<DashboardStatsPayload> {
       : roundToOneDecimalPercent(correctCount / submittedCount);
 
   return {
-    stats: {
-      submittedCount,
-      correctCount,
-      wrongCount,
-      accuracyRatePercent,
-    },
+    submittedCount,
+    correctCount,
+    wrongCount,
+    accuracyRatePercent,
+  };
+}
+
+function buildDashboardStatsPayload(
+  aggregates: DashboardAggregates,
+): DashboardStatsPayload {
+  const submittedCountBySubcategoryId = new Map<string, number>(
+    aggregates.subcategoryStats.map((item) => [
+      item.subcategoryId,
+      item.submittedCount,
+    ]),
+  );
+  const correctCountBySubcategoryId = new Map<string, number>(
+    aggregates.subcategoryStats.map((item) => [
+      item.subcategoryId,
+      item.correctCount,
+    ]),
+  );
+  const stats = buildDashboardStats({
+    submittedCount: aggregates.submittedCount,
+    correctCount: aggregates.correctCount,
+  });
+
+  return {
+    stats,
     subcategorySubmissionStats: buildSubcategorySubmissionStats(
       submittedCountBySubcategoryId,
-      submittedCount,
+      stats.submittedCount,
     ),
     subcategoryAccuracyStats: buildSubcategoryAccuracyStats(
       submittedCountBySubcategoryId,
