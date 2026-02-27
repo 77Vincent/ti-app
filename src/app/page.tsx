@@ -77,23 +77,25 @@ export default async function Home() {
         }}
         type="application/ld+json"
       />
-      <div className="mx-auto w-full max-w-6xl flex-1 space-y-8 px-4 pb-8 pt-10 sm:space-y-10 sm:pt-14">
-        <section className="space-y-6 text-center sm:space-y-8">
-          <div className="space-y-3">
-            <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-              {BRAND_TAGLINE}
-            </h1>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
-              {HOME_DESCRIPTION}
-            </p>
-          </div>
+      <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center px-4 py-8 sm:py-12">
+        <div className="w-full space-y-8 sm:space-y-10">
+          <section className="space-y-6 text-center sm:space-y-8">
+            <div className="space-y-3">
+              <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
+                {BRAND_TAGLINE}
+              </h1>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-default-500">
+                {HOME_DESCRIPTION}
+              </p>
+            </div>
 
-          <HomeStartButton href={PAGE_PATHS.TEST} />
-        </section>
+            <HomeStartButton href={PAGE_PATHS.TEST} />
+          </section>
 
-        <section className="space-y-4">
-          <StatsCards items={statItems} />
-        </section>
+          <section className="space-y-4">
+            <StatsCards items={statItems} />
+          </section>
+        </div>
       </div>
       <Footer />
     </div>
