@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { readTestSession } from "@/app/run/questionRunner/session/storage";
 import { getInitialDifficultyForSubcategory } from "@/lib/difficulty";
 import { SUBCATEGORIES, type SubcategoryEnum } from "@/lib/meta";
+import { readUserPlan } from "@/lib/plan/api";
 import { toast } from "@/lib/toast";
 import { updateTestSessionDifficulty } from "./api";
 
@@ -41,24 +42,29 @@ export function useDifficultyAdjustments() {
       INITIAL_STATE.hasSessionBySubcategory,
     );
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+  const [isPro, setIsPro] = useState(false);
   const [updatingSubcategoryId, setUpdatingSubcategoryId] =
     useState<SubcategoryEnum | null>(null);
 
   useEffect(() => {
     let active = true;
 
-    void Promise.all(
-      SUBCATEGORIES.map((subcategory) =>
-        readTestSession({
-          subjectId: subcategory.subjectId,
-          subcategoryId: subcategory.id,
-        }),
+    void Promise.all([
+      Promise.all(
+        SUBCATEGORIES.map((subcategory) =>
+          readTestSession({
+            subjectId: subcategory.subjectId,
+            subcategoryId: subcategory.id,
+          }),
+        ),
       ),
-    )
-      .then((sessions) => {
+      readUserPlan().catch(() => null),
+    ])
+      .then(([sessions, plan]) => {
         if (!active) {
           return;
         }
+        setIsPro(plan?.isPro === true);
 
         const {
           difficultyBySubcategory: nextDifficulty,
@@ -82,6 +88,7 @@ export function useDifficultyAdjustments() {
         if (active) {
           const { hasSessionBySubcategory: nextAvailability } = buildInitialState();
           setHasSessionBySubcategory(nextAvailability);
+          setIsPro(false);
         }
       })
       .finally(() => {
@@ -151,6 +158,7 @@ export function useDifficultyAdjustments() {
     difficultyBySubcategory,
     hasSessionBySubcategory,
     isLoadingSessions,
+    isPro,
     updatingSubcategoryId,
     hasAnyAdjustableSession,
     handleDifficultyChange,

@@ -10,6 +10,7 @@ export default function DifficultyAdjustSection() {
     difficultyBySubcategory,
     hasSessionBySubcategory,
     isLoadingSessions,
+    isPro,
     updatingSubcategoryId,
     hasAnyAdjustableSession,
     handleDifficultyChange,
@@ -47,7 +48,7 @@ export default function DifficultyAdjustSection() {
                   className="w-28"
                   color="primary"
                   disallowEmptySelection
-                  isDisabled={!isAdjustable || isUpdating}
+                  isDisabled={!isPro || !isAdjustable || isUpdating}
                   isLoading={isUpdating}
                   selectedKeys={new Set([selectedDifficulty])}
                   size="sm"

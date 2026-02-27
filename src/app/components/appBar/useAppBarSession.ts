@@ -3,8 +3,8 @@
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { USER_PLAN_REFRESH_EVENT } from "@/lib/events/userPlan";
+import { readUserPlan, type UserPlan } from "@/lib/plan/api";
 import { hasAuthenticatedUser } from "../../auth/sessionState";
-import { readUserPlan, type UserPlan } from "./api";
 
 type UseAppBarSessionResult = {
   isAuthLoading: boolean;
