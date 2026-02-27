@@ -8,7 +8,7 @@ import {
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
-import { readGlobalDashboardSummaryStats } from "@/lib/stats/data";
+import { readGlobalSummaryStats } from "@/lib/stats/data";
 import { formatPercent } from "@/lib/stats/percent";
 import HomeStartButton from "./components/HomeStartButton";
 
@@ -56,7 +56,7 @@ export default async function Home() {
     redirect(PAGE_PATHS.DASHBOARD);
   }
 
-  const stats = await readGlobalDashboardSummaryStats();
+  const stats = await readGlobalSummaryStats();
   const statItems = [
     {
       label: "Total submitted questions",

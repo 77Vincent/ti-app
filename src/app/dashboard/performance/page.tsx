@@ -1,12 +1,12 @@
 import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
 import SubcategoryAccuracyBars from "./SubcategoryAccuracyBars";
 import { StatsCards } from "@/app/components";
+import { readUserStats } from "@/lib/stats/data";
 import { formatPercent } from "@/lib/stats/percent";
-import { readDashboardStats } from "@/lib/stats/data";
 
 export default async function DashboardPerformancePage() {
   const { stats, subcategorySubmissionStats, subcategoryAccuracyStats } =
-    await readDashboardStats();
+    await readUserStats();
 
   const statItems = [
     {

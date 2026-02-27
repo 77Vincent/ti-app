@@ -1,26 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
-export type DashboardSubcategoryAggregateRow = {
+export type SubcategoryAggregateRow = {
   subcategoryId: string;
   submittedCount: number;
   correctCount: number;
 };
 
-export type DashboardAggregates = {
+export type StatsAggregates = {
   submittedCount: number;
   correctCount: number;
-  subcategoryStats: DashboardSubcategoryAggregateRow[];
+  subcategoryStats: SubcategoryAggregateRow[];
 };
 
-export type DashboardTotals = {
+export type StatsTotals = {
   submittedCount: number;
   correctCount: number;
 };
 
-export async function readDashboardTotals(
+export async function readStatsTotals(
   where?: Prisma.TestSessionWhereInput,
-): Promise<DashboardTotals> {
+): Promise<StatsTotals> {
   const summary = await prisma.testSession.aggregate({
     where,
     _sum: {
@@ -35,11 +35,11 @@ export async function readDashboardTotals(
   };
 }
 
-export async function readDashboardAggregates(
+export async function readStatsAggregates(
   where?: Prisma.TestSessionWhereInput,
-): Promise<DashboardAggregates> {
+): Promise<StatsAggregates> {
   const [totals, subcategoryGroups] = await Promise.all([
-    readDashboardTotals(where),
+    readStatsTotals(where),
     prisma.testSession.groupBy({
       by: ["subcategoryId"],
       where,

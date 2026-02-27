@@ -3,13 +3,13 @@ import type { SubjectEnum } from "@/lib/meta";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import { roundToOneDecimalPercent } from "./percent";
 import {
-  readDashboardAggregates,
-  readDashboardTotals,
-  type DashboardAggregates,
-  type DashboardTotals,
+  readStatsAggregates,
+  readStatsTotals,
+  type StatsAggregates,
+  type StatsTotals,
 } from "./repo";
 
-export type DashboardStats = {
+export type SummaryStats = {
   submittedCount: number;
   correctCount: number;
   wrongCount: number;
@@ -32,8 +32,8 @@ export type SubcategoryAccuracyStat = {
   correctCount: number;
 };
 
-export type DashboardStatsPayload = {
-  stats: DashboardStats;
+export type StatsPayload = {
+  stats: SummaryStats;
   subcategorySubmissionStats: SubcategorySubmissionStat[];
   subcategoryAccuracyStats: SubcategoryAccuracyStat[];
 };
@@ -134,27 +134,27 @@ function buildSubcategoryAccuracyStats(
   );
 }
 
-export async function readDashboardStats(): Promise<DashboardStatsPayload> {
+export async function readUserStats(): Promise<StatsPayload> {
   const userId = await readAuthenticatedUserId();
   if (!userId) {
-    throw new Error("Expected authenticated user in dashboard stats");
+    throw new Error("Expected authenticated user in stats");
   }
 
-  const aggregates = await readDashboardAggregates({ userId });
-  return buildDashboardStatsPayload(aggregates);
+  const aggregates = await readStatsAggregates({ userId });
+  return buildStatsPayload(aggregates);
 }
 
-export async function readGlobalDashboardStats(): Promise<DashboardStatsPayload> {
-  const aggregates = await readDashboardAggregates();
-  return buildDashboardStatsPayload(aggregates);
+export async function readGlobalStats(): Promise<StatsPayload> {
+  const aggregates = await readStatsAggregates();
+  return buildStatsPayload(aggregates);
 }
 
-export async function readGlobalDashboardSummaryStats(): Promise<DashboardStats> {
-  const totals = await readDashboardTotals();
-  return buildDashboardStats(totals);
+export async function readGlobalSummaryStats(): Promise<SummaryStats> {
+  const totals = await readStatsTotals();
+  return buildSummaryStats(totals);
 }
 
-function buildDashboardStats(totals: DashboardTotals): DashboardStats {
+function buildSummaryStats(totals: StatsTotals): SummaryStats {
   const submittedCount = totals.submittedCount;
   const correctCount = totals.correctCount;
   const wrongCount = submittedCount - correctCount;
@@ -171,9 +171,9 @@ function buildDashboardStats(totals: DashboardTotals): DashboardStats {
   };
 }
 
-function buildDashboardStatsPayload(
-  aggregates: DashboardAggregates,
-): DashboardStatsPayload {
+function buildStatsPayload(
+  aggregates: StatsAggregates,
+): StatsPayload {
   const submittedCountBySubcategoryId = new Map<string, number>(
     aggregates.subcategoryStats.map((item) => [
       item.subcategoryId,
@@ -186,7 +186,7 @@ function buildDashboardStatsPayload(
       item.correctCount,
     ]),
   );
-  const stats = buildDashboardStats({
+  const stats = buildSummaryStats({
     submittedCount: aggregates.submittedCount,
     correctCount: aggregates.correctCount,
   });
