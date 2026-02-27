@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer, StatsCards } from "@/app/components";
 import {
+  BRAND_DESCRIPTION,
   BRAND_TAGLINE,
   BRAND_TITLE,
+  HOME_DESCRIPTION,
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
@@ -14,7 +16,6 @@ import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = BRAND_TITLE;
 const HOME_TITLE = `${BRAND_TITLE} | ${BRAND_TAGLINE}`;
-const HOME_DESCRIPTION = "Infinite high-quality questions for adaptive learning.";
 const HOME_CANONICAL_PATH = "/";
 
 const SITE_URL = readSiteUrl();
@@ -23,13 +24,13 @@ const HOME_OG_IMAGE_URL = `${SITE_URL}/opengraph-image`;
 
 export const metadata: Metadata = {
   title: HOME_TITLE,
-  description: HOME_DESCRIPTION,
+  description: BRAND_DESCRIPTION,
   alternates: {
     canonical: HOME_URL,
   },
   openGraph: {
     title: HOME_TITLE,
-    description: HOME_DESCRIPTION,
+    description: BRAND_DESCRIPTION,
     url: HOME_URL,
     siteName: SITE_NAME,
     type: "website",
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: HOME_TITLE,
-    description: HOME_DESCRIPTION,
+    description: BRAND_DESCRIPTION,
     images: [HOME_OG_IMAGE_URL],
   },
 };
@@ -65,7 +66,7 @@ export default async function Home() {
     name: SITE_NAME,
     applicationCategory: "EducationalApplication",
     operatingSystem: "Any",
-    description: HOME_DESCRIPTION,
+    description: BRAND_DESCRIPTION,
     url: HOME_URL,
   };
 

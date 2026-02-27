@@ -4,7 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import { BRAND_TAGLINE, BRAND_TITLE } from "@/lib/config/brand";
+import { BRAND_DESCRIPTION, BRAND_TITLE } from "@/lib/config/brand";
 import { readSiteUrl } from "@/lib/config/siteUrl";
 import { AppBar } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
@@ -14,7 +14,7 @@ import UserSettingsBootstrap from "./components/UserSettingsBootstrap";
 export const metadata: Metadata = {
   metadataBase: new URL(readSiteUrl()),
   title: BRAND_TITLE,
-  description: BRAND_TAGLINE,
+  description: BRAND_DESCRIPTION,
   manifest: "/manifest.webmanifest",
 };
 
