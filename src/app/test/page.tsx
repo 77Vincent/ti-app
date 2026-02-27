@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function TestPage() {
   return (
-    <section className="mx-auto">
+    <section className="sm:mx-auto">
       <TestsPanel />
     </section>
   );
