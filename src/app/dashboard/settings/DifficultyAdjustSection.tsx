@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, SelectItem } from "@heroui/react";
+import { Chip, Select, SelectItem } from "@heroui/react";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "@/lib/difficulty";
 import { getSubjectIcon, SUBCATEGORIES } from "@/lib/meta";
 import { useDifficultyAdjustments } from "./useDifficultyAdjustments";
@@ -18,7 +18,12 @@ export default function DifficultyAdjustSection() {
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <span className="font-semibold">Difficulty adjust</span>
+      <div className="inline-flex items-center gap-2">
+        <span className="font-semibold">Difficulty adjust</span>
+        <Chip color="warning" size="sm" variant="flat">
+          <span className="font-semibold"> Pro </span>
+        </Chip>
+      </div>
 
       {isLoadingSessions ? (
         <p className="text-default-500 text-sm">Loading...</p>
