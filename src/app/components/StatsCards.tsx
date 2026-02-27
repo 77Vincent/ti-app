@@ -41,8 +41,8 @@ export default function StatsCards({ items }: StatsCardsProps) {
         return (
           <Card isBlurred key={item.label} shadow="md" className="border border-2 border-primary">
             <CardBody className="flex-row items-center justify-between gap-3 px-4 py-3 sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-              <p className="text-sm text-default-500">{item.label}</p>
-              <p className="text-xl font-semibold sm:text-2xl">
+              <p className="text-default-500">{item.label}</p>
+              <p className="text-xl font-bold sm:text-2xl">
                 <CountUp
                   key={`${item.label}-${item.value}`}
                   start={0}

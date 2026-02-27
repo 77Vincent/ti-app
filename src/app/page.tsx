@@ -78,10 +78,9 @@ export default async function Home() {
         }}
         type="application/ld+json"
       />
-      <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center px-4 py-8 sm:py-12">
-        <div className="w-full space-y-8 sm:space-y-10">
-          <section className="space-y-6 text-center sm:space-y-10">
-            <div className="space-y-3">
+      <div className="mx-auto flex flex-col w-full max-w-6xl flex-1 items-center justify-between py-8 px-2">
+          <section className="mt-6 sm:mt-10 space-y-6 text-center">
+            <div className="space-y-4">
               <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
                 Learning through <span className="text-primary">Testing</span>
               </h1>
@@ -93,10 +92,9 @@ export default async function Home() {
             <HomeStartButton href={PAGE_PATHS.TEST} />
           </section>
 
-          <section className="space-y-4">
+          <section className="w-full space-y-4">
             <StatsCards items={statItems} />
           </section>
-        </div>
       </div>
     </div>
   );
