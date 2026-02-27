@@ -29,7 +29,6 @@ Rules:
 - the correct answer must always be o[0].
 - explanations in o should be clear and consistent with correctness.
 - the option explanation should clearly and concise explain the reason.
-- for pronunciation-only beginner questions, explanations may be empty strings.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
 - there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.
@@ -41,7 +40,8 @@ export const GENERATOR_LANGUAGE_QUESTION_STYLE_BLOCK = `
 Question styles:
 1. selecting the correct word/phrase/sentence to fill in the blank in the prompt. No need to explicitly tell or hint the test taker to fill in the blank, showing the blank is sufficient. The blank should be represented by "___" (three underscores) in the prompt.
 2. selecting the correct interpretation of the prompt.
-3. a dialog is given as the prompt, and the question is to select the correct next line in the dialog.
+3. a realistic dialog is given as the prompt, and the question is to select the correct next line in the dialog.
+4. for pronunciation-only questions, explanations may be empty strings.
 `.trim();
 
 export function buildDifficultyTargetPrompt(
