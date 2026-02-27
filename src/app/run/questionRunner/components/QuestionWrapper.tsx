@@ -179,7 +179,6 @@ export default function QuestionWrapper({
           <Button
             aria-label="Next question"
             color="primary"
-            isIconOnly
             variant={hasSubmitted ? "solid" : "light"}
             isDisabled={!canTriggerNext}
             isLoading={isSubmitting}
