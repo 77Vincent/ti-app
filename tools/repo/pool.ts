@@ -25,8 +25,15 @@ export async function persistQuestionRawToPool(
 }
 
 export async function takeNextQuestionPool(): Promise<QuestionPool | null> {
+  const count = await prisma.questionPool.count();
+  if (count === 0) {
+    return null;
+  }
+
+  const skip = Math.floor(Math.random() * count);
   return prisma.questionPool.findFirst({
     orderBy: { id: "asc" },
+    skip,
   });
 }
 

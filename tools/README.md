@@ -11,7 +11,7 @@ Flow:
   - resolver can return `-1` for technical issues (question rejected)
   - predicted correct option indexes must be exactly `[0]`
 - If validation passes, the row is inserted into `QuestionPool`.
-- Resolver can also scan existing `QuestionPool` rows with the same validation rule and immediately delete rejected rows.
+- Resolver can also continuously sample existing `QuestionPool` rows with the same validation rule and immediately delete rejected rows.
 
 Environment variables:
 - `AI_API_KEY` (required)
@@ -26,7 +26,7 @@ Fixed models (not configurable):
 CLI usage:
 - `npm run tool:question-generate -- --subcategory english --difficulty A1`
 - `npm run tool:question-resolve` (processes `QuestionRaw` rows until empty)
-- `npm run tool:question-resolve -- --source pool` (processes `QuestionPool` rows until empty and deletes rejected rows)
+- `npm run tool:question-resolve -- --source pool` (continuously samples `QuestionPool` rows and deletes rejected rows; stop manually)
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`

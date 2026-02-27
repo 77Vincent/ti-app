@@ -18,7 +18,7 @@ help:
 	@echo "  make clean-deps Remove node_modules"
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make question-resolve   Resolve QuestionRaw rows until empty and move passed ones to QuestionPool"
-	@echo "  make question-resolve-pool   Resolve QuestionPool rows until empty and delete rejected ones"
+	@echo "  make question-resolve-pool   Continuously sample QuestionPool and delete rejected rows (stop manually)"
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
