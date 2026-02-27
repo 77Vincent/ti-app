@@ -40,7 +40,7 @@ export default function AppBar() {
     && plan.dailySubmittedQuota !== null;
 
   return (
-    <Navbar shouldHideOnScroll height={52} maxWidth="full" position="sticky">
+    <Navbar height={52} maxWidth="full" position="sticky">
       <NavbarBrand>
         <Link
           title={BRAND_TITLE}
