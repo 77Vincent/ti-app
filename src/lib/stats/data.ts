@@ -1,5 +1,5 @@
-import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import type { SubjectEnum } from "@/lib/meta";
+import type { Prisma } from "@prisma/client";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import { roundToOneDecimalPercent } from "./percent";
 import {
@@ -134,18 +134,10 @@ function buildSubcategoryAccuracyStats(
   );
 }
 
-export async function readUserStats(): Promise<StatsPayload> {
-  const userId = await readAuthenticatedUserId();
-  if (!userId) {
-    throw new Error("Expected authenticated user in stats");
-  }
-
-  const aggregates = await readStatsAggregates({ userId });
-  return buildStatsPayload(aggregates);
-}
-
-export async function readGlobalStats(): Promise<StatsPayload> {
-  const aggregates = await readStatsAggregates();
+export async function readStats(
+  where?: Prisma.TestSessionWhereInput,
+): Promise<StatsPayload> {
+  const aggregates = await readStatsAggregates(where);
   return buildStatsPayload(aggregates);
 }
 
