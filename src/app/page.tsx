@@ -8,8 +8,8 @@ import {
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
+import { buildStatsCardItems } from "@/lib/stats/cards";
 import { readGlobalSummaryStats } from "@/lib/stats/data";
-import { formatPercent } from "@/lib/stats/percent";
 import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = BRAND_TITLE;
@@ -57,24 +57,7 @@ export default async function Home() {
   }
 
   const stats = await readGlobalSummaryStats();
-  const statItems = [
-    {
-      label: "Total submitted questions",
-      value: stats.submittedCount.toLocaleString(),
-    },
-    {
-      label: "Total correct answer",
-      value: stats.correctCount.toLocaleString(),
-    },
-    {
-      label: "Total wrong answer",
-      value: stats.wrongCount.toLocaleString(),
-    },
-    {
-      label: "Average accuracy",
-      value: formatPercent(stats.accuracyRatePercent),
-    },
-  ] as const;
+  const statItems = buildStatsCardItems(stats);
 
   const structuredData = {
     "@context": "https://schema.org",

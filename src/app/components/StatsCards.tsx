@@ -1,14 +1,10 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/react";
-
-type StatsItem = {
-  label: string;
-  value: string;
-};
+import type { StatsCardItem } from "@/lib/stats/cards";
 
 type StatsCardsProps = {
-  items: readonly StatsItem[];
+  items: readonly StatsCardItem[];
 };
 
 export default function StatsCards({ items }: StatsCardsProps) {
