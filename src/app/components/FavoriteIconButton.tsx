@@ -32,7 +32,7 @@ export default function FavoriteIconButton({
       <Star
         aria-hidden
         className={isFavorite ? "fill-current" : undefined}
-        size={19}
+        size={20}
         strokeWidth={2.5}
       />
     </Button>
