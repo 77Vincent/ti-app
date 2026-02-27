@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
-import { Footer } from "@/app/components";
+import { Footer, StatsCards } from "@/app/components";
 import {
   BRAND_TAGLINE,
   BRAND_TITLE,
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
-import { formatPercent } from "@/app/dashboard/performance/format";
-import StatsCards from "@/app/dashboard/performance/StatsCards";
+import { formatPercent } from "@/lib/stats/percent";
 import { readGlobalDashboardSummaryStats } from "@/app/dashboard/performance/statsData";
 import HomeStartButton from "./components/HomeStartButton";
 

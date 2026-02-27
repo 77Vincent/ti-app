@@ -2,7 +2,7 @@
 
 import { Card, CardBody } from "@heroui/react";
 import { getSubjectIcon, type SubjectEnum } from "@/lib/meta";
-import { formatPercent } from "./format";
+import { formatPercent } from "@/lib/stats/percent";
 
 type SubcategoryAccuracyItem = {
   label: string;

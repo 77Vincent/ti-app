@@ -1,7 +1,7 @@
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { SUBCATEGORIES } from "@/lib/meta/subcategories";
 import type { SubjectEnum } from "@/lib/meta";
-import { roundToOneDecimalPercent } from "./format";
+import { roundToOneDecimalPercent } from "@/lib/stats/percent";
 import {
   readDashboardAggregates,
   readDashboardTotals,

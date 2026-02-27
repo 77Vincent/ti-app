@@ -1,7 +1,7 @@
-import StatsCards from "./StatsCards";
 import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
 import SubcategoryAccuracyBars from "./SubcategoryAccuracyBars";
-import { formatPercent } from "./format";
+import { StatsCards } from "@/app/components";
+import { formatPercent } from "@/lib/stats/percent";
 import { readDashboardStats } from "./statsData";
 
 export default async function DashboardPerformancePage() {
