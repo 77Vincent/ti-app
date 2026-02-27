@@ -137,6 +137,25 @@ export default function QuestionWrapper({
         ref={nextActionMidiSfxRef}
       />
 
+      <SessionDifficultyMilestone
+        difficulty={sessionDifficulty}
+        subcategoryId={subcategoryId}
+      />
+
+      <Card shadow="sm" className="border border-2 border-primary">
+        <CardBody>
+          <QuestionRunner
+            hasSubmitted={hasSubmitted}
+            isLoadingQuestion={isLoadingQuestion}
+            isAccessBlocked={isAccessBlocked}
+            question={question}
+            selectOption={handleOptionSelect}
+            selectedOptionIndexes={selectedOptionIndexes}
+            accessDemand={accessDemand}
+          />
+        </CardBody>
+      </Card>
+
       <div className="flex items-center justify-between gap-2">
         <Tooltip content="Accuracy" placement="right">
           <span>
@@ -168,27 +187,8 @@ export default function QuestionWrapper({
             {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
           </Button>
         </div>
-
       </div>
 
-      <Card shadow="sm" className="border border-2 border-primary">
-        <CardBody className="p-4">
-          <QuestionRunner
-            hasSubmitted={hasSubmitted}
-            isLoadingQuestion={isLoadingQuestion}
-            isAccessBlocked={isAccessBlocked}
-            question={question}
-            selectOption={handleOptionSelect}
-            selectedOptionIndexes={selectedOptionIndexes}
-            accessDemand={accessDemand}
-          />
-        </CardBody>
-      </Card>
-
-      <SessionDifficultyMilestone
-        difficulty={sessionDifficulty}
-        subcategoryId={subcategoryId}
-      />
     </div>
   );
 }
