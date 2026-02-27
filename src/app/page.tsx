@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { Footer } from "@/app/components";
 import {
@@ -49,7 +50,10 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const userId = await readAuthenticatedUserId();
-  const startHref = userId ? PAGE_PATHS.DASHBOARD : PAGE_PATHS.TEST;
+  if (userId) {
+    redirect(PAGE_PATHS.DASHBOARD);
+  }
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -79,7 +83,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <HomeStartButton href={startHref} />
+          <HomeStartButton href={PAGE_PATHS.TEST} />
         </section>
       </div>
       <Footer />
