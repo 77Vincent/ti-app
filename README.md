@@ -62,6 +62,21 @@ Open `http://localhost:3000` in your browser.
 
 All development and deploy commands are wrapped and available in the makefile
 
+## Mobile Wrapper (Capacitor)
+
+This project is wired for Capacitor in hosted-web mode.
+The native app loads your deployed web app URL.
+
+1. Set `CAPACITOR_SERVER_URL` in your environment (`https://...` in production).
+2. Create native projects once:
+   - `make cap-add-ios`
+   - `make cap-add-android`
+3. Sync after config/plugin changes:
+   - `make cap-sync`
+4. Open native IDE projects:
+   - `make cap-open-ios`
+   - `make cap-open-android`
+
 ## Pre-commit Unit Tests
 
 - Git pre-commit hook is enabled via Husky.

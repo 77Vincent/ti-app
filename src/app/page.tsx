@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
-import { Footer, StatsCards } from "@/app/components";
+import { StatsCards } from "@/app/components";
 import {
   BRAND_DESCRIPTION,
   BRAND_TAGLINE,
@@ -98,7 +98,6 @@ export default async function Home() {
           </section>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

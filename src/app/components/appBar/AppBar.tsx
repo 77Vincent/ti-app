@@ -24,6 +24,8 @@ const ThemeToggleButton = dynamic(
   { ssr: false },
 );
 const LOGO_ALT = `${BRAND_TITLE} Logo`;
+const APP_BAR_BASE_HEIGHT = 52;
+const SAFE_AREA_TOP = "env(safe-area-inset-top, 0px)";
 
 export default function AppBar() {
   const { isAuthenticated, plan } = useAppBarSession();
@@ -36,7 +38,15 @@ export default function AppBar() {
     && plan.dailySubmittedQuota !== null;
 
   return (
-    <Navbar height={52} maxWidth="full" position="sticky">
+    <Navbar
+      height={APP_BAR_BASE_HEIGHT}
+      maxWidth="full"
+      position="sticky"
+      style={{
+        paddingTop: SAFE_AREA_TOP,
+        minHeight: `calc(${APP_BAR_BASE_HEIGHT}px + ${SAFE_AREA_TOP})`,
+      }}
+    >
       <NavbarBrand>
         <Link
           title={BRAND_TITLE}

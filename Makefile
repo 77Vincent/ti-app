@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_ALL_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability question-all
+.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability question-all cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
 
 help:
 	@echo "Common commands:"
@@ -24,6 +24,11 @@ help:
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
 	@echo "  make question-probability Generate Probability questions for A..C (GAISE II)"
 	@echo "  make question-all      Generate English, Chinese, Japanese, and Probability questions"
+	@echo "  make cap-add-ios       Create iOS native project via Capacitor"
+	@echo "  make cap-add-android   Create Android native project via Capacitor"
+	@echo "  make cap-sync          Sync Capacitor config/assets/plugins"
+	@echo "  make cap-open-ios      Open iOS project in Xcode"
+	@echo "  make cap-open-android  Open Android project in Android Studio"
 	@echo "  make up 	  	 Start development environment with Docker Compose"
 	@echo "  make reset      Reset the database with Prisma migrate"
 
@@ -91,6 +96,21 @@ question-all:
 		$(MAKE) question-japanese || exit 1; \
 		$(MAKE) question-probability || exit 1; \
 	done
+
+cap-add-ios:
+	$(NPM) run cap:add:ios
+
+cap-add-android:
+	$(NPM) run cap:add:android
+
+cap-sync:
+	$(NPM) run cap:sync
+
+cap-open-ios:
+	$(NPM) run cap:open:ios
+
+cap-open-android:
+	$(NPM) run cap:open:android
 
 up:
 	docker-compose up -d
