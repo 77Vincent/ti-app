@@ -4,7 +4,7 @@ import { Command, InvalidArgumentError } from "commander";
 import { createQuestionsWithAI } from "./generate";
 import type { GenerateQuestionRequest } from "../types";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "../../shared/difficultyLadder";
-import { persistQuestionsToRaw } from "../repo";
+import { disconnectRepoPrisma, persistQuestionsToRaw } from "../repo";
 import { loadToolsEnv } from "../utils/env";
 
 function parseSubcategory(
@@ -80,8 +80,16 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${message}\n`);
-  process.exitCode = 1;
-});
+async function run(): Promise<void> {
+  try {
+    await main();
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(`${message}\n`);
+    process.exitCode = 1;
+  } finally {
+    await disconnectRepoPrisma();
+  }
+}
+
+void run();

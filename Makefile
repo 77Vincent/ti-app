@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_ALL_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-english question-chinese question-japanese question-probability question-all
+.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability question-all
 
 help:
 	@echo "Common commands:"
@@ -18,6 +18,7 @@ help:
 	@echo "  make clean-deps Remove node_modules"
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make question-resolve   Resolve QuestionRaw rows until empty and move passed ones to QuestionPool"
+	@echo "  make question-resolve-pool   Resolve QuestionPool rows until empty and delete rejected ones"
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
@@ -59,6 +60,9 @@ question:
 
 question-resolve:
 	$(NPM) run tool:question-resolve
+
+question-resolve-pool:
+	$(NPM) run tool:question-resolve -- --source pool
 
 question-english:
 	for d in A1 A2 B1 B2 C1 C2; do \

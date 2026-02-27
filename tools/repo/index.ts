@@ -1,4 +1,9 @@
-export { persistQuestionRawToPool } from "./pool";
+export {
+  deleteQuestionPoolById,
+  persistQuestionRawToPool,
+  takeNextQuestionPool,
+} from "./pool";
+export { disconnectRepoPrisma } from "./prisma";
 export {
   deleteQuestionRawById,
   persistQuestionsToRaw,

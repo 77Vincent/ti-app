@@ -1,12 +1,14 @@
 import type { QuestionOption } from "../types";
 import { resolveQuestionWithAI } from "./index";
 import {
+  deleteQuestionPoolById,
   deleteQuestionRawById,
   persistQuestionRawToPool,
+  takeNextQuestionPool,
   takeNextQuestionRaw,
 } from "../repo";
 
-export type ResolveNextRawQuestionResult =
+export type ResolveNextQuestionResult =
   | { status: "empty" }
   | {
       status: "passed" | "rejected";
@@ -17,19 +19,19 @@ export type ResolveNextRawQuestionResult =
       hasTechnicalIssue: boolean;
     };
 
-export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRawQuestionResult> {
-  const rawQuestion = await takeNextQuestionRaw();
-  if (!rawQuestion) {
-    return { status: "empty" };
-  }
+type ResolutionCheck = {
+  resolvedCorrectOptionIndexes: number[];
+  isCorrectOptionIndexMatch: boolean;
+  hasMultipleCorrectOptions: boolean;
+  hasTechnicalIssue: boolean;
+  isPassed: boolean;
+};
 
-  const resolution = await resolveQuestionWithAI(
-    {
-      prompt: rawQuestion.prompt,
-      options: rawQuestion.options as unknown as QuestionOption[],
-    },
-  );
-
+async function evaluateQuestion(
+  prompt: string,
+  options: QuestionOption[],
+): Promise<ResolutionCheck> {
+  const resolution = await resolveQuestionWithAI({ prompt, options });
   const resolvedCorrectOptionIndexes = [...resolution.correctOptionIndexes]
     .sort((a, b) => a - b);
   const hasTechnicalIssue = resolution.hasTechnicalIssue;
@@ -40,7 +42,27 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
     resolvedCorrectOptionIndexes[0] === 0;
   const isPassed = !hasTechnicalIssue && isCorrectOptionIndexMatch;
 
-  if (isPassed) {
+  return {
+    resolvedCorrectOptionIndexes,
+    isCorrectOptionIndexMatch,
+    hasMultipleCorrectOptions,
+    hasTechnicalIssue,
+    isPassed,
+  };
+}
+
+export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextQuestionResult> {
+  const rawQuestion = await takeNextQuestionRaw();
+  if (!rawQuestion) {
+    return { status: "empty" };
+  }
+
+  const result = await evaluateQuestion(
+    rawQuestion.prompt,
+    rawQuestion.options as unknown as QuestionOption[],
+  );
+
+  if (result.isPassed) {
     await persistQuestionRawToPool(rawQuestion);
   } else {
     console.log(rawQuestion);
@@ -49,11 +71,37 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
   await deleteQuestionRawById(rawQuestion.id);
 
   return {
-    status: isPassed ? "passed" : "rejected",
+    status: result.isPassed ? "passed" : "rejected",
     questionId: rawQuestion.id,
-    resolvedCorrectOptionIndexes,
-    isCorrectOptionIndexMatch,
-    hasMultipleCorrectOptions,
-    hasTechnicalIssue,
+    resolvedCorrectOptionIndexes: result.resolvedCorrectOptionIndexes,
+    isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
+    hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,
+    hasTechnicalIssue: result.hasTechnicalIssue,
+  };
+}
+
+export async function resolveNextQuestionFromPoolWithAI(): Promise<ResolveNextQuestionResult> {
+  const poolQuestion = await takeNextQuestionPool();
+  if (!poolQuestion) {
+    return { status: "empty" };
+  }
+
+  const result = await evaluateQuestion(
+    poolQuestion.prompt,
+    poolQuestion.options as unknown as QuestionOption[],
+  );
+
+  if (!result.isPassed) {
+    console.log(poolQuestion);
+    await deleteQuestionPoolById(poolQuestion.id);
+  }
+
+  return {
+    status: result.isPassed ? "passed" : "rejected",
+    questionId: poolQuestion.id,
+    resolvedCorrectOptionIndexes: result.resolvedCorrectOptionIndexes,
+    isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
+    hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,
+    hasTechnicalIssue: result.hasTechnicalIssue,
   };
 }

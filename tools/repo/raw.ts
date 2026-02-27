@@ -1,6 +1,7 @@
-import { PrismaClient, type Prisma, type QuestionRaw } from "@prisma/client";
+import type { Prisma, QuestionRaw } from "@prisma/client";
 import { SUBCATEGORIES } from "../../src/lib/meta/subcategories";
 import type { Question, QuestionSubcategory } from "../types";
+import { prisma } from "./prisma";
 
 type PersistQuestionsToRawInput = {
   subcategory: QuestionSubcategory;
@@ -23,46 +24,29 @@ export async function persistQuestionsToRaw(
     return;
   }
 
-  const prisma = new PrismaClient();
   const subjectId = getSubjectId(input.subcategory);
 
-  try {
-    await prisma.questionRaw.createMany({
-      data: input.questions.map((question) => ({
-        id: question.id,
-        subjectId,
-        subcategoryId: input.subcategory,
-        prompt: question.prompt,
-        difficulty: question.difficulty,
-        options: question.options as unknown as Prisma.InputJsonValue,
-      })),
-      skipDuplicates: true,
-    });
-  } finally {
-    await prisma.$disconnect();
-  }
+  await prisma.questionRaw.createMany({
+    data: input.questions.map((question) => ({
+      id: question.id,
+      subjectId,
+      subcategoryId: input.subcategory,
+      prompt: question.prompt,
+      difficulty: question.difficulty,
+      options: question.options as unknown as Prisma.InputJsonValue,
+    })),
+    skipDuplicates: true,
+  });
 }
 
 export async function takeNextQuestionRaw(): Promise<QuestionRaw | null> {
-  const prisma = new PrismaClient();
-
-  try {
-    return await prisma.questionRaw.findFirst({
-      orderBy: { id: "asc" },
-    });
-  } finally {
-    await prisma.$disconnect();
-  }
+  return prisma.questionRaw.findFirst({
+    orderBy: { id: "asc" },
+  });
 }
 
 export async function deleteQuestionRawById(id: string): Promise<void> {
-  const prisma = new PrismaClient();
-
-  try {
-    await prisma.questionRaw.delete({
-      where: { id },
-    });
-  } finally {
-    await prisma.$disconnect();
-  }
+  await prisma.questionRaw.delete({
+    where: { id },
+  });
 }

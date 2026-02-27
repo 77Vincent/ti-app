@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@heroui/react";
+import { Avatar, Link } from "@heroui/react";
 import {
   BarChart3,
   Heart,
@@ -12,7 +12,8 @@ import {
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import type { ReactNode } from "react";
-import { signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { getSession, signOut } from "next-auth/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 
 type DashboardLayoutClientProps = {
@@ -51,6 +52,26 @@ export default function DashboardLayoutClient({
   children,
 }: DashboardLayoutClientProps) {
   const pathname = usePathname();
+  const [avatarImage, setAvatarImage] = useState<string | undefined>(undefined);
+  const [avatarName, setAvatarName] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    void getSession().then((session) => {
+      if (!active) {
+        return;
+      }
+
+      const image = session?.user?.image?.trim();
+      setAvatarImage(image && image.length > 0 ? image : undefined);
+      setAvatarName(session?.user?.name?.trim() || session?.user?.email?.trim() || "User");
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleLogout() {
     void signOut({
@@ -121,7 +142,13 @@ export default function DashboardLayoutClient({
                 className="w-full"
               >
                 <span className="inline-flex items-center cursor-pointer gap-2">
-                  <LogOut aria-hidden size={18} />
+                  <Avatar
+                    color="primary"
+                    icon={<User aria-hidden strokeWidth={2.5} size={18} />}
+                    name={avatarName}
+                    size="sm"
+                    src={avatarImage}
+                  />
                   <span>Logout</span>
                 </span>
               </Link>
