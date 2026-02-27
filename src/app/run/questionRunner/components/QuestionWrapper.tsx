@@ -123,7 +123,7 @@ export default function QuestionWrapper({
   useEnterToNext(handleNextPress);
 
   return (
-    <div className="w-full max-w-3xl space-y-3">
+    <div className="w-full max-w-3xl space-y-3 pb-20 sm:pb-0">
       <MidiSfx
         presetId="submitCorrect"
         ref={submitCorrectMidiSfxRef}
@@ -156,35 +156,40 @@ export default function QuestionWrapper({
         </CardBody>
       </Card>
 
-      <Card isBlurred shadow="md" className="border border-2 border-primary">
-        <CardBody className="p-2">
-          <div className="flex items-center justify-between gap-2">
-            <FavoriteIconButton
-              isFavorite={isFavorite}
-              isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
-              isLoading={isFavoriteSubmitting || isFavoriteSyncing}
-              onPress={() => toggleFavorite(question)}
-            />
+      <div
+        className="fixed inset-x-0 bottom-0 z-30 px-4 pb-2 sm:static sm:z-auto sm:px-0 sm:pb-0"
+        style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 0.5rem)" }}
+      >
+        <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl border border-2 border-primary">
+          <CardBody className="p-2">
+            <div className="flex items-center justify-between gap-2">
+              <FavoriteIconButton
+                isFavorite={isFavorite}
+                isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
+                isLoading={isFavoriteSubmitting || isFavoriteSyncing}
+                onPress={() => toggleFavorite(question)}
+              />
 
-            <SessionAccuracy
-              correctCount={correctCount}
-              submittedCount={submittedCount}
-            />
+              <SessionAccuracy
+                correctCount={correctCount}
+                submittedCount={submittedCount}
+              />
 
-            <Button
-              aria-label="Next question"
-              color="primary"
-              isIconOnly
-              variant="solid"
-              isDisabled={!canTriggerNext}
-              isLoading={isSubmitting}
-              onPress={handleNextPress}
-            >
-              {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
-            </Button>
-          </div>
-        </CardBody>
-      </Card>
+              <Button
+                aria-label="Next question"
+                color="primary"
+                isIconOnly
+                variant="solid"
+                isDisabled={!canTriggerNext}
+                isLoading={isSubmitting}
+                onPress={handleNextPress}
+              >
+                {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
     </div>
   );
 }
