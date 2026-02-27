@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/react";
+import { Check, List, Target, X } from "lucide-react";
 import CountUp from "react-countup";
 import type { StatsCardItem } from "@/lib/stats/cards";
 
@@ -33,15 +34,26 @@ function parseStatValue(value: string): ParsedStatValue {
 }
 
 export default function StatsCards({ items }: StatsCardsProps) {
+  const iconByType = {
+    submitted: List,
+    correct: Check,
+    wrong: X,
+    accuracy: Target,
+  } as const;
+
   return (
     <section className="grid self-start gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => {
         const parsed = parseStatValue(item.value);
+        const Icon = iconByType[item.icon];
 
         return (
           <Card isBlurred key={item.label} shadow="md" className="border border-2 border-primary">
             <CardBody className="flex-row items-center justify-between gap-3 px-4 py-3 sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-              <p className="text-default-500">{item.label}</p>
+              <p className="text-default-600 inline-flex items-center gap-2">
+                <Icon aria-hidden size={20} strokeWidth={2.5} />
+                <span>{item.label}</span>
+              </p>
               <p className="text-xl font-bold sm:text-2xl">
                 <CountUp
                   key={`${item.label}-${item.value}`}
