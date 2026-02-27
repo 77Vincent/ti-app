@@ -9,19 +9,19 @@ export type StatsCardItem = {
 export function buildStatsCardItems(stats: SummaryStats): StatsCardItem[] {
   return [
     {
-      label: "Total submitted questions",
+      label: "Total submitted",
       value: stats.submittedCount.toLocaleString(),
     },
     {
-      label: "Total correct answer",
+      label: "Total correct",
       value: stats.correctCount.toLocaleString(),
     },
     {
-      label: "Total wrong answer",
+      label: "Total wrong",
       value: stats.wrongCount.toLocaleString(),
     },
     {
-      label: "Average accuracy",
+      label: "Accuracy",
       value: formatPercent(stats.accuracyRatePercent),
     },
   ];

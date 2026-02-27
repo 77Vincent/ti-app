@@ -79,7 +79,7 @@ export default async function Home() {
       />
       <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center px-4 py-8 sm:py-12">
         <div className="w-full space-y-8 sm:space-y-10">
-          <section className="space-y-6 text-center sm:space-y-8">
+          <section className="space-y-6 text-center sm:space-y-10">
             <div className="space-y-3">
               <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
                 {BRAND_TAGLINE}
