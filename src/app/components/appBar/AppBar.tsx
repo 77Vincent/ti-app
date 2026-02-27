@@ -31,6 +31,7 @@ const SAFE_AREA_TOP = "env(safe-area-inset-top, 0px)";
 export default function AppBar() {
   const { isAuthenticated, plan } = useAppBarSession();
   const SIGN_IN_LABEL = "Sign in";
+  const brandHref = isAuthenticated ? PAGE_PATHS.DASHBOARD : PAGE_PATHS.HOME;
 
   const isPro = plan?.isPro === true;
   const showNonProQuota = isAuthenticated
@@ -52,7 +53,7 @@ export default function AppBar() {
         <Link
           title={BRAND_TITLE}
           className="hover:brightness-125 flex items-center gap-2"
-          href={PAGE_PATHS.HOME}
+          href={brandHref}
           aria-label={BRAND_TITLE}
         >
           <Image src="/logo.svg" alt={LOGO_ALT} width={44} height={40} />
