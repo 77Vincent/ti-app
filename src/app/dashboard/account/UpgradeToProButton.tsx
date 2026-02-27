@@ -9,7 +9,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import { Infinity } from "lucide-react";
+import { Infinity, DiffIcon } from "lucide-react";
 import { useState } from "react";
 import { parseHttpErrorMessage } from "@/lib/http/error";
 import { toast } from "@/lib/toast";
@@ -70,6 +70,10 @@ export default function UpgradeToProButton() {
             <p className="inline-flex items-center gap-2">
               <Infinity aria-hidden="true" strokeWidth={2.5} size={20} />
               Unlimited attempts
+            </p>
+            <p className="inline-flex items-center gap-2">
+              <DiffIcon aria-hidden="true" strokeWidth={2.5} size={20} />
+              Free difficulty adjustments
             </p>
           </ModalBody>
           <ModalFooter className="w-full">
