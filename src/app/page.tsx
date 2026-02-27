@@ -8,8 +8,8 @@ import {
 } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
+import { readGlobalDashboardSummaryStats } from "@/lib/stats/data";
 import { formatPercent } from "@/lib/stats/percent";
-import { readGlobalDashboardSummaryStats } from "@/app/dashboard/performance/statsData";
 import HomeStartButton from "./components/HomeStartButton";
 
 const SITE_NAME = BRAND_TITLE;
