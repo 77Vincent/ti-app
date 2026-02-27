@@ -5,6 +5,7 @@ import { Music, Type } from "lucide-react";
 import { type ReactNode } from "react";
 import { updateUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
+import DifficultyAdjustSection from "./DifficultyAdjustSection";
 
 type SettingItemProps = {
   icon: ReactNode;
@@ -74,20 +75,23 @@ export default function DashboardSettingsPage() {
   }
 
   return (
-    <div className="flex w-full max-w-2xs flex-col gap-4">
-      <SettingItem
-        icon={<Music aria-hidden size={18} />}
-        isSelected={isSoundEnabled}
-        label="Sound"
-        onValueChange={handleSoundChange}
-      />
+    <div className="flex w-full max-w-2xs flex-col gap-8">
+      <div className="flex w-full flex-col gap-4">
+        <SettingItem
+          icon={<Music aria-hidden size={18} />}
+          isSelected={isSoundEnabled}
+          label="Sound"
+          onValueChange={handleSoundChange}
+        />
 
-      <SettingItem
-        icon={<Type aria-hidden size={18} />}
-        isSelected={isLargeQuestionTextEnabled}
-        label="Large font"
-        onValueChange={handleLargeFontChange}
-      />
+        <SettingItem
+          icon={<Type aria-hidden size={18} />}
+          isSelected={isLargeQuestionTextEnabled}
+          label="Large font"
+          onValueChange={handleLargeFontChange}
+        />
+      </div>
+      <DifficultyAdjustSection />
     </div>
   );
 }

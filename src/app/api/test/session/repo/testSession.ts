@@ -293,6 +293,30 @@ export async function updateTestSessionCurrentQuestionId(
   });
 }
 
+export async function updateAuthTestSessionDifficultyByContext(
+  where: AuthTestSessionContextWhere,
+  difficulty: string,
+) {
+  const result = await prisma.testSession.updateMany({
+    where: {
+      userId: where.userId,
+      subjectId: where.subjectId,
+      subcategoryId: where.subcategoryId,
+    },
+    data: {
+      difficulty,
+      difficultyCooldownRemaining: 0,
+      recentOutcomes: [],
+      currentQuestionId: null,
+    },
+  });
+  if (result.count === 0) {
+    return null;
+  }
+
+  return readTestSessionByContext(where);
+}
+
 export async function deleteTestSession(
   where: TestSessionIdentityWhere,
 ): Promise<void> {

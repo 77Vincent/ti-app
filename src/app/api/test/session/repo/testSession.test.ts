@@ -35,6 +35,7 @@ vi.mock("@/lib/prisma", () => ({
 import {
   deleteTestSession,
   incrementTestSessionProgress,
+  updateAuthTestSessionDifficultyByContext,
   readTestSessionQuestionState,
   readTestSessionByContext,
   readTestSession,
@@ -556,5 +557,94 @@ describe("test session repo", () => {
         currentQuestionId: "question-9",
       },
     });
+  });
+
+  it("updates authenticated session difficulty by subject/subcategory context", async () => {
+    testSessionUpdateMany.mockResolvedValueOnce({ count: 1 });
+    testSessionFindFirst.mockResolvedValueOnce({
+      id: "session-1",
+      correctCount: 3,
+      submittedCount: 5,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "B1",
+    });
+
+    await expect(
+      updateAuthTestSessionDifficultyByContext(
+        {
+          userId: "user-1",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        "B1",
+      ),
+    ).resolves.toEqual({
+      id: "session-1",
+      correctCount: 3,
+      submittedCount: 5,
+      subjectId: "language",
+      subcategoryId: "english",
+      difficulty: "B1",
+    });
+
+    expect(testSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      data: {
+        difficulty: "B1",
+        difficultyCooldownRemaining: 0,
+        recentOutcomes: [],
+        currentQuestionId: null,
+      },
+    });
+    expect(testSessionFindFirst).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      select: {
+        id: true,
+        correctCount: true,
+        submittedCount: true,
+        subjectId: true,
+        subcategoryId: true,
+        difficulty: true,
+      },
+    });
+  });
+
+  it("returns null when authenticated context session does not exist for difficulty update", async () => {
+    testSessionUpdateMany.mockResolvedValueOnce({ count: 0 });
+
+    await expect(
+      updateAuthTestSessionDifficultyByContext(
+        {
+          userId: "user-1",
+          subjectId: "language",
+          subcategoryId: "english",
+        },
+        "B1",
+      ),
+    ).resolves.toBeNull();
+
+    expect(testSessionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        subjectId: "language",
+        subcategoryId: "english",
+      },
+      data: {
+        difficulty: "B1",
+        difficultyCooldownRemaining: 0,
+        recentOutcomes: [],
+        currentQuestionId: null,
+      },
+    });
+    expect(testSessionFindFirst).not.toHaveBeenCalled();
   });
 });

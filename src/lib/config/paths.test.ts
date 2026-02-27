@@ -25,6 +25,7 @@ describe("API_PATHS", () => {
       QUESTIONS_FAVORITE: "/api/questions/favorite",
       QUESTIONS_FETCH: "/api/questions/fetch",
       TEST_SESSION: "/api/test/session",
+      TEST_SESSION_DIFFICULTY: "/api/test/session/difficulty",
       USER_SETTINGS: "/api/user/settings",
       USER_PLAN: "/api/user/plan",
     });
