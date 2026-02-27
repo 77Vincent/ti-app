@@ -42,6 +42,8 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextRaw
 
   if (isPassed) {
     await persistQuestionRawToPool(rawQuestion);
+  } else {
+    console.log(rawQuestion);
   }
 
   await deleteQuestionRawById(rawQuestion.id);
