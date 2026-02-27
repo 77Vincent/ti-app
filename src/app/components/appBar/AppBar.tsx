@@ -2,7 +2,6 @@
 
 import {
   Avatar,
-  Button,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -27,9 +26,8 @@ const ThemeToggleButton = dynamic(
 const LOGO_ALT = `${BRAND_TITLE} Logo`;
 
 export default function AppBar() {
-  const { isAuthenticated, plan, userDisplayName } = useAppBarSession();
+  const { isAuthenticated, plan } = useAppBarSession();
   const SIGN_IN_LABEL = "Sign in";
-  const DASHBOARD_LABEL = "Dashboard";
 
   const isPro = plan?.isPro === true;
   const showNonProQuota = isAuthenticated
@@ -69,17 +67,11 @@ export default function AppBar() {
         ) : null}
         <NavbarItem>
           {isAuthenticated ? (
-            <Link
-              aria-label={DASHBOARD_LABEL}
-              href={PAGE_PATHS.DASHBOARD}
-              title={userDisplayName || DASHBOARD_LABEL}
-            >
-              <Avatar
-                color="primary"
-                icon={<User aria-hidden="true" strokeWidth={2.5} size={20} />}
-                size="sm"
-              />
-            </Link>
+            <Avatar
+              color="primary"
+              icon={<User aria-hidden="true" strokeWidth={2.5} size={20} />}
+              size="sm"
+            />
           ) : (
             <Link
               aria-label={SIGN_IN_LABEL}
