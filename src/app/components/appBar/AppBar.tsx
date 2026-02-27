@@ -9,13 +9,12 @@ import {
   NavbarItem,
 } from "@heroui/react";
 import dynamic from "next/dynamic";
-import { LoaderCircle, User, User2 } from "lucide-react";
+import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND_TITLE } from "@/lib/config/brand";
 import QuotaBattery from "./QuotaBattery";
 import { useAppBarSession } from "./useAppBarSession";
-import { useSignInNavigation } from "./useSignInNavigation";
 import { PAGE_PATHS } from "@/lib/config/paths";
 
 const ThemeToggleButton = dynamic(
@@ -28,8 +27,7 @@ const ThemeToggleButton = dynamic(
 const LOGO_ALT = `${BRAND_TITLE} Logo`;
 
 export default function AppBar() {
-  const { isAuthLoading, isAuthenticated, plan, userDisplayName } = useAppBarSession();
-  const handleSignIn = useSignInNavigation();
+  const { isAuthenticated, plan, userDisplayName } = useAppBarSession();
   const SIGN_IN_LABEL = "Sign in";
   const DASHBOARD_LABEL = "Dashboard";
 
@@ -70,13 +68,7 @@ export default function AppBar() {
           </NavbarItem>
         ) : null}
         <NavbarItem>
-          {isAuthLoading ? (
-            <Avatar
-              color="primary"
-              icon={<LoaderCircle aria-hidden="true" className="animate-spin" strokeWidth={2.5} size={18} />}
-              size="sm"
-            />
-          ) : isAuthenticated ? (
+          {isAuthenticated ? (
             <Link
               aria-label={DASHBOARD_LABEL}
               href={PAGE_PATHS.DASHBOARD}
@@ -84,23 +76,18 @@ export default function AppBar() {
             >
               <Avatar
                 color="primary"
-                icon={<User aria-hidden="true" strokeWidth={2.5} size={18} />}
+                icon={<User aria-hidden="true" strokeWidth={2.5} size={20} />}
                 size="sm"
               />
             </Link>
           ) : (
-            <Button
+            <Link
               aria-label={SIGN_IN_LABEL}
+              href={PAGE_PATHS.SIGN_IN}
               title={SIGN_IN_LABEL}
-              isIconOnly
-              onPress={handleSignIn}
-              radius="full"
-              size="sm"
-              variant="light"
-              startContent={
-                <User2 aria-hidden="true" strokeWidth={2.5} size={20} />
-              }
-            />
+            >
+              <User className="hover:bg-default-200/80 rounded-full w-7.5 h-7.5 p-1" aria-hidden="true" strokeWidth={2.5} size={20} />
+            </Link>
           )}
         </NavbarItem>
         <NavbarItem>
