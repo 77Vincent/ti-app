@@ -4,9 +4,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import NextTopLoader from "nextjs-toploader";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
 import { BRAND_TAGLINE, BRAND_TITLE } from "@/lib/config/brand";
+import { isDatabaseUnavailableError } from "@/lib/prismaError";
 import { readSiteUrl } from "@/lib/config/siteUrl";
-import { AppBar } from "./components";
+import { AppBar, OfflineFallback } from "./components";
 import PwaServiceWorker from "./PwaServiceWorker";
 import Providers from "./providers";
 import UserSettingsBootstrap from "./components/UserSettingsBootstrap";
@@ -18,11 +20,22 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children: main,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let isOffline = false;
+  try {
+    await readAuthenticatedUserId();
+  } catch (error) {
+    if (isDatabaseUnavailableError(error)) {
+      isOffline = true;
+    } else {
+      throw error;
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
@@ -32,7 +45,9 @@ export default function RootLayout({
           <NextTopLoader color="#2B54B6" showSpinner={false} />
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
             <AppBar />
-            <main className="flex flex-1 flex-col p-4">{main}</main>
+            <main className="flex flex-1 flex-col p-1 sm:p-4">
+              {isOffline ? <OfflineFallback /> : main}
+            </main>
           </div>
         </Providers>
         <Analytics />
