@@ -15,6 +15,7 @@ import { BRAND_TITLE } from "@/lib/config/brand";
 import QuotaBattery from "./QuotaBattery";
 import { useAppBarSession } from "./useAppBarSession";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import ProBadge from "../ProBadge";
 
 const ThemeToggleButton = dynamic(
   () =>
@@ -55,7 +56,7 @@ export default function AppBar() {
           aria-label={BRAND_TITLE}
         >
           <Image src="/logo.svg" alt={LOGO_ALT} width={44} height={40} />
-          {isAuthenticated && isPro ? "Pro" : null}
+          {isAuthenticated && isPro ? <ProBadge/> : null}
         </Link>
       </NavbarBrand>
 

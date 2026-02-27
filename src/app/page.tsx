@@ -78,7 +78,7 @@ export default async function Home() {
         }}
         type="application/ld+json"
       />
-      <div className="mx-auto flex flex-col w-full max-w-6xl flex-1 items-center justify-between py-8 px-2">
+      <div className="mx-auto flex flex-col w-full max-w-6xl flex-1 items-center justify-between py-4 sm:py-8 px-2">
           <section className="mt-6 sm:mt-10 space-y-6 text-center">
             <div className="space-y-4">
               <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
