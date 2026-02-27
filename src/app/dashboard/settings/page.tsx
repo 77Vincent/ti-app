@@ -75,7 +75,7 @@ export default function DashboardSettingsPage() {
   }
 
   return (
-    <div className="flex w-full max-w-2xs flex-col gap-8">
+    <div className="flex w-full max-w-sm flex-col gap-8">
       <div className="flex w-full flex-col gap-4">
         <SettingItem
           icon={<Music aria-hidden size={18} />}
