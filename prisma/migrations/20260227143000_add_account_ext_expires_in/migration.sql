@@ -1,0 +1,2 @@
+ALTER TABLE "Account"
+ADD COLUMN IF NOT EXISTS "ext_expires_in" INTEGER;
