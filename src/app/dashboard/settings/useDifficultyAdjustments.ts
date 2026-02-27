@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { readTestSession } from "@/app/run/questionRunner/session/storage";
 import { getInitialDifficultyForSubcategory } from "@/lib/difficulty";
 import { SUBCATEGORIES, type SubcategoryEnum } from "@/lib/meta";
@@ -10,20 +10,24 @@ import { updateTestSessionDifficulty } from "./api";
 type DifficultyBySubcategory = Record<SubcategoryEnum, string>;
 type SessionAvailabilityBySubcategory = Record<SubcategoryEnum, boolean>;
 
-function buildInitialDifficultyBySubcategory(): DifficultyBySubcategory {
-  return Object.fromEntries(
-    SUBCATEGORIES.map((subcategory) => [
-      subcategory.id,
-      getInitialDifficultyForSubcategory(subcategory.id),
-    ]),
-  ) as DifficultyBySubcategory;
+function buildInitialState(): {
+  difficultyBySubcategory: DifficultyBySubcategory;
+  hasSessionBySubcategory: SessionAvailabilityBySubcategory;
+} {
+  return {
+    difficultyBySubcategory: Object.fromEntries(
+      SUBCATEGORIES.map((subcategory) => [
+        subcategory.id,
+        getInitialDifficultyForSubcategory(subcategory.id),
+      ]),
+    ) as DifficultyBySubcategory,
+    hasSessionBySubcategory: Object.fromEntries(
+      SUBCATEGORIES.map((subcategory) => [subcategory.id, false]),
+    ) as SessionAvailabilityBySubcategory,
+  };
 }
 
-function buildInitialSessionAvailabilityBySubcategory(): SessionAvailabilityBySubcategory {
-  return Object.fromEntries(
-    SUBCATEGORIES.map((subcategory) => [subcategory.id, false]),
-  ) as SessionAvailabilityBySubcategory;
-}
+const INITIAL_STATE = buildInitialState();
 
 const SUBCATEGORY_BY_ID = Object.fromEntries(
   SUBCATEGORIES.map((subcategory) => [subcategory.id, subcategory]),
@@ -31,10 +35,10 @@ const SUBCATEGORY_BY_ID = Object.fromEntries(
 
 export function useDifficultyAdjustments() {
   const [difficultyBySubcategory, setDifficultyBySubcategory] =
-    useState<DifficultyBySubcategory>(buildInitialDifficultyBySubcategory);
+    useState<DifficultyBySubcategory>(INITIAL_STATE.difficultyBySubcategory);
   const [hasSessionBySubcategory, setHasSessionBySubcategory] =
     useState<SessionAvailabilityBySubcategory>(
-      buildInitialSessionAvailabilityBySubcategory,
+      INITIAL_STATE.hasSessionBySubcategory,
     );
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [updatingSubcategoryId, setUpdatingSubcategoryId] =
@@ -56,8 +60,10 @@ export function useDifficultyAdjustments() {
           return;
         }
 
-        const nextDifficulty = buildInitialDifficultyBySubcategory();
-        const nextAvailability = buildInitialSessionAvailabilityBySubcategory();
+        const {
+          difficultyBySubcategory: nextDifficulty,
+          hasSessionBySubcategory: nextAvailability,
+        } = buildInitialState();
 
         sessions.forEach((session, index) => {
           if (!session) {
@@ -74,7 +80,8 @@ export function useDifficultyAdjustments() {
       })
       .catch(() => {
         if (active) {
-          setHasSessionBySubcategory(buildInitialSessionAvailabilityBySubcategory());
+          const { hasSessionBySubcategory: nextAvailability } = buildInitialState();
+          setHasSessionBySubcategory(nextAvailability);
         }
       })
       .finally(() => {
@@ -88,9 +95,8 @@ export function useDifficultyAdjustments() {
     };
   }, []);
 
-  const hasAnyAdjustableSession = useMemo(
-    () => Object.values(hasSessionBySubcategory).some(Boolean),
-    [hasSessionBySubcategory],
+  const hasAnyAdjustableSession = Object.values(hasSessionBySubcategory).some(
+    Boolean,
   );
 
   function handleDifficultyChange(
@@ -109,9 +115,6 @@ export function useDifficultyAdjustments() {
     }
 
     const subcategory = SUBCATEGORY_BY_ID[subcategoryId];
-    if (!subcategory) {
-      return;
-    }
 
     setDifficultyBySubcategory((previous) => ({
       ...previous,
