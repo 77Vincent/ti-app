@@ -211,6 +211,7 @@ export function useQuestion({
         })) {
           return;
         }
+        return;
       } finally {
         dispatchUiState({ type: "submitFetchFinished" });
       }

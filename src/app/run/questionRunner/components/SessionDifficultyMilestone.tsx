@@ -87,7 +87,7 @@ export default function SessionDifficultyMilestone({
         ref={difficultyDowngradeSfxRef}
       />
 
-      <Card isBlurred shadow="sm" className="border border-2 border-primary">
+      <Card isBlurred shadow="sm">
         <CardBody>
           <div className="flex items-center gap-1.5">
             {ladder.map((level, index) => {
@@ -98,7 +98,7 @@ export default function SessionDifficultyMilestone({
 
               return (
                 <Fragment key={level}>
-                  <Popover placement="top" shadow="md">
+                  <Popover placement="bottom" shadow="md">
                     <PopoverTrigger>
                       <button type="button">
                         <Chip
