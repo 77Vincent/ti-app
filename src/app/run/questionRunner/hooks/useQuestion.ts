@@ -3,7 +3,7 @@
 import type { SubjectEnum, SubcategoryEnum } from "@/lib/meta";
 import { toast } from "@/lib/toast";
 import { notifyUserPlanRefresh } from "@/lib/events/userPlan";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { fetchQuestion } from "../api";
 import { QuestionRunnerApiError } from "../api/error";
 import { recordQuestionResult } from "../session/storage";
@@ -69,6 +69,11 @@ export function useQuestion({
     questionSessionUiReducer,
     INITIAL_QUESTION_SESSION_UI_STATE,
   );
+  const prefetchedQuestionRef = useRef<{
+    key: string;
+    question: QuestionType;
+  } | null>(null);
+  const prefetchRequestKeyRef = useRef<string | null>(null);
   const { question, isLoadingQuestion, isSubmitting, hasSubmitted } = uiState;
   const { selectedOptionIndexes, setSelection, selectOption: selectQuestionOption } =
     useQuestionSelection();
@@ -124,7 +129,46 @@ export function useQuestion({
     [sessionId, subcategoryId, subjectId],
   );
 
+  const buildPrefetchKey = useCallback((difficultyToLoad: string): string => {
+    return `${sessionId}:${subjectId}:${subcategoryId}:${difficultyToLoad}`;
+  }, [sessionId, subjectId, subcategoryId]);
+
+  const clearPrefetchedQuestion = useCallback((): void => {
+    prefetchedQuestionRef.current = null;
+    prefetchRequestKeyRef.current = null;
+  }, []);
+
+  const prefetchNextQuestion = useCallback((difficultyToLoad: string): void => {
+    const key = buildPrefetchKey(difficultyToLoad);
+    if (prefetchedQuestionRef.current?.key === key) {
+      return;
+    }
+    if (prefetchRequestKeyRef.current === key) {
+      return;
+    }
+
+    prefetchRequestKeyRef.current = key;
+    void (async () => {
+      try {
+        const prefetchedQuestion = await loadQuestion(difficultyToLoad, true);
+        if (prefetchRequestKeyRef.current !== key) {
+          return;
+        }
+
+        prefetchedQuestionRef.current = {
+          key,
+          question: prefetchedQuestion,
+        };
+      } catch {
+        if (prefetchRequestKeyRef.current === key) {
+          prefetchedQuestionRef.current = null;
+        }
+      }
+    })();
+  }, [buildPrefetchKey, loadQuestion]);
+
   const applyLoadedQuestion = useCallback((nextQuestion: QuestionType): void => {
+    clearPrefetchedQuestion();
     setAccessDemand(null);
     setSelection([]);
     dispatchUiState({
@@ -132,7 +176,11 @@ export function useQuestion({
       question: nextQuestion,
       hasSubmitted: false,
     });
-  }, [setSelection]);
+  }, [clearPrefetchedQuestion, setSelection]);
+
+  useEffect(() => {
+    clearPrefetchedQuestion();
+  }, [clearPrefetchedQuestion, sessionId, subjectId, subcategoryId, sessionDifficulty]);
 
   useEffect(() => {
     let cancelled = false;
@@ -223,6 +271,7 @@ export function useQuestion({
       }));
       notifyUserPlanRefresh();
       setPendingDifficulty(nextDifficulty);
+      prefetchNextQuestion(nextDifficulty);
       return;
     }
 
@@ -230,13 +279,21 @@ export function useQuestion({
     try {
       const targetDifficulty = pendingDifficulty ?? sessionDifficulty;
       try {
-        const loadedQuestion = await loadQuestion(targetDifficulty, true);
+        const targetKey = buildPrefetchKey(targetDifficulty);
+        const prefetchedQuestion =
+          prefetchedQuestionRef.current?.key === targetKey
+            ? prefetchedQuestionRef.current.question
+            : null;
+        const loadedQuestion = prefetchedQuestion
+          ? prefetchedQuestion
+          : await loadQuestion(targetDifficulty, true);
         if (targetDifficulty !== sessionDifficulty) {
           setSessionDifficulty(targetDifficulty);
         }
         setPendingDifficulty(null);
         applyLoadedQuestion(loadedQuestion);
       } catch (error) {
+        clearPrefetchedQuestion();
         if (handleDemandError(error, showLoadError)) {
           return;
         }
