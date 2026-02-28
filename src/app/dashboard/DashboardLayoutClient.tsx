@@ -74,11 +74,11 @@ export default function DashboardLayoutClient({
   }, []);
 
   return (
-    <section className="flex flex-1 flex-col gap-4 pb-20 md:flex-row md:pb-0">
-      <aside className="w-full md:flex md:min-h-64 md:w-40 lg:w-56 md:shrink-0">
+    <section className="flex flex-1 flex-col gap-4 pb-20 sm:flex-row sm:pb-0">
+      <aside className="w-full sm:flex sm:min-h-64 sm:w-40 lg:w-56 sm:shrink-0">
         <nav aria-label="Dashboard sections" className="w-full">
           <ul
-            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/85 px-2 py-2 backdrop-blur-md md:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/85 px-2 py-2 backdrop-blur-md sm:hidden"
             style={{ paddingBottom: MOBILE_NAV_SAFE_BOTTOM }}
           >
             {DASHBOARD_NAV_ITEMS.map((item) => (
@@ -98,7 +98,7 @@ export default function DashboardLayoutClient({
             ))}
           </ul>
 
-          <div className="hidden h-full flex-col md:flex">
+          <div className="hidden h-full flex-col sm:flex">
             <ul className="flex flex-col gap-3">
               {DASHBOARD_NAV_ITEMS.map((item) => (
                 <li key={item.href}>
