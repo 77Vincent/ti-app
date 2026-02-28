@@ -16,6 +16,12 @@ import {
 } from "react";
 import NextLink from "next/link";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import {
+  triggerLightImpactHaptic,
+  triggerSelectionHaptic,
+  triggerSuccessHaptic,
+  triggerWrongAnswerHaptic,
+} from "@/lib/haptics";
 import QuestionRunner from "./QuestionRunner";
 import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useEnterToNext } from "../hooks/useEnterToNext";
@@ -100,6 +106,8 @@ export default function QuestionWrapper({
       return;
     }
 
+    triggerSelectionHaptic();
+
     const nextSelection = selectOption(optionIndex);
     if (!nextSelection) {
       return;
@@ -107,8 +115,10 @@ export default function QuestionWrapper({
 
     if (isAnswerCorrect(question, nextSelection)) {
       submitCorrectMidiSfxRef.current?.play();
+      triggerSuccessHaptic();
     } else {
       submitWrongMidiSfxRef.current?.play();
+      triggerWrongAnswerHaptic();
     }
     void submit(nextSelection);
   }, [isAccessBlocked, isFavoriteSubmitting, question, selectOption, submit]);
@@ -118,6 +128,7 @@ export default function QuestionWrapper({
       return;
     }
 
+    triggerLightImpactHaptic();
     nextActionMidiSfxRef.current?.play();
     void submit();
   }, [canTriggerNext, submit]);
@@ -173,6 +184,7 @@ export default function QuestionWrapper({
                   isIconOnly
                   variant="light"
                   className="sm:hidden"
+                  onPress={triggerLightImpactHaptic}
                 >
                   <ChevronLeft aria-hidden size={24} strokeWidth={2.5} />
                 </Button>

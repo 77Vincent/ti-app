@@ -94,7 +94,7 @@ export default function DashboardLayoutClient({
                   >
                     <item.icon
                       aria-hidden
-                      size={isActive ? 30 : 20}
+                      size={isActive ? 32 : 24}
                       className={isActive ? "text-background bg-primary rounded-full p-1 shadow" : "text-foreground"}
                     />
                     <span className="sr-only">{item.label}</span>
