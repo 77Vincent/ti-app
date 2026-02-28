@@ -5,7 +5,6 @@ import {
   BarChart3,
   Heart,
   LayoutDashboard,
-  LogOut,
   Settings as SettingsIcon,
   User,
 } from "lucide-react";
@@ -13,7 +12,7 @@ import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { getSession, signOut } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { PAGE_PATHS } from "@/lib/config/paths";
 
 type DashboardLayoutClientProps = {
@@ -51,6 +50,7 @@ const DASHBOARD_NAV_ITEMS = [
 export default function DashboardLayoutClient({
   children,
 }: DashboardLayoutClientProps) {
+  const MOBILE_NAV_SAFE_BOTTOM = "max(env(safe-area-inset-bottom, 0px), 0.5rem)";
   const pathname = usePathname();
   const [avatarImage, setAvatarImage] = useState<string | undefined>(undefined);
   const [avatarName, setAvatarName] = useState("");
@@ -73,17 +73,14 @@ export default function DashboardLayoutClient({
     };
   }, []);
 
-  function handleLogout() {
-    void signOut({
-      callbackUrl: PAGE_PATHS.SIGN_IN,
-    });
-  }
-
   return (
-    <section className="flex flex-1 flex-col gap-4 md:flex-row">
+    <section className="flex flex-1 flex-col gap-4 pb-20 md:flex-row md:pb-0">
       <aside className="w-full md:flex md:min-h-64 md:w-40 lg:w-56 md:shrink-0">
         <nav aria-label="Dashboard sections" className="w-full">
-          <ul className="flex items-center gap-2 md:hidden">
+          <ul
+            className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-divider bg-background/85 px-4 py-2 backdrop-blur-md md:hidden"
+            style={{ paddingBottom: MOBILE_NAV_SAFE_BOTTOM }}
+          >
             {DASHBOARD_NAV_ITEMS.map((item) => (
               <li key={item.href}>
                 <Link
@@ -99,17 +96,6 @@ export default function DashboardLayoutClient({
                 </Link>
               </li>
             ))}
-            <li className="ml-auto">
-              <Link
-                as="button"
-                onPress={handleLogout}
-                color="foreground"
-                className="inline-flex h-9 w-9 items-center justify-center"
-              >
-                <LogOut aria-hidden size={18} />
-                <span className="sr-only">Logout</span>
-              </Link>
-            </li>
           </ul>
 
           <div className="hidden h-full flex-col md:flex">
