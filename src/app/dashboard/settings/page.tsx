@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Music, Type } from "lucide-react";
+import { Moon, Music, Type } from "lucide-react";
+import { useTheme } from "next-themes";
 import { type ReactNode } from "react";
 import { updateUserSettings } from "@/lib/settings/api";
 import { useSettingsStore } from "@/lib/settings/store";
@@ -42,6 +43,7 @@ const ClientSwitch = dynamic(
 );
 
 export default function DashboardSettingsPage() {
+  const { resolvedTheme, setTheme } = useTheme();
   const isSoundEnabled = useSettingsStore((state) => state.isSoundEnabled);
   const setIsSoundEnabled = useSettingsStore(
     (state) => state.setIsSoundEnabled,
@@ -74,6 +76,10 @@ export default function DashboardSettingsPage() {
       .catch(() => undefined);
   }
 
+  function handleThemeChange(nextValue: boolean) {
+    setTheme(nextValue ? "dark" : "light");
+  }
+
   return (
     <div className="flex w-full max-w-sm flex-col gap-8">
       <div className="flex w-full flex-col gap-4">
@@ -89,6 +95,13 @@ export default function DashboardSettingsPage() {
           isSelected={isLargeQuestionTextEnabled}
           label="Large font"
           onValueChange={handleLargeFontChange}
+        />
+
+        <SettingItem
+          icon={<Moon aria-hidden size={18} />}
+          isSelected={resolvedTheme === "dark"}
+          label="Dark mode"
+          onValueChange={handleThemeChange}
         />
       </div>
       <DifficultyAdjustSection />
