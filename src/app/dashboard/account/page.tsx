@@ -3,6 +3,7 @@ import { LabeledValue } from "@/app/components";
 import { isProSubscriptionStatus } from "@/lib/billing/pro";
 import { syncUserSubscriptionFromStripe } from "@/lib/billing/sync";
 import CancelProButton from "./CancelProButton";
+import LogoutButton from "./LogoutButton";
 import { readAccountUserById } from "./repo";
 import UpgradeToProButton from "./UpgradeToProButton";
 
@@ -59,7 +60,7 @@ export default async function DashboardAccountPage() {
   };
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-4">
+    <div className="flex w-full max-w-sm flex-col gap-4">
       <LabeledValue label="Name" value={profile.name} />
       <LabeledValue label="Email" value={profile.email} />
       <LabeledValue label="Plan" value={profile.plan} />
@@ -72,6 +73,7 @@ export default async function DashboardAccountPage() {
         <CancelProButton isCancellationScheduled={isCancellationScheduled} />
       ) : null}
       {!isPro ? <UpgradeToProButton /> : null}
+      <LogoutButton />
     </div>
   );
 }
