@@ -37,8 +37,10 @@ export default function RootLayout({
           <PwaServiceWorker />
           <NextTopLoader color="#2B54B6" showSpinner={false} />
           <div className="bg-gradient-to-t from-primary-500/30 via-success-50/20 to-background text-foreground flex min-h-dvh flex-col">
-            <AppBar />
-            <main className="flex flex-1 flex-col px-4 pt-1 pb-4 sm:p-4">{main}</main>
+            <div className="hidden sm:block">
+              <AppBar />
+            </div>
+            <main className="flex flex-1 flex-col px-4 pb-4 pt-[calc(env(safe-area-inset-top,0px)+0.25rem)] sm:p-4">{main}</main>
           </div>
         </Providers>
         <Analytics />
