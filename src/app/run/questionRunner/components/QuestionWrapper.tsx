@@ -7,13 +7,15 @@ import type {
 } from "../types";
 import { Button, Card, CardBody } from "@heroui/react";
 import { FavoriteIconButton } from "@/app/components";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import NextLink from "next/link";
+import { PAGE_PATHS } from "@/lib/config/paths";
 import QuestionRunner from "./QuestionRunner";
 import MidiSfx, { type MidiSfxHandle } from "./MidiSfx";
 import { useEnterToNext } from "../hooks/useEnterToNext";
@@ -163,12 +165,25 @@ export default function QuestionWrapper({
         <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl">
           <CardBody className="p-2">
             <div className="flex items-center justify-between gap-2">
-              <FavoriteIconButton
-                isFavorite={isFavorite}
-                isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
-                isLoading={isFavoriteSubmitting || isFavoriteSyncing}
-                onPress={() => toggleFavorite(question)}
-              />
+              <div className="flex items-center gap-1">
+                <Button
+                  aria-label="Back to dashboard"
+                  as={NextLink}
+                  href={PAGE_PATHS.DASHBOARD}
+                  isIconOnly
+                  variant="light"
+                  className="sm:hidden"
+                >
+                  <ChevronLeft aria-hidden size={24} strokeWidth={2.5} />
+                </Button>
+
+                <FavoriteIconButton
+                  isFavorite={isFavorite}
+                  isDisabled={isFavoriteSubmitting || isFavoriteSyncing || !question || isAccessBlocked}
+                  isLoading={isFavoriteSubmitting || isFavoriteSyncing}
+                  onPress={() => toggleFavorite(question)}
+                />
+              </div>
 
               <SessionAccuracy
                 correctCount={correctCount}

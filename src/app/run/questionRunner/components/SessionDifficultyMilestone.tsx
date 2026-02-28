@@ -88,7 +88,7 @@ export default function SessionDifficultyMilestone({
       />
 
       <Card isBlurred shadow="sm" className="border border-2 border-primary">
-        <CardBody className="space-y-3">
+        <CardBody>
           <div className="flex items-center gap-1.5">
             {ladder.map((level, index) => {
               const isReached = index <= activeIndex;
