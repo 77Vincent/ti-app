@@ -78,7 +78,7 @@ export default function DashboardLayoutClient({
       <aside className="w-full sm:flex sm:min-h-64 sm:w-40 lg:w-56 sm:shrink-0">
         <nav aria-label="Dashboard sections" className="w-full">
           <ul
-            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/85 px-2 py-2 backdrop-blur-md sm:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/40 px-2 py-2 backdrop-blur-md sm:hidden"
             style={{ paddingBottom: MOBILE_NAV_SAFE_BOTTOM }}
           >
             {DASHBOARD_NAV_ITEMS.map((item) => (

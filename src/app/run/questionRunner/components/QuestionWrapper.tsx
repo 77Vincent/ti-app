@@ -165,7 +165,7 @@ export default function QuestionWrapper({
         <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl">
           <CardBody className="p-2">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <Button
                   aria-label="Back to dashboard"
                   as={NextLink}

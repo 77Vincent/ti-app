@@ -7,8 +7,11 @@ import { Footer } from "@/app/components";
 import { BRAND_TAGLINE, BRAND_TITLE } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Image from "next/image";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
+  const router = useRouter();
   const providers = [
     {
       id: GOOGLE_PROVIDER_ID,
@@ -24,6 +27,17 @@ export default function SignInPage() {
 
   return (
     <div className="flex flex-1 flex-col space-y-2">
+      <div className="mx-auto w-full max-w-md sm:hidden">
+        <Button
+          size="sm"
+          isIconOnly
+          aria-label="Go back"
+          onPress={() => router.back()}
+          startContent={<ChevronLeft aria-hidden size={24} />}
+          variant="light"
+        />
+      </div>
+
       <section className="flex justify-center">
         <Card shadow="sm" className="w-full max-w-md bg-content1/90 backdrop-blur">
           <CardBody className="gap-4 p-8 text-center">
