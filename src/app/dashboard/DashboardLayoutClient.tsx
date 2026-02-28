@@ -78,46 +78,58 @@ export default function DashboardLayoutClient({
       <aside className="w-full sm:flex sm:min-h-64 sm:w-40 lg:w-56 sm:shrink-0">
         <nav aria-label="Dashboard sections" className="w-full">
           <ul
-            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/40 px-2 py-2 backdrop-blur-md sm:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/20 px-2 py-2 backdrop-blur-md sm:hidden"
             style={{ paddingBottom: MOBILE_NAV_SAFE_BOTTOM }}
           >
-            {DASHBOARD_NAV_ITEMS.map((item) => (
-              <li key={item.href} className="flex-1">
-                <Link
-                  as={NextLink}
-                  href={item.href}
-                  aria-current={pathname === item.href ? "page" : undefined}
-                  color="foreground"
-                  underline={pathname === item.href ? "always" : "none"}
-                  className="inline-flex h-9 w-full items-center justify-center"
-                >
-                  <item.icon aria-hidden size={20} strokeWidth={2.5} />
-                  <span className="sr-only">{item.label}</span>
-                </Link>
-              </li>
-            ))}
+            {DASHBOARD_NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.href} className="flex-1">
+                  <Link
+                    as={NextLink}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    underline="none"
+                    className="inline-flex h-9 w-full items-center justify-center"
+                  >
+                    <item.icon
+                      aria-hidden
+                      size={isActive ? 30 : 20}
+                      className={isActive ? "text-background bg-primary rounded-full p-1 shadow" : "text-foreground"}
+                    />
+                    <span className="sr-only">{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="hidden h-full flex-col sm:flex">
             <ul className="flex flex-col gap-3">
-              {DASHBOARD_NAV_ITEMS.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    as={NextLink}
-                    href={item.href}
-                    aria-current={pathname === item.href ? "page" : undefined}
-                    color="foreground"
-                    underline={pathname === item.href ? "always" : "none"}
-                    isBlock
-                    className="w-full"
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <item.icon aria-hidden size={18} />
-                      <span>{item.label}</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              {DASHBOARD_NAV_ITEMS.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      as={NextLink}
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      color={isActive ? "primary" : "foreground"}
+                      underline="none"
+                      isBlock
+                      className={[
+                        "w-full rounded-medium px-2 py-1",
+                        isActive ? "bg-primary/15" : "",
+                      ].join(" ")}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <item.icon aria-hidden size={18} />
+                        <span>{item.label}</span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
             <div className="mt-auto pt-3">
               <div className="inline-flex items-center gap-2">
