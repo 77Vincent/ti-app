@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LegalPageLayout } from "@/app/components";
 import { withBrandTitle } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfUsePage() {
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4">
+    <LegalPageLayout>
       <h1 className="text-2xl font-semibold">Terms of Use</h1>
       <p className="text-default-600">
         By using this application, you agree to use it lawfully and
@@ -36,6 +37,6 @@ export default function TermsOfUsePage() {
         renewal stops at the end of the current billing cycle unless otherwise
         stated.
       </p>
-    </section>
+    </LegalPageLayout>
   );
 }

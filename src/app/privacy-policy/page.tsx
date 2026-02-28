@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LegalPageLayout } from "@/app/components";
 import { withBrandTitle } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import { readSiteUrl } from "@/lib/config/siteUrl";
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4">
+    <LegalPageLayout>
       <h1 className="text-2xl font-semibold">Privacy Policy</h1>
       <p className="text-default-600">
         We store only the data required to provide the testing experience, such
@@ -38,6 +39,6 @@ export default function PrivacyPolicyPage() {
         If you have a privacy request, contact the product operator and include
         enough account detail for verification.
       </p>
-    </section>
+    </LegalPageLayout>
   );
 }

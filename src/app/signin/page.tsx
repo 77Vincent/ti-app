@@ -3,15 +3,12 @@
 import { Button, Card, CardBody } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { GOOGLE_PROVIDER_ID, MICROSOFT_PROVIDER_ID } from "@/app/auth/signIn";
-import { Footer } from "@/app/components";
+import { Footer, MobileBackButton } from "@/app/components";
 import { BRAND_TAGLINE, BRAND_TITLE } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Image from "next/image";
-import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
-  const router = useRouter();
   const providers = [
     {
       id: GOOGLE_PROVIDER_ID,
@@ -28,14 +25,7 @@ export default function SignInPage() {
   return (
     <div className="flex flex-1 flex-col space-y-2">
       <div className="mx-auto w-full max-w-md sm:hidden">
-        <Button
-          size="sm"
-          isIconOnly
-          aria-label="Go back"
-          onPress={() => router.back()}
-          startContent={<ChevronLeft aria-hidden size={24} />}
-          variant="light"
-        />
+        <MobileBackButton ariaLabel="Go back" />
       </div>
 
       <section className="flex justify-center">
