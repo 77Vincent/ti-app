@@ -135,8 +135,14 @@ export default function QuestionWrapper({
 
   useEnterToNext(handleNextPress);
 
+  const questionCardBorderClassName = !hasSubmitted || !question
+    ? "border-primary"
+    : isAnswerCorrect(question, selectedOptionIndexes)
+      ? "border-success-500"
+      : "border-danger-500";
+
   return (
-    <div className="w-full max-w-3xl space-y-3 pb-20 sm:pb-0">
+    <div className="w-full max-w-3xl space-y-3 pb-20 pt-[5.5rem] sm:pb-0 sm:pt-0">
       <MidiSfx
         presetId="submitCorrect"
         ref={submitCorrectMidiSfxRef}
@@ -150,12 +156,19 @@ export default function QuestionWrapper({
         ref={nextActionMidiSfxRef}
       />
 
-      <SessionDifficultyMilestone
-        difficulty={sessionDifficulty}
-        subcategoryId={subcategoryId}
-      />
+      <div
+        className="fixed inset-x-0 top-0 z-30 px-4 sm:static sm:z-auto sm:px-0"
+        style={{ paddingTop: "max(env(safe-area-inset-top, 0px), 0.5rem)" }}
+      >
+        <div className="mx-auto w-full max-w-3xl">
+          <SessionDifficultyMilestone
+            difficulty={sessionDifficulty}
+            subcategoryId={subcategoryId}
+          />
+        </div>
+      </div>
 
-      <Card shadow="md" className="border border-2 border-primary">
+      <Card shadow="md" className={`border border-2 ${questionCardBorderClassName}`}>
         <CardBody>
           <QuestionRunner
             hasSubmitted={hasSubmitted}
