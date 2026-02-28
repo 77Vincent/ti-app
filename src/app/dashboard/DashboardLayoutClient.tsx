@@ -78,20 +78,20 @@ export default function DashboardLayoutClient({
       <aside className="w-full md:flex md:min-h-64 md:w-40 lg:w-56 md:shrink-0">
         <nav aria-label="Dashboard sections" className="w-full">
           <ul
-            className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-divider bg-background/85 px-4 py-2 backdrop-blur-md md:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-divider bg-background/85 px-2 py-2 backdrop-blur-md md:hidden"
             style={{ paddingBottom: MOBILE_NAV_SAFE_BOTTOM }}
           >
             {DASHBOARD_NAV_ITEMS.map((item) => (
-              <li key={item.href}>
+              <li key={item.href} className="flex-1">
                 <Link
                   as={NextLink}
                   href={item.href}
                   aria-current={pathname === item.href ? "page" : undefined}
                   color="foreground"
                   underline={pathname === item.href ? "always" : "none"}
-                  className="inline-flex h-9 w-9 items-center justify-center"
+                  className="inline-flex h-9 w-full items-center justify-center"
                 >
-                  <item.icon aria-hidden size={18} />
+                  <item.icon aria-hidden size={20} strokeWidth={2.5} />
                   <span className="sr-only">{item.label}</span>
                 </Link>
               </li>

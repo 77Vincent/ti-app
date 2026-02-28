@@ -142,7 +142,7 @@ export default function QuestionWrapper({
         subcategoryId={subcategoryId}
       />
 
-      <Card shadow="sm" className="border border-2 border-primary">
+      <Card shadow="md" className="border border-2 border-primary">
         <CardBody>
           <QuestionRunner
             hasSubmitted={hasSubmitted}
@@ -160,7 +160,7 @@ export default function QuestionWrapper({
         className="fixed inset-x-0 bottom-0 z-30 px-4 pb-2 sm:static sm:z-auto sm:px-0 sm:pb-0"
         style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 0.5rem)" }}
       >
-        <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl border border-2 border-primary">
+        <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl">
           <CardBody className="p-2">
             <div className="flex items-center justify-between gap-2">
               <FavoriteIconButton
