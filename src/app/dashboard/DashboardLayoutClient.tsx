@@ -134,24 +134,16 @@ export default function DashboardLayoutClient({
               ))}
             </ul>
             <div className="mt-auto pt-3">
-              <Link
-                as="button"
-                onPress={handleLogout}
-                color="foreground"
-                isBlock
-                className="w-full"
-              >
-                <span className="inline-flex items-center cursor-pointer gap-2">
-                  <Avatar
-                    color="primary"
-                    icon={<User aria-hidden strokeWidth={2.5} size={18} />}
-                    name={avatarName}
-                    size="sm"
-                    src={avatarImage}
-                  />
-                  <span>Logout</span>
-                </span>
-              </Link>
+              <div className="inline-flex items-center gap-2">
+                <Avatar
+                  color="primary"
+                  icon={<User aria-hidden strokeWidth={2.5} size={18} />}
+                  name={avatarName}
+                  size="sm"
+                  src={avatarImage}
+                />
+                <span>{avatarName}</span>
+              </div>
             </div>
           </div>
         </nav>
