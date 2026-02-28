@@ -31,6 +31,7 @@ const SAFE_AREA_TOP = "env(safe-area-inset-top, 0px)";
 export default function AppBar() {
   const { isAuthenticated, plan } = useAppBarSession();
   const SIGN_IN_LABEL = "Sign in";
+  const DASHBOARD_LABEL = "Dashboard";
   const brandHref = isAuthenticated ? PAGE_PATHS.DASHBOARD : PAGE_PATHS.HOME;
 
   const isPro = plan?.isPro === true;
@@ -57,7 +58,7 @@ export default function AppBar() {
           aria-label={BRAND_TITLE}
         >
           <Image src="/logo.svg" alt={LOGO_ALT} width={44} height={40} />
-          {isAuthenticated && isPro ? <ProBadge/> : null}
+          {isAuthenticated && isPro ? <ProBadge /> : null}
         </Link>
       </NavbarBrand>
 
@@ -79,11 +80,17 @@ export default function AppBar() {
         ) : null}
         <NavbarItem>
           {isAuthenticated ? (
-            <Avatar
-              color="primary"
-              icon={<User aria-hidden="true" strokeWidth={2.5} size={20} />}
-              size="sm"
-            />
+            <Link
+              aria-label={DASHBOARD_LABEL}
+              href={PAGE_PATHS.DASHBOARD}
+              title={DASHBOARD_LABEL}
+            >
+              <Avatar
+                color="primary"
+                icon={<User aria-hidden="true" strokeWidth={2.5} size={20} />}
+                size="sm"
+              />
+            </Link>
           ) : (
             <Link
               aria-label={SIGN_IN_LABEL}
