@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import type { GenerateQuestionRequest, Question } from "../types";
+import { readRandomQuestionSamples } from "../repo";
 import {
   QUESTION_ID_HASH_ALGORITHM,
   QUESTION_ID_HASH_ENCODING,
@@ -18,7 +19,8 @@ function createQuestionId(prompt: string): string {
 export async function createQuestionsWithAI(
   input: GenerateQuestionRequest,
 ): Promise<Question[]> {
-  const content = await requestDeepSeekGeneratorContent(input);
+  const samples = await readRandomQuestionSamples(input);
+  const content = await requestDeepSeekGeneratorContent(input, samples);
   const parsedQuestions = parseAIQuestionPayload(content);
   return parsedQuestions.map((question) => ({
     id: createQuestionId(question.prompt),

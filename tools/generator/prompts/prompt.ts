@@ -1,4 +1,7 @@
-import type { GenerateQuestionRequest } from "../../types";
+import type {
+  GenerateQuestionRequest,
+  GenerateQuestionSample,
+} from "../../types";
 import {
   ENGLISH_GENERATOR_SYSTEM_PROMPT,
   buildEnglishGeneratorUserPrompt,
@@ -35,7 +38,7 @@ export function buildGeneratorSystemPrompt(
   }
 }
 
-export function buildGeneratorUserPrompt(input: GenerateQuestionRequest): string {
+function buildGeneratorDifficultyUserPrompt(input: GenerateQuestionRequest): string {
   switch (input.subcategory) {
     case "english":
       return buildEnglishGeneratorUserPrompt(input);
@@ -50,4 +53,33 @@ export function buildGeneratorUserPrompt(input: GenerateQuestionRequest): string
         `No generator user prompt configured for subcategory "${input.subcategory}".`,
       );
   }
+}
+
+export function buildGeneratorUserPromptWithSamples(
+  input: GenerateQuestionRequest,
+  samples: GenerateQuestionSample[],
+): string {
+  const difficultyPrompt = buildGeneratorDifficultyUserPrompt(input);
+  if (samples.length === 0) {
+    return difficultyPrompt;
+  }
+
+  const samplePayload = samples.map((sample) => ({
+    p: sample.prompt,
+    o: sample.options.map((option) => (
+      option.explanation === undefined
+        ? [option.text]
+        : [option.text, option.explanation]
+    )),
+  }));
+
+  return `
+${difficultyPrompt}
+
+Reference examples from curated samples:
+- learn quality and style from them
+- do not copy wording or scenarios
+
+${JSON.stringify(samplePayload, null, 2)}
+`.trim();
 }

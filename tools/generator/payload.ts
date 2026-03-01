@@ -27,16 +27,18 @@ function parseQuestionPayload(value: unknown): ParsedAIQuestionPayload {
   const options: QuestionOption[] = o.map((item) => {
     if (
       !Array.isArray(item) ||
-      item.length !== 2 ||
-      !isNonEmptyString(item[0]) ||
-      typeof item[1] !== "string"
+      (item.length !== 1 && item.length !== 2) ||
+      !isNonEmptyString(item[0])
     ) {
+      throw new Error("AI options are invalid.");
+    }
+    if (item.length === 2 && typeof item[1] !== "string") {
       throw new Error("AI options are invalid.");
     }
 
     return {
       text: item[0].trim(),
-      explanation: item[1].trim(),
+      explanation: typeof item[1] === "string" ? item[1].trim() : undefined,
     };
   });
 

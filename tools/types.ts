@@ -11,7 +11,7 @@ export type GenerateQuestionRequest = {
 
 export type QuestionOption = {
   text: string;
-  explanation: string;
+  explanation?: string;
 };
 
 export type Question = {
@@ -21,6 +21,8 @@ export type Question = {
   options: QuestionOption[];
   correctOptionIndexes: number[];
 };
+
+export type GenerateQuestionSample = Pick<Question, "prompt" | "options">;
 
 export type ResolveQuestionRequest = Pick<Question, "prompt" | "options">;
 

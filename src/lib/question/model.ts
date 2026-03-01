@@ -2,7 +2,7 @@ export type QuestionOptionIndex = number;
 
 export type QuestionOption = {
   text: string;
-  explanation: string;
+  explanation?: string;
 };
 
 export type Question = {

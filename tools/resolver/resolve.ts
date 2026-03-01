@@ -50,7 +50,7 @@ async function evaluateQuestion(
         prompt,
         correctOption: {
           text: options[0].text,
-          explanation: options[0].explanation.trim() || undefined,
+          explanation: options[0].explanation?.trim() || undefined,
         },
       })
     : false;
