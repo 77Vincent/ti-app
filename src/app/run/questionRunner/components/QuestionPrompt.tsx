@@ -62,7 +62,7 @@ export default function QuestionPrompt({
             aria-pressed={isSpeaking}
             isIconOnly
             size="sm"
-            variant="light"
+            variant="flat"
             onPress={handleReadPress}
           >
             {isSpeaking
