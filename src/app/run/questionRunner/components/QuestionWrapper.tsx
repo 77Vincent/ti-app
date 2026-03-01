@@ -7,7 +7,7 @@ import type {
 } from "../types";
 import { Button, Card, CardBody } from "@heroui/react";
 import { FavoriteIconButton } from "@/app/components";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { LogOut as LeaveIcon, ChevronRight } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -30,6 +30,19 @@ import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
+
+function resolveReadPromptLanguage(subcategoryId: QuestionRunnerProps["subcategoryId"]): string | undefined {
+  switch (subcategoryId) {
+    case "english":
+      return "en-US";
+    case "chinese":
+      return "zh-CN";
+    case "japanese":
+      return "ja-JP";
+    default:
+      return undefined;
+  }
+}
 
 export default function QuestionWrapper({
   id,
@@ -100,6 +113,9 @@ export default function QuestionWrapper({
     Boolean(question) &&
     hasSubmitted &&
     !isSubmitting;
+  const readPromptLanguage = subjectId === "language"
+    ? resolveReadPromptLanguage(subcategoryId)
+    : undefined;
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
     if (!question || isFavoriteSubmitting || isAccessBlocked) {
@@ -142,7 +158,7 @@ export default function QuestionWrapper({
       : "border-danger-500";
 
   return (
-    <div className="w-full max-w-3xl space-y-3 pb-20 pt-[5.5rem] sm:pb-0 sm:pt-0">
+    <div className="w-full max-w-3xl space-y-3 pb-20 pt-15 sm:pb-0 sm:pt-0">
       <MidiSfx
         presetId="submitCorrect"
         ref={submitCorrectMidiSfxRef}
@@ -178,6 +194,8 @@ export default function QuestionWrapper({
             selectOption={handleOptionSelect}
             selectedOptionIndexes={selectedOptionIndexes}
             accessDemand={accessDemand}
+            readPromptLanguage={readPromptLanguage}
+            showReadPromptButton={subjectId === "language"}
           />
         </CardBody>
       </Card>
@@ -199,7 +217,7 @@ export default function QuestionWrapper({
                   className="sm:hidden"
                   onPress={triggerLightImpactHaptic}
                 >
-                  <ChevronLeft aria-hidden size={24} strokeWidth={2.5} />
+                  <LeaveIcon aria-hidden size={24} />
                 </Button>
 
                 <FavoriteIconButton
@@ -224,7 +242,7 @@ export default function QuestionWrapper({
                 isLoading={isSubmitting}
                 onPress={handleNextPress}
               >
-                {isSubmitting ? null : <ChevronRight strokeWidth={3} aria-hidden size={22} />}
+                {isSubmitting ? null : <ChevronRight aria-hidden size={24} />}
               </Button>
             </div>
           </CardBody>

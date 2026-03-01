@@ -15,6 +15,8 @@ type QuestionBodyProps = {
   onSelectOption: (optionIndex: QuestionOptionIndex) => void;
   markAllIncorrectAsWrong?: boolean;
   showPrompt?: boolean;
+  showReadPromptButton?: boolean;
+  readPromptLanguage?: string;
 };
 
 export default function QuestionBody({
@@ -24,10 +26,18 @@ export default function QuestionBody({
   onSelectOption,
   markAllIncorrectAsWrong = false,
   showPrompt = true,
+  showReadPromptButton = false,
+  readPromptLanguage,
 }: QuestionBodyProps) {
   return (
     <div className="space-y-5">
-      {showPrompt ? <QuestionPrompt markdown={question.prompt} /> : null}
+      {showPrompt ? (
+        <QuestionPrompt
+          markdown={question.prompt}
+          readLanguage={readPromptLanguage}
+          showReadButton={showReadPromptButton}
+        />
+      ) : null}
 
       <div className="space-y-4">
         {question.options.map((option, optionIndex) => {

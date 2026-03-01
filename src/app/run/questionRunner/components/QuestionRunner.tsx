@@ -15,6 +15,8 @@ type QuestionProps = {
   isAccessBlocked: boolean;
   accessDemand: AccessDemand | null;
   selectOption: (optionIndex: QuestionOptionIndex) => void;
+  showReadPromptButton?: boolean;
+  readPromptLanguage?: string;
 };
 
 const CTA_BY_DEMAND: Record<AccessDemand, { label: string; href: string }> = {
@@ -40,6 +42,8 @@ export default function QuestionRunner({
   isAccessBlocked,
   accessDemand,
   selectOption,
+  showReadPromptButton = false,
+  readPromptLanguage,
 }: QuestionProps) {
   const isLoading = isLoadingQuestion || !question;
   const cta = accessDemand
@@ -64,7 +68,9 @@ export default function QuestionRunner({
             hasSubmitted={hasSubmitted}
             onSelectOption={selectOption}
             question={question}
+            readPromptLanguage={readPromptLanguage}
             selectedOptionIndexes={selectedOptionIndexes}
+            showReadPromptButton={showReadPromptButton}
           />
         )}
       </div>

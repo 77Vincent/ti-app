@@ -35,7 +35,6 @@ export default function FavoriteIconButton({
         aria-hidden
         className={isFavorite ? "fill-current" : undefined}
         size={size === "sm" ? 20 : 24}
-        strokeWidth={2.5}
       />
     </Button>
   );
