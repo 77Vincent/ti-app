@@ -89,13 +89,16 @@ export default function DashboardLayoutClient({
                     as={NextLink}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
+                    color={isActive ? "primary" : "foreground"}
                     underline="none"
-                    className="inline-flex h-9 w-full items-center justify-center"
+                    className={[
+                      "inline-flex h-9 w-full items-center justify-center rounded-medium",
+                      isActive ? "bg-primary/15" : "",
+                    ].join(" ")}
                   >
                     <item.icon
                       aria-hidden
-                      size={isActive ? 32 : 24}
-                      className={isActive ? "text-background bg-primary rounded-full p-1 shadow" : "text-foreground"}
+                      size={24}
                     />
                     <span className="sr-only">{item.label}</span>
                   </Link>
