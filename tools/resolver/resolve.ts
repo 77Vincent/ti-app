@@ -1,5 +1,8 @@
 import type { QuestionOption } from "../types";
-import { resolveQuestionWithAI } from "./index";
+import {
+  resolveQuestionSecondPassWithAI,
+  resolveQuestionWithAI,
+} from "./index";
 import {
   deleteQuestionPoolById,
   deleteQuestionRawById,
@@ -17,6 +20,7 @@ export type ResolveNextQuestionResult =
       isCorrectOptionIndexMatch: boolean;
       hasMultipleCorrectOptions: boolean;
       hasTechnicalIssue: boolean;
+      isSecondPassApproved: boolean;
     };
 
 type ResolutionCheck = {
@@ -24,6 +28,7 @@ type ResolutionCheck = {
   isCorrectOptionIndexMatch: boolean;
   hasMultipleCorrectOptions: boolean;
   hasTechnicalIssue: boolean;
+  isSecondPassApproved: boolean;
   isPassed: boolean;
 };
 
@@ -40,13 +45,20 @@ async function evaluateQuestion(
     !hasTechnicalIssue &&
     resolvedCorrectOptionIndexes.length === 1 &&
     resolvedCorrectOptionIndexes[0] === 0;
-  const isPassed = !hasTechnicalIssue && isCorrectOptionIndexMatch;
+  const isSecondPassApproved = isCorrectOptionIndexMatch
+    ? await resolveQuestionSecondPassWithAI({
+        prompt,
+        correctOption: options[0],
+      })
+    : false;
+  const isPassed = isCorrectOptionIndexMatch && isSecondPassApproved;
 
   return {
     resolvedCorrectOptionIndexes,
     isCorrectOptionIndexMatch,
     hasMultipleCorrectOptions,
     hasTechnicalIssue,
+    isSecondPassApproved,
     isPassed,
   };
 }
@@ -77,6 +89,7 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextQue
     isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
     hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,
     hasTechnicalIssue: result.hasTechnicalIssue,
+    isSecondPassApproved: result.isSecondPassApproved,
   };
 }
 
@@ -103,5 +116,6 @@ export async function resolveNextQuestionFromPoolWithAI(): Promise<ResolveNextQu
     isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
     hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,
     hasTechnicalIssue: result.hasTechnicalIssue,
+    isSecondPassApproved: result.isSecondPassApproved,
   };
 }

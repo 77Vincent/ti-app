@@ -10,6 +10,7 @@ Flow:
 - Resolver model consumes one `QuestionRaw` row at a time, predicts all correct option indexes (raw text like `0`, `03`, `012`), and validates:
   - resolver can return `-1` for technical issues (question rejected)
   - predicted correct option indexes must be exactly `[0]`
+  - second pass sees only `prompt + option[0] + option[0].explanation`, tries to disapprove first, and only passes when no credible flaw is found
 - If validation passes, the row is inserted into `QuestionPool`.
 - Resolver can also continuously sample existing `QuestionPool` rows with the same validation rule and immediately delete rejected rows.
 

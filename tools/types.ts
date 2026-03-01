@@ -28,3 +28,8 @@ export type ResolveQuestionResult = {
   correctOptionIndexes: number[];
   hasTechnicalIssue: boolean;
 };
+
+export type ResolveQuestionSecondPassRequest = {
+  prompt: Question["prompt"];
+  correctOption: QuestionOption;
+};

@@ -1,9 +1,13 @@
 import type {
   ResolveQuestionRequest,
   ResolveQuestionResult,
+  ResolveQuestionSecondPassRequest,
 } from "../types";
 import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
-import { requestDeepSeekResolverContent } from "./client";
+import {
+  requestDeepSeekResolverContent,
+  requestDeepSeekResolverSecondPassContent,
+} from "./client";
 
 export async function resolveQuestionWithAI(
   input: ResolveQuestionRequest,
@@ -48,4 +52,16 @@ export async function resolveQuestionWithAI(
     correctOptionIndexes: answerIndexes,
     hasTechnicalIssue: false,
   };
+}
+
+export async function resolveQuestionSecondPassWithAI(
+  input: ResolveQuestionSecondPassRequest,
+): Promise<boolean> {
+  const content = await requestDeepSeekResolverSecondPassContent(input);
+  const rawOutput = content.trim();
+  if (rawOutput !== "0" && rawOutput !== "1") {
+    throw new Error("Resolver second-pass response is invalid.");
+  }
+
+  return rawOutput === "1";
 }

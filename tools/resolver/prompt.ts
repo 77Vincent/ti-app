@@ -1,4 +1,7 @@
-import type { ResolveQuestionRequest } from "../types";
+import type {
+  ResolveQuestionRequest,
+  ResolveQuestionSecondPassRequest,
+} from "../types";
 import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 
 export function buildResolverSystemPrompt(
@@ -40,6 +43,40 @@ export function buildResolverUserPrompt(input: ResolveQuestionRequest): string {
     {
       p: input.prompt,
       o: input.options.map((option) => option.text),
+    },
+    null,
+    2,
+  );
+}
+
+export function buildResolverSecondPassSystemPrompt(): string {
+  return `
+You are the second-pass validator for a multiple-choice question.
+You must try to disprove the provided correct answer and explanation first.
+
+Return raw text only:
+- 0 => reject
+- 1 => pass
+
+Rules:
+- output must be exactly one character: 0 or 1
+- no markdown, no code fences, no extra text
+- reject (0) if you find any credible flaw
+- pass (1) only if you cannot find a credible flaw
+- reject if the provided answer does not actually match the prompt
+- reject if the explanation is logically weak, contradictory, circular, vague, or factually wrong
+- reject if the explanation fails to justify why the answer is correct
+`.trim();
+}
+
+export function buildResolverSecondPassUserPrompt(
+  input: ResolveQuestionSecondPassRequest,
+): string {
+  return JSON.stringify(
+    {
+      p: input.prompt,
+      a: input.correctOption.text,
+      e: input.correctOption.explanation,
     },
     null,
     2,
