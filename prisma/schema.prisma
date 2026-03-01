@@ -16,6 +16,7 @@ model User {
   stripeCustomerId          String?            @unique
   isSoundEnabled            Boolean            @default(true)
   isLargeQuestionTextEnabled Boolean           @default(false)
+  isSlowSpeechEnabled       Boolean            @default(false)
   dailySubmittedCount       Int                @default(0)
   dailySubmittedCountDate   DateTime?
   accounts                  Account[]

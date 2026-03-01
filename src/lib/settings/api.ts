@@ -4,6 +4,7 @@ import { parseHttpErrorMessage } from "@/lib/http/error";
 export type UserSettings = {
   isSoundEnabled: boolean;
   isLargeQuestionTextEnabled: boolean;
+  isSlowSpeechEnabled: boolean;
 };
 
 type UserSettingsResponse = {
@@ -24,10 +25,14 @@ function parseUserSettingsResponse(payload: unknown): UserSettings | null {
   const isLargeQuestionTextEnabled = (
     settings as { isLargeQuestionTextEnabled?: unknown }
   ).isLargeQuestionTextEnabled;
+  const isSlowSpeechEnabled = (
+    settings as { isSlowSpeechEnabled?: unknown }
+  ).isSlowSpeechEnabled;
 
   if (
     typeof isSoundEnabled !== "boolean" ||
-    typeof isLargeQuestionTextEnabled !== "boolean"
+    typeof isLargeQuestionTextEnabled !== "boolean" ||
+    typeof isSlowSpeechEnabled !== "boolean"
   ) {
     return null;
   }
@@ -35,6 +40,7 @@ function parseUserSettingsResponse(payload: unknown): UserSettings | null {
   return {
     isSoundEnabled,
     isLargeQuestionTextEnabled,
+    isSlowSpeechEnabled,
   };
 }
 

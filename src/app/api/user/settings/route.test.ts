@@ -28,6 +28,7 @@ import { GET, PATCH } from "./route";
 const SETTINGS_PAYLOAD = {
   isSoundEnabled: true,
   isLargeQuestionTextEnabled: false,
+  isSlowSpeechEnabled: false,
 } as const;
 
 describe("user settings route", () => {
@@ -65,6 +66,7 @@ describe("user settings route", () => {
         select: {
           isSoundEnabled: true,
           isLargeQuestionTextEnabled: true,
+          isSlowSpeechEnabled: true,
         },
       });
     });
@@ -130,7 +132,7 @@ describe("user settings route", () => {
       expect(response.status).toBe(400);
       await expect(response.json()).resolves.toEqual({
         error:
-          "isSoundEnabled and/or isLargeQuestionTextEnabled must be provided as boolean.",
+          "isSoundEnabled, isLargeQuestionTextEnabled, and/or isSlowSpeechEnabled must be provided as boolean.",
       });
       expect(userUpdate).not.toHaveBeenCalled();
     });
@@ -140,6 +142,7 @@ describe("user settings route", () => {
       userUpdate.mockResolvedValueOnce({
         isSoundEnabled: false,
         isLargeQuestionTextEnabled: false,
+        isSlowSpeechEnabled: false,
       });
 
       const response = await PATCH(
@@ -154,6 +157,7 @@ describe("user settings route", () => {
         settings: {
           isSoundEnabled: false,
           isLargeQuestionTextEnabled: false,
+          isSlowSpeechEnabled: false,
         },
       });
       expect(userUpdate).toHaveBeenCalledWith({
@@ -162,6 +166,7 @@ describe("user settings route", () => {
         select: {
           isSoundEnabled: true,
           isLargeQuestionTextEnabled: true,
+          isSlowSpeechEnabled: true,
         },
       });
     });

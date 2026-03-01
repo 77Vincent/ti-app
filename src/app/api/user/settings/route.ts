@@ -7,11 +7,13 @@ export const runtime = "nodejs";
 const USER_SETTINGS_SELECT = {
   isSoundEnabled: true,
   isLargeQuestionTextEnabled: true,
+  isSlowSpeechEnabled: true,
 } as const;
 
 type UserSettingsPayload = {
   isSoundEnabled: boolean;
   isLargeQuestionTextEnabled: boolean;
+  isSlowSpeechEnabled: boolean;
 };
 
 function parseSettingsPatch(
@@ -24,6 +26,7 @@ function parseSettingsPatch(
   const payload = value as {
     isSoundEnabled?: unknown;
     isLargeQuestionTextEnabled?: unknown;
+    isSlowSpeechEnabled?: unknown;
   };
   const patch: Partial<UserSettingsPayload> = {};
 
@@ -41,6 +44,14 @@ function parseSettingsPatch(
     }
 
     patch.isLargeQuestionTextEnabled = payload.isLargeQuestionTextEnabled;
+  }
+
+  if ("isSlowSpeechEnabled" in payload) {
+    if (typeof payload.isSlowSpeechEnabled !== "boolean") {
+      return null;
+    }
+
+    patch.isSlowSpeechEnabled = payload.isSlowSpeechEnabled;
   }
 
   if (Object.keys(patch).length === 0) {
@@ -88,7 +99,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json(
       {
         error:
-          "isSoundEnabled and/or isLargeQuestionTextEnabled must be provided as boolean.",
+          "isSoundEnabled, isLargeQuestionTextEnabled, and/or isSlowSpeechEnabled must be provided as boolean.",
       },
       { status: 400 },
     );

@@ -1,0 +1,2 @@
+ALTER TABLE "User"
+ADD COLUMN "isSlowSpeechEnabled" BOOLEAN NOT NULL DEFAULT false;

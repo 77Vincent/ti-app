@@ -11,6 +11,10 @@ import {
   QUESTION_RUNNER_TEXT_SIZE_LARGE,
   QUESTION_RUNNER_TEXT_SIZE_NORMAL,
 } from "@/lib/config/typography";
+import {
+  QUESTION_PROMPT_SPEECH_RATE_DEFAULT,
+  QUESTION_PROMPT_SPEECH_RATE_SLOW,
+} from "@/lib/config/speech";
 import { useSettingsStore } from "@/lib/settings/store";
 import { usePromptSpeech } from "../hooks/usePromptSpeech";
 
@@ -31,6 +35,9 @@ export default function QuestionPrompt({
   const isLargeQuestionTextEnabled = useSettingsStore(
     (state) => state.isLargeQuestionTextEnabled,
   );
+  const isSlowSpeechEnabled = useSettingsStore(
+    (state) => state.isSlowSpeechEnabled,
+  );
   const textSizeClassName = isLargeQuestionTextEnabled
     ? QUESTION_RUNNER_TEXT_SIZE_LARGE
     : QUESTION_RUNNER_TEXT_SIZE_NORMAL;
@@ -44,6 +51,9 @@ export default function QuestionPrompt({
   } = usePromptSpeech({
     getTextToSpeak: getPromptText,
     language: readLanguage,
+    speechRate: isSlowSpeechEnabled
+      ? QUESTION_PROMPT_SPEECH_RATE_SLOW
+      : QUESTION_PROMPT_SPEECH_RATE_DEFAULT,
     cancelOnChangeKey: normalizedMarkdown,
   });
 

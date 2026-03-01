@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Moon, Music, Type } from "lucide-react";
+import { Moon, Music, Type, Volume2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { type ReactNode } from "react";
 import { updateUserSettings } from "@/lib/settings/api";
@@ -54,6 +54,12 @@ export default function DashboardSettingsPage() {
   const setIsLargeQuestionTextEnabled = useSettingsStore(
     (state) => state.setIsLargeQuestionTextEnabled,
   );
+  const isSlowSpeechEnabled = useSettingsStore(
+    (state) => state.isSlowSpeechEnabled,
+  );
+  const setIsSlowSpeechEnabled = useSettingsStore(
+    (state) => state.setIsSlowSpeechEnabled,
+  );
   const applyUserSettings = useSettingsStore((state) => state.applyUserSettings);
 
   function handleSoundChange(nextValue: boolean) {
@@ -80,6 +86,16 @@ export default function DashboardSettingsPage() {
     setTheme(nextValue ? "dark" : "light");
   }
 
+  function handleSlowSpeechChange(nextValue: boolean) {
+    setIsSlowSpeechEnabled(nextValue);
+
+    void updateUserSettings({ isSlowSpeechEnabled: nextValue })
+      .then((settings) => {
+        applyUserSettings(settings);
+      })
+      .catch(() => undefined);
+  }
+
   return (
     <div className="flex w-full max-w-sm flex-col gap-8">
       <div className="flex w-full flex-col gap-4">
@@ -95,6 +111,13 @@ export default function DashboardSettingsPage() {
           isSelected={isLargeQuestionTextEnabled}
           label="Large font"
           onValueChange={handleLargeFontChange}
+        />
+
+        <SettingItem
+          icon={<Volume2 aria-hidden size={18} />}
+          isSelected={isSlowSpeechEnabled}
+          label="slow speech"
+          onValueChange={handleSlowSpeechChange}
         />
 
         <SettingItem

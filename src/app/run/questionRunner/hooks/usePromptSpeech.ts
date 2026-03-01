@@ -7,6 +7,7 @@ import { useSpeechSynthesisEngine } from "./useSpeechSynthesisEngine";
 type UsePromptSpeechInput = {
   getTextToSpeak: () => string;
   language?: string;
+  speechRate?: number;
   cancelOnChangeKey: string;
 };
 
@@ -19,6 +20,7 @@ type UsePromptSpeechResult = {
 export function usePromptSpeech({
   getTextToSpeak,
   language,
+  speechRate,
   cancelOnChangeKey,
 }: UsePromptSpeechInput): UsePromptSpeechResult {
   const [isSpeakingUi, setIsSpeakingUi] = useState(false);
@@ -68,6 +70,9 @@ export function usePromptSpeech({
         utterance.voice = preferredVoice;
       }
     }
+    if (typeof speechRate === "number" && Number.isFinite(speechRate)) {
+      utterance.rate = speechRate;
+    }
 
     utterance.onstart = () => {
       setIsSpeakingUi(true);
@@ -80,7 +85,7 @@ export function usePromptSpeech({
     };
 
     synthesis.speak(utterance);
-  }, [cancelSpeaking, getTextToSpeak, isSpeakingUi, language, synthesis, voices]);
+  }, [cancelSpeaking, getTextToSpeak, isSpeakingUi, language, speechRate, synthesis, voices]);
 
   useEffect(() => {
     if (!isSpeechSupported) {
