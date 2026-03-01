@@ -3,7 +3,7 @@
 import { Button, Card, CardBody } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { GOOGLE_PROVIDER_ID, MICROSOFT_PROVIDER_ID } from "@/app/auth/signIn";
-import { Footer, MobileBackButton } from "@/app/components";
+import { Footer } from "@/app/components";
 import { BRAND_TAGLINE, BRAND_TITLE } from "@/lib/config/brand";
 import { PAGE_PATHS } from "@/lib/config/paths";
 import Image from "next/image";
@@ -24,10 +24,6 @@ export default function SignInPage() {
 
   return (
     <div className="flex flex-1 flex-col space-y-2">
-      <div className="mx-auto w-full max-w-md sm:hidden">
-        <MobileBackButton ariaLabel="Go back" />
-      </div>
-
       <section className="flex justify-center">
         <Card shadow="sm" className="w-full max-w-md bg-content1/90 backdrop-blur">
           <CardBody className="gap-4 p-8 text-center">
