@@ -26,8 +26,15 @@ Fixed models (not configurable):
 
 CLI usage:
 - `npm run tool:question-generate -- --subcategory english --difficulty A1`
+- `npm run tool:question-sample-seed` (loads `tools/samples/**/*.csv` into `QuestionSample`)
 - `npm run tool:question-resolve` (processes `QuestionRaw` rows until empty)
 - `npm run tool:question-resolve -- --source pool` (continuously samples `QuestionPool` rows and deletes rejected rows; stop manually)
+
+Sample CSV shape:
+- one file per subcategory, filename must match subcategory id (for example: `english.csv`, `chinese.csv`, `japanese.csv`)
+- required headers: `difficulty,prompt,o1,o2,o3,o4`
+- each row is one sample question
+- `o1` is the correct option text
 
 Subcategory difficulty ladders:
 - `english`: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`

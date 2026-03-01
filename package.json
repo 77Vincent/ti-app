@@ -13,6 +13,7 @@
     "cap:open:ios": "cap open ios",
     "cap:open:android": "cap open android",
     "tool:question-generate": "tsx tools/generator/cli.ts",
+    "tool:question-sample-seed": "tsx tools/samples/seed.ts",
     "tool:question-resolve": "tsx tools/resolver/cli.ts",
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",

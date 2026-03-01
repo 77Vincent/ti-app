@@ -9,4 +9,7 @@ export {
   persistQuestionsToRaw,
   takeNextQuestionRaw,
 } from "./raw";
-export { readRandomQuestionSamples } from "./sample";
+export {
+  persistQuestionSamples,
+  readRandomQuestionSamples,
+} from "./sample";

@@ -1,10 +1,72 @@
-import { QuestionSample } from "@prisma/client";
-import type { GenerateQuestionRequest, GenerateQuestionSample } from "../types";
+import { createHash } from "node:crypto";
+import { QuestionSample, type Prisma } from "@prisma/client";
+import { SUBCATEGORIES } from "../../src/lib/meta/subcategories";
+import type {
+  GenerateQuestionRequest,
+  GenerateQuestionSample,
+  QuestionDifficulty,
+  QuestionOption,
+  QuestionSubcategory,
+} from "../types";
+import {
+  QUESTION_ID_HASH_ALGORITHM,
+  QUESTION_ID_HASH_ENCODING,
+} from "../utils/config";
 import { prisma } from "./prisma";
 
 const GENERATOR_SAMPLE_COUNT = 3;
 
 type QuestionSampleRow = Pick<QuestionSample, "prompt" | "options">;
+type PersistQuestionSample = {
+  difficulty: QuestionDifficulty;
+  prompt: string;
+  options: QuestionOption[];
+};
+type PersistQuestionSamplesInput = {
+  subcategory: QuestionSubcategory;
+  samples: PersistQuestionSample[];
+};
+
+function getSubjectId(subcategory: QuestionSubcategory): string {
+  const matchedSubcategory = SUBCATEGORIES.find((item) => item.id === subcategory);
+  if (!matchedSubcategory) {
+    throw new Error(`Unknown subcategory: ${subcategory}`);
+  }
+
+  return matchedSubcategory.subjectId;
+}
+
+function createQuestionSampleId(
+  subcategory: QuestionSubcategory,
+  sample: PersistQuestionSample,
+): string {
+  return createHash(QUESTION_ID_HASH_ALGORITHM)
+    .update(`${subcategory}:${sample.difficulty}:${sample.prompt}`)
+    .digest(QUESTION_ID_HASH_ENCODING);
+}
+
+export async function persistQuestionSamples(
+  input: PersistQuestionSamplesInput,
+): Promise<number> {
+  if (input.samples.length === 0) {
+    return 0;
+  }
+
+  const subjectId = getSubjectId(input.subcategory);
+  const result = await prisma.questionSample.createMany({
+    data: input.samples.map((sample) => ({
+      id: createQuestionSampleId(input.subcategory, sample),
+      subjectId,
+      subcategoryId: input.subcategory,
+      prompt: sample.prompt,
+      difficulty: sample.difficulty,
+      options: sample.options as unknown as Prisma.InputJsonValue,
+    })),
+    skipDuplicates: true,
+  });
+
+  return result.count;
+}
 
 function toGenerateQuestionSample(row: QuestionSampleRow): GenerateQuestionSample {
   return {
