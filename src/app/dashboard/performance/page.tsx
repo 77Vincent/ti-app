@@ -1,18 +1,28 @@
-import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
-import SubcategoryAccuracyBars from "./SubcategoryAccuracyBars";
-import { readAuthenticatedUserId } from "@/app/api/test/session/auth";
+"use client";
+
 import { StatsCards } from "@/app/components";
 import { buildStatsCardItems } from "@/lib/stats/cards";
-import { readStats } from "@/lib/stats/data";
+import SubcategoryAccuracyBars from "./SubcategoryAccuracyBars";
+import SubcategorySubmissionBars from "./SubcategorySubmissionBars";
+import { usePerformanceStats } from "./usePerformanceStats";
 
-export default async function DashboardPerformancePage() {
-  const userId = await readAuthenticatedUserId();
-  if (!userId) {
-    throw new Error("Expected authenticated user in stats");
+export default function DashboardPerformancePage() {
+  const { payload, isLoading, loadError } = usePerformanceStats();
+
+  if (isLoading && !payload) {
+    return <p className="text-default-500">Loading...</p>;
+  }
+
+  if (!payload) {
+    return (
+      <p className="text-danger text-sm">
+        {loadError ?? "Failed to load performance."}
+      </p>
+    );
   }
 
   const { stats, subcategorySubmissionStats, subcategoryAccuracyStats } =
-    await readStats({ userId });
+    payload;
   const statItems = buildStatsCardItems(stats);
 
   return (

@@ -13,6 +13,7 @@ export const PAGE_PATHS = {
 } as const;
 
 export const API_PATHS = {
+  DASHBOARD_PERFORMANCE: "/api/dashboard/performance",
   QUESTIONS_FAVORITE: "/api/questions/favorite",
   QUESTIONS_FETCH: "/api/questions/fetch",
   TEST_SESSION: "/api/test/session",

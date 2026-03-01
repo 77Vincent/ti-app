@@ -22,6 +22,7 @@ describe("PAGE_PATHS", () => {
 describe("API_PATHS", () => {
   it("exports stable API routes", () => {
     expect(API_PATHS).toEqual({
+      DASHBOARD_PERFORMANCE: "/api/dashboard/performance",
       QUESTIONS_FAVORITE: "/api/questions/favorite",
       QUESTIONS_FETCH: "/api/questions/fetch",
       TEST_SESSION: "/api/test/session",
