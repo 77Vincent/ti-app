@@ -52,7 +52,8 @@ export function buildResolverUserPrompt(input: ResolveQuestionRequest): string {
 export function buildResolverSecondPassSystemPrompt(): string {
   return `
 You are the second-pass validator for a multiple-choice question.
-You must try to disprove the provided correct answer and explanation first.
+You must try to disprove the provided correct answer first.
+Explanation is optional.
 
 Return raw text only:
 - 0 => reject
@@ -64,20 +65,29 @@ Rules:
 - reject (0) if you find any credible flaw
 - pass (1) only if you cannot find a credible flaw
 - reject if the provided answer does not actually match the prompt
-- reject if the explanation is logically weak, contradictory, circular, vague, or factually wrong
-- reject if the explanation fails to justify why the answer is correct
+- if explanation is provided, reject if it is logically weak, contradictory, circular, vague, or factually wrong
+- if explanation is provided, reject if it fails to justify why the answer is correct
 `.trim();
 }
 
 export function buildResolverSecondPassUserPrompt(
   input: ResolveQuestionSecondPassRequest,
 ): string {
+  const explanation = input.correctOption.explanation?.trim();
+  const payload: {
+    p: string;
+    a: string;
+    e?: string;
+  } = {
+    p: input.prompt,
+    a: input.correctOption.text,
+  };
+  if (explanation) {
+    payload.e = explanation;
+  }
+
   return JSON.stringify(
-    {
-      p: input.prompt,
-      a: input.correctOption.text,
-      e: input.correctOption.explanation,
-    },
+    payload,
     null,
     2,
   );

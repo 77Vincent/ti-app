@@ -31,5 +31,7 @@ export type ResolveQuestionResult = {
 
 export type ResolveQuestionSecondPassRequest = {
   prompt: Question["prompt"];
-  correctOption: QuestionOption;
+  correctOption: Pick<QuestionOption, "text"> & {
+    explanation?: QuestionOption["explanation"];
+  };
 };

@@ -48,7 +48,10 @@ async function evaluateQuestion(
   const isSecondPassApproved = isCorrectOptionIndexMatch
     ? await resolveQuestionSecondPassWithAI({
         prompt,
-        correctOption: options[0],
+        correctOption: {
+          text: options[0].text,
+          explanation: options[0].explanation.trim() || undefined,
+        },
       })
     : false;
   const isPassed = isCorrectOptionIndexMatch && isSecondPassApproved;
