@@ -14,7 +14,7 @@ import {
 } from "../utils/config";
 import { prisma } from "./prisma";
 
-const GENERATOR_SAMPLE_COUNT = 3;
+const GENERATOR_SAMPLE_COUNT = 4;
 
 type QuestionSampleRow = Pick<QuestionSample, "prompt" | "options">;
 type PersistQuestionSample = {
