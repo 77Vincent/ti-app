@@ -17,7 +17,7 @@ ${buildDifficultyDescriptionBlock("chinese")}
 
 ${GENERATOR_COMMON_RULES_BLOCK}
 - question and option text should be in Simplified Chinese.
-- HSK1 level questions also test Chinese character pronunciation where the prompt is only the character to be tested, and options are the pronunciation in pinyin, no explanation needed.
+- HSK1 level questions also test Chinese character pronunciation where the prompt is only the character to be tested, and options are the pronunciation in pinyin.
 - When testing pronounciation, it can be either selecting the correct pronounciation for a given character, or selecting the correct character for a given pronounciation.
 - When testing pronounciation, it should purely focus on the pronounciation itself, not address any other aspect.
 `.trim();
