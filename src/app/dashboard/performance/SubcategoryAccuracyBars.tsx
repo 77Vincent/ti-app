@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Skeleton } from "@heroui/react";
 import { getSubjectIcon, type SubjectEnum } from "@/lib/meta";
 import { formatPercent } from "@/lib/stats/percent";
 
@@ -15,10 +15,12 @@ type SubcategoryAccuracyItem = {
 
 type SubcategoryAccuracyBarsProps = {
   items: readonly SubcategoryAccuracyItem[];
+  isLoading?: boolean;
 };
 
 export default function SubcategoryAccuracyBars({
   items,
+  isLoading = false,
 }: SubcategoryAccuracyBarsProps) {
   return (
     <Card shadow="sm" className="border border-2 border-primary">
@@ -27,7 +29,9 @@ export default function SubcategoryAccuracyBars({
           Top 5 accuracy
         </p>
 
-        {items.length === 0 ? null : (
+        {isLoading ? (
+          <Skeleton className="h-4.5 w-full rounded-xs" />
+        ) : items.length === 0 ? null : (
           <div className="space-y-3">
             {items.map((item) => {
               const SubjectIcon = getSubjectIcon(item.subjectId);

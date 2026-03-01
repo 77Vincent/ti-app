@@ -66,7 +66,7 @@ export default function QuestionPrompt({
       </div>
 
       {showReadButton && isSpeechSupported ? (
-        <div className="flex justify-start">
+        <div className="flex justify-start sm:hidden">
           <Button
             aria-label={isSpeaking ? "Stop reading question" : "Read question"}
             aria-pressed={isSpeaking}

@@ -113,12 +113,14 @@ export default function DashboardSettingsPage() {
           onValueChange={handleLargeFontChange}
         />
 
-        <SettingItem
-          icon={<SlowSpeech aria-hidden size={18} />}
-          isSelected={isSlowSpeechEnabled}
-          label="slow speech"
-          onValueChange={handleSlowSpeechChange}
-        />
+        <div className="sm:hidden">
+          <SettingItem
+            icon={<SlowSpeech aria-hidden size={18} />}
+            isSelected={isSlowSpeechEnabled}
+            label="slow speech"
+            onValueChange={handleSlowSpeechChange}
+          />
+        </div>
 
         <SettingItem
           icon={<Moon aria-hidden size={18} />}

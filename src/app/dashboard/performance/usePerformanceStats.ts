@@ -3,12 +3,6 @@
 import { useEffect, useState } from "react";
 import type { StatsPayload } from "@/lib/stats/data";
 import { readDashboardPerformanceStats } from "./api";
-import {
-  buildStatsCacheKey,
-  readCachedStats,
-  writeCachedStats,
-} from "./cache";
-import { readPerformanceUserCacheKey } from "./userCacheKey";
 
 type UsePerformanceStatsResult = {
   isLoading: boolean;
@@ -22,50 +16,34 @@ export function usePerformanceStats(): UsePerformanceStatsResult {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
 
-    void (async () => {
-      const userCacheKey = buildStatsCacheKey(
-        await readPerformanceUserCacheKey(),
-      );
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      const cachedPayload = readCachedStats(userCacheKey);
-      if (cachedPayload) {
-        setPayload(cachedPayload);
-        setIsLoading(false);
-      }
-
-      try {
-        const nextPayload = await readDashboardPerformanceStats(
-          controller.signal,
-        );
-        if (controller.signal.aborted) {
+    void readDashboardPerformanceStats()
+      .then((nextPayload) => {
+        if (!active) {
           return;
         }
 
         setPayload(nextPayload);
         setLoadError(null);
-        writeCachedStats(userCacheKey, nextPayload);
-      } catch (error) {
-        if (controller.signal.aborted || cachedPayload) {
+      })
+      .catch((error) => {
+        if (!active) {
           return;
         }
 
         const message =
           error instanceof Error ? error.message : "Failed to load performance.";
         setLoadError(message);
-      } finally {
-        if (!controller.signal.aborted) {
+      })
+      .finally(() => {
+        if (active) {
           setIsLoading(false);
         }
-      }
-    })();
+      });
 
     return () => {
-      controller.abort();
+      active = false;
     };
   }, []);
 

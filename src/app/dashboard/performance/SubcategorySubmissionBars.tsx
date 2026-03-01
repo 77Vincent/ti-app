@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Skeleton } from "@heroui/react";
 import { getSubjectIcon, type SubjectEnum } from "@/lib/meta";
 import { formatPercent } from "@/lib/stats/percent";
 
@@ -14,6 +14,7 @@ type SubcategorySubmissionItem = {
 type SubcategorySubmissionBarsProps = {
   items: readonly SubcategorySubmissionItem[];
   totalSubmittedCount: number;
+  isLoading?: boolean;
 };
 
 const SEGMENT_COLORS = [
@@ -27,6 +28,7 @@ const SEGMENT_COLORS = [
 export default function SubcategorySubmissionBars({
   items,
   totalSubmittedCount,
+  isLoading = false,
 }: SubcategorySubmissionBarsProps) {
   return (
     <Card shadow="sm" className="border border-2 border-primary">
@@ -35,7 +37,9 @@ export default function SubcategorySubmissionBars({
           Top 5 submitted
         </p>
 
-        {totalSubmittedCount === 0 ? null : (
+        {isLoading ? (
+          <Skeleton className="h-4.5 w-full rounded-xs" />
+        ) : totalSubmittedCount === 0 ? null : (
           <div className="space-y-3">
             <div className="flex h-4.5 overflow-hidden rounded-xs bg-default-200">
               {items.map((item, index) => (
