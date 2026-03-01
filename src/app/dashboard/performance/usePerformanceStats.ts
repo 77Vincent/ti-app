@@ -38,32 +38,30 @@ export function usePerformanceStats(): UsePerformanceStatsResult {
         setIsLoading(false);
       }
 
-      await readDashboardPerformanceStats(controller.signal)
-        .then((nextPayload) => {
-          if (controller.signal.aborted) {
-            return;
-          }
+      try {
+        const nextPayload = await readDashboardPerformanceStats(
+          controller.signal,
+        );
+        if (controller.signal.aborted) {
+          return;
+        }
 
-          setPayload(nextPayload);
-          setLoadError(null);
-          writeCachedStats(userCacheKey, nextPayload);
-        })
-        .catch((error) => {
-          if (controller.signal.aborted || cachedPayload) {
-            return;
-          }
+        setPayload(nextPayload);
+        setLoadError(null);
+        writeCachedStats(userCacheKey, nextPayload);
+      } catch (error) {
+        if (controller.signal.aborted || cachedPayload) {
+          return;
+        }
 
-          const message =
-            error instanceof Error
-              ? error.message
-              : "Failed to load performance.";
-          setLoadError(message);
-        })
-        .finally(() => {
-          if (!controller.signal.aborted) {
-            setIsLoading(false);
-          }
-        });
+        const message =
+          error instanceof Error ? error.message : "Failed to load performance.";
+        setLoadError(message);
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
     })();
 
     return () => {
