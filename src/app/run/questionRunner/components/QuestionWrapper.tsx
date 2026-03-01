@@ -146,7 +146,7 @@ export default function QuestionWrapper({
       : "border-danger-500";
 
   return (
-    <div className="w-full max-w-3xl space-y-3 pb-20 pt-15 sm:pb-0 sm:pt-0">
+    <div className="w-full max-w-3xl space-y-3 pb-20 pt-16 sm:pb-0 sm:pt-0">
       <MidiSfx
         presetId="submitCorrect"
         ref={submitCorrectMidiSfxRef}
