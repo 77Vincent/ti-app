@@ -8,7 +8,7 @@ Return only valid JSON with this shape:
 [
   {
     "p": string,
-    "o": [[string] | [string, string]]
+    "o": [string]
   }
 ]
 `.trim();
@@ -22,14 +22,11 @@ Rules:
 - first character must be "[" and last character must be "]".
 - no trailing commas and no comments.
 - p is the question prompt containing only prompting content.
-- p and every o[i][0] must be non-empty strings.
-- o is options as [text] or [text, explanation] tuples.
+- p and every o[i] must be non-empty strings.
+- o is options as a text-only string array.
 - options count must be ${QUESTION_OPTION_COUNT}.
 - option text values in o must be unique within the same question.
 - the correct answer must always be o[0].
-- for language subject, do not include explanation.
-- for non-language subjects, if explanation is included, it should be clear and consistent with correctness.
-- for non-language subjects, if explanation is included, it should clearly and concisely explain the reason.
 - the highest difficulty should be outstandingly challenging.
 - answers should not simply repeat the prompt.
 - there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.

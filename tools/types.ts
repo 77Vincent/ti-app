@@ -11,7 +11,6 @@ export type GenerateQuestionRequest = {
 
 export type QuestionOption = {
   text: string;
-  explanation?: string;
 };
 
 export type Question = {
@@ -33,7 +32,5 @@ export type ResolveQuestionResult = {
 
 export type ResolveQuestionSecondPassRequest = {
   prompt: Question["prompt"];
-  correctOption: Pick<QuestionOption, "text"> & {
-    explanation?: QuestionOption["explanation"];
-  };
+  correctOption: Pick<QuestionOption, "text">;
 };

@@ -17,7 +17,6 @@ ${buildDifficultyDescriptionBlock("probability")}
 
 ${GENERATOR_COMMON_RULES_BLOCK}
 - question prompt and options are in English.
-- if explanations are included, they must be in English.
 - each question must test probability knowledge directly.
 - exactly one unambiguously correct option.
 - incorrect options should be plausible and reflect common probability mistakes.

@@ -60,6 +60,7 @@ export default function QuestionChoice({
     : isSelected
       ? "border-primary bg-primary-50 dark:bg-primary-500/20"
       : "border-default-300 bg-background";
+  const explanation = option.explanation?.trim();
 
   return (
     <div className="space-y-1">
@@ -77,11 +78,11 @@ export default function QuestionChoice({
         </CardBody>
       </Card>
 
-      {hasSubmitted && option.explanation ? (
+      {hasSubmitted && explanation ? (
         <Card shadow="none">
           <CardBody className={`px-4 py-1 ${textSizeClassName} leading-relaxed opacity-70`}>
             <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
-              {normalizeMathMarkdown(option.explanation)}
+              {normalizeMathMarkdown(explanation)}
             </ReactMarkdown>
           </CardBody>
         </Card>

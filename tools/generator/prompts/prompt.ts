@@ -66,11 +66,7 @@ export function buildGeneratorUserPromptWithSamples(
 
   const samplePayload = samples.map((sample) => ({
     p: sample.prompt,
-    o: sample.options.map((option) => (
-      option.explanation === undefined
-        ? [option.text]
-        : [option.text, option.explanation]
-    )),
+    o: sample.options.map((option) => option.text),
   }));
 
   return `
