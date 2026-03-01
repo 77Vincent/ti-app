@@ -1,9 +1,9 @@
 .DEFAULT_GOAL := help
 
 NPM := npm
-QUESTION_ALL_REPEAT_COUNT := 50
+QUESTION_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability question-all cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
+.PHONY: help install dev build start lint test check clean clean-deps question question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
 
 help:
 	@echo "Common commands:"
@@ -23,7 +23,6 @@ help:
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
 	@echo "  make question-probability Generate Probability questions for A..C (GAISE II)"
-	@echo "  make question-all      Generate English, Chinese, Japanese, and Probability questions"
 	@echo "  make cap-add-ios       Create iOS native project via Capacitor"
 	@echo "  make cap-add-android   Create Android native project via Capacitor"
 	@echo "  make cap-sync          Sync Capacitor config/assets/plugins"
@@ -70,31 +69,31 @@ question-resolve-pool:
 	$(NPM) run tool:question-resolve -- --source pool
 
 question-english:
-	for d in A1 A2 B1 B2 C1 C2; do \
-		$(MAKE) question subcategory=english difficulty=$$d || exit 1; \
+	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \
+		for d in A1 A2 B1 B2 C1 C2; do \
+			$(MAKE) question subcategory=english difficulty=$$d || exit 1; \
+		done; \
 	done
 
 question-chinese:
-	for d in HSK1 HSK2 HSK3 HSK4 HSK5 HSK6; do \
-		$(MAKE) question subcategory=chinese difficulty=$$d || exit 1; \
+	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \
+		for d in HSK1 HSK2 HSK3 HSK4 HSK5 HSK6; do \
+			$(MAKE) question subcategory=chinese difficulty=$$d || exit 1; \
+		done; \
 	done
 
 question-japanese:
-	for d in N5 N4 N3 N2 N1; do \
-		$(MAKE) question subcategory=japanese difficulty=$$d || exit 1; \
+	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \
+		for d in N5 N4 N3 N2 N1; do \
+			$(MAKE) question subcategory=japanese difficulty=$$d || exit 1; \
+		done; \
 	done
 
 question-probability:
-	for d in A B C; do \
-		$(MAKE) question subcategory=probability difficulty=$$d || exit 1; \
-	done
-
-question-all:
-	for i in $$(seq 1 $(QUESTION_ALL_REPEAT_COUNT)); do \
-		$(MAKE) question-english || exit 1; \
-		$(MAKE) question-chinese || exit 1; \
-		$(MAKE) question-japanese || exit 1; \
-		$(MAKE) question-probability || exit 1; \
+	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \
+		for d in A B C; do \
+			$(MAKE) question subcategory=probability difficulty=$$d || exit 1; \
+		done; \
 	done
 
 cap-add-ios:
