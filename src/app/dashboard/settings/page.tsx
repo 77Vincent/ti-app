@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Moon, Music, Type, Volume2 } from "lucide-react";
+import { Moon, Volume as PlaySound, Type, Speech as SlowSpeech } from "lucide-react";
 import { useTheme } from "next-themes";
 import { type ReactNode } from "react";
 import { updateUserSettings } from "@/lib/settings/api";
@@ -100,7 +100,7 @@ export default function DashboardSettingsPage() {
     <div className="flex w-full max-w-sm flex-col gap-8">
       <div className="flex w-full flex-col gap-4">
         <SettingItem
-          icon={<Music aria-hidden size={18} />}
+          icon={<PlaySound aria-hidden size={18} />}
           isSelected={isSoundEnabled}
           label="Sound"
           onValueChange={handleSoundChange}
@@ -114,7 +114,7 @@ export default function DashboardSettingsPage() {
         />
 
         <SettingItem
-          icon={<Volume2 aria-hidden size={18} />}
+          icon={<SlowSpeech aria-hidden size={18} />}
           isSelected={isSlowSpeechEnabled}
           label="slow speech"
           onValueChange={handleSlowSpeechChange}

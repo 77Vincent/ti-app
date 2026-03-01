@@ -16,6 +16,7 @@ import {
 } from "react";
 import NextLink from "next/link";
 import { PAGE_PATHS } from "@/lib/config/paths";
+import { resolvePromptSpeechLanguage } from "@/lib/config/speech";
 import {
   triggerLightImpactHaptic,
   triggerSelectionHaptic,
@@ -30,19 +31,6 @@ import { useQuestionFavorite } from "../hooks/useQuestionFavorite";
 import { isAnswerCorrect } from "../utils/evaluation";
 import SessionAccuracy from "./SessionAccuracy";
 import SessionDifficultyMilestone from "./SessionDifficultyMilestone";
-
-function resolveReadPromptLanguage(subcategoryId: QuestionRunnerProps["subcategoryId"]): string | undefined {
-  switch (subcategoryId) {
-    case "english":
-      return "en-US";
-    case "chinese":
-      return "zh-CN";
-    case "japanese":
-      return "ja-JP";
-    default:
-      return undefined;
-  }
-}
 
 export default function QuestionWrapper({
   id,
@@ -114,7 +102,7 @@ export default function QuestionWrapper({
     hasSubmitted &&
     !isSubmitting;
   const readPromptLanguage = subjectId === "language"
-    ? resolveReadPromptLanguage(subcategoryId)
+    ? resolvePromptSpeechLanguage(subcategoryId)
     : undefined;
 
   const handleOptionSelect = useCallback((optionIndex: QuestionOptionIndex) => {
