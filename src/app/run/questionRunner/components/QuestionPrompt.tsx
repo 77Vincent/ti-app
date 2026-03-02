@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { type ReactNode, useCallback, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -22,6 +22,14 @@ type QuestionPromptProps = {
   markdown: string;
   showReadButton?: boolean;
   readLanguage?: string;
+};
+
+const PROMPT_MARKDOWN_COMPONENTS = {
+  strong: ({ children }: { children?: ReactNode }) => (
+    <strong className="font-bold text-primary dark:text-primary-500">
+      {children}
+    </strong>
+  ),
 };
 
 export default function QuestionPrompt({
@@ -60,7 +68,11 @@ export default function QuestionPrompt({
   return (
     <div className="space-y-1">
       <div ref={promptTextContainerRef} className={`${textSizeClassName} leading-relaxed`}>
-        <ReactMarkdown rehypePlugins={[rehypeKatex]} remarkPlugins={[remarkMath]}>
+        <ReactMarkdown
+          components={PROMPT_MARKDOWN_COMPONENTS}
+          rehypePlugins={[rehypeKatex]}
+          remarkPlugins={[remarkMath]}
+        >
           {normalizedMarkdown}
         </ReactMarkdown>
       </div>
