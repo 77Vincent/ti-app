@@ -28,7 +28,7 @@ Rules:
 - option text values in o must be unique within the same question.
 - the correct answer must always be o[0].
 - the highest difficulty should be outstandingly challenging.
-- answers should not simply repeat the prompt.
+- answers should not repeat the prompt.
 - there should be no ambiguiy, the correct answer should logically make sense, and must be clearly correct.
 - low difficulty questions should not be lengthy, wordy.
 - be creative on the question content, try to cover different knowledge points and scenarios, avoid being repetitive across questions.

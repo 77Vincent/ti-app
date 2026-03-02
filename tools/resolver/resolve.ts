@@ -32,10 +32,29 @@ type ResolutionCheck = {
   isPassed: boolean;
 };
 
+function hasOptionRepeatingPrompt(
+  prompt: string,
+  options: QuestionOption[],
+): boolean {
+  const normalizedPrompt = prompt.trim();
+  return options.some((option) => option.text.trim() === normalizedPrompt);
+}
+
 async function evaluateQuestion(
   prompt: string,
   options: QuestionOption[],
 ): Promise<ResolutionCheck> {
+  if (hasOptionRepeatingPrompt(prompt, options)) {
+    return {
+      resolvedCorrectOptionIndexes: [],
+      isCorrectOptionIndexMatch: false,
+      hasMultipleCorrectOptions: false,
+      hasTechnicalIssue: true,
+      isSecondPassApproved: false,
+      isPassed: false,
+    };
+  }
+
   const resolution = await resolveQuestionWithAI({ prompt, options });
   const resolvedCorrectOptionIndexes = [...resolution.correctOptionIndexes]
     .sort((a, b) => a - b);
