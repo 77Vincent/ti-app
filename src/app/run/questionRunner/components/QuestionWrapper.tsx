@@ -230,7 +230,7 @@ export default function QuestionWrapper({
                 isLoading={isSubmitting}
                 onPress={handleNextPress}
               >
-                {isSubmitting ? null : <ChevronRight aria-hidden size={24} />}
+                {isSubmitting ? null : <ChevronRight aria-hidden size={28} />}
               </Button>
             </div>
           </CardBody>
