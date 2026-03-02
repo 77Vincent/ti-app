@@ -6,6 +6,7 @@ import {
   Chip,
   Select,
   SelectItem,
+  Skeleton,
 } from "@heroui/react";
 import { FavoriteIconButton } from "@/app/components";
 import { getSubjectIcon } from "@/lib/meta";
@@ -112,7 +113,18 @@ export default function DashboardFavoritesPage() {
       </div>
 
       {isLoading ? (
-        <p className="text-default-500">Loading...</p>
+        <Card
+          shadow="sm"
+          className="opacity-80 border border-2 border-primary"
+        >
+          <CardBody className="space-y-3">
+            <Skeleton className="h-10 w-full rounded-md" />
+            <div className="flex items-center justify-end gap-4">
+              <Skeleton className="h-6 w-8 rounded-full" />
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+          </CardBody>
+        </Card>
       ) : null}
 
       {!isLoading && questions.length === 0 ? (
@@ -125,7 +137,7 @@ export default function DashboardFavoritesPage() {
             const isExpanded = expandedQuestionIds.has(question.id);
 
             return (
-              <Card key={question.id} shadow="sm" className="border border-2 border-primary">
+              <Card isHoverable key={question.id} shadow="sm" className="border border-2 border-primary">
                 <CardBody
                   aria-expanded={isExpanded}
                   className="space-y-3 cursor-pointer"

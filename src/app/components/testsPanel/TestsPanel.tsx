@@ -147,7 +147,7 @@ export function TestsPanel() {
                         subcategory.id,
                       )
                     }
-                    variant="bordered"
+                    variant="ghost"
                   >
                     {isPending ? null : subcategory.label}
                   </Button>
