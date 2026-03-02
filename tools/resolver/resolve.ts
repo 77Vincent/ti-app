@@ -52,17 +52,28 @@ function normalizeText(text: string): string {
     .toLowerCase();
 }
 
+function normalizeTextIgnoringPunctuation(text: string): string {
+  return normalizeText(text)
+    .replace(/[\p{P}\p{S}]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function hasStaticTechnicalIssue(
   prompt: string,
   options: QuestionOption[],
 ): boolean {
   const normalizedPrompt = normalizeText(prompt);
+  const punctuationInsensitivePrompt = normalizeTextIgnoringPunctuation(prompt);
   // Rule 1: prompt must be non-empty and options count must match the fixed contract.
   if (normalizedPrompt.length === 0 || options.length !== QUESTION_OPTION_COUNT) {
     return true;
   }
 
   const normalizedOptions = options.map((option) => normalizeText(option.text));
+  const punctuationInsensitiveOptions = options.map((option) => (
+    normalizeTextIgnoringPunctuation(option.text)
+  ));
   // Rule 2: each option must be non-empty.
   if (normalizedOptions.some((text) => text.length === 0)) {
     return true;
@@ -73,8 +84,13 @@ function hasStaticTechnicalIssue(
     return true;
   }
 
-  // Rule 4: no option may repeat the prompt text.
-  return normalizedOptions.some((text) => text === normalizedPrompt);
+  // Rule 4: options must stay unique even after punctuation/symbol differences are ignored.
+  if (new Set(punctuationInsensitiveOptions).size !== punctuationInsensitiveOptions.length) {
+    return true;
+  }
+
+  // Rule 5: no option may repeat the prompt text, including punctuation-only variants.
+  return punctuationInsensitiveOptions.some((text) => text === punctuationInsensitivePrompt);
 }
 
 async function evaluateQuestion(
