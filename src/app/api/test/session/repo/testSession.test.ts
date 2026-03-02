@@ -530,11 +530,17 @@ describe("test session repo", () => {
     testSessionFindUnique.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-3",
+      recentQuestionResults: [
+        { questionId: "question-1", isCorrect: true },
+        { questionId: "question-2", isCorrect: false },
+        { questionId: "question-3", isCorrect: true },
+      ],
     });
 
     await expect(readTestSessionQuestionState("session-1")).resolves.toEqual({
       id: "session-1",
       currentQuestionId: "question-3",
+      recentQuestionIds: ["question-1", "question-2", "question-3"],
     });
 
     expect(testSessionFindUnique).toHaveBeenCalledWith({
@@ -544,6 +550,7 @@ describe("test session repo", () => {
       select: {
         id: true,
         currentQuestionId: true,
+        recentQuestionResults: true,
       },
     });
   });

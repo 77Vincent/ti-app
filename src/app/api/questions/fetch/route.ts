@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type { Question } from "@/lib/question/model";
 import { parseQuestionParam } from "@/lib/testSession/validation";
-import { MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT } from "@/lib/config/testPolicy";
+import {
+  MAX_NON_PRO_DAILY_SUBMITTED_QUESTION_COUNT,
+  MAX_RECENT_QUESTION_RESULT_COUNT,
+} from "@/lib/config/testPolicy";
 import { isUserPro } from "@/lib/billing/pro";
 import { readAuthenticatedUserId } from "../../test/session/auth";
 import { readUserDailySubmittedCount } from "../../test/session/repo/user";
@@ -29,6 +32,19 @@ function withShuffledOptions(
 ): Question {
   const seedKey = sessionId ? `${sessionId}:${question.id}` : question.id;
   return shuffleQuestionOptions(question, seedKey);
+}
+
+function buildRecentExcludedQuestionIds(
+  recentQuestionIds: string[],
+  currentQuestionId: string | null,
+): string[] {
+  const recentVisitedQuestionIds = currentQuestionId
+    ? [...recentQuestionIds, currentQuestionId]
+    : recentQuestionIds;
+
+  return Array.from(new Set(recentVisitedQuestionIds)).slice(
+    -MAX_RECENT_QUESTION_RESULT_COUNT,
+  );
 }
 
 async function readDailyLimitResponse(): Promise<NextResponse | null> {
@@ -97,7 +113,13 @@ export async function POST(request: Request) {
           }
         }
 
-        const nextQuestion = await readRandomQuestionFromPool(input);
+        const excludedQuestionIds = buildRecentExcludedQuestionIds(
+          session.recentQuestionIds,
+          session.currentQuestionId,
+        );
+        const nextQuestion = await readRandomQuestionFromPool(input, {
+          excludeQuestionIds: excludedQuestionIds,
+        });
         if (!nextQuestion) {
           return noQuestionFoundResponse();
         }

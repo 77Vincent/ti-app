@@ -21,13 +21,26 @@ const QUESTION_POOL_READ_SELECT = {
   correctOptionIndexes: true,
 } as const;
 
+type ReadRandomQuestionFromPoolOptions = {
+  excludeQuestionIds?: string[];
+};
+
 export async function readRandomQuestionFromPool(
   input: QuestionParam,
+  options?: ReadRandomQuestionFromPoolOptions,
 ): Promise<Question | null> {
+  const excludedQuestionIds = options?.excludeQuestionIds ?? [];
   const where = {
     subjectId: input.subjectId,
     subcategoryId: input.subcategoryId,
     difficulty: input.difficulty,
+    ...(excludedQuestionIds.length > 0
+      ? {
+          id: {
+            notIn: excludedQuestionIds,
+          },
+        }
+      : {}),
   };
 
   const total = await prisma.questionPool.count({ where });

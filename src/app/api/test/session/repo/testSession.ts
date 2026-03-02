@@ -55,6 +55,7 @@ const TEST_SESSION_ADAPTIVE_SELECT = {
 const TEST_SESSION_QUESTION_STATE_SELECT = {
   id: true,
   currentQuestionId: true,
+  recentQuestionResults: true,
 } as const;
 
 type RecentQuestionResult = {
@@ -276,6 +277,9 @@ export async function readTestSessionQuestionState(sessionId: string) {
   return {
     id: session.id,
     currentQuestionId: session.currentQuestionId,
+    recentQuestionIds: (
+      session.recentQuestionResults as RecentQuestionResult[]
+    ).map((item) => item.questionId),
   };
 }
 

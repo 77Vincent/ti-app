@@ -121,6 +121,7 @@ describe("fetch question route", () => {
     readTestSessionQuestionState.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-current",
+      recentQuestionIds: [],
     });
     readQuestionFromPoolById.mockResolvedValueOnce(VALID_QUESTION);
     const route = await import("./route");
@@ -155,6 +156,7 @@ describe("fetch question route", () => {
     readTestSessionQuestionState.mockResolvedValueOnce({
       id: "session-1",
       currentQuestionId: "question-current",
+      recentQuestionIds: [],
     });
     const route = await import("./route");
 
@@ -173,7 +175,9 @@ describe("fetch question route", () => {
     await expect(response.json()).resolves.toEqual({
       question: VALID_QUESTION,
     });
-    expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+    expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT, {
+      excludeQuestionIds: ["question-current"],
+    });
     expect(updateTestSessionCurrentQuestionId).toHaveBeenCalledWith(
       "session-1",
       VALID_QUESTION.id,
@@ -267,6 +271,64 @@ describe("fetch question route", () => {
     expect(readUserDailySubmittedCount).toHaveBeenCalledWith("user-1");
     expect(isUserPro).toHaveBeenCalledWith("user-1");
     expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT);
+  });
+
+  it("excludes only the last 10 unique recently visited question ids for next question fetch", async () => {
+    readTestSessionQuestionState.mockResolvedValueOnce({
+      id: "session-1",
+      currentQuestionId: "question-12",
+      recentQuestionIds: [
+        "question-1",
+        "question-2",
+        "question-3",
+        "question-4",
+        "question-5",
+        "question-6",
+        "question-7",
+        "question-8",
+        "question-9",
+        "question-10",
+        "question-11",
+        "question-12",
+      ],
+    });
+    const route = await import("./route");
+
+    const response = await route.POST(
+      new Request("http://localhost/api/questions/fetch", {
+        body: JSON.stringify({
+          ...VALID_INPUT,
+          sessionId: "session-1",
+          next: true,
+        }),
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const [, options] = readRandomQuestionFromPool.mock.calls[0] as [
+      typeof VALID_INPUT,
+      { excludeQuestionIds?: string[] },
+    ];
+
+    expect(readRandomQuestionFromPool).toHaveBeenCalledWith(VALID_INPUT, {
+      excludeQuestionIds: expect.any(Array),
+    });
+    expect(options.excludeQuestionIds).toHaveLength(10);
+    expect(options.excludeQuestionIds).toEqual(
+      expect.arrayContaining([
+        "question-3",
+        "question-4",
+        "question-5",
+        "question-6",
+        "question-7",
+        "question-8",
+        "question-9",
+        "question-10",
+        "question-11",
+        "question-12",
+      ]),
+    );
   });
 
   it("returns 404 when no pooled question exists", async () => {
