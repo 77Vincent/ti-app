@@ -67,6 +67,8 @@ ${difficultyPrompt}
 Reference examples from curated samples:
 - learn quality and style from them
 - do not copy wording or scenarios
+- do not reuse or slightly modify the samples
+- cover various knowledge points
 
 ${JSON.stringify(samplePayload, null, 2)}
 `.trim();
