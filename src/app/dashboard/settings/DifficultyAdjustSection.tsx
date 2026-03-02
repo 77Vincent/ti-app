@@ -1,10 +1,31 @@
 "use client";
 
-import { Select, SelectItem } from "@heroui/react";
+import { Select, SelectItem, Skeleton } from "@heroui/react";
 import { DIFFICULTY_LADDER_BY_SUBCATEGORY } from "@/lib/difficulty";
 import { getSubjectIcon, SUBCATEGORIES } from "@/lib/meta";
 import { useDifficultyAdjustments } from "./useDifficultyAdjustments";
 import { ProBadge } from "@/app/components";
+
+const DIFFICULTY_ADJUST_SKELETON_COUNT = SUBCATEGORIES.length;
+
+function DifficultyAdjustLoadingSkeleton({ rowCount }: { rowCount: number }) {
+  return (
+    <div className="flex w-full flex-col gap-2">
+      {Array.from({ length: rowCount }).map((_, index) => (
+        <div
+          className="flex w-full items-center justify-between gap-3"
+          key={`difficulty-adjust-skeleton-${index + 1}`}
+        >
+          <span className="inline-flex items-center gap-2">
+            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-5 w-20 rounded-md" />
+          </span>
+          <Skeleton className="h-7.5 w-28 rounded-md" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function DifficultyAdjustSection() {
   const {
@@ -24,9 +45,9 @@ export default function DifficultyAdjustSection() {
         <ProBadge />
       </div>
 
-      {isLoadingSessions ? (
-        <p className="text-default-500 text-sm">Loading...</p>
-      ) : null}
+      {isLoadingSessions
+        ? <DifficultyAdjustLoadingSkeleton rowCount={DIFFICULTY_ADJUST_SKELETON_COUNT} />
+        : null}
 
       {!isLoadingSessions ? (
         <div className="flex w-full flex-col gap-2">
