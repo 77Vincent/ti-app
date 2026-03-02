@@ -3,6 +3,7 @@ import {
   resolveQuestionSecondPassWithAI,
   resolveQuestionWithAI,
 } from "./index";
+import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 import {
   deleteQuestionPoolById,
   deleteQuestionRawById,
@@ -32,27 +33,56 @@ type ResolutionCheck = {
   isPassed: boolean;
 };
 
-function hasOptionRepeatingPrompt(
+function buildTechnicalIssueResult(): ResolutionCheck {
+  return {
+    resolvedCorrectOptionIndexes: [],
+    isCorrectOptionIndexMatch: false,
+    hasMultipleCorrectOptions: false,
+    hasTechnicalIssue: true,
+    isSecondPassApproved: false,
+    isPassed: false,
+  };
+}
+
+function normalizeText(text: string): string {
+  return text
+    .normalize("NFKC")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+function hasStaticTechnicalIssue(
   prompt: string,
   options: QuestionOption[],
 ): boolean {
-  const normalizedPrompt = prompt.trim();
-  return options.some((option) => option.text.trim() === normalizedPrompt);
+  const normalizedPrompt = normalizeText(prompt);
+  // Rule 1: prompt must be non-empty and options count must match the fixed contract.
+  if (normalizedPrompt.length === 0 || options.length !== QUESTION_OPTION_COUNT) {
+    return true;
+  }
+
+  const normalizedOptions = options.map((option) => normalizeText(option.text));
+  // Rule 2: each option must be non-empty.
+  if (normalizedOptions.some((text) => text.length === 0)) {
+    return true;
+  }
+
+  // Rule 3: options must be unique after normalization.
+  if (new Set(normalizedOptions).size !== normalizedOptions.length) {
+    return true;
+  }
+
+  // Rule 4: no option may repeat the prompt text.
+  return normalizedOptions.some((text) => text === normalizedPrompt);
 }
 
 async function evaluateQuestion(
   prompt: string,
   options: QuestionOption[],
 ): Promise<ResolutionCheck> {
-  if (hasOptionRepeatingPrompt(prompt, options)) {
-    return {
-      resolvedCorrectOptionIndexes: [],
-      isCorrectOptionIndexMatch: false,
-      hasMultipleCorrectOptions: false,
-      hasTechnicalIssue: true,
-      isSecondPassApproved: false,
-      isPassed: false,
-    };
+  if (hasStaticTechnicalIssue(prompt, options)) {
+    return buildTechnicalIssueResult();
   }
 
   const resolution = await resolveQuestionWithAI({ prompt, options });
