@@ -14,10 +14,6 @@ import {
   JAPANESE_GENERATOR_SYSTEM_PROMPT,
   buildJapaneseGeneratorUserPrompt,
 } from "./japanese";
-import {
-  PROBABILITY_GENERATOR_SYSTEM_PROMPT,
-  buildProbabilityGeneratorUserPrompt,
-} from "./probability";
 
 export function buildGeneratorSystemPrompt(
   input: GenerateQuestionRequest,
@@ -29,8 +25,6 @@ export function buildGeneratorSystemPrompt(
       return CHINESE_GENERATOR_SYSTEM_PROMPT;
     case "japanese":
       return JAPANESE_GENERATOR_SYSTEM_PROMPT;
-    case "probability":
-      return PROBABILITY_GENERATOR_SYSTEM_PROMPT;
     default:
       throw new Error(
         `No generator system prompt configured for subcategory "${input.subcategory}".`,
@@ -46,8 +40,6 @@ function buildGeneratorDifficultyUserPrompt(input: GenerateQuestionRequest): str
       return buildChineseGeneratorUserPrompt(input);
     case "japanese":
       return buildJapaneseGeneratorUserPrompt(input);
-    case "probability":
-      return buildProbabilityGeneratorUserPrompt(input);
     default:
       throw new Error(
         `No generator user prompt configured for subcategory "${input.subcategory}".`,
