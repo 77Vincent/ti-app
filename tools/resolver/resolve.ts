@@ -5,10 +5,8 @@ import {
 } from "./index";
 import { QUESTION_OPTION_COUNT } from "../../src/lib/config/question";
 import {
-  deleteQuestionPoolById,
   deleteQuestionRawById,
   persistQuestionRawToPool,
-  takeNextQuestionPool,
   takeNextQuestionRaw,
 } from "../repo";
 
@@ -152,33 +150,6 @@ export async function resolveNextQuestionFromRawWithAI(): Promise<ResolveNextQue
   return {
     status: result.isPassed ? "passed" : "rejected",
     questionId: rawQuestion.id,
-    resolvedCorrectOptionIndexes: result.resolvedCorrectOptionIndexes,
-    isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
-    hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,
-    hasTechnicalIssue: result.hasTechnicalIssue,
-    isSecondPassApproved: result.isSecondPassApproved,
-  };
-}
-
-export async function resolveNextQuestionFromPoolWithAI(): Promise<ResolveNextQuestionResult> {
-  const poolQuestion = await takeNextQuestionPool();
-  if (!poolQuestion) {
-    return { status: "empty" };
-  }
-
-  const result = await evaluateQuestion(
-    poolQuestion.prompt,
-    poolQuestion.options as unknown as QuestionOption[],
-  );
-
-  if (!result.isPassed) {
-    console.log(poolQuestion);
-    await deleteQuestionPoolById(poolQuestion.id);
-  }
-
-  return {
-    status: result.isPassed ? "passed" : "rejected",
-    questionId: poolQuestion.id,
     resolvedCorrectOptionIndexes: result.resolvedCorrectOptionIndexes,
     isCorrectOptionIndexMatch: result.isCorrectOptionIndexMatch,
     hasMultipleCorrectOptions: result.hasMultipleCorrectOptions,

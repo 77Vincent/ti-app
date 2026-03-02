@@ -12,7 +12,6 @@ Flow:
   - predicted correct option indexes must be exactly `[0]`
   - second pass sees only `prompt + option[0]`; it tries to disapprove first and only passes when no credible flaw is found
 - If validation passes, the row is inserted into `QuestionPool`.
-- Resolver can also continuously sample existing `QuestionPool` rows with the same validation rule and immediately delete rejected rows.
 
 Environment variables:
 - `AI_API_KEY` (required)
@@ -28,7 +27,6 @@ CLI usage:
 - `npm run tool:question-generate -- --subcategory english --difficulty A1`
 - `npm run tool:question-sample-seed` (loads `tools/samples/**/*.csv` into `QuestionSample`)
 - `npm run tool:question-resolve` (processes `QuestionRaw` rows until empty)
-- `npm run tool:question-resolve -- --source pool` (continuously samples `QuestionPool` rows and deletes rejected rows; stop manually)
 
 Sample CSV shape:
 - one file per subcategory, filename must match subcategory id (for example: `english.csv`, `chinese.csv`, `japanese.csv`)

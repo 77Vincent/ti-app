@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-sample-seed question-resolve question-resolve-pool question-english question-chinese question-japanese question-probability cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
+.PHONY: help install dev build start lint test check clean clean-deps question question-sample-seed question-resolve question-english question-chinese question-japanese question-probability cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
 
 help:
 	@echo "Common commands:"
@@ -19,7 +19,6 @@ help:
 	@echo "  make question subcategory=english difficulty=A1  Run question AI tool"
 	@echo "  make question-sample-seed   Seed QuestionSample rows from tools/samples/**/*.csv"
 	@echo "  make question-resolve   Resolve QuestionRaw rows until empty and move passed ones to QuestionPool"
-	@echo "  make question-resolve-pool   Continuously sample QuestionPool and delete rejected rows (stop manually)"
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
@@ -68,9 +67,6 @@ question-sample-seed:
 
 question-resolve:
 	$(NPM) run tool:question-resolve
-
-question-resolve-pool:
-	$(NPM) run tool:question-resolve -- --source pool
 
 question-english:
 	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \

@@ -1,23 +1,11 @@
 #!/usr/bin/env node
 
-import { Command, InvalidArgumentError } from "commander";
+import { Command } from "commander";
 import { disconnectRepoPrisma } from "../repo";
 import {
-  resolveNextQuestionFromPoolWithAI,
   resolveNextQuestionFromRawWithAI,
 } from "./resolve";
 import { loadToolsEnv } from "../utils/env";
-
-type ResolveSource = "raw" | "pool";
-
-function parseSource(value: string): ResolveSource {
-  const normalizedValue = value.trim().toLowerCase();
-  if (normalizedValue !== "raw" && normalizedValue !== "pool") {
-    throw new InvalidArgumentError("source must be one of: raw, pool.");
-  }
-
-  return normalizedValue;
-}
 
 async function main(): Promise<void> {
   loadToolsEnv(import.meta.url);
@@ -26,27 +14,17 @@ async function main(): Promise<void> {
   program
     .name("question-resolve")
     .description("Resolve and validate generated questions")
-    .option(
-      "-s, --source <source>",
-      "Source table to resolve: raw or pool",
-      parseSource,
-      "raw",
-    )
     .showHelpAfterError();
 
   await program.parseAsync(process.argv);
 
-  const options = program.opts<{ source: ResolveSource }>();
-
   let processedCount = 0;
 
   while (true) {
-    const result = options.source === "raw"
-      ? await resolveNextQuestionFromRawWithAI()
-      : await resolveNextQuestionFromPoolWithAI();
+    const result = await resolveNextQuestionFromRawWithAI();
     if (result.status === "empty") {
       process.stdout.write(
-        `No Question${options.source === "raw" ? "Raw" : "Pool"} rows left to resolve. Processed ${processedCount} question(s).\n`,
+        `No QuestionRaw rows left to resolve. Processed ${processedCount} question(s).\n`,
       );
       return;
     }
@@ -55,17 +33,13 @@ async function main(): Promise<void> {
 
     if (result.status === "passed") {
       process.stdout.write(
-        options.source === "raw"
-          ? `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Moved to QuestionPool.\n`
-          : `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Kept in QuestionPool.\n`,
+        `Resolved ${result.questionId}: PASSED (answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}]). Moved to QuestionPool.\n`,
       );
       continue;
     }
 
     process.stdout.write(
-      options.source === "raw"
-        ? `Resolved ${result.questionId}: REJECTED (resolved answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}], multiple correct options: ${result.hasMultipleCorrectOptions}, technical issue: ${result.hasTechnicalIssue}, second-pass approved: ${result.isSecondPassApproved}).\n`
-        : `Resolved ${result.questionId}: REJECTED (resolved answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}], multiple correct options: ${result.hasMultipleCorrectOptions}, technical issue: ${result.hasTechnicalIssue}, second-pass approved: ${result.isSecondPassApproved}). Deleted from QuestionPool.\n`,
+      `Resolved ${result.questionId}: REJECTED (resolved answer indexes: [${result.resolvedCorrectOptionIndexes.join(", ")}], multiple correct options: ${result.hasMultipleCorrectOptions}, technical issue: ${result.hasTechnicalIssue}, second-pass approved: ${result.isSecondPassApproved}).\n`,
     );
   }
 }

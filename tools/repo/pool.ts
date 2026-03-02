@@ -1,6 +1,5 @@
 import {
   type Prisma,
-  QuestionPool,
   QuestionRaw,
 } from "@prisma/client";
 import { prisma } from "./prisma";
@@ -21,24 +20,5 @@ export async function persistQuestionRawToPool(
       },
     ],
     skipDuplicates: true,
-  });
-}
-
-export async function takeNextQuestionPool(): Promise<QuestionPool | null> {
-  const count = await prisma.questionPool.count();
-  if (count === 0) {
-    return null;
-  }
-
-  const skip = Math.floor(Math.random() * count);
-  return prisma.questionPool.findFirst({
-    orderBy: { id: "asc" },
-    skip,
-  });
-}
-
-export async function deleteQuestionPoolById(id: string): Promise<void> {
-  await prisma.questionPool.delete({
-    where: { id },
   });
 }
