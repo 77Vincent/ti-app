@@ -3,7 +3,7 @@
 NPM := npm
 QUESTION_REPEAT_COUNT := 50
 
-.PHONY: help install dev build start lint test check clean clean-deps question question-sample-seed question-resolve question-english question-chinese question-japanese question-probability cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
+.PHONY: help install dev build start lint test check clean clean-deps question question-sample-seed question-resolve question-english question-chinese question-japanese db-connect cap-add-ios cap-add-android cap-sync cap-open-ios cap-open-android
 
 help:
 	@echo "Common commands:"
@@ -22,7 +22,7 @@ help:
 	@echo "  make question-english  Generate English questions for A1..C2"
 	@echo "  make question-chinese  Generate Chinese questions for HSK1..HSK6"
 	@echo "  make question-japanese Generate Japanese questions for N5..N1"
-	@echo "  make question-probability Generate Probability questions for A..C (GAISE II)"
+	@echo "  make db-connect        Open psql with DATABASE_URL from .env"
 	@echo "  make cap-add-ios       Create iOS native project via Capacitor"
 	@echo "  make cap-add-android   Create Android native project via Capacitor"
 	@echo "  make cap-sync          Sync Capacitor config/assets/plugins"
@@ -89,12 +89,27 @@ question-japanese:
 		done; \
 	done
 
-question-probability:
-	for i in $$(seq 1 $(QUESTION_REPEAT_COUNT)); do \
-		for d in A B C; do \
-			$(MAKE) question subcategory=probability difficulty=$$d || exit 1; \
-		done; \
-	done
+db-connect:
+	@if ! command -v psql >/dev/null 2>&1; then \
+		echo "psql is required but not installed."; \
+		exit 1; \
+	fi
+	@if [ ! -f .env ]; then \
+		echo ".env file not found."; \
+		exit 1; \
+	fi
+	@DATABASE_URL=$$(grep -E '^DATABASE_URL=' .env | sed -E 's/^DATABASE_URL=//; s/^"//; s/"$$//'); \
+	if [ -z "$$DATABASE_URL" ]; then \
+		echo "DATABASE_URL is missing in .env."; \
+		exit 1; \
+	fi; \
+	DATABASE_URL_CLEAN=$$(printf '%s' "$$DATABASE_URL" | sed -E 's/[?&]schema=[^&]*//; s/\?&/?/; s/[?&]$$//'); \
+	DATABASE_SCHEMA=$$(printf '%s' "$$DATABASE_URL" | sed -nE 's/.*[?&]schema=([^&]+).*/\1/p'); \
+	if [ -n "$$DATABASE_SCHEMA" ]; then \
+		PGOPTIONS="--search_path=$$DATABASE_SCHEMA" psql "$$DATABASE_URL_CLEAN"; \
+	else \
+		psql "$$DATABASE_URL_CLEAN"; \
+	fi
 
 cap-add-ios:
 	$(NPM) run cap:add:ios
