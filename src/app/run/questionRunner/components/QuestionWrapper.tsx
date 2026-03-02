@@ -195,17 +195,17 @@ export default function QuestionWrapper({
         <Card isBlurred shadow="lg" className="mx-auto w-full max-w-3xl">
           <CardBody className="p-2">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <Button
                   aria-label="Back to dashboard"
                   as={NextLink}
                   href={PAGE_PATHS.DASHBOARD}
                   isIconOnly
-                  variant="light"
+                  variant="flat"
                   className="sm:hidden"
                   onPress={triggerLightImpactHaptic}
                 >
-                  <LeaveIcon aria-hidden size={24} />
+                  <LeaveIcon aria-hidden size={25} />
                 </Button>
 
                 <FavoriteIconButton
