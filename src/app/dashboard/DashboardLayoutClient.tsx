@@ -92,13 +92,13 @@ export default function DashboardLayoutClient({
                     color={isActive ? "primary" : "foreground"}
                     underline="none"
                     className={[
-                      "inline-flex h-9 w-full items-center justify-center rounded-medium",
+                      "inline-flex h-10 w-full items-center justify-center rounded-medium",
                       isActive ? "bg-primary/15" : "",
                     ].join(" ")}
                   >
                     <item.icon
                       aria-hidden
-                      size={24}
+                      size={26}
                     />
                     <span className="sr-only">{item.label}</span>
                   </Link>
