@@ -68,7 +68,8 @@ Reference examples from curated samples:
 - learn quality and style from them
 - do not copy wording or scenarios
 - do not reuse or slightly modify the samples
-- cover various knowledge points
+- deduce the underlying knowledge points and skills being tested in the samples 
+- cover diverse and various knowledge points based on the samples
 
 ${JSON.stringify(samplePayload, null, 2)}
 `.trim();
